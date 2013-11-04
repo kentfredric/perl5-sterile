@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{TerminalPunctuation} (and fuzzy permutations)
@@ -40,10 +44,17 @@ return <<'END';
 1944	1945	Terminal_Punctuation
 1B5A	1B5B	Terminal_Punctuation
 1B5D	1B5F	Terminal_Punctuation
+1C3B	1C3F	Terminal_Punctuation
+1C7E	1C7F	Terminal_Punctuation
 203C	203D	Terminal_Punctuation
 2047	2049	Terminal_Punctuation
+2E2E		Terminal_Punctuation
 3001	3002	Terminal_Punctuation
+A60D	A60F	Terminal_Punctuation
 A876	A877	Terminal_Punctuation
+A8CE	A8CF	Terminal_Punctuation
+A92F		Terminal_Punctuation
+AA5D	AA5F	Terminal_Punctuation
 FE50	FE52	Terminal_Punctuation
 FE54	FE57	Terminal_Punctuation
 FF01		Terminal_Punctuation

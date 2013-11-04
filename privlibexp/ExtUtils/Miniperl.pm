@@ -24,7 +24,11 @@ $head= <<'EOF!HEAD';
  */
 
 /*
- * "The Road goes ever on and on, down from the door where it began."
+ *      The Road goes ever on and on
+ *          Down from the door where it began.
+ *
+ *     [Bilbo on p.35 of _The Lord of the Rings_, I/i: "A Long-Expected Party"]
+ *     [Frodo on p.73 of _The Lord of the Rings_, I/iii: "Three Is Company"]
  */
 
 /* This file contains the main() function for the perl interpreter.
@@ -49,6 +53,7 @@ $head= <<'EOF!HEAD';
 #include "EXTERN.h"
 #define PERL_IN_MINIPERLMAIN_C
 #include "perl.h"
+#include "XSUB.h"
 
 static void xs_init (pTHX);
 static PerlInterpreter *my_perl;
@@ -191,11 +196,12 @@ sub writemain{
         print "EXTERN_C void boot_${cname} (pTHX_ CV* cv);\n";
     }
 
-    my ($tail1,$tail2) = ( $tail =~ /\A(.*\n)(\s*\}.*)\Z/s );
-    print $tail1;
+    my ($tail1,$tail2,$tail3) = ( $tail =~ /\A(.*{\s*\n)(.*\n)(\s*\}.*)\Z/s );
 
+    print $tail1;
     print "\tconst char file[] = __FILE__;\n";
     print "\tdXSUB_SYS;\n" if $] > 5.002;
+    print $tail2;
 
     foreach $_ (@exts){
 	my($pname) = canon('/', $_);
@@ -215,7 +221,7 @@ sub writemain{
 	}
 	print "\t}\n";
     }
-    print $tail2;
+    print $tail3;
 }
 
 sub canon{

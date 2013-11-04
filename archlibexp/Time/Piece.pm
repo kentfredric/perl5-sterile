@@ -1,4 +1,4 @@
-# $Id: Piece.pm 72 2007-11-19 01:26:10Z matt $
+# $Id: Piece.pm 82 2009-06-27 13:20:23Z matt $
 
 package Time::Piece;
 
@@ -22,7 +22,7 @@ our %EXPORT_TAGS = (
     ':override' => 'internal',
     );
 
-our $VERSION = '1.12';
+our $VERSION = '1.15';
 
 bootstrap Time::Piece $VERSION;
 
@@ -591,6 +591,33 @@ sub compare {
     return $lhs <=> $rhs;
 }
 
+sub add_months {
+    my ($time, $num_months) = @_;
+    
+    croak("add_months requires a number of months") unless defined($num_months);
+    
+    my $final_month = $time->_mon + $num_months;
+    my $num_years = 0;
+    if ($final_month > 11 || $final_month < 0) {
+        # these two ops required because we have no POSIX::floor and don't
+        # want to load POSIX.pm
+        $num_years = int($final_month / 12);
+        $num_years-- if ($final_month < 0);
+        
+        $final_month = $final_month % 12;
+    }
+    
+    my @vals = _mini_mktime($time->sec, $time->min, $time->hour,
+                            $time->mday, $final_month, $time->year - 1900 + $num_years);
+#    warn(sprintf("got vals: %d-%d-%d %d:%d:%d\n", reverse(@vals)));
+    return scalar $time->_mktime(\@vals, $time->[c_islocal]);
+}
+
+sub add_years {
+    my ($time, $years) = @_;
+    $time->add_months($years * 12);
+}
+
 1;
 __END__
 
@@ -732,6 +759,20 @@ while examining the object will print the number of seconds (because
 of the overloading), you can also get the number of minutes, hours,
 days, weeks and years in that delta, using the Time::Seconds API.
 
+In addition to adding seconds, there are two APIs for adding months and
+years:
+
+    $t->add_months(6);
+    $t->add_years(5);
+
+The months and years can be negative for subtractions. Note that there
+is some "strange" behaviour when adding and subtracting months at the
+ends of months. Generally when the resulting month is shorter than the
+starting month then the number of overlap days is added. For example
+subtracting a month from 2008-03-31 will not result in 2008-02-31 as this
+is an impossible date. Instead you will get 2008-03-02. This appears to
+be consistent with other date manipulation tools.
+
 =head2 Date Comparisons
 
 Date comparisons are also possible, using the full suite of "<", ">",
@@ -778,6 +819,24 @@ Finally, it's possible to override localtime and gmtime everywhere, by
 including the ':override' tag in the import list:
 
     use Time::Piece ':override';
+
+=head1 CAVEATS
+
+=head2 Setting $ENV{TZ} in Threads on Win32
+
+Note that when using perl in the default build configuration on Win32
+(specifically, when perl is built with PERL_IMPLICIT_SYS), each perl
+interpreter maintains its own copy of the environment and only the main
+interpreter will update the process environment seen by strftime.
+
+Therefore, if you make changes to $ENV{TZ} from inside a thread other than
+the main thread then those changes will not be seen by strftime if you
+subsequently call that with the %Z formatting code. You must change $ENV{TZ}
+in the main thread to have the desired effect in this case (and you must
+also call _tzset() in the main thread to register the environment change).
+
+Furthermore, remember that this caveat also applies to fork(), which is
+emulated by threads on Win32.
 
 =head1 AUTHOR
 

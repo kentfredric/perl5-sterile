@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Malayalam} (and fuzzy permutations)
@@ -14,10 +18,11 @@ return <<'END';
 0D0E	0D10	Malayalam
 0D12	0D28	Malayalam
 0D2A	0D39	Malayalam
-0D3E	0D43	Malayalam
+0D3D	0D44	Malayalam
 0D46	0D48	Malayalam
 0D4A	0D4D	Malayalam
 0D57		Malayalam
-0D60	0D61	Malayalam
-0D66	0D6F	Malayalam
+0D60	0D63	Malayalam
+0D66	0D75	Malayalam
+0D79	0D7F	Malayalam
 END

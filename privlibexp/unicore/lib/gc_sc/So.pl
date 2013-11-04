@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{So}
@@ -24,7 +28,9 @@ return <<'END';
 0B70		
 0BF3	0BF8	
 0BFA		
+0C7F		
 0CF1	0CF2	
+0D79		
 0F01	0F03	
 0F13	0F17	
 0F1A	0F1F	
@@ -33,7 +39,8 @@ return <<'END';
 0F38		
 0FBE	0FC5	
 0FC7	0FCC	
-0FCF		
+0FCE	0FCF	
+109E	109F	
 1360		
 1390	1399	
 1940		
@@ -53,6 +60,7 @@ return <<'END';
 213A	213B	
 214A		
 214C	214D	
+214F		
 2195	2199	
 219C	219F	
 21A1	21A2	
@@ -76,8 +84,9 @@ return <<'END';
 25B8	25C0	
 25C2	25F7	
 2600	266E	
-2670	269C	
-26A0	26B2	
+2670	269D	
+26A0	26BC	
+26C0	26C3	
 2701	2704	
 2706	2709	
 270C	2727	
@@ -91,8 +100,9 @@ return <<'END';
 2798	27AF	
 27B1	27BE	
 2800	28FF	
-2B00	2B1A	
-2B20	2B23	
+2B00	2B2F	
+2B45	2B46	
+2B50	2B54	
 2CE5	2CEA	
 2E80	2E99	
 2E9B	2EF3	
@@ -105,7 +115,7 @@ return <<'END';
 303E	303F	
 3190	3191	
 3196	319F	
-31C0	31CF	
+31C0	31E3	
 3200	321E	
 322A	3243	
 3250		
@@ -124,9 +134,11 @@ FFFC	FFFD
 10102		
 10137	1013F	
 10179	10189	
+10190	1019B	
+101D0	101FC	
 1D000	1D0F5	
 1D100	1D126	
-1D12A	1D164	
+1D129	1D164	
 1D16A	1D16C	
 1D183	1D184	
 1D18C	1D1A9	
@@ -134,4 +146,6 @@ FFFC	FFFD
 1D200	1D241	
 1D245		
 1D300	1D356	
+1F000	1F02B	
+1F030	1F093	
 END

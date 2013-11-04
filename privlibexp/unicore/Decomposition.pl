@@ -1420,6 +1420,8 @@ return <<'END';
 2A75		<compat> 003D 003D
 2A76		<compat> 003D 003D 003D
 2ADC		2ADD 0338
+2C7C		<sub> 006A
+2C7D		<super> 0056
 2D6F		<super> 2D61
 2E9F		<compat> 6BCD
 2EF3		<compat> 9F9F
@@ -2309,6 +2311,7 @@ return <<'END';
 33FD		<compat> 0033 0030 65E5
 33FE		<compat> 0033 0031 65E5
 33FF		<square> 0067 0061 006C
+A770		<super> A76F
 F900		8C48
 F901		66F4
 F902		8ECA

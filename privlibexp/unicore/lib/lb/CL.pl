@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # Linebreak category 'Close_Punctuation'
 #
@@ -27,6 +31,8 @@ return <<'END';
 27E7		
 27E9		
 27EB		
+27ED		
+27EF		
 2984		
 2986		
 2988		
@@ -41,6 +47,10 @@ return <<'END';
 29D9		
 29DB		
 29FD		
+2E23		
+2E25		
+2E27		
+2E29		
 3001	3002	
 3009		
 300B		

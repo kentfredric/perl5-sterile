@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 468 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/labs.al)"
+#line 461 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/labs.al)"
 sub labs {
     unimpl "labs() is C-specific, use abs instead";
 }

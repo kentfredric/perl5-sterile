@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # Linebreak category 'Combining_Mark'
 #
@@ -13,14 +17,13 @@ return <<'END';
 0300	034E	
 0350	035B	
 0363	036F	
-0483	0486	
-0488	0489	
+0483	0489	
 0591	05BD	
 05BF		
 05C1	05C2	
 05C4	05C5	
 05C7		
-0610	0615	
+0610	061A	
 064B	065E	
 0670		
 06D6	06DC	
@@ -48,7 +51,9 @@ return <<'END';
 0A3E	0A42	
 0A47	0A48	
 0A4B	0A4D	
+0A51		
 0A70	0A71	
+0A75		
 0A81	0A83	
 0ABC		
 0ABE	0AC5	
@@ -57,10 +62,11 @@ return <<'END';
 0AE2	0AE3	
 0B01	0B03	
 0B3C		
-0B3E	0B43	
+0B3E	0B44	
 0B47	0B48	
 0B4B	0B4D	
 0B56	0B57	
+0B62	0B63	
 0B82		
 0BBE	0BC2	
 0BC6	0BC8	
@@ -71,6 +77,7 @@ return <<'END';
 0C46	0C48	
 0C4A	0C4D	
 0C55	0C56	
+0C62	0C63	
 0C82	0C83	
 0CBC		
 0CBE	0CC4	
@@ -79,10 +86,11 @@ return <<'END';
 0CD5	0CD6	
 0CE2	0CE3	
 0D02	0D03	
-0D3E	0D43	
+0D3E	0D44	
 0D46	0D48	
 0D4A	0D4D	
 0D57		
+0D62	0D63	
 0D82	0D83	
 0DCA		
 0DCF	0DD4	
@@ -113,22 +121,36 @@ return <<'END';
 1B00	1B04	
 1B34	1B44	
 1B6B	1B73	
-1DC0	1DCA	
+1B80	1B82	
+1BA1	1BAA	
+1C24	1C37	
+1DC0	1DE6	
 1DFE	1DFF	
 200C	200F	
 202A	202E	
 206A	206F	
-20D0	20EF	
+20D0	20F0	
+2DE0	2DFF	
 302A	302F	
 3099	309A	
+A66F	A672	
+A67C	A67D	
 A802		
 A806		
 A80B		
 A823	A827	
+A880	A881	
+A8B4	A8C4	
+A926	A92D	
+A947	A953	
+AA29	AA36	
+AA43		
+AA4C	AA4D	
 FB1E		
 FE00	FE0F	
-FE20	FE23	
+FE20	FE26	
 FFF9	FFFB	
+101FD		
 10A01	10A03	
 10A05	10A06	
 10A0C	10A0F	

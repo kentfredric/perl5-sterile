@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Katakana} (and fuzzy permutations)
@@ -12,6 +16,8 @@ return <<'END';
 30A1	30FA	Katakana
 30FD	30FF	Katakana
 31F0	31FF	Katakana
+32D0	32FE	Katakana
+3300	3357	Katakana
 FF66	FF6F	Katakana
 FF71	FF9D	Katakana
 END

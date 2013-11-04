@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # BidiClass category 'Right_To_Left'
 #
@@ -31,6 +35,8 @@ FB46	FB4F
 1083C		
 1083F		
 10900	10919	
+10920	10939	
+1093F		
 10A00		
 10A10	10A13	
 10A15	10A17	

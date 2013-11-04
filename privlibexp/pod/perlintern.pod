@@ -119,10 +119,9 @@ Found in file pad.h
 =item PAD_CLONE_VARS
 X<PAD_CLONE_VARS>
 
-|CLONE_PARAMS* param
 Clone the state variables associated with running and compiling pads.
 
-	void	PAD_CLONE_VARS(PerlInterpreter *proto_perl \)
+	void	PAD_CLONE_VARS(PerlInterpreter *proto_perl, CLONE_PARAMS* param)
 
 =for hackers
 Found in file pad.h
@@ -422,7 +421,7 @@ perl on VMS). This code used to be inline, but now perl uses C<File::Glob>
 this glob starter is only used by miniperl during the build process.
 Moving it away shrinks pp_hot.c; shrinking pp_hot.c helps speed perl up.
 
-	PerlIO*	start_glob(SV* pattern, IO *io)
+	PerlIO*	start_glob(SV *tmpglob, IO *io)
 
 =for hackers
 Found in file doio.c
@@ -434,11 +433,24 @@ Found in file doio.c
 
 =over 8
 
-=item magic_sethint
-X<magic_sethint>
+=item magic_clearhint
+X<magic_clearhint>
 
 Triggered by a delete from %^H, records the key to
 C<PL_compiling.cop_hints_hash>.
+
+	int	magic_clearhint(SV* sv, MAGIC* mg)
+
+=for hackers
+Found in file mg.c
+
+=item magic_sethint
+X<magic_sethint>
+
+Triggered by a store to %^H, records the key/value pair to
+C<PL_compiling.cop_hints_hash>.  It is assumed that hints aren't storing
+anything that would need a deep copy.  Maybe we should warn if we find a
+reference.
 
 	int	magic_sethint(SV* sv, MAGIC* mg)
 
@@ -464,25 +476,6 @@ Found in file mg.c
 
 =over 8
 
-=item mro_get_linear_isa_c3
-X<mro_get_linear_isa_c3>
-
-Returns the C3 linearization of @ISA
-the given stash.  The return value is a read-only AV*.
-C<level> should be 0 (it is used internally in this
-function's recursion).
-
-You are responsible for C<SvREFCNT_inc()> on the
-return value if you plan to store it anywhere
-semi-permanently (otherwise it might be deleted
-out from under you the next time the cache is
-invalidated).
-
-	AV*	mro_get_linear_isa_c3(HV* stash, I32 level)
-
-=for hackers
-Found in file mro.c
-
 =item mro_get_linear_isa_dfs
 X<mro_get_linear_isa_dfs>
 
@@ -497,7 +490,7 @@ semi-permanently (otherwise it might be deleted
 out from under you the next time the cache is
 invalidated).
 
-	AV*	mro_get_linear_isa_dfs(HV* stash, I32 level)
+	AV*	mro_get_linear_isa_dfs(HV* stash, U32 level)
 
 =for hackers
 Found in file mro.c
@@ -597,6 +590,8 @@ and set on scope exit. This allows the 'Variable $x is not available' warning
 to be generated in evals, such as 
 
     { my $x = 1; sub f { eval '$x'} } f();
+
+For state vars, SVf_PADSTALE is overloaded to mean 'not yet initialised'
 
 	AV *	CvPADLIST(CV *cv)
 

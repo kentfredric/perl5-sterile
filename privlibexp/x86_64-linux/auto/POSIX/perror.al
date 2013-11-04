@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 351 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/perror.al)"
+#line 344 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/perror.al)"
 sub perror {
     print STDERR "@_: " if @_;
     print STDERR $!,"\n";

@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Po}
@@ -25,11 +29,11 @@ return <<'END';
 0387		
 055A	055F	
 0589		
-05BE		
 05C0		
 05C3		
 05C6		
 05F3	05F4	
+0609	060A	
 060C	060D	
 061B		
 061E	061F	
@@ -44,7 +48,7 @@ return <<'END';
 0E5A	0E5B	
 0F04	0F12	
 0F85		
-0FD0	0FD1	
+0FD0	0FD4	
 104A	104F	
 10FB		
 1361	1368	
@@ -59,6 +63,8 @@ return <<'END';
 19DE	19DF	
 1A1E	1A1F	
 1B5A	1B60	
+1C3B	1C3F	
+1C7E	1C7F	
 2016	2017	
 2020	2027	
 2030	2038	
@@ -73,10 +79,22 @@ return <<'END';
 2E06	2E08	
 2E0B		
 2E0E	2E16	
+2E18	2E19	
+2E1B		
+2E1E	2E1F	
+2E2A	2E2E	
+2E30		
 3001	3003	
 303D		
 30FB		
+A60D	A60F	
+A673		
+A67E		
 A874	A877	
+A8CE	A8CF	
+A92E	A92F	
+A95F		
+AA5C	AA5F	
 FE10	FE16	
 FE19		
 FE30		
@@ -101,6 +119,7 @@ FF64	FF65
 1039F		
 103D0		
 1091F		
+1093F		
 10A50	10A58	
 12470	12473	
 END

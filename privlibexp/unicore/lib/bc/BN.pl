@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # BidiClass category 'Boundary_Neutral'
 #
@@ -13,7 +17,7 @@ return <<'END';
 00AD		
 070F		
 200B	200D	
-2060	2063	
+2060	2064	
 206A	206F	
 FEFF		
 1D173	1D17A	

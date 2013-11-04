@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # BidiClass category 'European_Terminator'
 #
@@ -9,6 +13,7 @@ return <<'END';
 0023	0025	
 00A2	00A5	
 00B0	00B1	
+0609	060A	
 066A		
 09F2	09F3	
 0AF1		

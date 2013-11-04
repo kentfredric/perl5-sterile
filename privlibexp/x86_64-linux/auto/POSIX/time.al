@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 633 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/time.al)"
+#line 626 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/time.al)"
 sub time {
     usage "time()" if @_ != 0;
     CORE::time;

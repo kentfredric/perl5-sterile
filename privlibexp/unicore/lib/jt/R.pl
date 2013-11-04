@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # JoiningType category 'Right_Joining'
 #
@@ -31,4 +35,7 @@ return <<'END';
 074D		
 0759	075B	
 076B	076C	
+0771		
+0773	0774	
+0778	0779	
 END

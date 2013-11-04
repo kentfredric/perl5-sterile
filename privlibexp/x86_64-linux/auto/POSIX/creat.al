@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 148 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/creat.al)"
+#line 141 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/creat.al)"
 sub creat {
     usage "creat(filename, mode)" if @_ != 2;
     &open($_[0], &O_WRONLY | &O_CREAT | &O_TRUNC, $_[1]);

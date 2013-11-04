@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{N}
@@ -25,12 +29,14 @@ return <<'END';
 0B66	0B6F	
 0BE6	0BF2	
 0C66	0C6F	
+0C78	0C7E	
 0CE6	0CEF	
-0D66	0D6F	
+0D66	0D75	
 0E50	0E59	
 0ED0	0ED9	
 0F20	0F33	
 1040	1049	
+1090	1099	
 1369	137C	
 16EE	16F0	
 17E0	17E9	
@@ -39,10 +45,14 @@ return <<'END';
 1946	194F	
 19D0	19D9	
 1B50	1B59	
+1BB0	1BB9	
+1C40	1C49	
+1C50	1C59	
 2070		
 2074	2079	
 2080	2089	
 2153	2182	
+2185	2188	
 2460	249B	
 24EA	24FF	
 2776	2793	
@@ -55,6 +65,10 @@ return <<'END';
 3251	325F	
 3280	3289	
 32B1	32BF	
+A620	A629	
+A8D0	A8D9	
+A900	A909	
+AA50	AA59	
 FF10	FF19	
 10107	10133	
 10140	10178	

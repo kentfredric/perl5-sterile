@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Myanmar} (and fuzzy permutations)
@@ -9,10 +13,6 @@
 # Meaning: Script 'Myanmar'
 #
 return <<'END';
-1000	1021	Myanmar
-1023	1027	Myanmar
-1029	102A	Myanmar
-102C	1032	Myanmar
-1036	1039	Myanmar
-1040	1059	Myanmar
+1000	1099	Myanmar
+109E	109F	Myanmar
 END

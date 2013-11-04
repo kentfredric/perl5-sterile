@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # BidiClass category 'Other_Neutral'
 #
@@ -31,11 +35,13 @@ return <<'END';
 0387		
 03F6		
 058A		
+0606	0607	
 060E	060F	
 06E9		
 07F6	07F9	
 0BF3	0BF8	
 0BFA		
+0C78	0C7E	
 0CF1	0CF2	
 0F3A	0F3D	
 1390	1399	
@@ -76,9 +82,10 @@ return <<'END';
 2400	2426	
 2440	244A	
 2460	2487	
-24EA	269C	
+24EA	269D	
 26A0	26AB	
-26AD	26B2	
+26AD	26BC	
+26C0	26C3	
 2701	2704	
 2706	2709	
 270C	2727	
@@ -91,14 +98,13 @@ return <<'END';
 2798	27AF	
 27B1	27BE	
 27C0	27CA	
-27D0	27EB	
-27F0	27FF	
-2900	2B1A	
-2B20	2B23	
+27CC		
+27D0	27FF	
+2900	2B4C	
+2B50	2B54	
 2CE5	2CEA	
 2CF9	2CFF	
-2E00	2E17	
-2E1C	2E1D	
+2E00	2E30	
 2E80	2E99	
 2E9B	2EF3	
 2F00	2FD5	
@@ -111,7 +117,7 @@ return <<'END';
 309B	309C	
 30A0		
 30FB		
-31C0	31CF	
+31C0	31E3	
 321D	321E	
 3250	325F	
 327C	327E	
@@ -122,8 +128,11 @@ return <<'END';
 33FF		
 4DC0	4DFF	
 A490	A4C6	
-A700	A71A	
-A720	A721	
+A60D	A60F	
+A673		
+A67E	A67F	
+A700	A721	
+A788		
 A828	A82B	
 A874	A877	
 FD3E	FD3F	
@@ -147,8 +156,11 @@ FFE8	FFEE
 FFF9	FFFD	
 10101		
 10140	1018A	
+10190	1019B	
 1091F		
 1D200	1D241	
 1D245		
 1D300	1D356	
+1F000	1F02B	
+1F030	1F093	
 END

@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Gurmukhi} (and fuzzy permutations)
@@ -21,7 +25,8 @@ return <<'END';
 0A3E	0A42	Gurmukhi
 0A47	0A48	Gurmukhi
 0A4B	0A4D	Gurmukhi
+0A51		Gurmukhi
 0A59	0A5C	Gurmukhi
 0A5E		Gurmukhi
-0A66	0A74	Gurmukhi
+0A66	0A75	Gurmukhi
 END

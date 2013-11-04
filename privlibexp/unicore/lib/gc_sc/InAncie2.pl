@@ -2,12 +2,16 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
-# 	\p{InAncientGreekMusicalNotation} (and fuzzy permutations)
+# 	\p{InAncientGreekNumbers} (and fuzzy permutations)
 # 
-# Meaning: Block 'Ancient Greek Musical Notation'
+# Meaning: Block 'Ancient Greek Numbers'
 #
 return <<'END';
-1D200	1D24F	Ancient Greek Musical Notation
+10140	1018F	Ancient Greek Numbers
 END

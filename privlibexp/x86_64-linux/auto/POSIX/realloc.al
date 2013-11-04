@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 488 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/realloc.al)"
+#line 481 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/realloc.al)"
 sub realloc {
     unimpl "realloc() is C-specific, stopped";
 }

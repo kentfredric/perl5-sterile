@@ -4,7 +4,7 @@ use Carp;
 use warnings;
 use strict;
 use vars qw($VERSION $AUTOLOAD);
-$VERSION = '0.79';
+$VERSION = '0.85'; # remember to update version in POD!
 # $DB::single=1;
 
 my %symcache;
@@ -12,7 +12,6 @@ sub findsym {
 	my ($pkg, $ref, $type) = @_;
 	return $symcache{$pkg,$ref} if $symcache{$pkg,$ref};
 	$type ||= ref($ref);
-	my $found;
 	no strict 'refs';
         foreach my $sym ( values %{$pkg."::"} ) {
 	    use strict;
@@ -234,13 +233,13 @@ Attribute::Handlers - Simpler definition of attribute handlers
 
 =head1 VERSION
 
-This document describes version 0.79 of Attribute::Handlers,
-released November 25, 2007.
+This document describes version 0.85 of Attribute::Handlers,
+released June 11, 2009.
 
 =head1 SYNOPSIS
 
 	package MyClass;
-	require v5.6.0;
+	require 5.006;
 	use Attribute::Handlers;
 	no warnings 'redefine';
 
@@ -686,7 +685,7 @@ module, then the following code:
 
         sub fn :Ugly(sister) :Omni('po',tent()) {...}
         my @arr :Good :Omni(s/cie/nt/);
-        my %hsh :Good(q/bye) :Omni(q/bus/);
+        my %hsh :Good(q/bye/) :Omni(q/bus/);
 
 
 would cause the following handlers to be invoked:
@@ -811,6 +810,24 @@ Let's you write:
 
         # etc.
 
+=head1 UTILITY FUNCTIONS
+
+This module offers a single utility function, C<findsym()>.
+
+=over 4
+
+=item findsym
+
+  my $symbol = Attribute::Handlers::findsym($package, $referent);
+
+The function looks in the symbol table of C<$package> for the typeglob for
+C<$referent>, which is a reference to a variable or subroutine (SCALAR, ARRAY,
+HASH, or CODE). If it finds the typeglob, it returns it. Otherwise, it returns
+undef. Note that C<findsym> memoizes the typeglobs it has previously
+successfully found, so subsequent calls with the same arguments should be
+must faster.
+
+=back
 
 =head1 DIAGNOSTICS
 
@@ -864,15 +881,20 @@ this won't happen.
 
 =head1 AUTHOR
 
-Damian Conway (damian@conway.org)
+Damian Conway (damian@conway.org). The maintainer of this module is now Rafael
+Garcia-Suarez (rgarciasuarez@gmail.com).
+
+Maintainer of the CPAN release is Steffen Mueller (smueller@cpan.org).
+Contact him with technical difficulties with respect to the packaging of the
+CPAN module.
 
 =head1 BUGS
 
 There are undoubtedly serious bugs lurking somewhere in code this funky :-)
 Bug reports and other feedback are most welcome.
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-         Copyright (c) 2001, Damian Conway. All Rights Reserved.
+         Copyright (c) 2001-2009, Damian Conway. All Rights Reserved.
        This module is free software. It may be used, redistributed
            and/or modified under the same terms as Perl itself.

@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Deprecated} (and fuzzy permutations)
@@ -13,4 +17,6 @@ return <<'END';
 17A3		Deprecated
 17D3		Deprecated
 206A	206F	Deprecated
+E0001		Deprecated
+E0020	E007F	Deprecated
 END

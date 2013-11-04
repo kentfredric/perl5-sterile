@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Ps}
@@ -33,6 +37,8 @@ return <<'END';
 27E6		
 27E8		
 27EA		
+27EC		
+27EE		
 2983		
 2985		
 2987		
@@ -47,6 +53,10 @@ return <<'END';
 29D8		
 29DA		
 29FC		
+2E22		
+2E24		
+2E26		
+2E28		
 3008		
 300A		
 300C		

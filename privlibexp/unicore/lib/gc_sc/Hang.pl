@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Hangul} (and fuzzy permutations)
@@ -14,7 +18,7 @@ return <<'END';
 11A8	11F9	Hangul
 3131	318E	Hangul
 3200	321E	Hangul
-3260	327D	Hangul
+3260	327E	Hangul
 AC00	D7A3	Hangul
 FFA0	FFBE	Hangul
 FFC2	FFC7	Hangul

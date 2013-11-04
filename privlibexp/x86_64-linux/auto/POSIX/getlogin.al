@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 703 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getlogin.al)"
+#line 696 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getlogin.al)"
 sub getlogin {
     usage "getlogin()" if @_ != 0;
     CORE::getlogin();

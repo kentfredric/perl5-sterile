@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # Binary property 'Other_Math'
 #
@@ -14,13 +18,13 @@ return <<'END';
 2016		Other_Math
 2032	2034	Other_Math
 2040		Other_Math
-2061	2063	Other_Math
+2061	2064	Other_Math
 207D	207E	Other_Math
 208D	208E	Other_Math
 20D0	20DC	Other_Math
 20E1		Other_Math
 20E5	20E6	Other_Math
-20EC	20EF	Other_Math
+20EB	20EF	Other_Math
 2102		Other_Math
 210A	2113	Other_Math
 2115		Other_Math
@@ -32,10 +36,40 @@ return <<'END';
 2133	2138	Other_Math
 213C	213F	Other_Math
 2145	2149	Other_Math
+2195	2199	Other_Math
+219C	219F	Other_Math
+21A1	21A2	Other_Math
+21A4	21A5	Other_Math
+21A7		Other_Math
+21A9	21AD	Other_Math
+21B0	21B1	Other_Math
+21B6	21B7	Other_Math
+21BC	21CD	Other_Math
+21D0	21D1	Other_Math
+21D3		Other_Math
+21D5	21DB	Other_Math
+21DD		Other_Math
+21E4	21E5	Other_Math
+23B4	23B5	Other_Math
 23B7		Other_Math
 23D0		Other_Math
+23E2		Other_Math
+25A0	25A1	Other_Math
+25AE	25B6	Other_Math
+25BC	25C0	Other_Math
+25C6	25C7	Other_Math
+25CA	25CB	Other_Math
+25CF	25D3	Other_Math
+25E2		Other_Math
+25E4		Other_Math
+25E7	25EC	Other_Math
+2605	2606	Other_Math
+2640		Other_Math
+2642		Other_Math
+2660	2663	Other_Math
+266D	266E	Other_Math
 27C5	27C6	Other_Math
-27E6	27EB	Other_Math
+27E6	27EF	Other_Math
 2983	2998	Other_Math
 29D8	29DB	Other_Math
 29FC	29FD	Other_Math

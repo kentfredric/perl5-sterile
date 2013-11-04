@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{OtherLowercase} (and fuzzy permutations)
@@ -20,4 +24,6 @@ return <<'END';
 2090	2094	Other_Lowercase
 2170	217F	Other_Lowercase
 24D0	24E9	Other_Lowercase
+2C7D		Other_Lowercase
+A770		Other_Lowercase
 END

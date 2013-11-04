@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 517 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/memset.al)"
+#line 510 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/memset.al)"
 sub memset {
     unimpl "memset() is C-specific, use x instead";
 }

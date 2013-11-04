@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 158 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getgrgid.al)"
+#line 151 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getgrgid.al)"
 sub getgrgid {
     usage "getgrgid(gid)" if @_ != 1;
     CORE::getgrgid($_[0]);

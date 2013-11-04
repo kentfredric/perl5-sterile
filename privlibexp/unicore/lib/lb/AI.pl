@@ -2,16 +2,19 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # Linebreak category 'Ambiguous'
 #
 return <<'END';
-00A1		
 00A7	00A8	
 00AA		
 00B2	00B3	
 00B6	00BA	
-00BC	00BF	
+00BC	00BE	
 00D7		
 00F7		
 02C7		

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 484 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rand.al)"
+#line 477 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rand.al)"
 sub rand {
     unimpl "rand() is non-portable, use Perl's rand instead";
 }

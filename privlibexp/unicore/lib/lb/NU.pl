@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # Linebreak category 'Numeric'
 #
@@ -24,11 +28,19 @@ return <<'END';
 0ED0	0ED9	
 0F20	0F29	
 1040	1049	
+1090	1099	
 17E0	17E9	
 1810	1819	
 1946	194F	
 19D0	19D9	
 1B50	1B59	
+1BB0	1BB9	
+1C40	1C49	
+1C50	1C59	
+A620	A629	
+A8D0	A8D9	
+A900	A909	
+AA50	AA59	
 104A0	104A9	
 1D7CE	1D7FF	
 END

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 623 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/gmtime.al)"
+#line 616 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/gmtime.al)"
 sub gmtime {
     usage "gmtime(time)" if @_ != 1;
     CORE::gmtime($_[0]);

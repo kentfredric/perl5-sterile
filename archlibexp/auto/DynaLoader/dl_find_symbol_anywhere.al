@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package DynaLoader;
 
-#line 344 "../../lib/DynaLoader.pm (autosplit into ../../lib/auto/DynaLoader/dl_find_symbol_anywhere.al)"
+#line 341 "../../lib/DynaLoader.pm (autosplit into ../../lib/auto/DynaLoader/dl_find_symbol_anywhere.al)"
 sub dl_find_symbol_anywhere
 {
     my $sym = shift;

@@ -2,6 +2,10 @@
 # This file is built by mktables from e.g. UnicodeData.txt.
 # Any changes made here will be lost!
 
+# This file is for internal use by the Perl program only.  The format and even
+# name or existence of this file are subject to change without notice.  Don't
+# use it directly.
+
 #
 # This file supports:
 # 	\p{Mn}
@@ -11,13 +15,13 @@
 #
 return <<'END';
 0300	036F	
-0483	0486	
+0483	0487	
 0591	05BD	
 05BF		
 05C1	05C2	
 05C4	05C5	
 05C7		
-0610	0615	
+0610	061A	
 064B	065E	
 0670		
 06D6	06DC	
@@ -44,7 +48,9 @@ return <<'END';
 0A41	0A42	
 0A47	0A48	
 0A4B	0A4D	
+0A51		
 0A70	0A71	
+0A75		
 0A81	0A82	
 0ABC		
 0AC1	0AC5	
@@ -54,9 +60,10 @@ return <<'END';
 0B01		
 0B3C		
 0B3F		
-0B41	0B43	
+0B41	0B44	
 0B4D		
 0B56		
+0B62	0B63	
 0B82		
 0BC0		
 0BCD		
@@ -64,13 +71,15 @@ return <<'END';
 0C46	0C48	
 0C4A	0C4D	
 0C55	0C56	
+0C62	0C63	
 0CBC		
 0CBF		
 0CC6		
 0CCC	0CCD	
 0CE2	0CE3	
-0D41	0D43	
+0D41	0D44	
 0D4D		
+0D62	0D63	
 0DCA		
 0DD2	0DD4	
 0DD6		
@@ -92,10 +101,15 @@ return <<'END';
 0F99	0FBC	
 0FC6		
 102D	1030	
-1032		
-1036	1037	
-1039		
+1032	1037	
+1039	103A	
+103D	103E	
 1058	1059	
+105E	1060	
+1071	1074	
+1082		
+1085	1086	
+108D		
 135F		
 1712	1714	
 1732	1734	
@@ -118,19 +132,37 @@ return <<'END';
 1B3C		
 1B42		
 1B6B	1B73	
-1DC0	1DCA	
+1B80	1B81	
+1BA2	1BA5	
+1BA8	1BA9	
+1C2C	1C33	
+1C36	1C37	
+1DC0	1DE6	
 1DFE	1DFF	
 20D0	20DC	
 20E1		
-20E5	20EF	
+20E5	20F0	
+2DE0	2DFF	
 302A	302F	
 3099	309A	
+A66F		
+A67C	A67D	
+A802		
 A806		
 A80B		
 A825	A826	
+A8C4		
+A926	A92D	
+A947	A951	
+AA29	AA2E	
+AA31	AA32	
+AA35	AA36	
+AA43		
+AA4C		
 FB1E		
 FE00	FE0F	
-FE20	FE23	
+FE20	FE26	
+101FD		
 10A01	10A03	
 10A05	10A06	
 10A0C	10A0F	
