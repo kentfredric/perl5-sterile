@@ -40,7 +40,8 @@
     0,
     /* rhash '%' extra data for restricted hashes */
     magic_vtable_max | PERL_MAGIC_VALUE_MAGIC,
-    0,
+    /* proto '&' my sub prototype CV */
+    magic_vtable_max,
     0,
     0,
     0,
@@ -80,8 +81,7 @@
     /* env 'E' %ENV hash */
     want_vtbl_env,
     0,
-    /* study 'G' study()ed string */
-    want_vtbl_regexp | PERL_MAGIC_READONLY_ACCEPTABLE | PERL_MAGIC_VALUE_MAGIC,
+    0,
     /* hints 'H' %^H hash */
     want_vtbl_hints,
     /* isa 'I' @ISA array */
@@ -103,7 +103,7 @@
     /* uvar 'U' Available for use by extensions */
     want_vtbl_uvar,
     /* vstring 'V' SV was vstring literal */
-    want_vtbl_vstring | PERL_MAGIC_VALUE_MAGIC,
+    magic_vtable_max | PERL_MAGIC_VALUE_MAGIC,
     0,
     0,
     0,
@@ -124,7 +124,7 @@
     /* envelem 'e' %ENV hash element */
     want_vtbl_envelem,
     /* fm 'f' Formline ('compiled' format) */
-    want_vtbl_regdata | PERL_MAGIC_READONLY_ACCEPTABLE | PERL_MAGIC_VALUE_MAGIC,
+    want_vtbl_regexp | PERL_MAGIC_READONLY_ACCEPTABLE | PERL_MAGIC_VALUE_MAGIC,
     /* regex_global 'g' m//g target */
     want_vtbl_mglob | PERL_MAGIC_READONLY_ACCEPTABLE | PERL_MAGIC_VALUE_MAGIC,
     /* hintselem 'h' %^H hash element */

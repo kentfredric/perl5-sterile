@@ -5,13 +5,11 @@
  */
 
 #ifdef PERL_CORE
+/* A Bison parser, made by GNU Bison 2.6.1.  */
 
-/* A Bison parser, made by GNU Bison 2.4.1.  */
-
-/* Skeleton interface for Bison's Yacc-like parsers in C
+/* Bison interface for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,6 +37,13 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+/* Enabling traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -100,31 +105,32 @@
      NOAMP = 309,
      LOCAL = 310,
      MY = 311,
-     MYSUB = 312,
-     REQUIRE = 313,
-     COLONATTR = 314,
-     PREC_LOW = 315,
-     DOROP = 316,
-     OROP = 317,
-     ANDOP = 318,
-     NOTOP = 319,
-     ASSIGNOP = 320,
-     DORDOR = 321,
-     OROR = 322,
-     ANDAND = 323,
-     BITOROP = 324,
-     BITANDOP = 325,
-     SHIFTOP = 326,
-     MATCHOP = 327,
-     REFGEN = 328,
-     UMINUS = 329,
-     POWOP = 330,
-     POSTDEC = 331,
-     POSTINC = 332,
-     PREDEC = 333,
-     PREINC = 334,
-     ARROW = 335,
-     PEG = 336
+     REQUIRE = 312,
+     COLONATTR = 313,
+     FORMLBRACK = 314,
+     FORMRBRACK = 315,
+     PREC_LOW = 316,
+     DOROP = 317,
+     OROP = 318,
+     ANDOP = 319,
+     NOTOP = 320,
+     ASSIGNOP = 321,
+     DORDOR = 322,
+     OROR = 323,
+     ANDAND = 324,
+     BITOROP = 325,
+     BITANDOP = 326,
+     SHIFTOP = 327,
+     MATCHOP = 328,
+     REFGEN = 329,
+     UMINUS = 330,
+     POWOP = 331,
+     POSTDEC = 332,
+     POSTINC = 333,
+     PREDEC = 334,
+     PREINC = 335,
+     ARROW = 336,
+     PEG = 337
    };
 #endif
 
@@ -183,40 +189,61 @@
 #define NOAMP 309
 #define LOCAL 310
 #define MY 311
-#define MYSUB 312
-#define REQUIRE 313
-#define COLONATTR 314
-#define PREC_LOW 315
-#define DOROP 316
-#define OROP 317
-#define ANDOP 318
-#define NOTOP 319
-#define ASSIGNOP 320
-#define DORDOR 321
-#define OROR 322
-#define ANDAND 323
-#define BITOROP 324
-#define BITANDOP 325
-#define SHIFTOP 326
-#define MATCHOP 327
-#define REFGEN 328
-#define UMINUS 329
-#define POWOP 330
-#define POSTDEC 331
-#define POSTINC 332
-#define PREDEC 333
-#define PREINC 334
-#define ARROW 335
-#define PEG 336
+#define REQUIRE 312
+#define COLONATTR 313
+#define FORMLBRACK 314
+#define FORMRBRACK 315
+#define PREC_LOW 316
+#define DOROP 317
+#define OROP 318
+#define ANDOP 319
+#define NOTOP 320
+#define ASSIGNOP 321
+#define DORDOR 322
+#define OROR 323
+#define ANDAND 324
+#define BITOROP 325
+#define BITANDOP 326
+#define SHIFTOP 327
+#define MATCHOP 328
+#define REFGEN 329
+#define UMINUS 330
+#define POWOP 331
+#define POSTDEC 332
+#define POSTINC 333
+#define PREDEC 334
+#define PREINC 335
+#define ARROW 336
+#define PEG 337
 
 
-
+#ifdef PERL_IN_TOKE_C
+static bool
+S_is_opval_token(int type) {
+    switch (type) {
+    case FUNC0OP:
+    case FUNC0SUB:
+    case FUNCMETH:
+    case LSTOPSUB:
+    case METHOD:
+    case PLUGEXPR:
+    case PLUGSTMT:
+    case PMFUNC:
+    case PRIVATEREF:
+    case QWLIST:
+    case THING:
+    case UNIOPSUB:
+    case WORD:
+	return 1;
+    }
+    return 0;
+}
+#endif /* PERL_IN_TOKE_C */
 #endif /* PERL_CORE */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
-
-/* Line 1676 of yacc.c  */
+/* Line 2049 of yacc.c  */
 
     I32	ival; /* __DEFAULT__ (marker for regen_perly.pl;
 				must always be 1st union member) */
@@ -235,8 +262,7 @@ typedef union YYSTYPE
 #endif
 
 
-
-/* Line 1676 of yacc.c  */
+/* Line 2049 of yacc.c  */
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -244,10 +270,22 @@ typedef union YYSTYPE
 #endif
 
 
-
+#ifdef YYPARSE_PARAM
+#if defined __STDC__ || defined __cplusplus
+int yyparse (void *YYPARSE_PARAM);
+#else
+int yyparse ();
+#endif
+#else /* ! YYPARSE_PARAM */
+#if defined __STDC__ || defined __cplusplus
+int yyparse (void);
+#else
+int yyparse ();
+#endif
+#endif /* ! YYPARSE_PARAM */
 
 
 /* Generated from:
- * ff01d43de6f749eba3bfeffd39928772fe7e1bebe039506b8465c05941209aa8 perly.y
- * 53f57d7143a42b3c008841a14d158bcf9cab64b2904b07ef5e95051fe9a8a875 regen_perly.pl
+ * 28c2c7738eefc00762e227af0363c729186c992e9127e0c935684cccbf3a3b4f perly.y
+ * 5c9d2a0262457fe9b70073fc8ad6c188f812f38ad57712b7e2f53daa01b297cc regen_perly.pl
  * ex: set ro: */

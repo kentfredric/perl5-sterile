@@ -1,6 +1,6 @@
 package overload;
 
-our $VERSION = '1.19';
+our $VERSION = '1.22';
 
 %ops = (
     with_assign         => "+ - * / % ** << >> x .",
@@ -495,9 +495,6 @@ value will be ignored.
 If C<E<lt>E<gt>> is overloaded then the same implementation is used
 for both the I<read-filehandle> syntax C<E<lt>$varE<gt>> and
 I<globbing> syntax C<E<lt>${var}E<gt>>.
-
-B<BUGS> Even in list context, the iterator is currently called only
-once and with scalar context.
 
 =item * I<File tests>
 
@@ -1234,7 +1231,7 @@ Put this in F<symbolic.pm> in your Perl library directory:
 
 This module is very unusual as overloaded modules go: it does not
 provide any usual overloaded operators, instead it provides an
-implementation for L<C<nomethod>>.  In this example the C<nomethod>
+implementation for L</C<nomethod>>.  In this example the C<nomethod>
 subroutine returns an object which encapsulates operations done over
 the objects: C<< symbolic->new(3) >> contains C<['n', 3]>, C<< 2 +
 symbolic->new(3) >> contains C<['+', 2, ['n', 3]]>.
@@ -1677,6 +1674,10 @@ coincides with the current one.
 =item *
 
 Barewords are not covered by overloaded string constants.
+
+=item *
+
+The range operator C<..> cannot be overloaded.
 
 =back
 

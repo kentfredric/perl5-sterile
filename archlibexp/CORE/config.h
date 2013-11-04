@@ -9,9 +9,9 @@
 
 /* Package name      : perl5
  * Source directory  : .
- * Configuration time: Sun Nov 24 22:01:05 NZDT 2013
+ * Configuration time: Tue Nov  5 04:57:03 NZDT 2013
  * Configured by     : kent
- * Target system     : linux katipo2 3.12.0-gentoo #54 smp wed nov 6 04:43:49 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
+ * Target system     : linux katipo2 3.11.6-gentoo #52 smp mon oct 21 00:17:07 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
  */
 
 #ifndef _config_h_
@@ -890,7 +890,7 @@
  *	feature tests from Configure are generally more reliable.
  */
 #define OSNAME "linux"		/**/
-#define OSVERS "3.12.0-gentoo"		/**/
+#define OSVERS "3.11.6-gentoo"		/**/
 
 /* USE_CROSS_COMPILE:
  *	This symbol, if defined, indicates that Perl is being cross-compiled.
@@ -916,13 +916,10 @@
 /* MEM_ALIGNBYTES:
  *	This symbol contains the number of bytes required to align a
  *	double, or a long double when applicable. Usual values are 2,
- *	4 and 8. The default is eight, for safety.
+ *	4 and 8. The default is eight, for safety.  For cross-compiling
+ *  	or multiarch support, Configure will set a minimum of 8.
  */
-#if defined(USE_CROSS_COMPILE) || defined(MULTIARCH)
-#  define MEM_ALIGNBYTES 8
-#else
 #define MEM_ALIGNBYTES 8
-#endif
 
 /* ARCHLIB:
  *	This variable, if defined, holds the name of the directory in
@@ -937,8 +934,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/5.17.0/x86_64-linux"		/**/
-#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/5.17.0/x86_64-linux"		/**/
+#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/5.18.0/x86_64-linux"		/**/
+#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/5.18.0/x86_64-linux"		/**/
 
 /* ARCHNAME:
  *	This symbol holds a string representing the architecture name.
@@ -960,9 +957,9 @@
  *	This symbol, if defined, indicates that we'd like to relocate entries
  *	in @INC at run time based on the location of the perl binary.
  */
-#define BIN "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/bin"	/**/
-#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/bin"	/**/
-/*#define PERL_RELOCATABLE_INC  		/ **/
+#define BIN "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/bin"	/**/
+#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/bin"	/**/
+#define PERL_RELOCATABLE_INC "undef" 		/**/
 
 /* INTSIZE:
  *	This symbol contains the value of sizeof(int) so that the C
@@ -984,7 +981,7 @@
  *	This symbol holds the hexadecimal constant defined in byteorder,
  *	in a UV, i.e. 0x1234 or 0x4321 or 0x12345678, etc...
  *	If the compiler supports cross-compiling or multiple-architecture
- *	binaries (eg. on NeXT systems), use compiler-defined macros to
+ *	binaries (e.g. on NeXT systems), use compiler-defined macros to
  *	determine the byte order.
  *	On NeXT 3.2 (and greater), you can build "Fat" Multiple Architecture
  *	Binaries (MAB) on either big endian or little endian machines.
@@ -2359,9 +2356,21 @@
  *	This symbol, if defined, indicates that the struct sockaddr_in6
  *	structure has a member called sin6_scope_id.
  */
+/* HAS_IP_MREQ:
+ *	This symbol, if defined, indicates the availability of
+ *	struct ip_mreq;
+ */
+/* HAS_IP_MREQ_SOURCE:
+ *	This symbol, if defined, indicates the availability of
+ *	struct ip_mreq_source;
+ */
 /* HAS_IPV6_MREQ:
  *	This symbol, if defined, indicates the availability of
  *	struct ipv6_mreq;
+ */
+/* HAS_IPV6_MREQ_SOURCE:
+ *	This symbol, if defined, indicates the availability of
+ *	struct ipv6_mreq_source;
  */
 #define	HAS_SOCKET		/**/
 #define	HAS_SOCKETPAIR	/**/
@@ -2374,7 +2383,10 @@
 #define	HAS_SCM_RIGHTS	/**/
 #define	HAS_SOCKADDR_IN6	/**/
 #define	HAS_SIN6_SCOPE_ID	/**/
+#define	HAS_IP_MREQ	/**/
+#define	HAS_IP_MREQ_SOURCE	/**/
 #define	HAS_IPV6_MREQ	/**/
+/*#define	HAS_IPV6_MREQ_SOURCE	/ **/
 
 /* HAS_SRAND48_R:
  *	This symbol, if defined, indicates that the srand48_r routine
@@ -2661,10 +2673,17 @@
 #define DOUBLESIZE 8		/**/
 
 /* EBCDIC:
- *     This symbol, if defined, indicates that this system uses
+ *	This symbol, if defined, indicates that this system uses
  *	EBCDIC encoding.
  */
+/* BOOTSTRAP_CHARSET:
+ *	This symbol, if defined, indicates that this system needs
+ *	converting various files to the native character set before
+ *	bringing up perl on a system that has a non-ASCII character
+ *	set and no working perl.
+ */
 /*#define	EBCDIC 		/ **/
+/*#define	BOOTSTRAP_CHARSET	/ **/
 
 /* Fpos_t:
  *	This symbol holds the type used to declare file positions in libc.
@@ -2679,7 +2698,7 @@
 #define	Gid_t_f		"u"		/**/
 
 /* Gid_t_sign:
- *	This symbol holds the signedess of a Gid_t.
+ *	This symbol holds the signedness of a Gid_t.
  *	1 for unsigned, -1 for signed.
  */
 #define Gid_t_sign	1		/* GID sign */
@@ -3026,8 +3045,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/5.17.0"		/**/
-#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/5.17.0"		/**/
+#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/5.18.0"		/**/
+#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/5.18.0"		/**/
 
 /* CAN_PROTOTYPE:
  *	If defined, this macro indicates that the C compiler can handle
@@ -3170,8 +3189,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/site_perl/5.17.0/x86_64-linux"		/**/
-#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/site_perl/5.17.0/x86_64-linux"		/**/
+#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/site_perl/5.18.0/x86_64-linux"		/**/
+#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/site_perl/5.18.0/x86_64-linux"		/**/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -3193,9 +3212,9 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/site_perl/5.17.0"		/**/
-#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/site_perl/5.17.0"		/**/
-#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.17.0-pristine/lib/site_perl"		/**/
+#define SITELIB "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/site_perl/5.18.0"		/**/
+#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/site_perl/5.18.0"		/**/
+#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.18.0-pristine/lib/site_perl"		/**/
 
 /* Size_t_size:
  *	This symbol holds the size of a Size_t in bytes.
@@ -3238,7 +3257,7 @@
 #define	Uid_t_f		"u"		/**/
 
 /* Uid_t_sign:
- *	This symbol holds the signedess of a Uid_t.
+ *	This symbol holds the signedness of a Uid_t.
  *	1 for unsigned, -1 for signed.
  */
 #define Uid_t_sign	1		/* UID sign */
@@ -3341,7 +3360,7 @@
  *	-Dusedevel, to enable development features.  This should not be
  *	done for production builds.
  */
-#define	PERL_USE_DEVEL		/**/
+/*#define	PERL_USE_DEVEL		/ **/
 
 /* HAS_ATOLF:
  *	This symbol, if defined, indicates that the atolf routine is
@@ -3701,7 +3720,7 @@
 #define     HAS_INT64_T               /**/
 
 /* HAS_ISBLANK:
- *	This manifest constant lets the C program know that isblank 
+ *	This manifest constant lets the C program know that isblank
  *	is available.
  */
 #define HAS_ISBLANK		/**/
@@ -4581,7 +4600,7 @@
  *	This variable contains the size of struct stat's st_ino in bytes.
  */
 /* ST_INO_SIGN:
- *	This symbol holds the signedess of struct stat's st_ino.
+ *	This symbol holds the signedness of struct stat's st_ino.
  *	1 for unsigned, -1 for signed.
  */
 #define ST_INO_SIGN 1	/* st_ino sign */
@@ -4592,7 +4611,7 @@
  *	script to make sure (one hopes) that it runs with perl and not
  *	some shell.
  */
-#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.17.0-pristine/bin/perl5.17.0"		/**/
+#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.18.0-pristine/bin/perl"		/**/
 
 /* HAS_STDIO_STREAM_ARRAY:
  *	This symbol, if defined, tells that there is an array
