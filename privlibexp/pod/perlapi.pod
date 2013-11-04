@@ -4280,7 +4280,7 @@ Found in file mg.c
 =item mg_get
 X<mg_get>
 
-Do magic after a value is retrieved from the SV.  See C<sv_magic>.
+Do magic before a value is retrieved from the SV.  See C<sv_magic>.
 
 	int	mg_get(SV* sv)
 

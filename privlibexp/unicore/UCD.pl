@@ -467,7 +467,7 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 'ccc=129' => 'ccc129',
 'ccc=13' => 'ccc13',
 'ccc=130' => 'ccc130',
-'ccc=132' => 'ccc133',
+'ccc=132' => 'ccc132',
 'ccc=14' => 'ccc14',
 'ccc=15' => 'ccc15',
 'ccc=16' => 'ccc16',
@@ -541,7 +541,7 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 'ccc=ccc129' => 'ccc129',
 'ccc=ccc13' => 'ccc13',
 'ccc=ccc130' => 'ccc130',
-'ccc=ccc133' => 'ccc133',
+'ccc=ccc132' => 'ccc132',
 'ccc=ccc14' => 'ccc14',
 'ccc=ccc15' => 'ccc15',
 'ccc=ccc16' => 'ccc16',
@@ -3985,10 +3985,10 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 'CCC130',
 130,
 ],
-'ccc133' => 
+'ccc132' => 
 [
-'CCC133',
-'CCC133',
+'CCC132',
+'CCC132',
 132,
 ],
 'ccc14' => 

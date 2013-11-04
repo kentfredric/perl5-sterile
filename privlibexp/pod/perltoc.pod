@@ -7422,7 +7422,183 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.16.0
+=head2 perldelta - what is new for perl v5.16.3
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=item Security
+
+=over 4
+
+=item CVE-2013-1667: memory exhaustion with arbitrary hash keys
+
+=item wrap-around with IO on long strings
+
+=item memory leak in Encode
+
+=back
+
+=item Incompatible Changes
+
+=item Deprecations
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5163delta, perldelta - what is new for perl v5.16.3
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=item Security
+
+=over 4
+
+=item CVE-2013-1667: memory exhaustion with arbitrary hash keys
+
+=item wrap-around with IO on long strings
+
+=item memory leak in Encode
+
+=back
+
+=item Incompatible Changes
+
+=item Deprecations
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5162delta - what is new for perl v5.16.2
+
+=over 4
+
+=item DESCRIPTION
+
+=item Incompatible Changes
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Configuration and Compilation
+
+configuration should no longer be confused by ls colorization
+
+=item Platform Support
+
+=over 4
+
+=item Platform-Specific Notes
+
+AIX
+
+=back
+
+=item Selected Bug Fixes
+
+fix /\h/ equivalence with /[\h]/
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5161delta - what is new for perl v5.16.1
+
+=over 4
+
+=item DESCRIPTION
+
+=item Security
+
+=over 4
+
+=item an off-by-two error in Scalar-List-Util has been fixed
+
+=back
+
+=item Incompatible Changes
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Configuration and Compilation
+
+=item Platform Support
+
+=over 4
+
+=item Platform-Specific Notes
+
+VMS
+
+=back
+
+=item Selected Bug Fixes
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5160delta - what is new for perl v5.16.0
 
 =over 4
 
@@ -7659,7 +7835,7 @@ L<Version::Requirements>
 
 =back
 
-=head2 perl5160delta, perldelta - what is new for perl v5.16.0
+=head2 perl5160delta - what is new for perl v5.16.0
 
 =over 4
 
@@ -7896,128 +8072,31 @@ L<Version::Requirements>
 
 =back
 
-=head2 perl5160delta, perldelta - what is new for perl v5.16.0
+=head2 perl5143delta - what is new for perl v5.14.3
 
 =over 4
 
 =item DESCRIPTION
 
-=item Notice
-
 =item Core Enhancements
-
-=over 4
-
-=item C<use I<VERSION>>
-
-=item C<__SUB__>
-
-=item New and Improved Built-ins
-
-=item Unicode Support
-
-=item XS Changes
-
-=item Changes to Special Variables
-
-=item Debugger Changes
-
-=item The C<CORE> Namespace
-
-=item Other Changes
-
-=back
 
 =item Security
 
 =over 4
 
-=item Use C<is_utf8_char_buf()> and not C<is_utf8_char()>
+=item C<Digest> unsafe use of eval (CVE-2011-3597)
 
-=item Malformed UTF-8 input could cause attempts to read beyond the end of
-the buffer
-
-=item C<File::Glob::bsd_glob()> memory error with GLOB_ALTDIRFUNC
-(CVE-2011-2728).
-
-=item Privileges are now set correctly when assigning to C<$(>
-
-=back
-
-=item Deprecations
-
-=over 4
-
-=item Don't read the Unicode data base files in F<lib/unicore>
-
-=item XS functions C<is_utf8_char()>, C<utf8_to_uvchr()> and
-C<utf8_to_uvuni()>
-
-=back
-
-=item Future Deprecations
-
-=over 4
-
-=item Core Modules
-
-=item Platforms with no supporting programmers:
-
-=item Other Future Deprecations
+=item Heap buffer overrun in 'x' string repeat operator (CVE-2012-5195)
 
 =back
 
 =item Incompatible Changes
 
-=over 4
-
-=item Special blocks called in void context
-
-=item The C<overloading> pragma and regexp objects
-
-=item Two XS typemap Entries removed
-
-=item Unicode 6.1 has incompatibilities with Unicode 6.0
-
-=item Borland compiler
-
-=item Certain deprecated Unicode properties are no longer supported by
-default
-
-=item Dereferencing IO thingies as typeglobs
-
-=item User-defined case-changing operations
-
-=item XSUBs are now 'static'
-
-=item Weakening read-only references
-
-=item Tying scalars that hold typeglobs
-
-=item IPC::Open3 no longer provides C<xfork()>, C<xclose_on_exec()>
-and C<xpipe_anon()>
-
-=item C<$$> no longer caches PID
-
-=item C<$$> and C<getppid()> no longer emulate POSIX semantics under
-LinuxThreads
-
-=item C<< $< >>, C<< $> >>, C<$(> and C<$)> are no longer cached
-
-=item Which Non-ASCII characters get quoted by C<quotemeta> and C<\Q> has
-changed
-
-=back
-
-=item Performance Enhancements
+=item Deprecations
 
 =item Modules and Pragmata
 
 =over 4
-
-=item Deprecated Modules
-
-L<Version::Requirements>
 
 =item New Modules and Pragmata
 
@@ -8035,23 +8114,7 @@ L<Version::Requirements>
 
 =item Changes to Existing Documentation
 
-=item Removed Documentation
-
 =back
-
-=item Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=item Removed Errors
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Utility Changes
 
 =item Configuration and Compilation
 
@@ -8059,71 +8122,17 @@ L<Version::Requirements>
 
 =over 4
 
+=item New Platforms
+
+=item Discontinued Platforms
+
 =item Platform-Specific Notes
 
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=over 4
-
-=item Array and hash
-
-=item C API fixes
-
-=item Compile-time hints
-
-=item Copy-on-write scalars
-
-=item The debugger
-
-=item Dereferencing operators
-
-=item Filehandle, last-accessed
-
-=item Filetests and C<stat>
-
-=item Formats
-
-=item C<given> and C<when>
-
-=item The C<glob> operator
-
-=item Lvalue subroutines
-
-=item Overloading
-
-=item Prototypes of built-in keywords
-
-=item Regular expressions
-
-=item Smartmatching
-
-=item The C<sort> operator
-
-=item The C<substr> operator
-
-=item Support for embedded nulls
-
-=item Threading bugs
-
-=item Tied variables
-
-=item Version objects and vstrings
-
-=item Warnings, redefinition
-
-=item Warnings, "Uninitialized"
-
-=item Weak references
-
-=item Other notable fixes
+FreeBSD, Solaris and NetBSD, HP-UX, Linux, Mac OS X, GNU/Hurd, NetBSD
 
 =back
 
-=item Known Problems
+=item Bug Fixes
 
 =item Acknowledgements
 
@@ -15612,7 +15621,7 @@ redoop, nextop, lastop
 
 =item B::COP Methods
 
-label, stash, stashpv, stashflags, file, cop_seq, arybase, line, warnings,
+label, stash, stashpv, stashlen, file, cop_seq, arybase, line, warnings,
 io, hints, hints_hash
 
 =back

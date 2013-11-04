@@ -9,9 +9,9 @@
 
 /* Package name      : perl5
  * Source directory  : .
- * Configuration time: Sun Nov 24 20:31:42 NZDT 2013
+ * Configuration time: Tue Nov  5 04:24:38 NZDT 2013
  * Configured by     : kent
- * Target system     : linux katipo2 3.12.0-gentoo #54 smp wed nov 6 04:43:49 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
+ * Target system     : linux katipo2 3.11.6-gentoo #52 smp mon oct 21 00:17:07 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
  */
 
 #ifndef _config_h_
@@ -890,7 +890,7 @@
  *	feature tests from Configure are generally more reliable.
  */
 #define OSNAME "linux"		/**/
-#define OSVERS "3.12.0-gentoo"		/**/
+#define OSVERS "3.11.6-gentoo"		/**/
 
 /* USE_CROSS_COMPILE:
  *	This symbol, if defined, indicates that Perl is being cross-compiled.
@@ -937,8 +937,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/5.16.0/x86_64-linux"		/**/
-#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/5.16.0/x86_64-linux"		/**/
+#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/5.16.3/x86_64-linux"		/**/
+#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/5.16.3/x86_64-linux"		/**/
 
 /* ARCHNAME:
  *	This symbol holds a string representing the architecture name.
@@ -960,8 +960,8 @@
  *	This symbol, if defined, indicates that we'd like to relocate entries
  *	in @INC at run time based on the location of the perl binary.
  */
-#define BIN "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/bin"	/**/
-#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/bin"	/**/
+#define BIN "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/bin"	/**/
+#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/bin"	/**/
 /*#define PERL_RELOCATABLE_INC  		/ **/
 
 /* INTSIZE:
@@ -3026,8 +3026,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/5.16.0"		/**/
-#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/5.16.0"		/**/
+#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/5.16.3"		/**/
+#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/5.16.3"		/**/
 
 /* CAN_PROTOTYPE:
  *	If defined, this macro indicates that the C compiler can handle
@@ -3170,8 +3170,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/site_perl/5.16.0/x86_64-linux"		/**/
-#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/site_perl/5.16.0/x86_64-linux"		/**/
+#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/site_perl/5.16.3/x86_64-linux"		/**/
+#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/site_perl/5.16.3/x86_64-linux"		/**/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -3193,9 +3193,9 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/site_perl/5.16.0"		/**/
-#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/site_perl/5.16.0"		/**/
-#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/site_perl"		/**/
+#define SITELIB "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/site_perl/5.16.3"		/**/
+#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/site_perl/5.16.3"		/**/
+#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.16.3-pristine/lib/site_perl"		/**/
 
 /* Size_t_size:
  *	This symbol holds the size of a Size_t in bytes.
@@ -4592,7 +4592,7 @@
  *	script to make sure (one hopes) that it runs with perl and not
  *	some shell.
  */
-#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.16.0-pristine/bin/perl"		/**/
+#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.16.3-pristine/bin/perl"		/**/
 
 /* HAS_STDIO_STREAM_ARRAY:
  *	This symbol, if defined, tells that there is an array
