@@ -125,7 +125,7 @@ C<sin>, C<sqrt>, C<srand>
 =item Functions for real @ARRAYs
 X<array>
 
-C<pop>, C<push>, C<shift>, C<splice>, C<unshift>
+C<each>, C<keys>, C<pop>, C<push>, C<shift>, C<splice>, C<unshift>, C<values>
 
 =item Functions for list data
 X<list>
@@ -1263,13 +1263,11 @@ final operation is an element or slice of an aggregate:
 =item die LIST
 X<die> X<throw> X<exception> X<raise> X<$@> X<abort>
 
-Outside an C<eval>, prints the value of LIST to C<STDERR> and
-exits with the current value of C<$!> (errno).  If C<$!> is C<0>,
-exits with the value of C<<< ($? >> 8) >>> (backtick `command`
-status).  If C<<< ($? >> 8) >>> is C<0>, exits with C<255>.  Inside
-an C<eval(),> the error message is stuffed into C<$@> and the
-C<eval> is terminated with the undefined value.  This makes
-C<die> the way to raise an exception.
+C<die> raises an exception. Inside an C<eval> the error message is stuffed
+into C<$@> and the C<eval> is terminated with the undefined value.
+If the exception is outside of all enclosing C<eval>s, then the uncaught
+exception prints LIST to C<STDERR> and exits with a non-zero value. If you
+need to exit the process with a specific exit code, see L<exit>.
 
 Equivalent examples:
 
@@ -1295,8 +1293,6 @@ produce, respectively
     /etc/games is no good at canasta line 123.
     /etc/games is no good, stopped at canasta line 123.
 
-See also exit(), warn(), and the Carp module.
-
 If the output is empty and C<$@> already contains a value (typically from a
 previous eval) that value is reused after appending C<"\t...propagated">.
 This is useful for propagating exceptions:
@@ -1311,6 +1307,19 @@ C<$@>.  i.e., as if C<< $@ = eval { $@->PROPAGATE(__FILE__, __LINE__) }; >>
 were called.
 
 If C<$@> is empty then the string C<"Died"> is used.
+
+If an uncaught exception results in interpreter exit, the exit code is
+determined from the values of C<$!> and C<$?> with this pseudocode:
+
+    exit $! if $!;              # errno
+    exit $? >> 8 if $? >> 8;    # child exit status
+    exit 255;                   # last resort
+
+The intent is to squeeze as much possible information about the likely cause
+into the limited space of the system exit code. However, as C<$!> is the value
+of C's C<errno>, which can be set by any system call, this means that the value
+of the exit code used by C<die> can be non-predictable, so should not be relied
+upon, other than to be non-zero.
 
 You can also call C<die> with a reference argument, and if this is trapped
 within an C<eval>, C<$@> contains that reference.  This permits more
@@ -1354,6 +1363,8 @@ nothing in such situations, put
 as the first line of the handler (see L<perlvar/$^S>).  Because
 this promotes strange action at a distance, this counterintuitive
 behavior may be fixed in a future release.
+
+See also exit(), warn(), and the Carp module.
 
 =item do BLOCK
 X<do> X<block>
@@ -2712,11 +2723,60 @@ X<lc> X<lowercase>
 =item lc
 
 Returns a lowercased version of EXPR.  This is the internal function
-implementing the C<\L> escape in double-quoted strings.  Respects
-current LC_CTYPE locale if C<use locale> in force.  See L<perllocale>
-and L<perlunicode> for more details about locale and Unicode support.
+implementing the C<\L> escape in double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
+
+What gets returned depends on several factors:
+
+=over
+
+=item If C<use bytes> is in effect:
+
+=over
+
+=item On EBCDIC platforms
+
+The results are what the C language system call C<tolower()> returns.
+
+=item On ASCII platforms
+
+The results follow ASCII semantics.  Only characters C<A-Z> change, to C<a-z>
+respectively.
+
+=back
+
+=item Otherwise, If EXPR has the UTF8 flag set
+
+If the current package has a subroutine named C<ToLower>, it will be used to
+change the case (See L<perlunicode/User-Defined Case Mappings>.)
+Otherwise Unicode semantics are used for the case change.
+
+=item Otherwise, if C<use locale> is in effect
+
+Respects current LC_CTYPE locale.  See L<perllocale>.
+
+=item Otherwise, if C<use feature 'unicode_strings'> is in effect:
+
+Unicode semantics are used for the case change.  Any subroutine named
+C<ToLower> will not be used.
+
+=item Otherwise:
+
+=over
+
+=item On EBCDIC platforms
+
+The results are what the C language system call C<tolower()> returns.
+
+=item On ASCII platforms
+
+ASCII semantics are used for the case change.  The lowercase of any character
+outside the ASCII range is the character itself.
+
+=back
+
+=back
 
 =item lcfirst EXPR
 X<lcfirst> X<lowercase>
@@ -2725,11 +2785,12 @@ X<lcfirst> X<lowercase>
 
 Returns the value of EXPR with the first character lowercased.  This
 is the internal function implementing the C<\l> escape in
-double-quoted strings.  Respects current LC_CTYPE locale if C<use
-locale> in force.  See L<perllocale> and L<perlunicode> for more
-details about locale and Unicode support.
+double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
+
+This function behaves the same way under various pragma, such as in a locale,
+as L</lc> does.
 
 =item length EXPR
 X<length> X<size>
@@ -3603,8 +3664,10 @@ Takes a LIST of values and converts it into a string using the rules
 given by the TEMPLATE.  The resulting string is the concatenation of
 the converted values.  Typically, each converted value looks
 like its machine-level representation.  For example, on 32-bit machines
-an integer may be represented by a sequence of 4 bytes, which will in 
-Perl be presented as a string that's 4 characters long.
+an integer may be represented by a sequence of 4 bytes, which  will in
+Perl be presented as a string that's 4 characters long. 
+
+See L<perlpacktut> for an introduction to this function.
 
 The TEMPLATE is a sequence of characters that give the order and type
 of values, as follows:
@@ -4373,6 +4436,32 @@ the C<\Q> escape in double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
 
+quotemeta (and C<\Q> ... C<\E>) are useful when interpolating strings into
+regular expressions, because by default an interpolated variable will be
+considered a mini-regular expression. For example:
+
+    my $sentence = 'The quick brown fox jumped over the lazy dog';
+    my $substring = 'quick.*?fox';
+    $sentence =~ s{$substring}{big bad wolf};
+
+Will cause C<$sentence> to become C<'The big bad wolf jumped over...'>.
+
+On the other hand:
+
+    my $sentence = 'The quick brown fox jumped over the lazy dog';
+    my $substring = 'quick.*?fox';
+    $sentence =~ s{\Q$substring\E}{big bad wolf};
+
+Or:
+
+    my $sentence = 'The quick brown fox jumped over the lazy dog';
+    my $substring = 'quick.*?fox';
+    my $quoted_substring = quotemeta($substring);
+    $sentence =~ s{$quoted_substring}{big bad wolf};
+
+Will both leave the sentence as is. Normally, when accepting string input from
+the user, quotemeta() or C<\Q> must be used.
+
 =item rand EXPR
 X<rand> X<random>
 
@@ -4395,6 +4484,13 @@ returns a random integer between C<0> and C<9>, inclusive.
 (Note: If your rand function consistently returns numbers that are too
 large or too small, then your version of Perl was probably compiled
 with the wrong number of RANDBITS.)
+
+B<C<rand()> is not cryptographically secure.  You should not rely
+on it in security-sensitive situations.>  As of this writing, a
+number of third-party CPAN modules offer random number generators
+intended by their authors to be cryptographically secure,
+including: L<Math::Random::Secure>, L<Math::Random::MT::Perl>, and
+L<Math::TrulyRandom>.
 
 =item read FILEHANDLE,SCALAR,LENGTH,OFFSET
 X<read> X<file, read>
@@ -4743,8 +4839,8 @@ first look for a similar filename with a "F<.pmc>" extension. If this file
 is found, it will be loaded in place of any file ending in a "F<.pm>"
 extension.
 
-You can also insert hooks into the import facility, by putting directly
-Perl code into the @INC array.  There are three forms of hooks: subroutine
+You can also insert hooks into the import facility, by putting Perl code
+directly into the @INC array.  There are three forms of hooks: subroutine
 references, array references and blessed objects.
 
 Subroutine references are the simplest case.  When the inclusion system
@@ -6074,15 +6170,17 @@ Most programs won't even call srand() at all, except those that
 need a cryptographically-strong starting point rather than the
 generally acceptable default, which is based on time of day,
 process ID, and memory allocation, or the F</dev/urandom> device
-if available.
+if available. You may also want to call srand() after a fork() to
+avoid child processes sharing the same seed value as the parent (and
+consequently each other).
 
 You can call srand($seed) with the same $seed to reproduce the
 I<same> sequence from rand(), but this is usually reserved for
 generating predictable results for testing or debugging.
 Otherwise, don't call srand() more than once in your program.
 
-Do B<not> call srand() (i.e., without an argument) more than once in
-a script.  The internal state of the random number generator should
+Do B<not> call srand() (i.e., without an argument) more than once per
+process.  The internal state of the random number generator should
 contain more entropy than can be provided by any seed, so calling
 srand() again actually I<loses> randomness.
 
@@ -6103,8 +6201,8 @@ example:
 
     srand (time ^ $$ ^ unpack "%L*", `ps axww | gzip -f`);
 
-If you're particularly concerned with this, see the C<Math::TrulyRandom>
-module in CPAN.
+If you're particularly concerned with this, search the CPAN for
+random number generator modules instead of rolling out your own.
 
 Frequently called programs (like CGI scripts) that simply use
 
@@ -6649,6 +6747,9 @@ When C<system>'s arguments are executed indirectly by the shell,
 results and return codes are subject to its quirks.
 See L<perlop/"`STRING`"> and L</exec> for details.
 
+Since C<system> does a C<fork> and C<wait> it may affect a C<SIGCHLD>
+handler. See L<perlipc> for details.
+
 =item syswrite FILEHANDLE,SCALAR,LENGTH,OFFSET
 X<syswrite>
 
@@ -6869,13 +6970,14 @@ X<uc> X<uppercase> X<toupper>
 =item uc
 
 Returns an uppercased version of EXPR.  This is the internal function
-implementing the C<\U> escape in double-quoted strings.  Respects
-current LC_CTYPE locale if C<use locale> in force.  See L<perllocale>
-and L<perlunicode> for more details about locale and Unicode support.
+implementing the C<\U> escape in double-quoted strings.
 It does not attempt to do titlecase mapping on initial letters.  See
-C<ucfirst> for that.
+L</ucfirst> for that.
 
 If EXPR is omitted, uses C<$_>.
+
+This function behaves the same way under various pragma, such as in a locale,
+as L</lc> does.
 
 =item ucfirst EXPR
 X<ucfirst> X<uppercase>
@@ -6884,11 +6986,12 @@ X<ucfirst> X<uppercase>
 
 Returns the value of EXPR with the first character in uppercase
 (titlecase in Unicode).  This is the internal function implementing
-the C<\u> escape in double-quoted strings.  Respects current LC_CTYPE
-locale if C<use locale> in force.  See L<perllocale> and L<perlunicode>
-for more details about locale and Unicode support.
+the C<\u> escape in double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
+
+This function behaves the same way under various pragma, such as in a locale,
+as L</lc> does.
 
 =item umask EXPR
 X<umask>
@@ -6994,6 +7097,7 @@ and expands it out into a list of values.
 (In scalar context, it returns merely the first value produced.)
 
 If EXPR is omitted, unpacks the C<$_> string.
+See L<perlpacktut> for an introduction to this function.
 
 The string is broken into chunks described by the TEMPLATE.  Each chunk
 is converted separately to a value.  Typically, either the string is a result
@@ -7176,6 +7280,11 @@ or no unimport method being found.
     no integer;
     no strict 'refs';
     no warnings;
+
+Care should be taken when using the C<no VERSION> form of C<no>.  It is
+I<only> meant to be used to assert that the running perl is of a earlier
+version than its argument and I<not> to undo the feature-enabling side effects
+of C<use VERSION>.
 
 See L<perlmodlib> for a list of standard modules and pragmas.  See L<perlrun>
 for the C<-M> and C<-m> command-line options to Perl that give C<use>
@@ -7504,6 +7613,9 @@ C<-1> if there are no child processes.  The status is returned in C<$?>
 and C<${^CHILD_ERROR_NATIVE}>.
 Note that a return value of C<-1> could mean that child processes are
 being automatically reaped, as described in L<perlipc>.
+
+If you use wait in your handler for $SIG{CHLD} it may accidently wait for the
+child created by qx() or system(). See L<perlipc> for details.
 
 =item waitpid PID,FLAGS
 X<waitpid>

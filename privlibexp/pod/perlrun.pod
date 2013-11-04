@@ -235,11 +235,13 @@ terminated by the null character, you can say this:
     find . -name '*.orig' -print0 | perl -n0e unlink
 
 The special value 00 will cause Perl to slurp files in paragraph mode.
-The value 0777 will cause Perl to slurp files whole because there is no
-legal byte with that value.
+Any value 0400 or above will cause Perl to slurp files whole, but by convention
+the value 0777 is the one normally used for this purpose.
 
-If you want to specify any Unicode character, use the hexadecimal
-format: C<-0xHHH...>, where the C<H> are valid hexadecimal digits.
+You can also specify the separator character using hexadecimal notation:
+C<-0xHHH...>, where the C<H> are valid hexadecimal digits.  Unlike the octal
+form, this one may be used to specify any Unicode character, even those beyond
+0xFF.
 (This means that you cannot use the C<-x> with a directory name that
 consists of hexadecimal digits.)
 
@@ -440,7 +442,7 @@ behaves just like B<-e>, except that it implicitly enables all
 optional features (in the main compilation unit). See L<feature>.
 
 =item B<-f>
-X<-f>
+X<-f> X<sitecustomize> X<sitecustomize.pl>
 
 Disable executing F<$Config{sitelib}/sitecustomize.pl> at startup.
 
@@ -449,6 +451,28 @@ F<$Config{sitelib}/sitecustomize.pl> at startup (in a BEGIN block).
 This is a hook that allows the sysadmin to customize how perl behaves.
 It can for instance be used to add entries to the @INC array to make perl
 find modules in non-standard locations.
+
+Perl actually inserts the following code:
+
+    BEGIN {
+        do { local $!; -f "$Config{sitelib}/sitecustomize.pl"; }
+            && do "$Config{sitelib}/sitecustomize.pl";
+    }
+
+Since it is an actual C<do> (not a C<require>), F<sitecustomize.pl>
+doesn't need to return a true value. The code is run in package C<main>,
+in its own lexical scope. However, if the script dies, C<$@> will not
+be set.
+
+The value of C<$Config{sitelib}> is also determined in C code and not
+read from C<Config.pm>, which is not loaded.
+
+The code is executed B<very> early. For example, any changes made to
+C<@INC> will show up in the output of `perl -V`. Of course, C<END>
+blocks will be likewise executed very late.
+
+To determine at runtime if this capability has been compiled in your
+perl, you can check the value of C<$Config{usesitecustomize}>.
 
 =item B<-F>I<pattern>
 X<-F>
@@ -1248,14 +1272,15 @@ See also hash_seed() of L<Hash::Util>.
 =item PERL_MEM_LOG
 X<PERL_MEM_LOG>
 
-If your perl was configured with C<-Accflags=-DPERL_MEM_LOG>, setting the
-environment variable C<PERL_MEMLOG> enables logging debug messages. The
-value has the form C<< <number>[m][s][t] >>, where C<number> is the
-filedescriptor number you want to write to, and the combination of letters
-specifies that you want information about (m)emory and/or (s)v, optionally
-with (t)imestamps. For example C<PERL_MEMLOG=1mst> will log all
-information to stdout. You can write to other opened filedescriptors too,
-in a variety of ways;
+If your perl was configured with C<-Accflags=-DPERL_MEM_LOG>, setting
+the environment variable C<PERL_MEM_LOG> enables logging debug
+messages. The value has the form C<< <number>[m][s][t] >>, where
+C<number> is the filedescriptor number you want to write to (2 is
+default), and the combination of letters specifies that you want
+information about (m)emory and/or (s)v, optionally with
+(t)imestamps. For example C<PERL_MEM_LOG=1mst> will log all
+information to stdout. You can write to other opened filedescriptors
+too, in a variety of ways;
 
   bash$ 3>foo3 PERL_MEM_LOG=3m perl ...
 

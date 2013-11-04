@@ -13,7 +13,7 @@
 #         \p{PosixSpace}
 #         \p{Is_PosixSpace}
 # 
-#     Meaning: \t \n, \x0B, \f, \r, and ' '
+#     Meaning: \t, \n, \cK, \f, \r, and ' '.  (\cK is vertical tab)
 # 
 # perluniprops.pod should be consulted for the syntax rules for any of these,
 # including if adding or subtracting white space, underscore, and hyphen

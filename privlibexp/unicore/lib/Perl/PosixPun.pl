@@ -13,8 +13,7 @@
 #         \p{PosixPunct}
 #         \p{Is_PosixPunct}
 # 
-#     Meaning: Graphical characters that aren't Word characters = [\x21-
-#     \x2F\x3A-\x40\x5B-\x60\x7B-\x7E]
+#     Meaning: [-!"#$%&'()*+,./:;<>?@[\\]^_`{|}~]
 # 
 # perluniprops.pod should be consulted for the syntax rules for any of these,
 # including if adding or subtracting white space, underscore, and hyphen

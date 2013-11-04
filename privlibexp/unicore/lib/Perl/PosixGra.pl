@@ -13,7 +13,7 @@
 #         \p{PosixGraph}
 #         \p{Is_PosixGraph}
 # 
-#     Meaning: [\x21-\x7E]
+#     Meaning: [-!"#$%&'()*+,./:;<>?@[\\]^_`{|}~0-9A-Za-z]
 # 
 # perluniprops.pod should be consulted for the syntax rules for any of these,
 # including if adding or subtracting white space, underscore, and hyphen

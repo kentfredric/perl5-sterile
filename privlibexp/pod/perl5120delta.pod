@@ -199,9 +199,9 @@ See the documentation for C<ExtUtils::MakeMaker> or C<Module::Build> for
 more on how to specify C<configure_requires> when creating a distribution
 for CPAN.
 
-=head2 C<each> is now more flexible
+=head2 C<each>, C<keys>, C<values> are now more flexible
 
-The C<each> function can now operate on arrays.
+The C<each>, C<keys>, C<values> function can now operate on arrays.
 
 =head2 C<when> as a statement modifier
 
@@ -251,7 +251,7 @@ C<perl5xxdelta.pod> file for that release.
 To disable this feature in a given lexical scope, you should use C<no
 warnings 'deprecated';> For information about which language features
 are deprecated and explanations of various deprecation warnings, please
-see L<perldiag.pod>. See L</Deprecations> below for the list of features
+see L<perldiag>. See L</Deprecations> below for the list of features
 and modules Perl's developers have deprecated as part of this release.
 
 =head2 Version number formats

@@ -13,7 +13,9 @@
 #         \p{PosixCntrl}
 #         \p{Is_PosixCntrl}
 # 
-#     Meaning: [\x00-\x1F]
+#     Meaning: ASCII control characters: NUL, SOH, STX, ETX, EOT, ENQ, ACK,
+#     BEL, BS, HT, LF, VT, FF, CR, SO, SI, DLE, DC1, DC2, DC3, DC4, NAK, SYN,
+#     ETB, CAN, EOM, SUB, ESC, FS, GS, RS, US, and DEL
 # 
 # perluniprops.pod should be consulted for the syntax rules for any of these,
 # including if adding or subtracting white space, underscore, and hyphen

@@ -7918,6 +7918,7 @@ Found in file util.c
 
 
 =back
+
 =head1 Undocumented functions
 
 These functions are currently undocumented:

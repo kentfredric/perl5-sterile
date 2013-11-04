@@ -975,7 +975,7 @@ Interaction, perlfaq9 - Networking
 
 =item What is Perl?
 
-=item Who supports Perl?  Who develops it?  Why is it free?
+=item Who supports Perl? Who develops it? Why is it free?
 
 =item Which version of Perl should I use?
 
@@ -1103,7 +1103,8 @@ Ksh, Tcsh, Zsh, Affrus, Alpha, BBEdit and BBEdit Lite
 
 =item Where can I get Perl macros for vi?
 
-=item Where can I get perl-mode for emacs?
+=item Where can I get perl-mode or cperl-mode for emacs?
+X<emacs>
 
 =item How can I use curses with Perl?
 
@@ -1459,12 +1460,12 @@ X<lock> X<file, lock> X<flock>
 =item Why can't I just open(FH, "E<gt>file.lock")?
 X<lock, lockfile race condition>
 
-=item I still don't get locking.  I just want to increment the number in
-the file.  How can I do this?
+=item I still don't get locking. I just want to increment the number in the
+file. How can I do this?
 X<counter> X<file, counter>
 
 =item All I want to do is append a small amount of text to the end of a
-file.  Do I still have to use locking?
+file. Do I still have to use locking?
 X<append> X<file, append>
 
 =item How do I randomly update a binary file?
@@ -1841,8 +1842,9 @@ search path?
 
 =item How do I add a directory to my include path (@INC) at runtime?
 
-the PERLLIB environment variable, the PERL5LIB environment variable, the
-perl -Idir command line flag, the use lib pragma:
+the C<PERLLIB> environment variable, the C<PERL5LIB> environment variable,
+the C<perl -Idir> command line flag, the C<lib> pragma:, the C<local::lib>
+module:
 
 =item What is socket.ph and where do I get it?
 
@@ -2335,21 +2337,24 @@ STR,SUBSTR,POSITION X<index> X<indexOf> X<InStr>, index STR,SUBSTR, int
 EXPR X<int> X<integer> X<truncate> X<trunc> X<floor>, int, ioctl
 FILEHANDLE,FUNCTION,SCALAR X<ioctl>, join EXPR,LIST X<join>, keys HASH
 X<keys> X<key>, keys ARRAY, kill SIGNAL, LIST X<kill> X<signal>, last LABEL
-X<last> X<break>, last, lc EXPR X<lc> X<lowercase>, lc, lcfirst EXPR
-X<lcfirst> X<lowercase>, lcfirst, length EXPR X<length> X<size>, length,
-link OLDFILE,NEWFILE X<link>, listen SOCKET,QUEUESIZE X<listen>, local EXPR
-X<local>, localtime EXPR X<localtime> X<ctime>, localtime, lock THING
-X<lock>, log EXPR X<log> X<logarithm> X<e> X<ln> X<base>, log, lstat EXPR
-X<lstat>, lstat, m//, map BLOCK LIST X<map>, map EXPR,LIST, mkdir
-FILENAME,MASK X<mkdir> X<md> X<directory, create>, mkdir FILENAME, mkdir,
-msgctl ID,CMD,ARG X<msgctl>, msgget KEY,FLAGS X<msgget>, msgrcv
-ID,VAR,SIZE,TYPE,FLAGS X<msgrcv>, msgsnd ID,MSG,FLAGS X<msgsnd>, my EXPR
-X<my>, my TYPE EXPR, my EXPR : ATTRS, my TYPE EXPR : ATTRS, next LABEL
-X<next> X<continue>, next, no MODULE VERSION LIST X<no declarations>
-X<unimporting>, no MODULE VERSION, no MODULE LIST, no MODULE, no VERSION,
-oct EXPR X<oct> X<octal> X<hex> X<hexadecimal> X<binary> X<bin>, oct, open
-FILEHANDLE,EXPR X<open> X<pipe> X<file, open> X<fopen>, open
-FILEHANDLE,MODE,EXPR, open FILEHANDLE,MODE,EXPR,LIST, open
+X<last> X<break>, last, lc EXPR X<lc> X<lowercase>, lc, If C<use bytes> is
+in effect:, On EBCDIC platforms, On ASCII platforms, Otherwise, If EXPR has
+the UTF8 flag set, Otherwise, if C<use locale> is in effect, Otherwise, if
+C<use feature 'unicode_strings'> is in effect:, Otherwise:, On EBCDIC
+platforms, On ASCII platforms, lcfirst EXPR X<lcfirst> X<lowercase>,
+lcfirst, length EXPR X<length> X<size>, length, link OLDFILE,NEWFILE
+X<link>, listen SOCKET,QUEUESIZE X<listen>, local EXPR X<local>, localtime
+EXPR X<localtime> X<ctime>, localtime, lock THING X<lock>, log EXPR X<log>
+X<logarithm> X<e> X<ln> X<base>, log, lstat EXPR X<lstat>, lstat, m//, map
+BLOCK LIST X<map>, map EXPR,LIST, mkdir FILENAME,MASK X<mkdir> X<md>
+X<directory, create>, mkdir FILENAME, mkdir, msgctl ID,CMD,ARG X<msgctl>,
+msgget KEY,FLAGS X<msgget>, msgrcv ID,VAR,SIZE,TYPE,FLAGS X<msgrcv>, msgsnd
+ID,MSG,FLAGS X<msgsnd>, my EXPR X<my>, my TYPE EXPR, my EXPR : ATTRS, my
+TYPE EXPR : ATTRS, next LABEL X<next> X<continue>, next, no MODULE VERSION
+LIST X<no declarations> X<unimporting>, no MODULE VERSION, no MODULE LIST,
+no MODULE, no VERSION, oct EXPR X<oct> X<octal> X<hex> X<hexadecimal>
+X<binary> X<bin>, oct, open FILEHANDLE,EXPR X<open> X<pipe> X<file, open>
+X<fopen>, open FILEHANDLE,MODE,EXPR, open FILEHANDLE,MODE,EXPR,LIST, open
 FILEHANDLE,MODE,REFERENCE, open FILEHANDLE, opendir DIRHANDLE,EXPR
 X<opendir>, ord EXPR X<ord> X<encoding>, ord, our EXPR X<our> X<global>,
 our TYPE EXPR, our EXPR : ATTRS, our TYPE EXPR : ATTRS, pack TEMPLATE,LIST
@@ -2710,14 +2715,15 @@ B<-0>[I<octal/hexadecimal>] X<-0> X<$/>, B<-a> X<-a> X<autosplit>, B<-C
 [I<number/list>]> X<-C>, B<-c> X<-c>, B<-d> X<-d> X<-dt>, B<-dt>,
 B<-d:>I<foo[=bar,baz]> X<-d> X<-dt>, B<-dt:>I<foo[=bar,baz]>,
 B<-D>I<letters> X<-D> X<DEBUGGING> X<-DDEBUGGING>, B<-D>I<number>, B<-e>
-I<commandline> X<-e>, B<-E> I<commandline> X<-E>, B<-f> X<-f>,
-B<-F>I<pattern> X<-F>, B<-h> X<-h>, B<-i>[I<extension>] X<-i> X<in-place>,
-B<-I>I<directory> X<-I> X<@INC>, B<-l>[I<octnum>] X<-l> X<$/> X<$\>,
-B<-m>[B<->]I<module> X<-m> X<-M>, B<-M>[B<->]I<module>,
-B<-M>[B<->]I<'module ...'>, B<-[mM]>[B<->]I<module=arg[,arg]...>, B<-n>
-X<-n>, B<-p> X<-p>, B<-s> X<-s>, B<-S> X<-S>, B<-t> X<-t>, B<-T> X<-T>,
-B<-u> X<-u>, B<-U> X<-U>, B<-v> X<-v>, B<-V> X<-V>, B<-V:>I<configvar>,
-B<-w> X<-w>, B<-W> X<-W>, B<-X> X<-X>, B<-x> X<-x>, B<-x>I<directory>
+I<commandline> X<-e>, B<-E> I<commandline> X<-E>, B<-f> X<-f>
+X<sitecustomize> X<sitecustomize.pl>, B<-F>I<pattern> X<-F>, B<-h> X<-h>,
+B<-i>[I<extension>] X<-i> X<in-place>, B<-I>I<directory> X<-I> X<@INC>,
+B<-l>[I<octnum>] X<-l> X<$/> X<$\>, B<-m>[B<->]I<module> X<-m> X<-M>,
+B<-M>[B<->]I<module>, B<-M>[B<->]I<'module ...'>,
+B<-[mM]>[B<->]I<module=arg[,arg]...>, B<-n> X<-n>, B<-p> X<-p>, B<-s>
+X<-s>, B<-S> X<-S>, B<-t> X<-t>, B<-T> X<-T>, B<-u> X<-u>, B<-U> X<-U>,
+B<-v> X<-v>, B<-V> X<-V>, B<-V:>I<configvar>, B<-w> X<-w>, B<-W> X<-W>,
+B<-X> X<-X>, B<-x> X<-x>, B<-x>I<directory>
 
 =back
 
@@ -2953,11 +2959,15 @@ X<$PERLDB>, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200,
 $EXCEPTIONS_BEING_CAUGHT, $^S X<$^S> X<$EXCEPTIONS_BEING_CAUGHT>,
 $BASETIME, $^T X<$^T> X<$BASETIME>, ${^TAINT}, ${^UNICODE}, ${^UTF8CACHE},
 ${^UTF8LOCALE}, $PERL_VERSION, $^V X<$^V> X<$PERL_VERSION>, $WARNING, $^W
-X<$^W> X<$WARNING>, ${^WARNING_BITS}, ${^WIN32_SLOPPY_STAT},
-$EXECUTABLE_NAME, $^X X<$^X> X<$EXECUTABLE_NAME>, ARGV X<ARGV>, $ARGV
-X<$ARGV>, @ARGV X<@ARGV>, ARGVOUT X<ARGVOUT>, @F X<@F>, @INC X<@INC>, @ARG,
-@_ X<@_> X<@ARG>, %INC X<%INC>, %ENV, $ENV{expr} X<%ENV>, %SIG, $SIG{expr}
-X<%SIG>
+X<$^W> X<$WARNING>, ${^WARNING_BITS}, ${^WIN32_SLOPPY_STAT}
+X<sitecustomize> X<sitecustomize.pl>, $EXECUTABLE_NAME, $^X X<$^X>
+X<$EXECUTABLE_NAME>, ARGV X<ARGV>, $ARGV X<$ARGV>, @ARGV X<@ARGV>, ARGVOUT
+X<ARGVOUT>, @F X<@F>, @INC X<@INC>, @ARG, @_ X<@_> X<@ARG>, %INC X<%INC>,
+%ENV, $ENV{expr} X<%ENV>, %SIG, $SIG{expr} X<%SIG>
+
+=item Names that are no longer special
+
+$# X<$#>, $* X<$*>
 
 =item Error Indicators
 X<error> X<exception>
@@ -2987,6 +2997,10 @@ case-insensitive> X<regular expression, case-insensitive>, x X</x>, p X</p>
 X<regex, preserve> X<regexp, preserve>, g and c X</g> X</c>
 
 =item Regular Expressions
+
+[1], [2], [3], [4], [5], [6], [7]
+
+=item Quoting metacharacters
 
 =item Extended Patterns
 
@@ -3097,7 +3111,7 @@ Escapes
 
 =item The dot
 
-=item Backslashed sequences
+=item Backslash sequences
 X<\w> X<\W> X<\s> X<\S> X<\d> X<\D> X<\p> X<\P> 
 X<\N> X<\v> X<\V> X<\h> X<\H>
 X<word> X<whitespace>
@@ -3106,7 +3120,7 @@ X<word> X<whitespace>
 
 =item Bracketed Character Classes
 
-[1], [2], [3], [4], [5], [6]
+[1], [2], [3], [4], [5] (punct), [6]
 
 =item Locale, EBCDIC, Unicode and UTF-8
 
@@ -3734,8 +3748,8 @@ portable
 
 =item Alphabetical Listing of Perl Functions
 
--I<X>, atan2, binmode, chmod, chown, chroot, crypt, dbmclose, dbmopen,
-dump, exec, exit, fcntl, flock, fork, getlogin, getpgrp, getppid,
+-I<X>, alarm, atan2, binmode, chmod, chown, chroot, crypt, dbmclose,
+dbmopen, dump, exec, exit, fcntl, flock, fork, getlogin, getpgrp, getppid,
 getpriority, getpwnam, getgrnam, getnetbyname, getpwuid, getgrgid,
 getnetbyaddr, getprotobynumber, getservbyport, getpwent, getgrent,
 gethostbyname, gethostent, getnetent, getprotoent, getservent, sethostent,
@@ -3749,14 +3763,14 @@ syscall, sysopen, system, times, truncate, umask, utime, wait, waitpid
 
 =back
 
-=item Supported Platforms (Perl 5.12)
+=item Supported Platforms
 
 Linux (x86, ARM, IA64), HP-UX, AIX, Win32, Windows 2000, Windows XP,
 Windows Server 2003, Windows Vista, Windows Server 2008, Windows 7, Cygwin,
 Solaris (x86, SPARC), OpenVMS, Alpha (7.2 and later), I64 (8.2 and later),
 Symbian, NetBSD, FreeBSD, Haiku, Irix (6.5. What else?), OpenBSD, Dragonfly
 BSD, MirOS BSD, time_t issues that may or may not be fixed, Symbian (Series
-60 v3, 3.2 and 5 - what else?), Stratus VOS, AIX
+60 v3, 3.2 and 5 - what else?), Stratus VOS / OpenVOS, AIX
 
 =item EOL Platforms (Perl 5.12)
 
@@ -4347,32 +4361,146 @@ X<CLONE> X<CLONE_SKIP> X<thread> X<threads> X<ithread>
 
 =item Pragmatic Modules
 
-attributes, autouse, blib, bytes, charnames, deprecate, diagnostics,
-feature, filetest, integer, less, locale, mro, open, ops, overload,
-overloading, re, sigtrap, sort, strict, subs, utf8, vars, version, vmsish,
-warnings, warnings::register
+attributes, autodie, autodie::exception, autodie::exception::system,
+autodie::hints, autouse, base, bigint, bignum, bigrat, blib, bytes,
+charnames, constant, deprecate, diagnostics, encoding, encoding::warnings,
+feature, fields, filetest, if, inc::latest, integer, less, lib, locale,
+mro, open, ops, overload, overloading, parent, re, sigtrap, sort, strict,
+subs, threads, threads::shared, utf8, vars, version, vmsish, warnings,
+warnings::register
 
 =item Standard Modules
 
-AnyDBM_File, B, B::Concise, B::Showlex, B::Terse, B::Xref, Benchmark, CORE,
-Carp, Class::Struct, Config, DB, DBM_Filter, DBM_Filter::compress,
-DBM_Filter::encode, DBM_Filter::int32, DBM_Filter::null, DBM_Filter::utf8,
-Devel::DProf, Devel::Peek, Devel::SelfStubber, DirHandle, Dumpvalue,
-DynaLoader, English, Env, Errno, Exporter, Exporter::Heavy,
-ExtUtils::Embed, ExtUtils::XSSymSet, Fcntl, File::Basename,
-File::CheckTree, File::Compare, File::Copy, File::DosGlob, File::Find,
-File::Glob, File::stat, FileCache, FileHandle, FindBin, GDBM_File,
-Getopt::Std, Hash::Util, Hash::Util::FieldHash, I18N::Collate,
-I18N::Langinfo, IPC::Open2, IPC::Open3, NDBM_File, Net::hostent,
-Net::netent, Net::protoent, Net::servent, O, ODBM_File, Opcode, POSIX,
-PerlIO, PerlIO::encoding, PerlIO::scalar, PerlIO::via, Pod::Functions,
-Pod::Html, SDBM_File, Search::Dict, SelectSaver, Socket, Symbol,
-Sys::Hostname, Term::Complete, Term::ReadLine, Text::Abbrev, Thread,
-Tie::Array, Tie::Handle, Tie::Hash, Tie::Hash::NamedCapture, Tie::Memoize,
-Tie::Scalar, Tie::StdHandle, Tie::SubstrHash, Time::Local, Time::gmtime,
-Time::localtime, Time::tm, UNIVERSAL, Unicode::UCD, User::grent,
-User::pwent, VMS::DCLsym, VMS::Stdio, Win32CORE, XS::APItest,
-XS::APItest::KeywordRPN, XS::Typemap, version::Internals
+AnyDBM_File, App::Cpan, App::Prove, App::Prove::State,
+App::Prove::State::Result, App::Prove::State::Result::Test,
+Archive::Extract, Archive::Tar, Archive::Tar::File, Attribute::Handlers,
+AutoLoader, AutoSplit, B, B::Concise, B::Debug, B::Deparse, B::Lint,
+B::Lint::Debug, B::Showlex, B::Terse, B::Xref, Benchmark, CGI, CGI::Apache,
+CGI::Carp, CGI::Cookie, CGI::Fast, CGI::Pretty, CGI::Push, CGI::Switch,
+CGI::Util, CORE, CPAN, CPAN::API::HOWTO, CPAN::Distroprefs,
+CPAN::FirstTime, CPAN::Kwalify, CPAN::Nox, CPAN::Version, CPANPLUS,
+CPANPLUS::Dist::Base, CPANPLUS::Dist::Build,
+CPANPLUS::Dist::Build::Constants, CPANPLUS::Dist::Sample,
+CPANPLUS::Internals::Source::Memory, CPANPLUS::Internals::Source::SQLite,
+CPANPLUS::Shell::Classic, CPANPLUS::Shell::Default::Plugins::HOWTO, Carp,
+Class::ISA, Class::Struct, Compress::Raw::Bzip2, Compress::Raw::Bzip2::FAQ,
+Compress::Raw::Zlib, Compress::Raw::Zlib::FAQ, Compress::Zlib, Config, Cwd,
+DB, DBM_Filter, DBM_Filter::compress, DBM_Filter::encode,
+DBM_Filter::int32, DBM_Filter::null, DBM_Filter::utf8, DB_File,
+Data::Dumper, Devel::DProf, Devel::InnerPackage, Devel::PPPort,
+Devel::Peek, Devel::SelfStubber, Digest, Digest::MD5, Digest::SHA,
+Digest::base, Digest::file, DirHandle, Dumpvalue, DynaLoader, Encode,
+Encode::Alias, Encode::Byte, Encode::CJKConstants, Encode::CN,
+Encode::CN::HZ, Encode::Config, Encode::EBCDIC, Encode::Encoder,
+Encode::Encoding, Encode::GSM0338, Encode::Guess, Encode::JP,
+Encode::JP::H2Z, Encode::JP::JIS7, Encode::KR, Encode::KR::2022_KR,
+Encode::MIME::Header, Encode::MIME::Name, Encode::PerlIO,
+Encode::Supported, Encode::Symbol, Encode::TW, Encode::Unicode,
+Encode::Unicode::UTF7, English, Env, Errno, Exporter, Exporter::Heavy,
+ExtUtils::CBuilder, ExtUtils::CBuilder::Platform::Windows,
+ExtUtils::Command, ExtUtils::Command::MM, ExtUtils::Constant,
+ExtUtils::Constant::Base, ExtUtils::Constant::Utils,
+ExtUtils::Constant::XS, ExtUtils::Embed, ExtUtils::Install,
+ExtUtils::Installed, ExtUtils::Liblist, ExtUtils::MM, ExtUtils::MM_AIX,
+ExtUtils::MM_Any, ExtUtils::MM_BeOS, ExtUtils::MM_Cygwin, ExtUtils::MM_DOS,
+ExtUtils::MM_Darwin, ExtUtils::MM_MacOS, ExtUtils::MM_NW5,
+ExtUtils::MM_OS2, ExtUtils::MM_QNX, ExtUtils::MM_UWIN, ExtUtils::MM_Unix,
+ExtUtils::MM_VMS, ExtUtils::MM_VOS, ExtUtils::MM_Win32, ExtUtils::MM_Win95,
+ExtUtils::MY, ExtUtils::MakeMaker, ExtUtils::MakeMaker::Config,
+ExtUtils::MakeMaker::FAQ, ExtUtils::MakeMaker::Tutorial,
+ExtUtils::Manifest, ExtUtils::Mkbootstrap, ExtUtils::Mksymlists,
+ExtUtils::Packlist, ExtUtils::ParseXS, ExtUtils::XSSymSet,
+ExtUtils::testlib, Fatal, Fcntl, File::Basename, File::CheckTree,
+File::Compare, File::Copy, File::DosGlob, File::Fetch, File::Find,
+File::Glob, File::GlobMapper, File::Path, File::Spec, File::Spec::Cygwin,
+File::Spec::Epoc, File::Spec::Functions, File::Spec::Mac, File::Spec::OS2,
+File::Spec::Unix, File::Spec::VMS, File::Spec::Win32, File::Temp,
+File::stat, FileCache, FileHandle, Filter::Simple, Filter::Util::Call,
+FindBin, GDBM_File, Getopt::Long, Getopt::Std, Hash::Util,
+Hash::Util::FieldHash, I18N::Collate, I18N::LangTags,
+I18N::LangTags::Detect, I18N::LangTags::List, I18N::Langinfo, IO,
+IO::Compress::Base, IO::Compress::Bzip2, IO::Compress::Deflate,
+IO::Compress::FAQ, IO::Compress::Gzip, IO::Compress::RawDeflate,
+IO::Compress::Zip, IO::Dir, IO::File, IO::Handle, IO::Pipe, IO::Poll,
+IO::Seekable, IO::Select, IO::Socket, IO::Socket::INET, IO::Socket::UNIX,
+IO::Uncompress::AnyInflate, IO::Uncompress::AnyUncompress,
+IO::Uncompress::Base, IO::Uncompress::Bunzip2, IO::Uncompress::Gunzip,
+IO::Uncompress::Inflate, IO::Uncompress::RawInflate, IO::Uncompress::Unzip,
+IO::Zlib, IPC::Cmd, IPC::Msg, IPC::Open2, IPC::Open3, IPC::Semaphore,
+IPC::SharedMem, IPC::SysV, List::Util, List::Util::XS, Locale::Constants,
+Locale::Country, Locale::Currency, Locale::Language, Locale::Maketext,
+Locale::Maketext::Simple, Locale::Maketext::TPJ13, Locale::Script,
+Log::Message, Log::Message::Config, Log::Message::Handlers,
+Log::Message::Item, Log::Message::Simple, MIME::Base64, MIME::QuotedPrint,
+Math::BigFloat, Math::BigInt, Math::BigInt::Calc, Math::BigInt::CalcEmu,
+Math::BigInt::FastCalc, Math::BigRat, Math::Complex, Math::Trig, Memoize,
+Memoize::AnyDBM_File, Memoize::Expire, Memoize::ExpireFile,
+Memoize::ExpireTest, Memoize::NDBM_File, Memoize::SDBM_File,
+Memoize::Storable, Module::Build, Module::Build::API,
+Module::Build::Authoring, Module::Build::Base, Module::Build::Bundling,
+Module::Build::Compat, Module::Build::ConfigData, Module::Build::Cookbook,
+Module::Build::ModuleInfo, Module::Build::Notes, Module::Build::PPMMaker,
+Module::Build::Platform::Amiga, Module::Build::Platform::Default,
+Module::Build::Platform::EBCDIC, Module::Build::Platform::MPEiX,
+Module::Build::Platform::MacOS, Module::Build::Platform::RiscOS,
+Module::Build::Platform::Unix, Module::Build::Platform::VMS,
+Module::Build::Platform::VOS, Module::Build::Platform::Windows,
+Module::Build::Platform::aix, Module::Build::Platform::cygwin,
+Module::Build::Platform::darwin, Module::Build::Platform::os2,
+Module::CoreList, Module::Load, Module::Load::Conditional, Module::Loaded,
+Module::Pluggable, Module::Pluggable::Object, NDBM_File, NEXT, Net::Cmd,
+Net::Config, Net::Domain, Net::FTP, Net::NNTP, Net::Netrc, Net::POP3,
+Net::Ping, Net::SMTP, Net::Time, Net::hostent, Net::libnetFAQ, Net::netent,
+Net::protoent, Net::servent, O, ODBM_File, Object::Accessor, Opcode, POSIX,
+Package::Constants, Params::Check, Parse::CPAN::Meta, PerlIO,
+PerlIO::encoding, PerlIO::scalar, PerlIO::via, PerlIO::via::QuotedPrint,
+Pod::Checker, Pod::Escapes, Pod::Find, Pod::Functions, Pod::Html,
+Pod::InputObjects, Pod::LaTeX, Pod::Man, Pod::ParseLink, Pod::ParseUtils,
+Pod::Parser, Pod::Perldoc, Pod::Perldoc::BaseTo, Pod::Perldoc::GetOptsOO,
+Pod::Perldoc::ToChecker, Pod::Perldoc::ToMan, Pod::Perldoc::ToNroff,
+Pod::Perldoc::ToPod, Pod::Perldoc::ToRtf, Pod::Perldoc::ToText,
+Pod::Perldoc::ToTk, Pod::Perldoc::ToXml, Pod::PlainText, Pod::Plainer,
+Pod::Select, Pod::Simple, Pod::Simple::Checker, Pod::Simple::Debug,
+Pod::Simple::DumpAsText, Pod::Simple::DumpAsXML, Pod::Simple::HTML,
+Pod::Simple::HTMLBatch, Pod::Simple::LinkSection, Pod::Simple::Methody,
+Pod::Simple::PullParser, Pod::Simple::PullParserEndToken,
+Pod::Simple::PullParserStartToken, Pod::Simple::PullParserTextToken,
+Pod::Simple::PullParserToken, Pod::Simple::RTF, Pod::Simple::Search,
+Pod::Simple::SimpleTree, Pod::Simple::Subclassing, Pod::Simple::Text,
+Pod::Simple::TextContent, Pod::Simple::XHTML, Pod::Simple::XMLOutStream,
+Pod::Text, Pod::Text::Color, Pod::Text::Termcap, Pod::Usage, SDBM_File,
+Safe, Scalar::Util, Search::Dict, SelectSaver, SelfLoader, Shell, Socket,
+Storable, Switch, Symbol, Sys::Hostname, Sys::Syslog, Sys::Syslog::Win32,
+TAP::Base, TAP::Formatter::Color, TAP::Formatter::Console,
+TAP::Formatter::Console, TAP::Formatter::Console::ParallelSession,
+TAP::Formatter::Console::Session, TAP::Formatter::File,
+TAP::Formatter::File::Session, TAP::Formatter::Session, TAP::Harness,
+TAP::Object, TAP::Parser, TAP::Parser::Aggregator, TAP::Parser::Grammar,
+TAP::Parser::Iterator, TAP::Parser::Iterator::Array,
+TAP::Parser::Iterator::Process, TAP::Parser::Iterator::Stream,
+TAP::Parser::IteratorFactory, TAP::Parser::Multiplexer,
+TAP::Parser::Result, TAP::Parser::Result::Bailout,
+TAP::Parser::Result::Comment, TAP::Parser::Result::Plan,
+TAP::Parser::Result::Pragma, TAP::Parser::Result::Test,
+TAP::Parser::Result::Unknown, TAP::Parser::Result::Version,
+TAP::Parser::Result::YAML, TAP::Parser::ResultFactory,
+TAP::Parser::Scheduler, TAP::Parser::Scheduler::Job,
+TAP::Parser::Scheduler::Spinner, TAP::Parser::Source,
+TAP::Parser::Source::Perl, TAP::Parser::Utils,
+TAP::Parser::YAMLish::Reader, TAP::Parser::YAMLish::Writer,
+Term::ANSIColor, Term::Cap, Term::Complete, Term::ReadLine, Term::UI, Test,
+Test::Builder, Test::Builder::Module, Test::Builder::Tester,
+Test::Builder::Tester::Color, Test::Harness, Test::More, Test::Simple,
+Test::Tutorial, Text::Abbrev, Text::Balanced, Text::ParseWords,
+Text::Soundex, Text::Tabs, Text::Wrap, Thread, Thread::Queue,
+Thread::Semaphore, Tie::Array, Tie::File, Tie::Handle, Tie::Hash,
+Tie::Hash::NamedCapture, Tie::Memoize, Tie::RefHash, Tie::Scalar,
+Tie::StdHandle, Tie::SubstrHash, Time::HiRes, Time::Local, Time::Piece,
+Time::Seconds, Time::gmtime, Time::localtime, Time::tm, UNIVERSAL,
+Unicode::Collate, Unicode::Normalize, Unicode::UCD, User::grent,
+User::pwent, VMS::DCLsym, VMS::Stdio, Win32API::File, Win32CORE,
+XS::APItest, XS::APItest::KeywordRPN, XS::Typemap, XSLoader,
+version::Internals
 
 =item Extension Modules
 
@@ -6021,14 +6149,18 @@ XS_VERSION_BOOTCHECK X<XS_VERSION_BOOTCHECK>
 
 =item Warning and Dieing
 
-croak X<croak>, warn X<warn>, GetVars X<GetVars>, Gv_AMupdate
-X<Gv_AMupdate>, PerlIO_clearerr X<PerlIO_clearerr>, PerlIO_close
-X<PerlIO_close>, PerlIO_context_layers X<PerlIO_context_layers>, PerlIO_eof
-X<PerlIO_eof>, PerlIO_error X<PerlIO_error>, PerlIO_fileno
-X<PerlIO_fileno>, PerlIO_fill X<PerlIO_fill>, PerlIO_flush X<PerlIO_flush>,
-PerlIO_get_base X<PerlIO_get_base>, PerlIO_get_bufsiz X<PerlIO_get_bufsiz>,
-PerlIO_get_cnt X<PerlIO_get_cnt>, PerlIO_get_ptr X<PerlIO_get_ptr>,
-PerlIO_read X<PerlIO_read>, PerlIO_seek X<PerlIO_seek>, PerlIO_set_cnt
+croak X<croak>, warn X<warn>
+
+=item Undocumented functions
+
+GetVars X<GetVars>, Gv_AMupdate X<Gv_AMupdate>, PerlIO_clearerr
+X<PerlIO_clearerr>, PerlIO_close X<PerlIO_close>, PerlIO_context_layers
+X<PerlIO_context_layers>, PerlIO_eof X<PerlIO_eof>, PerlIO_error
+X<PerlIO_error>, PerlIO_fileno X<PerlIO_fileno>, PerlIO_fill
+X<PerlIO_fill>, PerlIO_flush X<PerlIO_flush>, PerlIO_get_base
+X<PerlIO_get_base>, PerlIO_get_bufsiz X<PerlIO_get_bufsiz>, PerlIO_get_cnt
+X<PerlIO_get_cnt>, PerlIO_get_ptr X<PerlIO_get_ptr>, PerlIO_read
+X<PerlIO_read>, PerlIO_seek X<PerlIO_seek>, PerlIO_set_cnt
 X<PerlIO_set_cnt>, PerlIO_set_ptrcnt X<PerlIO_set_ptrcnt>,
 PerlIO_setlinebuf X<PerlIO_setlinebuf>, PerlIO_stderr X<PerlIO_stderr>,
 PerlIO_stdin X<PerlIO_stdin>, PerlIO_stdout X<PerlIO_stdout>, PerlIO_tell
@@ -6306,7 +6438,10 @@ sv_2num X<sv_2num>
 
 =item Unicode Support
 
-find_uninit_var X<find_uninit_var>, report_uninit X<report_uninit>,
+find_uninit_var X<find_uninit_var>, report_uninit X<report_uninit>
+
+=item Undocumented functions
+
 F0convert X<F0convert>, Slab_to_rw X<Slab_to_rw>, add_data X<add_data>,
 add_utf16_textfilter X<add_utf16_textfilter>, addmad X<addmad>, allocmy
 X<allocmy>, amagic_cmp X<amagic_cmp>, amagic_cmp_locale
@@ -6395,13 +6530,14 @@ X<hv_copy_hints_hv>, hv_delete_common X<hv_delete_common>, hv_kill_backrefs
 X<hv_kill_backrefs>, hv_magic_check X<hv_magic_check>, hv_notallowed
 X<hv_notallowed>, incline X<incline>, incpush X<incpush>, incpush_if_exists
 X<incpush_if_exists>, incpush_use_sep X<incpush_use_sep>, ingroup
-X<ingroup>, init_argv_symbols X<init_argv_symbols>, init_debugger
-X<init_debugger>, init_ids X<init_ids>, init_interp X<init_interp>,
-init_main_stash X<init_main_stash>, init_perllib X<init_perllib>,
-init_postdump_symbols X<init_postdump_symbols>, init_predump_symbols
-X<init_predump_symbols>, intuit_method X<intuit_method>, intuit_more
-X<intuit_more>, invert X<invert>, io_close X<io_close>, is_an_int
-X<is_an_int>, is_handle_constructor X<is_handle_constructor>, is_inplace_av
+X<ingroup>, init_argv_symbols X<init_argv_symbols>, init_dbargs
+X<init_dbargs>, init_debugger X<init_debugger>, init_ids X<init_ids>,
+init_interp X<init_interp>, init_main_stash X<init_main_stash>,
+init_perllib X<init_perllib>, init_postdump_symbols
+X<init_postdump_symbols>, init_predump_symbols X<init_predump_symbols>,
+intuit_method X<intuit_method>, intuit_more X<intuit_more>, invert
+X<invert>, io_close X<io_close>, is_an_int X<is_an_int>,
+is_handle_constructor X<is_handle_constructor>, is_inplace_av
 X<is_inplace_av>, is_list_assignment X<is_list_assignment>, is_utf8_X_L
 X<is_utf8_X_L>, is_utf8_X_LV X<is_utf8_X_LV>, is_utf8_X_LVT
 X<is_utf8_X_LVT>, is_utf8_X_LV_LVT_V X<is_utf8_X_LV_LVT_V>, is_utf8_X_T
@@ -6846,16 +6982,31 @@ the perl core
 
 =item DESCRIPTION
 
+=item MAINTENANCE AND SUPPORT
+
+=item BACKWARD COMPATIBILITY AND DEPRECATION
+
+=over 4
+
+=item Terminology
+
+experimental, deprecated, discouraged, removed
+
+=back
+
+=item MAINTENANCE BRANCHES
+
+=over 4
+
+=item Getting changes into a maint branch
+
+=back
+
 =item CONTRIBUTED MODULES
 
 =over 4
 
 =item A Social Contract about Artistic Control
-
-The version of the module in the core should still be considered the	
-work of the original author.  All patches, bug reports, and so forth	
-should be fed back to them.  Their development directions should be    
-respected whenever possible
 
 =back
 
@@ -6869,29 +7020,29 @@ respected whenever possible
 
 =item SYNOPSIS
 
-=item GETTING ACCESS TO THE REPOSITORY
+=item Getting access to the repository
 
 =over 4
 
-=item READ ACCESS VIA THE WEB
+=item Read access via the web
 
-=item READ ACCESS VIA GIT
+=item Read access via Git
 
-=item WRITE ACCESS TO THE REPOSITORY
+=item Write access to the repository
 
-=item A NOTE ON CAMEL AND DROMEDARY
+=item A note on camel and dromedary
 
 =back
 
-=item OVERVIEW OF THE REPOSITORY
+=item Overview of the repository
 
 =over 4
 
-=item FINDING OUT YOUR STATUS
+=item Finding out your status
 
 =back
 
-=item SUBMITTING A PATCH
+=item Submitting a patch
 
 =over 4
 
@@ -6906,21 +7057,21 @@ Testsuite
 
 =back
 
-=item ACCEPTING A PATCH
+=item Accepting a patch
 
-=item CLEANING A WORKING DIRECTORY
+=item Cleaning a working directory
 
-=item BISECTING
+=item Bisecting
 
-=item SUBMITTING A PATCH VIA GITHUB
+=item Submitting a patch via GitHub
 
-=item MERGING FROM A BRANCH VIA GITHUB
+=item Merging from a branch via GitHub
 
-=item TOPIC BRANCHES AND REWRITING HISTORY
+=item Topic branches and rewriting history
 
-=item COMMITTING TO MAINTENANCE VERSIONS
+=item Committing to maintenance versions
 
-=item GRAFTS
+=item Grafts
 
 =item SEE ALSO
 
@@ -7150,8 +7301,6 @@ C<cc> (in F<cc.U>), C<ld> (in F<dlsrc.U>)
 
 =item regexp optimiser optional
 
-=item delete &function
-
 =item C</w> regex modifier
 
 =item optional optimizer
@@ -7272,6 +7421,326 @@ B<-V>
 
 =back
 
+=head2 perldelta - what is new for perl v5.12.5
+
+=over 4
+
+=item DESCRIPTION
+
+=item Security
+
+=over 4
+
+=item C<Encode> decode_xs n-byte heap-overflow (CVE-2011-2939)
+
+=item C<File::Glob::bsd_glob()> memory error with GLOB_ALTDIRFUNC
+(CVE-2011-2728).
+
+=item Heap buffer overrun in 'x' string repeat operator (CVE-2012-5195)
+
+=back
+
+=item Incompatible Changes
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules
+
+=back
+
+=item Changes to Existing Documentation
+
+=over 4
+
+=item L<perlebcdic>
+
+=item L<perlunicode>
+
+=item L<perluniprops>
+
+=back
+
+=item Installation and Configuration Improvements
+
+=over 4
+
+=item Platform Specific Changes
+
+Mac OS X, NetBSD
+
+=back
+
+=item Selected Bug Fixes
+
+=item Errata
+
+=over 4
+
+=item split() and C<@_>
+
+=back
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5125delta, perldelta - what is new for perl v5.12.5
+
+=over 4
+
+=item DESCRIPTION
+
+=item Security
+
+=over 4
+
+=item C<Encode> decode_xs n-byte heap-overflow (CVE-2011-2939)
+
+=item C<File::Glob::bsd_glob()> memory error with GLOB_ALTDIRFUNC
+(CVE-2011-2728).
+
+=item Heap buffer overrun in 'x' string repeat operator (CVE-2012-5195)
+
+=back
+
+=item Incompatible Changes
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules
+
+=back
+
+=item Changes to Existing Documentation
+
+=over 4
+
+=item L<perlebcdic>
+
+=item L<perlunicode>
+
+=item L<perluniprops>
+
+=back
+
+=item Installation and Configuration Improvements
+
+=over 4
+
+=item Platform Specific Changes
+
+Mac OS X, NetBSD
+
+=back
+
+=item Selected Bug Fixes
+
+=item Errata
+
+=over 4
+
+=item split() and C<@_>
+
+=back
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5124delta - what is new for perl v5.12.4
+
+=over 4
+
+=item DESCRIPTION
+
+=item Incompatible Changes
+
+=item Selected Bug Fixes
+
+=item Modules and Pragmata
+
+=item Testing
+
+=item Documentation
+
+=item Platform Specific Notes
+
+Linux
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5123delta, perldelta - what is new for perl v5.12.3
+
+=over 4
+
+=item DESCRIPTION
+
+=item Incompatible Changes
+
+=item Core Enhancements
+
+=over 4
+
+=item C<keys>, C<values> work on arrays
+
+=back
+
+=item Bug Fixes
+
+=item Platform Specific Notes
+
+Solaris, VMS, VOS
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5122delta - what is new for perl v5.12.2
+
+=over 4
+
+=item DESCRIPTION
+
+=item Incompatible Changes
+
+=item Core Enhancements
+
+=item Modules and Pragmata
+
+=over 4
+
+=item New Modules and Pragmata
+
+=item Pragmata Changes
+
+=item Updated Modules
+
+C<Carp>, C<CPANPLUS>, C<File::Glob>, C<File::Copy>, C<File::Spec>
+
+=back
+
+=item Utility Changes
+
+=item Changes to Existing Documentation
+
+=item Installation and Configuration Improvements
+
+=over 4
+
+=item Configuration improvements
+
+=item Compilation improvements
+
+=back
+
+=item Selected Bug Fixes
+
+=item Platform Specific Notes
+
+=over 4
+
+=item AIX
+
+=item Windows
+
+=item VMS
+
+=back
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5121delta, perldelta - what is new for perl v5.12.1
+
+=over 4
+
+=item DESCRIPTION
+
+=item Incompatible Changes
+
+=item Core Enhancements
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Pragmata Changes
+
+=item Updated Modules
+
+=back
+
+=item Changes to Existing Documentation
+
+=item Testing
+
+=over 4
+
+=item Testing Improvements
+
+=back
+
+=item Installation and Configuration Improvements
+
+=over 4
+
+=item Configuration improvements
+
+=back
+
+=item Bug Fixes
+
+=item Platform Specific Notes
+
+=over 4
+
+=item HP-UX
+
+=item AIX
+
+=item FreeBSD 7
+
+=item VMS
+
+=back
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
 =head2 perl5120delta - what is new for perl v5.12.0
 
 =over 4
@@ -7308,225 +7777,7 @@ B<-V>
 
 =item Support for C<configure_requires> in CPAN module metadata
 
-=item C<each> is now more flexible
-
-=item C<when> as a statement modifier
-
-=item C<$,> flexibility
-
-=item // in when clauses
-
-=item Enabling warnings from your shell environment
-
-=item C<delete local>
-
-=item New support for Abstract namespace sockets
-
-=item 32-bit limit on substr arguments removed
-
-=back
-
-=item Potentially Incompatible Changes
-
-=over 4
-
-=item Deprecations warn by default
-
-=item Version number formats
-
-=item @INC reorganization
-
-=item REGEXPs are now first class
-
-=item Switch statement changes
-
-flip-flop operators, defined-or operator
-
-=item Smart match changes
-
-=item Other potentially incompatible changes
-
-=back
-
-=item Deprecations
-
-suidperl, Use of C<:=> to mean an empty attribute list, C<<
-UNIVERSAL->import() >>, Use of "goto" to jump into a construct, Custom
-character names in \N{name} that don't look like names, Deprecated Modules,
-L<Class::ISA>, L<Pod::Plainer>, L<Shell>, L<Switch>, Assignment to $[, Use
-of the attribute :locked on subroutines, Use of "locked" with the
-attributes pragma, Use of "unique" with the attributes pragma, Perl_pmflag,
-Numerous Perl 4-era libraries
-
-=item Unicode overhaul
-
-=item Modules and Pragmata
-
-=over 4
-
-=item New Modules and Pragmata
-
-C<autodie>, C<Compress::Raw::Bzip2>, C<overloading>, C<parent>,
-C<Parse::CPAN::Meta>, C<VMS::DCLsym>, C<VMS::Stdio>,
-C<XS::APItest::KeywordRPN>
-
-=item Updated Pragmata
-
-C<base>, C<bignum>, C<charnames>, C<constant>, C<diagnostics>, C<feature>,
-C<less>, C<lib>, C<mro>, C<overload>, C<threads>, C<threads::shared>,
-C<version>, C<warnings>
-
-=item Updated Modules
-
-C<Archive::Extract>, C<Archive::Tar>, C<Attribute::Handlers>,
-C<AutoLoader>, C<B::Concise>, C<B::Debug>, C<B::Deparse>, C<B::Lint>,
-C<CGI>, C<Class::ISA>, C<Compress::Raw::Zlib>, C<CPAN>, C<CPANPLUS>,
-C<CPANPLUS::Dist::Build>, C<Data::Dumper>, C<DB_File>, C<Devel::PPPort>,
-C<Digest>, C<Digest::MD5>, C<Digest::SHA>, C<Encode>, C<Exporter>,
-C<ExtUtils::CBuilder>, C<ExtUtils::Command>, C<ExtUtils::Constant>,
-C<ExtUtils::Install>, C<ExtUtils::MakeMaker>, C<ExtUtils::Manifest>,
-C<ExtUtils::ParseXS>, C<File::Fetch>, C<File::Path>, C<File::Temp>,
-C<Filter::Simple>, C<Filter::Util::Call>, C<Getopt::Long>, C<IO>,
-C<IO::Zlib>, C<IPC::Cmd>, C<IPC::SysV>, C<Locale::Maketext>,
-C<Locale::Maketext::Simple>, C<Log::Message>, C<Log::Message::Simple>,
-C<Math::BigInt>, C<Math::BigInt::FastCalc>, C<Math::BigRat>,
-C<Math::Complex>, C<Memoize>, C<MIME::Base64>, C<Module::Build>,
-C<Module::CoreList>, C<Module::Load>, C<Module::Load::Conditional>,
-C<Module::Loaded>, C<Module::Pluggable>, C<Net::Ping>, C<NEXT>,
-C<Object::Accessor>, C<Package::Constants>, C<PerlIO>, C<Pod::Parser>,
-C<Pod::Perldoc>, C<Pod::Plainer>, C<Pod::Simple>, C<Safe>, C<SelfLoader>,
-C<Storable>, C<Switch>, C<Sys::Syslog>, C<Term::ANSIColor>, C<Term::UI>,
-C<Test>, C<Test::Harness>, C<Test::Simple>, C<Text::Balanced>,
-C<Text::ParseWords>, C<Text::Soundex>, C<Thread::Queue>,
-C<Thread::Semaphore>, C<Tie::RefHash>, C<Time::HiRes>, C<Time::Local>,
-C<Time::Piece>, C<Unicode::Collate>, C<Unicode::Normalize>, C<Win32>,
-C<Win32API::File>, C<XSLoader>
-
-=item Removed Modules and Pragmata
-
-C<attrs>, C<CPAN::API::HOWTO>, C<CPAN::DeferedCode>, C<CPANPLUS::inc>,
-C<DCLsym>, C<ExtUtils::MakeMaker::bytes>, C<ExtUtils::MakeMaker::vmsish>,
-C<Stdio>, C<Test::Harness::Assert>, C<Test::Harness::Iterator>,
-C<Test::Harness::Point>, C<Test::Harness::Results>,
-C<Test::Harness::Straps>, C<Test::Harness::Util>, C<XSSymSet>
-
-=item Deprecated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
-
-=item New Documentation
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Selected Performance Enhancements
-
-=item Installation and Configuration Improvements
-
-=item Internal Changes
-
-=item Testing
-
-=over 4
-
-=item Testing improvements
-
-Parallel tests, Test harness flexibility, Test watchdog
-
-=item New Tests
-
-=back
-
-=item New or Changed Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=item Changed Diagnostics
-
-C<Illegal character in prototype for %s : %s>, C<Prototype after '%c' for
-%s : %s>
-
-=back
-
-=item Utility Changes
-
-=item Selected Bug Fixes
-
-=item Platform Specific Changes
-
-=over 4
-
-=item New Platforms
-
-Haiku, MirOS BSD
-
-=item Discontinued Platforms
-
-Domain/OS, MiNT, Tenon MachTen
-
-=item Updated Platforms
-
-AIX, Cygwin, Darwin (Mac OS X), DragonFly BSD, FreeBSD, Irix, NetBSD,
-OpenVMS, Stratus VOS, Symbian, Windows
-
-=back
-
-=item Known Problems
-
-=item Errata
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perldelta, perl5120delta - what is new for perl v5.12.0
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=over 4
-
-=item New C<package NAME VERSION> syntax
-
-=item The C<...> operator
-
-=item Implicit strictures
-
-=item Unicode improvements
-
-=item Y2038 compliance
-
-=item qr overloading
-
-=item Pluggable keywords
-
-=item APIs for more internals
-
-=item Overridable function lookup
-
-=item A proper interface for pluggable Method Resolution Orders
-
-=item C<\N> experimental regex escape
-
-=item DTrace support
-
-=item Support for C<configure_requires> in CPAN module metadata
-
-=item C<each> is now more flexible
+=item C<each>, C<keys>, C<values> are now more flexible
 
 =item C<when> as a statement modifier
 
@@ -11858,17 +12109,17 @@ a), b), c), d), a), b), c), d)
 
 =back
 
-=head2 perlgpl - the GNU General Public License, version 2
+=head2 perlgpl - the GNU General Public License, version 1
 
 =over 4
 
 =item SYNOPSIS
 
+=item DESCRIPTION
+
 =back
 
 =over 4
-
-=item DESCRIPTION
 
 =item GNU GENERAL PUBLIC LICENSE
 
@@ -11888,7 +12139,7 @@ a), b), c), d), a), b), c), d)
 
 =item Incompatibility with AIX Toolbox lib gdbm
 
-=item Perl 5.12 was successfully compiled and tested on:
+=item Perl 5 was successfully compiled and tested on:
 
 =item Building Dynamic Extensions on AIX
 
@@ -11898,13 +12149,13 @@ a), b), c), d), a), b), c), d)
 
 =item 64-bit Perl
 
-=item Recommended Options AIX 5.1/5.2/5.3 and 6.1 (threaded/32-bit)
+=item Recommended Options AIX 5.1/5.2/5.3/6.1 and 7.1 (threaded/32-bit)
 
-=item Recommended Options AIX 5.1/5.2/5.3 and 6.1 (32-bit)
+=item Recommended Options AIX 5.1/5.2/5.3/6.1 and 7.1 (32-bit)
 
-=item Recommended Options AIX 5.1/5.2/5.3 and 6.1 (threaded/64-bit)
+=item Recommended Options AIX 5.1/5.2/5.3/6.1 and 7.1 (threaded/64-bit)
 
-=item Recommended Options AIX 5.1/5.2/5.3 and 6.1(64-bit)
+=item Recommended Options AIX 5.1/5.2/5.3/6.1 and 7.1 (64-bit)
 
 =item Compiling Perl 5 on older AIX versions up to 4.3.3
 
@@ -25061,7 +25312,8 @@ new ( [ARGS] )
 =item METHODS
 
 accept([PKG]), socketpair(DOMAIN, TYPE, PROTOCOL), atmark, connected,
-protocol, sockdomain, sockopt(OPT [, VAL]), socktype, timeout([VAL])
+protocol, sockdomain, sockopt(OPT [, VAL]), getsockopt(LEVEL, OPT),
+setsockopt(LEVEL, OPT, VAL), socktype, timeout([VAL])
 
 =item SEE ALSO
 
@@ -28287,13 +28539,26 @@ platform
 
 =item DESCRIPTION
 
+=item FUNCTIONS API
+
+C<first_release( MODULE )>, C<first_release_by_date( MODULE )>,
+C<find_modules( REGEX, [ LIST OF PERLS ] )>, C<find_version( PERL_VERSION
+)>, C<is_deprecated( MODULE, PERL_VERSION )>, C<removed_from( MODULE )>,
+C<removed_from_by_date( MODULE )>
+
+=item DATA STRUCTURES
+
+C<%Module::CoreList::version>, C<%Module::CoreList::released>,
+C<%Module::CoreList::families>, C<%Module::CoreList::deprecated>,
+C<%Module::CoreList::upstream>, C<%Module::CoreList::bug_tracker>
+
 =item CAVEATS
 
 =item HISTORY
 
 =item AUTHOR
 
-=item COPYRIGHT
+=item LICENSE
 
 =item SEE ALSO
 
@@ -35311,7 +35576,7 @@ B<code>, B<full>, B<simple>, B<mapping>, B<status>, B<*>, B<*>, B<turkic>
 
 =item B<casespec()>
 
-B<code>, B<lower>, B<title>, B<lower>, B<condition>
+B<code>, B<lower>, B<title>, B<upper>, B<condition>
 
 =back
 

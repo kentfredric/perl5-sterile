@@ -1151,6 +1151,7 @@ Found in file sv.c
 
 
 =back
+
 =head1 Undocumented functions
 
 These functions are currently undocumented:
@@ -1798,6 +1799,9 @@ X<ingroup>
 
 =item init_argv_symbols
 X<init_argv_symbols>
+
+=item init_dbargs
+X<init_dbargs>
 
 =item init_debugger
 X<init_debugger>

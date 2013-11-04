@@ -44,11 +44,11 @@ sub import {
     return;
 }
 
-die "Perl lib version (5.12.0) doesn't match executable version ($])"
+die "Perl lib version (5.12.5) doesn't match executable version ($])"
     unless $^V;
 
-$^V eq 5.12.0
-    or die "Perl lib version (5.12.0) doesn't match executable version (" .
+$^V eq 5.12.5
+    or die "Perl lib version (5.12.5) doesn't match executable version (" .
 	sprintf("v%vd",$^V) . ")";
 
 
@@ -74,7 +74,7 @@ sub AUTOLOAD {
 
 # tie returns the object, so the value returned to require will be true.
 tie %Config, 'Config', {
-    archlibexp => '/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0/x86_64-linux',
+    archlibexp => '/home/kent/perl5/perlbrew/perls/5.12.5-pristine/lib/5.12.5/x86_64-linux',
     archname => 'x86_64-linux',
     cc => 'cc',
     d_readlink => 'define',
@@ -87,13 +87,13 @@ tie %Config, 'Config', {
     ldlibpthname => 'LD_LIBRARY_PATH',
     libpth => '/lib/../lib64 /usr/lib/../lib64 /lib /usr/lib /lib64 /usr/lib64',
     osname => 'linux',
-    osvers => '3.12.0-gentoo',
+    osvers => '3.11.6-gentoo',
     path_sep => ':',
-    privlibexp => '/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0',
-    scriptdir => '/home/kent/perl5/perlbrew/perls/5.12.0-pristine/bin',
-    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0/x86_64-linux',
-    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0',
+    privlibexp => '/home/kent/perl5/perlbrew/perls/5.12.5-pristine/lib/5.12.5',
+    scriptdir => '/home/kent/perl5/perlbrew/perls/5.12.5-pristine/bin',
+    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.12.5-pristine/lib/site_perl/5.12.5/x86_64-linux',
+    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.12.5-pristine/lib/site_perl/5.12.5',
     useithreads => undef,
     usevendorprefix => undef,
-    version => '5.12.0',
+    version => '5.12.5',
 };

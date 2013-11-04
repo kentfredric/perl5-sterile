@@ -2308,15 +2308,20 @@ this property.
    \p{PosixAlnum}          [A-Za-z0-9] (62)
    \p{PosixAlpha}          [A-Za-z] (52)
    \p{PosixBlank}          \t and ' ' (2)
-   \p{PosixCntrl}          [\x00-\x1F] (33)
+   \p{PosixCntrl}          ASCII control characters: NUL, SOH, STX,
+                             ETX, EOT, ENQ, ACK, BEL, BS, HT, LF, VT,
+                             FF, CR, SO, SI, DLE, DC1, DC2, DC3, DC4,
+                             NAK, SYN, ETB, CAN, EOM, SUB, ESC, FS,
+                             GS, RS, US, and DEL (33)
    \p{PosixDigit}          [0-9] (10)
-   \p{PosixGraph}          [\x21-\x7E] (94)
+   \p{PosixGraph}          [-!"#$%&'()*+,./:;<>?@[\\]^_`{|}~0-9A-Za-
+                             z] (94)
    \p{PosixLower}          [a-z] (26)
-   \p{PosixPrint}          [\x20-\x7E] (95)
-   \p{PosixPunct}          Graphical characters that aren't Word
-                             characters = [\x21-\x2F\x3A-\x40\x5B-
-                             \x60\x7B-\x7E] (32)
-   \p{PosixSpace}          \t \n, \x0B, \f, \r, and ' ' (6)
+   \p{PosixPrint}          [- 0-9A-Za-
+                             z!"#$%&'()*+,./:;<>?@[\\]^_`{|}~] (95)
+   \p{PosixPunct}          [-!"#$%&'()*+,./:;<>?@[\\]^_`{|}~] (32)
+   \p{PosixSpace}          \t, \n, \cK, \f, \r, and ' '.  (\cK is
+                             vertical tab) (6)
    \p{PosixUpper}          [A-Z] (26)
  T \p{Present_In: 1.1}     \p{Age=1.1} (Short: \p{In=1.1}) (Perl
                              extension) (33_979)

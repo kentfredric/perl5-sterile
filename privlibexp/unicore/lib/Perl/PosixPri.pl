@@ -13,7 +13,7 @@
 #         \p{PosixPrint}
 #         \p{Is_PosixPrint}
 # 
-#     Meaning: [\x20-\x7E]
+#     Meaning: [- 0-9A-Za-z!"#$%&'()*+,./:;<>?@[\\]^_`{|}~]
 # 
 # perluniprops.pod should be consulted for the syntax rules for any of these,
 # including if adding or subtracting white space, underscore, and hyphen

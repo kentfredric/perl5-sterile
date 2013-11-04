@@ -16,14 +16,14 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
 	 OPpTRANS_SQUASH OPpTRANS_DELETE OPpTRANS_COMPLEMENT OPpTARGET_MY
 	 OPpCONST_ARYBASE OPpEXISTS_SUB OPpSORT_NUMERIC OPpSORT_INTEGER
 	 OPpSORT_REVERSE OPpSORT_INPLACE OPpSORT_DESCEND OPpITER_REVERSED
-	 OPpREVERSE_INPLACE
+	 OPpREVERSE_INPLACE OPpCONST_NOVER
 	 SVf_IOK SVf_NOK SVf_ROK SVf_POK SVpad_OUR SVf_FAKE SVs_RMG SVs_SMG
          CVf_METHOD CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED),
 	 ($] < 5.009 ? 'PMf_SKIPWHITE' : 'RXf_SKIPWHITE'),
 	 ($] < 5.011 ? 'CVf_LOCKED' : ());
-$VERSION = 0.96;
+$VERSION = 0.97_01;
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -1380,7 +1380,6 @@ sub pp_nextstate {
     $self->{'curcop'} = $op;
     my @text;
     push @text, $self->cop_subs($op);
-    push @text, $op->label . ": " if $op->label;
     my $stash = $op->stashpv;
     if ($stash ne $self->{'curstash'}) {
 	push @text, "package $stash;\n";
@@ -1433,6 +1432,8 @@ sub pp_nextstate {
 	push @text, "\f#line " . $op->line .
 	  ' "' . $op->file, qq'"\n';
     }
+
+    push @text, $op->label . ": " if $op->label;
 
     return join("", @text);
 }
@@ -1788,7 +1789,7 @@ sub pp_require {
 	$name =~ s/\.pm//g;
 	return "$opname $name";
     } else {	
-	$self->unop($op, $cx, $opname);
+	$self->unop($op, $cx, $op->first->private & OPpCONST_NOVER ? "no" : $opname);
     }
 }
 
