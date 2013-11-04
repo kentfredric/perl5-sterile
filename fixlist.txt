@@ -1,0 +1,11 @@
+privlibexp/x86_64-linux/Config_heavy.pl
+privlibexp/x86_64-linux/CORE/config.h
+privlibexp/x86_64-linux/CORE/libperl.a
+privlibexp/x86_64-linux/Config.pm
+privlibexp/x86_64-linux/.packlist
+privlibexp/pod/perlfunc.pod
+archlibexp/Config_heavy.pl
+archlibexp/CORE/config.h
+archlibexp/CORE/libperl.a
+archlibexp/Config.pm
+archlibexp/.packlist
