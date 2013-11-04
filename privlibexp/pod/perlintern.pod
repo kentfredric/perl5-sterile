@@ -1997,9 +1997,6 @@ X<invlist_len>
 =item invlist_max
 X<invlist_max>
 
-=item invlist_set_array
-X<invlist_set_array>
-
 =item invlist_set_len
 X<invlist_set_len>
 
@@ -2272,6 +2269,9 @@ X<malloced_size>
 
 =item matcher_matches_sv
 X<matcher_matches_sv>
+
+=item mayberelocate
+X<mayberelocate>
 
 =item measure_struct
 X<measure_struct>

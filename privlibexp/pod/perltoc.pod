@@ -2096,11 +2096,12 @@ X<assignment> X<operator, assignment> X<=> X<**=> X<+=> X<*=> X<&=>
 X<<< <<= >>> X<&&=> X<-=> X</=> X<|=> X<<< >>= >>> X<||=> X<//=> X<.=>
 X<%=> X<^=> X<x=>
 
+=item The Triple-Dot Operator
+X<...> X<... operator> X<yada-yada operator> X<whatever operator>
+X<triple-dot operator>
+
 =item Comma Operator
 X<comma> X<operator, comma> X<,>
-
-=item Yada Yada Operator
-X<...> X<... operator> X<yada yada operator>
 
 =item List Operators (Rightward)
 X<operator, list, rightward> X<list operator>
@@ -2136,10 +2137,10 @@ qr/STRING/msixpodual X<qr> X</i> X</m> X</o> X</s> X</x> X</p>,
 m/PATTERN/msixpodualgc X<m> X<operator, match> X<regexp, options> X<regexp>
 X<regex, options> X<regex> X</m> X</s> X</i> X</x> X</p> X</o> X</g> X</c>,
 /PATTERN/msixpodualgc, The empty pattern //, Matching in list context, \G
-assertion, m?PATTERN? X<?> X<operator, match-once>, ?PATTERN?,
-s/PATTERN/REPLACEMENT/msixpodualgcer X<substitute> X<substitution>
-X<replace> X<regexp, replace> X<regexp, substitute> X</m> X</s> X</i> X</x>
-X</p> X</o> X</g> X</c> X</e> X</r>
+assertion, m?PATTERN?msixpodualgc X<?> X<operator, match-once>,
+?PATTERN?msixpodualgc, s/PATTERN/REPLACEMENT/msixpodualgcer X<substitute>
+X<substitution> X<replace> X<regexp, replace> X<regexp, substitute> X</m>
+X</s> X</i> X</x> X</p> X</o> X</g> X</c> X</e> X</r>
 
 =item Quote-Like Operators
 X<operator, quote-like>
@@ -2263,9 +2264,9 @@ Functions for real %HASHes X<hash>, Input and output functions X<I/O>
 X<input> X<output> X<dbm>, Functions for fixed-length data or records,
 Functions for filehandles, files, or directories X<file> X<filehandle>
 X<directory> X<pipe> X<link> X<symlink>, Keywords related to the control
-flow of your Perl program X<control flow>, Keywords related to switch,
-Keywords related to scoping, Miscellaneous functions, Functions for
-processes and process groups X<process> X<pid> X<process id>, Keywords
+flow of your Perl program X<control flow>, Keywords related to the switch
+feature, Keywords related to scoping, Miscellaneous functions, Functions
+for processes and process groups X<process> X<pid> X<process id>, Keywords
 related to Perl modules X<module>, Keywords related to classes and
 object-orientation X<object> X<class> X<package>, Low-level socket
 functions X<socket> X<sock>, System V interprocess communication functions
@@ -2301,44 +2302,45 @@ SOCKET,NAME X<connect>, continue BLOCK X<continue>, continue, cos EXPR
 X<cos> X<cosine> X<acos> X<arccosine>, cos, crypt PLAINTEXT,SALT X<crypt>
 X<digest> X<hash> X<salt> X<plaintext> X<password> X<decrypt>
 X<cryptography> X<passwd> X<encrypt>, dbmclose HASH X<dbmclose>, dbmopen
-HASH,DBNAME,MASK X<dbmopen> X<dbm> X<ndbm> X<sdbm> X<gdbm>, defined EXPR
-X<defined> X<undef> X<undefined>, defined, delete EXPR X<delete>, die LIST
-X<die> X<throw> X<exception> X<raise> X<$@> X<abort>, do BLOCK X<do>
-X<block>, do SUBROUTINE(LIST) X<do>, do EXPR X<do>, dump LABEL X<dump>
-X<core> X<undump>, dump, each HASH X<each> X<hash, iterator>, each ARRAY
-X<array, iterator>, each EXPR, eof FILEHANDLE X<eof> X<end of file>
-X<end-of-file>, eof (), eof, eval EXPR X<eval> X<try> X<catch> X<evaluate>
-X<parse> X<execute> X<error, handling> X<exception, handling>, eval BLOCK,
-eval, exec LIST X<exec> X<execute>, exec PROGRAM LIST, exists EXPR
-X<exists> X<autovivification>, exit EXPR X<exit> X<terminate> X<abort>,
-exit, exp EXPR X<exp> X<exponential> X<antilog> X<antilogarithm> X<e>, exp,
-fcntl FILEHANDLE,FUNCTION,SCALAR X<fcntl>, fileno FILEHANDLE X<fileno>,
-flock FILEHANDLE,OPERATION X<flock> X<lock> X<locking>, fork X<fork>
-X<child> X<parent>, format X<format>, formline PICTURE,LIST X<formline>,
-getc FILEHANDLE X<getc> X<getchar> X<character> X<file, read>, getc,
-getlogin X<getlogin> X<login>, getpeername SOCKET X<getpeername> X<peer>,
-getpgrp PID X<getpgrp> X<group>, getppid X<getppid> X<parent> X<pid>,
-getpriority WHICH,WHO X<getpriority> X<priority> X<nice>, getpwnam NAME
-X<getpwnam> X<getgrnam> X<gethostbyname> X<getnetbyname> X<getprotobyname>
-X<getpwuid> X<getgrgid> X<getservbyname> X<gethostbyaddr> X<getnetbyaddr>
-X<getprotobynumber> X<getservbyport> X<getpwent> X<getgrent> X<gethostent>
-X<getnetent> X<getprotoent> X<getservent> X<setpwent> X<setgrent>
-X<sethostent> X<setnetent> X<setprotoent> X<setservent> X<endpwent>
-X<endgrent> X<endhostent> X<endnetent> X<endprotoent> X<endservent>,
-getgrnam NAME, gethostbyname NAME, getnetbyname NAME, getprotobyname NAME,
-getpwuid UID, getgrgid GID, getservbyname NAME,PROTO, gethostbyaddr
-ADDR,ADDRTYPE, getnetbyaddr ADDR,ADDRTYPE, getprotobynumber NUMBER,
-getservbyport PORT,PROTO, getpwent, getgrent, gethostent, getnetent,
-getprotoent, getservent, setpwent, setgrent, sethostent STAYOPEN, setnetent
-STAYOPEN, setprotoent STAYOPEN, setservent STAYOPEN, endpwent, endgrent,
-endhostent, endnetent, endprotoent, endservent, getsockname SOCKET
-X<getsockname>, getsockopt SOCKET,LEVEL,OPTNAME X<getsockopt>, glob EXPR
-X<glob> X<wildcard> X<filename, expansion> X<expand>, glob, gmtime EXPR
-X<gmtime> X<UTC> X<Greenwich>, gmtime, goto LABEL X<goto> X<jump> X<jmp>,
-goto EXPR, goto &NAME, grep BLOCK LIST X<grep>, grep EXPR,LIST, hex EXPR
-X<hex> X<hexadecimal>, hex, import LIST X<import>, index
-STR,SUBSTR,POSITION X<index> X<indexOf> X<InStr>, index STR,SUBSTR, int
-EXPR X<int> X<integer> X<truncate> X<trunc> X<floor>, int, ioctl
+HASH,DBNAME,MASK X<dbmopen> X<dbm> X<ndbm> X<sdbm> X<gdbm>, default BLOCK,
+defined EXPR X<defined> X<undef> X<undefined>, defined, delete EXPR
+X<delete>, die LIST X<die> X<throw> X<exception> X<raise> X<$@> X<abort>,
+do BLOCK X<do> X<block>, do SUBROUTINE(LIST) X<do>, do EXPR X<do>, dump
+LABEL X<dump> X<core> X<undump>, dump, each HASH X<each> X<hash, iterator>,
+each ARRAY X<array, iterator>, each EXPR, eof FILEHANDLE X<eof> X<end of
+file> X<end-of-file>, eof (), eof, eval EXPR X<eval> X<try> X<catch>
+X<evaluate> X<parse> X<execute> X<error, handling> X<exception, handling>,
+eval BLOCK, eval, exec LIST X<exec> X<execute>, exec PROGRAM LIST, exists
+EXPR X<exists> X<autovivification>, exit EXPR X<exit> X<terminate>
+X<abort>, exit, exp EXPR X<exp> X<exponential> X<antilog> X<antilogarithm>
+X<e>, exp, fcntl FILEHANDLE,FUNCTION,SCALAR X<fcntl>, fileno FILEHANDLE
+X<fileno>, flock FILEHANDLE,OPERATION X<flock> X<lock> X<locking>, fork
+X<fork> X<child> X<parent>, format X<format>, formline PICTURE,LIST
+X<formline>, getc FILEHANDLE X<getc> X<getchar> X<character> X<file, read>,
+getc, getlogin X<getlogin> X<login>, getpeername SOCKET X<getpeername>
+X<peer>, getpgrp PID X<getpgrp> X<group>, getppid X<getppid> X<parent>
+X<pid>, getpriority WHICH,WHO X<getpriority> X<priority> X<nice>, getpwnam
+NAME X<getpwnam> X<getgrnam> X<gethostbyname> X<getnetbyname>
+X<getprotobyname> X<getpwuid> X<getgrgid> X<getservbyname> X<gethostbyaddr>
+X<getnetbyaddr> X<getprotobynumber> X<getservbyport> X<getpwent>
+X<getgrent> X<gethostent> X<getnetent> X<getprotoent> X<getservent>
+X<setpwent> X<setgrent> X<sethostent> X<setnetent> X<setprotoent>
+X<setservent> X<endpwent> X<endgrent> X<endhostent> X<endnetent>
+X<endprotoent> X<endservent>, getgrnam NAME, gethostbyname NAME,
+getnetbyname NAME, getprotobyname NAME, getpwuid UID, getgrgid GID,
+getservbyname NAME,PROTO, gethostbyaddr ADDR,ADDRTYPE, getnetbyaddr
+ADDR,ADDRTYPE, getprotobynumber NUMBER, getservbyport PORT,PROTO, getpwent,
+getgrent, gethostent, getnetent, getprotoent, getservent, setpwent,
+setgrent, sethostent STAYOPEN, setnetent STAYOPEN, setprotoent STAYOPEN,
+setservent STAYOPEN, endpwent, endgrent, endhostent, endnetent,
+endprotoent, endservent, getsockname SOCKET X<getsockname>, getsockopt
+SOCKET,LEVEL,OPTNAME X<getsockopt>, given EXPR BLOCK X<given>, given BLOCK,
+glob EXPR X<glob> X<wildcard> X<filename, expansion> X<expand>, glob,
+gmtime EXPR X<gmtime> X<UTC> X<Greenwich>, gmtime, goto LABEL X<goto>
+X<jump> X<jmp>, goto EXPR, goto &NAME, grep BLOCK LIST X<grep>, grep
+EXPR,LIST, hex EXPR X<hex> X<hexadecimal>, hex, import LIST X<import>,
+index STR,SUBSTR,POSITION X<index> X<indexOf> X<InStr>, index STR,SUBSTR,
+int EXPR X<int> X<integer> X<truncate> X<trunc> X<floor>, int, ioctl
 FILEHANDLE,FUNCTION,SCALAR X<ioctl>, join EXPR,LIST X<join>, keys HASH
 X<keys> X<key>, keys ARRAY, keys EXPR, kill SIGNAL, LIST X<kill> X<signal>,
 last LABEL X<last> X<break>, last, lc EXPR X<lc> X<lowercase>, lc, If C<use
@@ -2363,43 +2365,43 @@ FILEHANDLE,MODE,EXPR, open FILEHANDLE,MODE,EXPR,LIST, open
 FILEHANDLE,MODE,REFERENCE, open FILEHANDLE, opendir DIRHANDLE,EXPR
 X<opendir>, ord EXPR X<ord> X<encoding>, ord, our EXPR X<our> X<global>,
 our TYPE EXPR, our EXPR : ATTRS, our TYPE EXPR : ATTRS, pack TEMPLATE,LIST
-X<pack>, package NAMESPACE VERSION X<package> X<module> X<namespace>
-X<version>, package NAMESPACE, package NAMESPACE VERSION BLOCK X<package>
-X<module> X<namespace> X<version>, package NAMESPACE BLOCK, pipe
+X<pack>, package NAMESPACE, package NAMESPACE VERSION X<package> X<module>
+X<namespace> X<version>, package NAMESPACE BLOCK, package NAMESPACE VERSION
+BLOCK X<package> X<module> X<namespace> X<version>, pipe
 READHANDLE,WRITEHANDLE X<pipe>, pop ARRAY X<pop> X<stack>, pop EXPR, pop,
 pos SCALAR X<pos> X<match, position>, pos, print FILEHANDLE LIST X<print>,
-print LIST, print, printf FILEHANDLE FORMAT, LIST X<printf>, printf FORMAT,
-LIST, prototype FUNCTION X<prototype>, push ARRAY,LIST X<push> X<stack>,
-push EXPR,LIST, q/STRING/, qq/STRING/, qx/STRING/, qw/STRING/, qr/STRING/,
-quotemeta EXPR X<quotemeta> X<metacharacter>, quotemeta, rand EXPR X<rand>
-X<random>, rand, read FILEHANDLE,SCALAR,LENGTH,OFFSET X<read> X<file,
-read>, read FILEHANDLE,SCALAR,LENGTH, readdir DIRHANDLE X<readdir>,
-readline EXPR, readline X<readline> X<gets> X<fgets>, readlink EXPR
-X<readlink>, readlink, readpipe EXPR, readpipe X<readpipe>, recv
-SOCKET,SCALAR,LENGTH,FLAGS X<recv>, redo LABEL X<redo>, redo, ref EXPR
-X<ref> X<reference>, ref, rename OLDNAME,NEWNAME X<rename> X<move> X<mv>
-X<ren>, require VERSION X<require>, require EXPR, require, reset EXPR
-X<reset>, reset, return EXPR X<return>, return, reverse LIST X<reverse>
-X<rev> X<invert>, rewinddir DIRHANDLE X<rewinddir>, rindex
-STR,SUBSTR,POSITION X<rindex>, rindex STR,SUBSTR, rmdir FILENAME X<rmdir>
-X<rd> X<directory, remove>, rmdir, s///, say FILEHANDLE LIST X<say>, say
-LIST, say, scalar EXPR X<scalar> X<context>, seek
-FILEHANDLE,POSITION,WHENCE X<seek> X<fseek> X<filehandle, position>,
-seekdir DIRHANDLE,POS X<seekdir>, select FILEHANDLE X<select> X<filehandle,
-default>, select, select RBITS,WBITS,EBITS,TIMEOUT X<select>, semctl
-ID,SEMNUM,CMD,ARG X<semctl>, semget KEY,NSEMS,FLAGS X<semget>, semop
-KEY,OPSTRING X<semop>, send SOCKET,MSG,FLAGS,TO X<send>, send
-SOCKET,MSG,FLAGS, setpgrp PID,PGRP X<setpgrp> X<group>, setpriority
-WHICH,WHO,PRIORITY X<setpriority> X<priority> X<nice> X<renice>, setsockopt
-SOCKET,LEVEL,OPTNAME,OPTVAL X<setsockopt>, shift ARRAY X<shift>, shift
-EXPR, shift, shmctl ID,CMD,ARG X<shmctl>, shmget KEY,SIZE,FLAGS X<shmget>,
-shmread ID,VAR,POS,SIZE X<shmread> X<shmwrite>, shmwrite
-ID,STRING,POS,SIZE, shutdown SOCKET,HOW X<shutdown>, sin EXPR X<sin>
-X<sine> X<asin> X<arcsine>, sin, sleep EXPR X<sleep> X<pause>, sleep,
-socket SOCKET,DOMAIN,TYPE,PROTOCOL X<socket>, socketpair
-SOCKET1,SOCKET2,DOMAIN,TYPE,PROTOCOL X<socketpair>, sort SUBNAME LIST
-X<sort> X<qsort> X<quicksort> X<mergesort>, sort BLOCK LIST, sort LIST,
-splice ARRAY or EXPR,OFFSET,LENGTH,LIST X<splice>, splice ARRAY or
+print FILEHANDLE, print LIST, print, printf FILEHANDLE FORMAT, LIST
+X<printf>, printf FILEHANDLE, printf FORMAT, LIST, printf, prototype
+FUNCTION X<prototype>, push ARRAY,LIST X<push> X<stack>, push EXPR,LIST,
+q/STRING/, qq/STRING/, qx/STRING/, qw/STRING/, qr/STRING/, quotemeta EXPR
+X<quotemeta> X<metacharacter>, quotemeta, rand EXPR X<rand> X<random>,
+rand, read FILEHANDLE,SCALAR,LENGTH,OFFSET X<read> X<file, read>, read
+FILEHANDLE,SCALAR,LENGTH, readdir DIRHANDLE X<readdir>, readline EXPR,
+readline X<readline> X<gets> X<fgets>, readlink EXPR X<readlink>, readlink,
+readpipe EXPR, readpipe X<readpipe>, recv SOCKET,SCALAR,LENGTH,FLAGS
+X<recv>, redo LABEL X<redo>, redo, ref EXPR X<ref> X<reference>, ref,
+rename OLDNAME,NEWNAME X<rename> X<move> X<mv> X<ren>, require VERSION
+X<require>, require EXPR, require, reset EXPR X<reset>, reset, return EXPR
+X<return>, return, reverse LIST X<reverse> X<rev> X<invert>, rewinddir
+DIRHANDLE X<rewinddir>, rindex STR,SUBSTR,POSITION X<rindex>, rindex
+STR,SUBSTR, rmdir FILENAME X<rmdir> X<rd> X<directory, remove>, rmdir,
+s///, say FILEHANDLE LIST X<say>, say FILEHANDLE, say LIST, say, scalar
+EXPR X<scalar> X<context>, seek FILEHANDLE,POSITION,WHENCE X<seek> X<fseek>
+X<filehandle, position>, seekdir DIRHANDLE,POS X<seekdir>, select
+FILEHANDLE X<select> X<filehandle, default>, select, select
+RBITS,WBITS,EBITS,TIMEOUT X<select>, semctl ID,SEMNUM,CMD,ARG X<semctl>,
+semget KEY,NSEMS,FLAGS X<semget>, semop KEY,OPSTRING X<semop>, send
+SOCKET,MSG,FLAGS,TO X<send>, send SOCKET,MSG,FLAGS, setpgrp PID,PGRP
+X<setpgrp> X<group>, setpriority WHICH,WHO,PRIORITY X<setpriority>
+X<priority> X<nice> X<renice>, setsockopt SOCKET,LEVEL,OPTNAME,OPTVAL
+X<setsockopt>, shift ARRAY X<shift>, shift EXPR, shift, shmctl ID,CMD,ARG
+X<shmctl>, shmget KEY,SIZE,FLAGS X<shmget>, shmread ID,VAR,POS,SIZE
+X<shmread> X<shmwrite>, shmwrite ID,STRING,POS,SIZE, shutdown SOCKET,HOW
+X<shutdown>, sin EXPR X<sin> X<sine> X<asin> X<arcsine>, sin, sleep EXPR
+X<sleep> X<pause>, sleep, socket SOCKET,DOMAIN,TYPE,PROTOCOL X<socket>,
+socketpair SOCKET1,SOCKET2,DOMAIN,TYPE,PROTOCOL X<socketpair>, sort SUBNAME
+LIST X<sort> X<qsort> X<quicksort> X<mergesort>, sort BLOCK LIST, sort
+LIST, splice ARRAY or EXPR,OFFSET,LENGTH,LIST X<splice>, splice ARRAY or
 EXPR,OFFSET,LENGTH, splice ARRAY or EXPR,OFFSET, splice ARRAY or EXPR,
 split /PATTERN/,EXPR,LIMIT X<split>, split /PATTERN/,EXPR, split /PATTERN/,
 split, sprintf FORMAT, LIST X<sprintf>, format parameter index, flags,
@@ -2432,8 +2434,9 @@ use Module VERSION LIST X<use> X<module> X<import>, use Module VERSION, use
 Module LIST, use Module, use VERSION, utime LIST X<utime>, values HASH
 X<values>, values ARRAY, values EXPR, vec EXPR,OFFSET,BITS X<vec> X<bit>
 X<bit vector>, wait X<wait>, waitpid PID,FLAGS X<waitpid>, wantarray
-X<wantarray> X<context>, warn LIST X<warn> X<warning> X<STDERR>, write
-FILEHANDLE X<write>, write EXPR, write, y///
+X<wantarray> X<context>, warn LIST X<warn> X<warning> X<STDERR>, when EXPR
+BLOCK X<when>, when BLOCK, write FILEHANDLE X<write>, write EXPR, write,
+y///
 
 =back
 
@@ -2739,7 +2742,7 @@ X<perl, command switches> X<command switches>
 
 B<-0>[I<octal/hexadecimal>] X<-0> X<$/>, B<-a> X<-a> X<autosplit>, B<-C
 [I<number/list>]> X<-C>, B<-c> X<-c>, B<-d> X<-d> X<-dt>, B<-dt>,
-B<-d:>I<foo[=bar,baz]> X<-d> X<-dt>, B<-dt:>I<foo[=bar,baz]>,
+B<-d:>I<MOD[=bar,baz]> X<-d> X<-dt>, B<-dt:>I<MOD[=bar,baz]>,
 B<-D>I<letters> X<-D> X<DEBUGGING> X<-DDEBUGGING>, B<-D>I<number>, B<-e>
 I<commandline> X<-e>, B<-E> I<commandline> X<-E>, B<-f> X<-f>
 X<sitecustomize> X<sitecustomize.pl>, B<-F>I<pattern> X<-F>, B<-h> X<-h>,
@@ -4992,13 +4995,12 @@ file, execute, execute bit, exit status, export, expression, extension
 false, FAQ, fatal error, field, FIFO, file, file descriptor, file test
 operator, fileglob, filehandle, filename, filesystem, filter, flag,
 floating point, flush, FMTEYEWTK, fork, formal arguments, format, freely
-available, freely redistributable, freeware, function, funny character,
-garbage collection
+available, freely redistributable, freeware, function, funny character
 
 =item G
 
-GID, glob, global, global destruction, glue language, granularity, greedy,
-grep, group, GV
+garbage collection, GID, glob, global, global destruction, glue language,
+granularity, greedy, grep, group, GV
 
 =item H
 
@@ -6714,52 +6716,52 @@ intuit_method X<intuit_method>, intuit_more X<intuit_more>, invert
 X<invert>, invlist_array X<invlist_array>, invlist_destroy
 X<invlist_destroy>, invlist_extend X<invlist_extend>, invlist_intersection
 X<invlist_intersection>, invlist_len X<invlist_len>, invlist_max
-X<invlist_max>, invlist_set_array X<invlist_set_array>, invlist_set_len
-X<invlist_set_len>, invlist_set_max X<invlist_set_max>, invlist_trim
-X<invlist_trim>, invlist_union X<invlist_union>, invoke_exception_hook
-X<invoke_exception_hook>, io_close X<io_close>, is_an_int X<is_an_int>,
-is_handle_constructor X<is_handle_constructor>, is_inplace_av
-X<is_inplace_av>, is_list_assignment X<is_list_assignment>, is_utf8_X_L
-X<is_utf8_X_L>, is_utf8_X_LV X<is_utf8_X_LV>, is_utf8_X_LVT
-X<is_utf8_X_LVT>, is_utf8_X_LV_LVT_V X<is_utf8_X_LV_LVT_V>, is_utf8_X_T
-X<is_utf8_X_T>, is_utf8_X_V X<is_utf8_X_V>, is_utf8_X_begin
-X<is_utf8_X_begin>, is_utf8_X_extend X<is_utf8_X_extend>,
-is_utf8_X_non_hangul X<is_utf8_X_non_hangul>, is_utf8_X_prepend
-X<is_utf8_X_prepend>, is_utf8_char_slow X<is_utf8_char_slow>,
-is_utf8_common X<is_utf8_common>, isa_lookup X<isa_lookup>, jmaybe
-X<jmaybe>, join_exact X<join_exact>, keyword X<keyword>,
-keyword_plugin_standard X<keyword_plugin_standard>, list X<list>, listkids
-X<listkids>, localize X<localize>, looks_like_bool X<looks_like_bool>, lop
-X<lop>, mad_free X<mad_free>, madlex X<madlex>, madparse X<madparse>,
-magic_clear_all_env X<magic_clear_all_env>, magic_clearenv
-X<magic_clearenv>, magic_clearisa X<magic_clearisa>, magic_clearpack
-X<magic_clearpack>, magic_clearsig X<magic_clearsig>, magic_existspack
-X<magic_existspack>, magic_freearylen_p X<magic_freearylen_p>,
-magic_freeovrld X<magic_freeovrld>, magic_get X<magic_get>, magic_getarylen
-X<magic_getarylen>, magic_getdefelem X<magic_getdefelem>, magic_getnkeys
-X<magic_getnkeys>, magic_getpack X<magic_getpack>, magic_getpos
-X<magic_getpos>, magic_getsig X<magic_getsig>, magic_getsubstr
-X<magic_getsubstr>, magic_gettaint X<magic_gettaint>, magic_getuvar
-X<magic_getuvar>, magic_getvec X<magic_getvec>, magic_killbackrefs
-X<magic_killbackrefs>, magic_len X<magic_len>, magic_methcall1
-X<magic_methcall1>, magic_methpack X<magic_methpack>, magic_nextpack
-X<magic_nextpack>, magic_regdata_cnt X<magic_regdata_cnt>,
-magic_regdatum_get X<magic_regdatum_get>, magic_regdatum_set
-X<magic_regdatum_set>, magic_scalarpack X<magic_scalarpack>, magic_set
-X<magic_set>, magic_set_all_env X<magic_set_all_env>, magic_setamagic
-X<magic_setamagic>, magic_setarylen X<magic_setarylen>, magic_setcollxfrm
-X<magic_setcollxfrm>, magic_setdbline X<magic_setdbline>, magic_setdefelem
-X<magic_setdefelem>, magic_setenv X<magic_setenv>, magic_setisa
-X<magic_setisa>, magic_setmglob X<magic_setmglob>, magic_setnkeys
-X<magic_setnkeys>, magic_setpack X<magic_setpack>, magic_setpos
-X<magic_setpos>, magic_setregexp X<magic_setregexp>, magic_setsig
-X<magic_setsig>, magic_setsubstr X<magic_setsubstr>, magic_settaint
-X<magic_settaint>, magic_setutf8 X<magic_setutf8>, magic_setuvar
-X<magic_setuvar>, magic_setvec X<magic_setvec>, magic_sizepack
-X<magic_sizepack>, magic_wipepack X<magic_wipepack>, make_matcher
-X<make_matcher>, make_trie X<make_trie>, make_trie_failtable
-X<make_trie_failtable>, malloc_good_size X<malloc_good_size>, malloced_size
-X<malloced_size>, matcher_matches_sv X<matcher_matches_sv>, measure_struct
+X<invlist_max>, invlist_set_len X<invlist_set_len>, invlist_set_max
+X<invlist_set_max>, invlist_trim X<invlist_trim>, invlist_union
+X<invlist_union>, invoke_exception_hook X<invoke_exception_hook>, io_close
+X<io_close>, is_an_int X<is_an_int>, is_handle_constructor
+X<is_handle_constructor>, is_inplace_av X<is_inplace_av>,
+is_list_assignment X<is_list_assignment>, is_utf8_X_L X<is_utf8_X_L>,
+is_utf8_X_LV X<is_utf8_X_LV>, is_utf8_X_LVT X<is_utf8_X_LVT>,
+is_utf8_X_LV_LVT_V X<is_utf8_X_LV_LVT_V>, is_utf8_X_T X<is_utf8_X_T>,
+is_utf8_X_V X<is_utf8_X_V>, is_utf8_X_begin X<is_utf8_X_begin>,
+is_utf8_X_extend X<is_utf8_X_extend>, is_utf8_X_non_hangul
+X<is_utf8_X_non_hangul>, is_utf8_X_prepend X<is_utf8_X_prepend>,
+is_utf8_char_slow X<is_utf8_char_slow>, is_utf8_common X<is_utf8_common>,
+isa_lookup X<isa_lookup>, jmaybe X<jmaybe>, join_exact X<join_exact>,
+keyword X<keyword>, keyword_plugin_standard X<keyword_plugin_standard>,
+list X<list>, listkids X<listkids>, localize X<localize>, looks_like_bool
+X<looks_like_bool>, lop X<lop>, mad_free X<mad_free>, madlex X<madlex>,
+madparse X<madparse>, magic_clear_all_env X<magic_clear_all_env>,
+magic_clearenv X<magic_clearenv>, magic_clearisa X<magic_clearisa>,
+magic_clearpack X<magic_clearpack>, magic_clearsig X<magic_clearsig>,
+magic_existspack X<magic_existspack>, magic_freearylen_p
+X<magic_freearylen_p>, magic_freeovrld X<magic_freeovrld>, magic_get
+X<magic_get>, magic_getarylen X<magic_getarylen>, magic_getdefelem
+X<magic_getdefelem>, magic_getnkeys X<magic_getnkeys>, magic_getpack
+X<magic_getpack>, magic_getpos X<magic_getpos>, magic_getsig
+X<magic_getsig>, magic_getsubstr X<magic_getsubstr>, magic_gettaint
+X<magic_gettaint>, magic_getuvar X<magic_getuvar>, magic_getvec
+X<magic_getvec>, magic_killbackrefs X<magic_killbackrefs>, magic_len
+X<magic_len>, magic_methcall1 X<magic_methcall1>, magic_methpack
+X<magic_methpack>, magic_nextpack X<magic_nextpack>, magic_regdata_cnt
+X<magic_regdata_cnt>, magic_regdatum_get X<magic_regdatum_get>,
+magic_regdatum_set X<magic_regdatum_set>, magic_scalarpack
+X<magic_scalarpack>, magic_set X<magic_set>, magic_set_all_env
+X<magic_set_all_env>, magic_setamagic X<magic_setamagic>, magic_setarylen
+X<magic_setarylen>, magic_setcollxfrm X<magic_setcollxfrm>, magic_setdbline
+X<magic_setdbline>, magic_setdefelem X<magic_setdefelem>, magic_setenv
+X<magic_setenv>, magic_setisa X<magic_setisa>, magic_setmglob
+X<magic_setmglob>, magic_setnkeys X<magic_setnkeys>, magic_setpack
+X<magic_setpack>, magic_setpos X<magic_setpos>, magic_setregexp
+X<magic_setregexp>, magic_setsig X<magic_setsig>, magic_setsubstr
+X<magic_setsubstr>, magic_settaint X<magic_settaint>, magic_setutf8
+X<magic_setutf8>, magic_setuvar X<magic_setuvar>, magic_setvec
+X<magic_setvec>, magic_sizepack X<magic_sizepack>, magic_wipepack
+X<magic_wipepack>, make_matcher X<make_matcher>, make_trie X<make_trie>,
+make_trie_failtable X<make_trie_failtable>, malloc_good_size
+X<malloc_good_size>, malloced_size X<malloced_size>, matcher_matches_sv
+X<matcher_matches_sv>, mayberelocate X<mayberelocate>, measure_struct
 X<measure_struct>, mem_collxfrm X<mem_collxfrm>, mem_log_common
 X<mem_log_common>, mess_alloc X<mess_alloc>, method_common
 X<method_common>, missingterm X<missingterm>, mod X<mod>,
@@ -7775,123 +7777,39 @@ B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.14.0
+=head2 perldelta - what is new for perl v5.14.4
 
 =over 4
 
 =item DESCRIPTION
 
-=item Notice
-
 =item Core Enhancements
-
-=over 4
-
-=item Unicode
-
-=item Regular Expressions
-
-=item Syntactical Enhancements
-
-=item Exception Handling
-
-=item Other Enhancements
-
-C<-d:-foo>, C<-d:-foo=bar>
-
-=item New C APIs
-
-=back
 
 =item Security
 
 =over 4
 
-=item User-defined regular expression properties
+=item CVE-2013-1667: memory exhaustion with arbitrary hash keys
+
+=item memory leak in Encode
+
+=item [perl #111594] Socket::unpack_sockaddr_un heap-buffer-overflow
+
+=item [perl #111586] SDBM_File: fix off-by-one access to global ".dir"
+
+=item off-by-two error in List::Util
+
+=item [perl #115994] fix segv in regcomp.c:S_join_exact()
+
+=item [perl #115992] PL_eval_start use-after-free
+
+=item wrap-around with IO on long strings
 
 =back
 
 =item Incompatible Changes
 
-=over 4
-
-=item Regular Expressions and String Escapes
-
-=item Stashes and Package Variables
-
-=item Changes to Syntax or to Perl Operators
-
-=item Threads and Processes
-
-=item Configuration
-
-=back
-
 =item Deprecations
-
-=over 4
-
-=item Omitting a space between a regular expression and subsequent word
-
-=item C<\cI<X>>
-
-=item C<"\b{"> and C<"\B{">
-
-=item Perl 4-era .pl libraries
-
-=item List assignment to C<$[>
-
-=item Use of qw(...) as parentheses
-
-=item C<\N{BELL}>
-
-=item C<?PATTERN?>
-
-=item Tie functions on scalars holding typeglobs
-
-=item User-defined case-mapping
-
-=item Deprecated modules
-
-L<Devel::DProf>
-
-=back
-
-=item Performance Enhancements
-
-=over 4
-
-=item "Safe signals" optimisation
-
-=item Optimisation of shift() and pop() calls without arguments
-
-=item Optimisation of regexp engine string comparison work
-
-=item Regular expression compilation speed-up
-
-=item String appending is 100 times faster
-
-=item Eliminate C<PL_*> accessor functions under ithreads
-
-=item Freeing weak references
-
-=item Lexical array and hash assignments
-
-=item C<@_> uses less memory
-
-=item Size optimisations to SV and HV structures
-
-=item Memory consumption improvements to Exporter
-
-=item Memory savings for weak references
-
-=item C<%+> and C<%-> use less memory
-
-=item Multiple small improvements to threads
-
-=item Adjacent pairs of nextstate opcodes are now optimized away
-
-=back
 
 =item Modules and Pragmata
 
@@ -7899,14 +7817,299 @@ L<Devel::DProf>
 
 =item New Modules and Pragmata
 
-=item Updated Modules and Pragma
+=item Updated Modules and Pragmata
 
-much less configuration dialog hassle, support for F<META/MYMETA.json>,
-support for L<local::lib>, support for L<HTTP::Tiny> to reduce the
-dependency on FTP sites, automatic mirror selection, iron out all known
-bugs in configure_requires, support for distributions compressed with
-L<bzip2(1)>, allow F<Foo/Bar.pm> on the command line to mean C<Foo::Bar>,
-charinfo(), charscript(), charblock()
+Socket, SDBM_File, List::Util
+
+=item Removed Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item New Documentation
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Diagnostics
+
+=item Utility Changes
+
+=item Configuration and Compilation
+
+=item Platform Support
+
+=over 4
+
+=item New Platforms
+
+=item Discontinued Platforms
+
+=item Platform-Specific Notes
+
+VMS
+
+=back
+
+=item Selected Bug Fixes
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5144delta, perldelta - what is new for perl v5.14.4
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=item Security
+
+=over 4
+
+=item CVE-2013-1667: memory exhaustion with arbitrary hash keys
+
+=item memory leak in Encode
+
+=item [perl #111594] Socket::unpack_sockaddr_un heap-buffer-overflow
+
+=item [perl #111586] SDBM_File: fix off-by-one access to global ".dir"
+
+=item off-by-two error in List::Util
+
+=item [perl #115994] fix segv in regcomp.c:S_join_exact()
+
+=item [perl #115992] PL_eval_start use-after-free
+
+=item wrap-around with IO on long strings
+
+=back
+
+=item Incompatible Changes
+
+=item Deprecations
+
+=item Modules and Pragmata
+
+=over 4
+
+=item New Modules and Pragmata
+
+=item Updated Modules and Pragmata
+
+Socket, SDBM_File, List::Util
+
+=item Removed Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item New Documentation
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Diagnostics
+
+=item Utility Changes
+
+=item Configuration and Compilation
+
+=item Platform Support
+
+=over 4
+
+=item New Platforms
+
+=item Discontinued Platforms
+
+=item Platform-Specific Notes
+
+VMS
+
+=back
+
+=item Selected Bug Fixes
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5143delta - what is new for perl v5.14.3
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=item Security
+
+=over 4
+
+=item C<Digest> unsafe use of eval (CVE-2011-3597)
+
+=item Heap buffer overrun in 'x' string repeat operator (CVE-2012-5195)
+
+=back
+
+=item Incompatible Changes
+
+=item Deprecations
+
+=item Modules and Pragmata
+
+=over 4
+
+=item New Modules and Pragmata
+
+=item Updated Modules and Pragmata
+
+=item Removed Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item New Documentation
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Configuration and Compilation
+
+=item Platform Support
+
+=over 4
+
+=item New Platforms
+
+=item Discontinued Platforms
+
+=item Platform-Specific Notes
+
+FreeBSD, Solaris and NetBSD, HP-UX, Linux, Mac OS X, GNU/Hurd, NetBSD
+
+=back
+
+=item Bug Fixes
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5142delta - what is new for perl v5.14.2
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=item Security
+
+=over 4
+
+=item C<File::Glob::bsd_glob()> memory error with GLOB_ALTDIRFUNC
+(CVE-2011-2728).
+
+=item C<Encode> decode_xs n-byte heap-overflow (CVE-2011-2939)
+
+=back
+
+=item Incompatible Changes
+
+=item Deprecations
+
+=item Modules and Pragmata
+
+=over 4
+
+=item New Modules and Pragmata
+
+=item Updated Modules and Pragmata
+
+=item Removed Modules and Pragmata
+
+=back
+
+=item Platform Support
+
+=over 4
+
+=item New Platforms
+
+=item Discontinued Platforms
+
+=item Platform-Specific Notes
+
+HP-UX PA-RISC/64 now supports gcc-4.x, Building on OS X 10.7 Lion and Xcode
+4 works again
+
+=back
+
+=item Bug Fixes
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5141delta - what is new for perl v5.14.1
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=item Security
+
+=item Incompatible Changes
+
+=item Deprecations
+
+=item Modules and Pragmata
+
+=over 4
+
+=item New Modules and Pragmata
+
+=item Updated Modules and Pragmata
 
 =item Removed Modules and Pragmata
 
@@ -7928,14 +8131,6 @@ charinfo(), charscript(), charblock()
 
 =item New Diagnostics
 
-Closure prototype called, Insecure user-defined property %s, panic: gp_free
-failed to free glob pointer - something is repeatedly re-creating entries,
-Parsing code internal error (%s), refcnt: fd %d%s, Regexp modifier "/%c"
-may not appear twice, Regexp modifiers "/%c" and "/%c" are mutually
-exclusive, Using !~ with %s doesn't make sense, "\b{" is deprecated; use
-"\b\{" instead, "\B{" is deprecated; use "\B\{" instead, Operation "%s"
-returns its argument for .., Use of qw(...) as parentheses is deprecated
-
 =item Changes to Existing Diagnostics
 
 =back
@@ -7944,17 +8139,15 @@ returns its argument for .., Use of qw(...) as parentheses is deprecated
 
 =item Configuration and Compilation
 
+=item Testing
+
 =item Platform Support
 
 =over 4
 
 =item New Platforms
 
-AIX
-
 =item Discontinued Platforms
-
-Apollo DomainOS, MacOS Classic
 
 =item Platform-Specific Notes
 
@@ -7962,75 +8155,7 @@ Apollo DomainOS, MacOS Classic
 
 =item Internal Changes
 
-=over 4
-
-=item New APIs
-
-=item C API Changes
-
-=item Deprecated C APIs
-
-C<Perl_ptr_table_clear>, C<sv_compile_2op>, C<find_rundefsvoffset>,
-C<CALL_FPTR> and C<CPERLscope>
-
-=item Other Internal Changes
-
-=back
-
-=item Selected Bug Fixes
-
-=over 4
-
-=item I/O
-
-=item Regular Expression Bug Fixes
-
-=item Syntax/Parsing Bugs
-
-=item Stashes, Globs and Method Lookup
-
-Aliasing packages by assigning to globs [perl #77358], Deleting packages by
-deleting their containing stash elements, Undefining the glob containing a
-package (C<undef *Foo::>), Undefining an ISA glob (C<undef *Foo::ISA>),
-Deleting an ISA stash element (C<delete $Foo::{ISA}>), Sharing @ISA arrays
-between classes (via C<*Foo::ISA = \@Bar::ISA> or C<*Foo::ISA = *Bar::ISA>)
-[perl #77238]
-
-=item Unicode
-
-=item Ties, Overloading and Other Magic
-
-=item The Debugger
-
-=item Threads
-
-=item Scoping and Subroutines
-
-=item Signals
-
-=item Miscellaneous Memory Leaks
-
-=item Memory Corruption and Crashes
-
-=item Fixes to Various Perl Operators
-
-=item Bugs Relating to the C API
-
-=back
-
-=item Known Problems
-
-=item Errata
-
-=over 4
-
-=item keys(), values(), and each() work on arrays
-
-=item split() and C<@_>
-
-=back
-
-=item Obituary
+=item Bug Fixes
 
 =item Acknowledgements
 
@@ -8040,7 +8165,7 @@ between classes (via C<*Foo::ISA = \@Bar::ISA> or C<*Foo::ISA = *Bar::ISA>)
 
 =back
 
-=head2 perl5140delta, perldelta - what is new for perl v5.14.0
+=head2 perl5140delta - what is new for perl v5.14.0
 
 =over 4
 
@@ -9417,7 +9542,7 @@ AIX
 
 =back
 
-=head2 perl5123delta, perldelta - what is new for perl v5.12.3
+=head2 perl5123delta - what is new for perl v5.12.3
 
 =over 4
 
@@ -14484,11 +14609,11 @@ DJGPP, Pthreads
 
 =item nss_delete core dump from op/pwent or op/grent
 
+=item error: pasting ")" and "l" does not give a valid preprocessing token
+
 =item Miscellaneous
 
 =item AUTHOR
-
-=item DATE
 
 =back
 
@@ -14587,10 +14712,6 @@ DJGPP, Pthreads
 =item Updating Apple's Perl
 
 =item Known problems
-
-=item MacPerl
-
-=item Carbon
 
 =item Cocoa
 
