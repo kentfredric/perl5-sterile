@@ -346,10 +346,6 @@ Individual test suite results.
 
 Individual test results.
 
-=item Archive::Extract
-
-A generic archive extracting mechanism
-
 =item Archive::Tar
 
 Module for manipulations of tar archives
@@ -385,14 +381,6 @@ Walk Perl syntax tree, printing debug info about ops
 =item B::Deparse
 
 Perl compiler backend to produce perl code
-
-=item B::Lint
-
-Perl lint
-
-=item B::Lint::Debug
-
-Adds debugging stringification to B::
 
 =item B::Showlex
 
@@ -534,158 +522,6 @@ Internal handling of tar archives for CPAN.pm
 
 Utility functions to compare CPAN versions
 
-=item CPANPLUS
-
-API & CLI access to the CPAN mirrors
-
-=item CPANPLUS::Backend
-
-Programmer's interface to CPANPLUS
-
-=item CPANPLUS::Backend::RV
-
-Return value objects
-
-=item CPANPLUS::Config
-
-Configuration defaults and heuristics for CPANPLUS
-
-=item CPANPLUS::Config::HomeEnv
-
-Set the environment for the CPANPLUS base dir
-
-=item CPANPLUS::Configure
-
-Configuration for CPANPLUS
-
-=item CPANPLUS::Dist
-
-Base class for plugins
-
-=item CPANPLUS::Dist::Autobundle
-
-Distribution class for installation snapshots
-
-=item CPANPLUS::Dist::Base
-
-Base class for custom distribution classes
-
-=item CPANPLUS::Dist::Build
-
-CPANPLUS plugin to install packages that use Build.PL
-
-=item CPANPLUS::Dist::Build::Constants
-
-Constants for CPANPLUS::Dist::Build
-
-=item CPANPLUS::Dist::MM
-
-Distribution class for MakeMaker related modules
-
-=item CPANPLUS::Dist::Sample
-
-Sample code to create your own Dist::* plugin
-
-=item CPANPLUS::Error
-
-Error handling for CPANPLUS
-
-=item CPANPLUS::FAQ
-
-CPANPLUS Frequently Asked Questions
-
-=item CPANPLUS::Hacking
-
-Developing CPANPLUS
-
-=item CPANPLUS::Internals
-
-CPANPLUS internals
-
-=item CPANPLUS::Internals::Extract
-
-Internals for archive extraction
-
-=item CPANPLUS::Internals::Fetch
-
-Internals for fetching files
-
-=item CPANPLUS::Internals::Report
-
-Internals for sending test reports
-
-=item CPANPLUS::Internals::Search
-
-Internals for searching for modules
-
-=item CPANPLUS::Internals::Source
-
-Internals for updating source files
-
-=item CPANPLUS::Internals::Source::Memory
-
-In memory implementation
-
-=item CPANPLUS::Internals::Source::SQLite
-
-SQLite implementation
-
-=item CPANPLUS::Internals::Utils
-
-Convenience functions for CPANPLUS
-
-=item CPANPLUS::Module
-
-CPAN module objects for CPANPLUS
-
-=item CPANPLUS::Module::Author
-
-CPAN author object for CPANPLUS
-
-=item CPANPLUS::Module::Author::Fake
-
-Dummy author object for CPANPLUS
-
-=item CPANPLUS::Module::Checksums
-
-Checking the checksum of a distribution
-
-=item CPANPLUS::Module::Fake
-
-Fake module object for internal use
-
-=item CPANPLUS::Selfupdate
-
-Self-updating for CPANPLUS
-
-=item CPANPLUS::Shell
-
-Base class for CPANPLUS shells
-
-=item CPANPLUS::Shell::Classic
-
-CPAN.pm emulation for CPANPLUS
-
-=item CPANPLUS::Shell::Default
-
-The default CPANPLUS shell
-
-=item CPANPLUS::Shell::Default::Plugins::CustomSource
-
-Add custom sources to CPANPLUS
-
-=item CPANPLUS::Shell::Default::Plugins::HOWTO
-
-Documentation on how to write your own plugins
-
-=item CPANPLUS::Shell::Default::Plugins::Remote
-
-Connect to a remote CPANPLUS
-
-=item CPANPLUS::Shell::Default::Plugins::Source
-
-Read in CPANPLUS commands
-
 =item Carp
 
 Alternative warn and die for modules
@@ -753,10 +589,6 @@ Perl5 access to Berkeley DB version 1.x
 =item Data::Dumper
 
 Stringified perl data structures, suitable for both printing and C<eval>
-
-=item Devel::InnerPackage
-
-Find all the inner packages of a package
 
 =item Devel::PPPort
 
@@ -1125,10 +957,6 @@ Load the C Fcntl.h defines
 =item File::Basename
 
 Parse file paths into directory, filename and suffix.
-
-=item File::CheckTree
-
-Run many filetest checks on a tree
 
 =item File::Compare
 
@@ -1562,26 +1390,6 @@ Article about software localization
 
 Standard codes for script identification
 
-=item Log::Message
-
-A generic message storing mechanism;
-
-=item Log::Message::Config
-
-Configuration options for Log::Message
-
-=item Log::Message::Handlers
-
-Message handlers for Log::Message
-
-=item Log::Message::Item
-
-Message objects for Log::Message
-
-=item Log::Message::Simple
-
-Simplified interface to Log::Message
-
 =item MIME::Base64
 
 Encoding and decoding of base64 strings
@@ -1782,14 +1590,6 @@ Mark modules as loaded or unloaded
 
 Gather package and POD information from perl module files
 
-=item Module::Pluggable
-
-Automatically give your module the ability to have plugins
-
-=item Module::Pluggable::Object
-
-Automatically give your module the ability to have plugins
-
 =item NDBM_File
 
 Tied access to ndbm files
@@ -1866,10 +1666,6 @@ Generic interface to Perl Compiler backends
 
 Tied access to odbm files
 
-=item Object::Accessor
-
-Interface to create per object accessors
-
 =item Opcode
 
 Disable named opcodes when compiling perl code
@@ -1929,10 +1725,6 @@ Group Perl's functions a la perlfunc.pod
 =item Pod::Html
 
 Module to convert pod files to HTML
-
-=item Pod::LaTeX
-
-Convert Pod data to formatted Latex
 
 =item Pod::Man
 
@@ -2326,14 +2118,6 @@ Perl word completion module
 
 Perl interface to various C<readline> packages.
 
-=item Term::UI
-
-Term::ReadLine UI made easy
-
-=item Term::UI::History
-
-History function
-
 =item Test
 
 Provides a simple framework for writing test scripts
@@ -2381,10 +2165,6 @@ Extract delimited text sequences from strings.
 =item Text::ParseWords
 
 Parse text into an array of tokens or array of arrays
-
-=item Text::Soundex
-
-Implementation of the soundex algorithm.
 
 =item Text::Tabs
 

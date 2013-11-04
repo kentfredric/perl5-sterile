@@ -7780,7 +7780,6 @@ in the C<svtype> enum.  Test these flags with the C<SvTYPE> macro.
 The types are:
 
     SVt_NULL
-    SVt_BIND (unused)
     SVt_IV
     SVt_NV
     SVt_RV
