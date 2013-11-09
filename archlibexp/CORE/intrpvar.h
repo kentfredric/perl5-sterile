@@ -33,11 +33,7 @@
  * Important ones in the first cache line (if alignment is done right) */
 
 PERLVAR(I, stack_sp,	SV **)		/* top of the stack */
-#ifdef OP_IN_REGISTER
-PERLVAR(I, opsave,	OP *)
-#else
 PERLVAR(I, op,		OP *)		/* currently executing op */
-#endif
 PERLVAR(I, curpad,	SV **)		/* active pad (lexicals+tmps) */
 
 PERLVAR(I, stack_base,	SV **)
@@ -580,8 +576,8 @@ PERLVAR(I, numeric_radix_sv, SV *)	/* The radix separator if not '.' */
 #endif /* !USE_LOCALE_NUMERIC */
 
 /* Unicode inversion lists */
-PERLVAR(I, ASCII,	SV *)
 PERLVAR(I, Latin1,	SV *)
+PERLVAR(I, UpperLatin1,	SV *)   /* Code points 128 - 255 */
 PERLVAR(I, AboveLatin1,	SV *)
 
 PERLVAR(I, NonL1NonFinalFold,   SV *)
@@ -739,7 +735,7 @@ PERLVAR(I, debug_pad,	struct perl_debug_pad)	/* always needed because of the re 
 /* Hook for File::Glob */
 PERLVARI(I, globhook,	globhook_t, NULL)
 
-/* The last unconditional member of the interpreter structure when 5.19.4 was
+/* The last unconditional member of the interpreter structure when 5.19.5 was
    released. The offset of the end of this is baked into a global variable in 
    any shared perl library which will allow a sanity test in future perl
    releases.  */

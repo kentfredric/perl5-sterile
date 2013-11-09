@@ -2433,6 +2433,21 @@ X<sighandler>
 =item softref2xv
 X<softref2xv>
 
+=item ssc_add_range
+X<ssc_add_range>
+
+=item ssc_clear_locale
+X<ssc_clear_locale>
+
+=item ssc_cp_and
+X<ssc_cp_and>
+
+=item ssc_intersection
+X<ssc_intersection>
+
+=item ssc_union
+X<ssc_union>
+
 =item sub_crush_depth
 X<sub_crush_depth>
 

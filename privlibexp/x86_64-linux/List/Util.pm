@@ -4,7 +4,7 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 #
-# This module is normally only loaded if the XS module is not available
+# Maintained since 2013 by Paul Evans <leonerd@leonerd.org.uk>
 
 package List::Util;
 
@@ -12,18 +12,28 @@ use strict;
 require Exporter;
 
 our @ISA        = qw(Exporter);
-our @EXPORT_OK  = qw(first min max minstr maxstr reduce sum sum0 shuffle pairmap pairgrep pairfirst pairs pairkeys pairvalues);
-our $VERSION    = "1.32";
+our @EXPORT_OK  = qw(
+  all any first min max minstr maxstr none notall product reduce sum sum0 shuffle
+  pairmap pairgrep pairfirst pairs pairkeys pairvalues
+);
+our $VERSION    = "1.35";
 our $XS_VERSION = $VERSION;
 $VERSION    = eval $VERSION;
 
 require XSLoader;
 XSLoader::load('List::Util', $XS_VERSION);
 
-sub sum0
+sub import
 {
-   return 0 unless @_;
-   goto &sum;
+  my $pkg = caller;
+
+  # (RT88848) Touch the caller's $a and $b, to avoid the warning of
+  #   Name "main::a" used only once: possible typo" warning
+  no strict 'refs';
+  ${"${pkg}::a"} = ${"${pkg}::a"};
+  ${"${pkg}::b"} = ${"${pkg}::b"};
+
+  goto &Exporter::import;
 }
 
 1;
@@ -67,10 +77,27 @@ Returns the result of the last call to BLOCK. If LIST is empty then
 C<undef> is returned. If LIST only contains one element then that
 element is returned and BLOCK is not executed.
 
+The following examples all demonstrate how C<reduce> could be used to
+implement the other list-reduction functions in this module. (They are
+not in fact implemented like this, but instead in a more efficient
+manner in individual C functions).
+
+    $foo = reduce { defined($a)            ? $a :
+                    $code->(local $_ = $b) ? $b :
+                                             undef } undef, @list # first
+
+    $foo = reduce { $a > $b ? $a : $b } 1..10       # max
+    $foo = reduce { $a gt $b ? $a : $b } 'A'..'Z'   # maxstr
     $foo = reduce { $a < $b ? $a : $b } 1..10       # min
     $foo = reduce { $a lt $b ? $a : $b } 'aa'..'zz' # minstr
     $foo = reduce { $a + $b } 1 .. 10               # sum
     $foo = reduce { $a . $b } @bar                  # concat
+
+    $foo = reduce { $a || $code->(local $_ = $b) } 0, @bar   # any
+    $foo = reduce { $a && $code->(local $_ = $b) } 1, @bar   # all
+    $foo = reduce { $a && !$code->(local $_ = $b) } 1, @bar  # none
+    $foo = reduce { $a || !$code->(local $_ = $b) } 0, @bar  # notall
+       # Note that these implementations do not fully short-circuit
 
 If your algorithm requires that C<reduce> produce an identity value, then
 make sure that you always pass that identity value as the first argument to prevent
@@ -80,6 +107,34 @@ C<undef> being returned
 
 The remaining list-reduction functions are all specialisations of this
 generic idea.
+
+=head2 any BLOCK LIST
+
+Similar to C<grep> in that it evaluates BLOCK setting C<$_> to each element
+of LIST in turn. C<any> returns true if any element makes the BLOCK return a
+true value. If BLOCK never returns true or LIST was empty then it returns
+false.
+
+Many cases of using C<grep> in a conditional can be written using C<any>
+instead, as it can short-circuit after the first true result.
+
+    if( any { length > 10 } @strings ) {
+        # at least one string has more than 10 characters
+    }
+
+=head2 all BLOCK LIST
+
+Similar to C<any>, except that it requires all elements of the LIST to make
+the BLOCK return true. If any element returns false, then it returns true. If
+the BLOCK never returns false or the LIST was empty then it returns true.
+
+=head2 none BLOCK LIST
+
+=head2 notall BLOCK LIST
+
+Similar to C<any> and C<all>, but with the return sense inverted. C<none>
+returns true if no value in the LIST causes the BLOCK to return true, and
+C<notall> returns true if not all of the values do.
 
 =head2 first BLOCK LIST
 
@@ -92,13 +147,6 @@ C<undef> is returned.
     $foo = first { $_ > $value } @list    # first value in @list which
                                           # is greater than $value
 
-This function could be implemented using C<reduce> like this
-
-    $foo = reduce { defined($a) ? $a : wanted($b) ? $b : undef } undef, @list
-
-for example wanted() could be defined() which would return the first
-defined value in @list
-
 =head2 max LIST
 
 Returns the entry in the list with the highest numerical value. If the
@@ -107,10 +155,6 @@ list is empty then C<undef> is returned.
     $foo = max 1..10                # 10
     $foo = max 3,9,12               # 12
     $foo = max @bar, @baz           # whatever
-
-This function could be implemented using C<reduce> like this
-
-    $foo = reduce { $a > $b ? $a : $b } 1..10
 
 =head2 maxstr LIST
 
@@ -122,10 +166,6 @@ If the list is empty then C<undef> is returned.
     $foo = maxstr "hello","world"   # "world"
     $foo = maxstr @bar, @baz        # whatever
 
-This function could be implemented using C<reduce> like this
-
-    $foo = reduce { $a gt $b ? $a : $b } 'A'..'Z'
-
 =head2 min LIST
 
 Similar to C<max> but returns the entry in the list with the lowest
@@ -134,10 +174,6 @@ numerical value. If the list is empty then C<undef> is returned.
     $foo = min 1..10                # 1
     $foo = min 3,9,12               # 3
     $foo = min @bar, @baz           # whatever
-
-This function could be implemented using C<reduce> like this
-
-    $foo = reduce { $a < $b ? $a : $b } 1..10
 
 =head2 minstr LIST
 
@@ -149,9 +185,13 @@ If the list is empty then C<undef> is returned.
     $foo = minstr "hello","world"   # "hello"
     $foo = minstr @bar, @baz        # whatever
 
-This function could be implemented using C<reduce> like this
+=head2 product LIST
 
-    $foo = reduce { $a lt $b ? $a : $b } 'A'..'Z'
+Returns the product of all the elements in LIST. If LIST is empty then C<1> is
+returned.
+
+    $foo = product 1..10            # 3628800
+    $foo = product 3,9,12           # 324
 
 =head2 sum LIST
 
@@ -161,10 +201,6 @@ C<undef> is returned.
     $foo = sum 1..10                # 55
     $foo = sum 3,9,12               # 24
     $foo = sum @bar, @baz           # whatever
-
-This function could be implemented using C<reduce> like this
-
-    $foo = reduce { $a + $b } 1..10
 
 =head2 sum0 LIST
 
@@ -292,22 +328,6 @@ reduce.t failing.
 
 The following are additions that have been requested, but I have been reluctant
 to add due to them being very simple to implement in perl
-
-  # One argument is true
-
-  sub any { $_ && return 1 for @_; 0 }
-
-  # All arguments are true
-
-  sub all { $_ || return 0 for @_; 1 }
-
-  # All arguments are false
-
-  sub none { $_ && return 0 for @_; 1 }
-
-  # One argument is false
-
-  sub notall { $_ || return 1 for @_; 0 }
 
   # How many elements are true
 

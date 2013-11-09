@@ -15,7 +15,7 @@ use ExtUtils::MakeMaker qw($Verbose neatvalue);
 
 # If we make $VERSION an our variable parse_version() breaks
 use vars qw($VERSION);
-$VERSION = '6.76';
+$VERSION = '6.80';
 $VERSION = eval $VERSION;  ## no critic [BuiltinFunctions::ProhibitStringyEval]
 
 require ExtUtils::MM_Any;
@@ -879,11 +879,6 @@ $(BOOTSTRAP) : $(FIRST_MAKEFILE) $(BOOTDEP) $(INST_ARCHAUTODIR)$(DFSEP).exists
 		-e "Mkbootstrap('$(BASEEXT)','$(BSLOADLIBS)');"
 	$(NOECHO) $(TOUCH) %s
 	$(CHMOD) $(PERM_RW) %s
-
-$(INST_BOOT) : $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).exists
-	$(NOECHO) $(RM_RF) %s
-	- $(CP) $(BOOTSTRAP) %s
-	$(CHMOD) $(PERM_RW) %s
 MAKE_FRAG
 }
 
@@ -915,7 +910,7 @@ OTHERLDFLAGS = '.$ld_opt.$otherldflags.'
 INST_DYNAMIC_DEP = '.$inst_dynamic_dep.'
 INST_DYNAMIC_FIX = '.$ld_fix.'
 
-$(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).exists $(EXPORT_LIST) $(PERL_ARCHIVE) $(PERL_ARCHIVE_AFTER) $(INST_DYNAMIC_DEP)
+$(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(INST_ARCHAUTODIR)$(DFSEP).exists $(EXPORT_LIST) $(PERL_ARCHIVE) $(PERL_ARCHIVE_AFTER) $(INST_DYNAMIC_DEP)
 ');
     if ($armaybe ne ':'){
 	$ldfrom = 'tmp$(LIB_EXT)';
@@ -963,6 +958,8 @@ MAKE
 
     push @m, <<'MAKE';
 	$(CHMOD) $(PERM_RWX) $@
+	$(NOECHO) $(RM_RF) $(BOOTSTRAP)
+	- $(CP_NONEMPTY) $(BOOTSTRAP) $(INST_BOOT) $(PERM_RW)
 MAKE
 
     return join('',@m);
@@ -1761,6 +1758,7 @@ sub init_tools {
     $self->{RM_RF}      ||= "rm -rf";
     $self->{TOUCH}      ||= "touch";
     $self->{TEST_F}     ||= "test -f";
+    $self->{TEST_S}     ||= "test -s";
     $self->{CP}         ||= "cp";
     $self->{MV}         ||= "mv";
     $self->{CHMOD}      ||= "chmod";
@@ -1878,7 +1876,7 @@ sub init_PERL {
 
     my @perls = ($thisperl);
     push @perls, map { "$_$Config{exe_ext}" }
-                     ('perl', 'perl5', "perl$Config{version}");
+                     ("perl$Config{version}", 'perl5', 'perl');
 
     # miniperl has priority over all but the canonical perl when in the
     # core.  Otherwise its a last resort.
@@ -2640,9 +2638,15 @@ sub parse_abstract {
         $inpod = /^=(?!cut)/ ? 1 : /^=cut/ ? 0 : $inpod;
         next if !$inpod;
         chop;
-        next unless /^($package(?:\.pm)? \s+ -+ \s+)(.*)/x;
-        $result = $2;
-        last;
+        if ( /^($package(?:\.pm)? \s+ -+ \s+)(.*)/x ) {
+          $result = $2;
+          next;
+        }
+        next unless $result;
+        if ( $result && ( /^\s*$/ || /^\=/ ) ) {
+          last;
+        }
+        $result = join ' ', $result, $_;
     }
     close $fh;
 
@@ -2727,6 +2731,7 @@ sub get_version
 		};
 		\$$name;
 	};
+  $eval = $1 if $eval =~ m{^(.+)}s;
 	local $^W = 0;
 	my $result = eval($eval);  ## no critic
 	warn "Could not eval '$eval' in $parsefile: $@" if $@;

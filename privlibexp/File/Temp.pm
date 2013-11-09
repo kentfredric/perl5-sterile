@@ -1,16 +1,17 @@
 package File::Temp;
 # ABSTRACT: return name and handle of a temporary file safely
-our $VERSION = '0.2301'; # VERSION
+our $VERSION = '0.2304'; # VERSION
 
 
-# 5.6.0 gives us S_IWOTH, S_IWGRP, our and auto-vivifying filehandls
-# People would like a version on 5.004 so give them what they want :-)
-use 5.004;
+# Toolchain targets v5.8.1, but we'll try to support back to v5.6 anyway.
+# It might be possible to make this v5.5, but many v5.6isms are creeping
+# into the code and tests.
+use 5.006;
 use strict;
 use Carp;
 use File::Spec 0.8;
 use Cwd ();
-use File::Path qw/ rmtree /;
+use File::Path 2.06 qw/ rmtree /;
 use Fcntl 1.03;
 use IO::Seekable;               # For SEEK_*
 use Errno;
@@ -28,7 +29,7 @@ eval { require Carp::Heavy; };
 require Symbol if $] < 5.006;
 
 ### For the OO interface
-use base qw/ IO::Handle IO::Seekable /;
+use parent 0.221 qw/ IO::Handle IO::Seekable /;
 use overload '""' => "STRINGIFY", '0+' => "NUMIFY",
   fallback => 1;
 
@@ -40,7 +41,7 @@ $KEEP_ALL = 0;
 
 # We are exporting functions
 
-use base qw/Exporter/;
+use Exporter 5.57 'import';   # 5.57 lets us import 'import'
 
 # Export list - to allow fine tuning of export table
 
@@ -752,7 +753,7 @@ sub _can_do_level {
       foreach my $file (@files) {
         # close the filehandle without checking its state
         # in order to make real sure that this is closed
-        # if its already closed then I dont care about the answer
+        # if its already closed then I don't care about the answer
         # probably a better way to do this
         close($file->[0]);      # file handle is [0]
 
@@ -1632,7 +1633,7 @@ File::Temp - return name and handle of a temporary file safely
 
 =head1 VERSION
 
-version 0.2301
+version 0.2304
 
 =head1 SYNOPSIS
 
@@ -2521,7 +2522,7 @@ the C<tempdir> function.
 =head2 Bugs / Feature Requests
 
 Please report any bugs or feature requests through the issue tracker
-at L<https://rt.cpan.org/Public/Dist/Display.html?Name=File-Temp>.
+at L<http://rt.cpan.org/Public/Dist/Display.html?Name=File-Temp>.
 You will be notified automatically of any progress on your issue.
 
 =head2 Source Code
@@ -2529,9 +2530,9 @@ You will be notified automatically of any progress on your issue.
 This is open source software.  The code repository is available for
 public review and contribution under the terms of the license.
 
-L<http://github.com/Perl-Toolchain-Gang/File-Temp>
+L<https://github.com/Perl-Toolchain-Gang/File-Temp>
 
-  git clone git://github.com/Perl-Toolchain-Gang/File-Temp.git
+  git clone https://github.com/Perl-Toolchain-Gang/File-Temp.git
 
 =head1 AUTHOR
 
@@ -2551,6 +2552,10 @@ David Golden <dagolden@cpan.org>
 
 =item *
 
+David Steinbrunner <dsteinbrunner@pobox.com>
+
+=item *
+
 Ed Avis <eda@linux01.wcl.local>
 
 =item *
@@ -2559,11 +2564,23 @@ James E. Keenan <jkeen@verizon.net>
 
 =item *
 
+Karen Etheridge <ether@cpan.org>
+
+=item *
+
 Kevin Ryde <user42@zip.com.au>
 
 =item *
 
+Olivier Mengue <dolmen@cpan.org>
+
+=item *
+
 Peter John Acklam <pjacklam@online.no>
+
+=item *
+
+Peter Rabbitson <ribasushi@cpan.org>
 
 =back
 

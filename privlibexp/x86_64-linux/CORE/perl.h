@@ -90,24 +90,13 @@
 #   define USE_HEAP_INSTEAD_OF_STACK
 #endif
 
-#/* Use the reentrant APIs like localtime_r and getpwent_r */
+/* Use the reentrant APIs like localtime_r and getpwent_r */
 /* Win32 has naturally threadsafe libraries, no need to use any _r variants. */
 #if defined(USE_ITHREADS) && !defined(USE_REENTRANT_API) && !defined(NETWARE) && !defined(WIN32) && !defined(PERL_DARWIN)
 #   define USE_REENTRANT_API
 #endif
 
 /* <--- here ends the logic shared by perl.h and makedef.pl */
-
-/*
- * PERL_DARWIN for MacOSX (__APPLE__ exists but is not officially sanctioned)
- * (The -DPERL_DARWIN comes from the hints/darwin.sh.)
- * __bsdi__ for BSD/OS
- */
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(PERL_DARWIN) || defined(__bsdi__) || defined(BSD41) || defined(BSD42) || defined(BSD43) || defined(BSD44)
-#   ifndef BSDish
-#       define BSDish
-#   endif
-#endif
 
 /* Microsoft Visual C++ 6.0 needs special treatment in numerous places */
 #if defined(WIN32) && defined(_MSC_VER) && _MSC_VER >= 1200 && _MSC_VER < 1300
@@ -434,14 +423,6 @@
 #  endif
 #endif
 
-#ifdef OP_IN_REGISTER
-#  ifdef __GNUC__
-#    define stringify_immed(s) #s
-#    define stringify(s) stringify_immed(s)
-struct op *Perl_op asm(stringify(OP_IN_REGISTER));
-#  endif
-#endif
-
 /* gcc (-ansi) -pedantic doesn't allow gcc statement expressions,
  * g++ allows them but seems to have problems with them
  * (insane errors ensue).
@@ -473,14 +454,8 @@ struct op *Perl_op asm(stringify(OP_IN_REGISTER));
 #   define STMT_START	(void)(	/* gcc supports "({ STATEMENTS; })" */
 #   define STMT_END	)
 # else
-   /* Now which other defined()s do we need here ??? */
-#  if (defined(sun) || defined(__sun__)) && !defined(__GNUC__)
-#   define STMT_START	if (1)
-#   define STMT_END	else (void)0
-#  else
 #   define STMT_START	do
 #   define STMT_END	while (0)
-#  endif
 # endif
 #endif
 
@@ -641,11 +616,7 @@ struct op *Perl_op asm(stringify(OP_IN_REGISTER));
 #  include <pthread.h>
 #endif
 
-#ifndef _TYPES_		/* If types.h defines this it's easy. */
-#   ifndef major		/* Does everyone's types.h define this? */
-#	include <sys/types.h>
-#   endif
-#endif
+#include <sys/types.h>
 
 #ifdef __cplusplus
 #  ifndef I_STDARG
@@ -718,6 +689,16 @@ struct op *Perl_op asm(stringify(OP_IN_REGISTER));
 #	include <sys/types.h>
 #   endif
 #   include <sys/param.h>
+#endif
+
+/* On BSD-derived systems, <sys/param.h> defines BSD to a year-month
+   value something like 199306.  This may be useful if no more-specific
+   feature test is available.
+*/
+#if defined(BSD)
+#   ifndef BSDish
+#       define BSDish
+#   endif
 #endif
 
 /* Use all the "standard" definitions? */
@@ -969,9 +950,6 @@ EXTERN_C int usleep(unsigned int);
 	extern int memcmp (char*, char*, int);
 #    endif
 #  endif
-#  ifdef BUGGY_MSC
-#    pragma function(memcmp)
-#  endif
 #else
 #   ifndef memcmp
 #	define memcmp 	my_memcmp
@@ -1133,7 +1111,7 @@ EXTERN_C char **environ;
 #endif
 
 #if defined(__cplusplus)
-#  if defined(__OpenBSD__) || defined(__FreeBSD__) || defined(__NetBSD__)
+#  if defined(BSDish)
 EXTERN_C char **environ;
 #  elif defined(__CYGWIN__)
 EXTERN_C char *crypt(const char *, const char *);
@@ -1325,13 +1303,6 @@ EXTERN_C char *crypt(const char *, const char *);
 #   endif
 #endif
 
-#ifdef FPUTS_BOTCH
-/* work around botch in SunOS 4.0.1 and 4.0.2 */
-#   ifndef fputs
-#	define fputs(sv,fp) fprintf(fp,"%s",sv)
-#   endif
-#endif
-
 /*
  * The following gobbledygook brought to you on behalf of __STDC__.
  * (I could just use #ifndef __STDC__, but this is more bulletproof
@@ -1480,10 +1451,6 @@ EXTERN_C char *crypt(const char *, const char *);
 
 #ifndef S_IEXEC
 #   define S_IEXEC S_IXUSR
-#endif
-
-#ifdef ff_next
-#   undef ff_next
 #endif
 
 #if defined(cray) || defined(gould) || defined(i860) || defined(pyr)
@@ -2244,9 +2211,6 @@ int isnan(double d);
 
 #endif
 
-struct RExC_state_t;
-struct _reg_trie_data;
-
 typedef MEM_SIZE STRLEN;
 
 #ifdef PERL_MAD
@@ -2448,42 +2412,22 @@ typedef SV PADNAME;
 #   else
 #       include "dosish.h"
 #   endif
-#   define ISHISH "dos"
-#endif
-
-#if defined(VMS)
+#elif defined(VMS)
 #   include "vmsish.h"
-#   define ISHISH "vms"
-#endif
-
-#if defined(PLAN9)
+#elif defined(PLAN9)
 #   include "./plan9/plan9ish.h"
-#   define ISHISH "plan9"
-#endif
-
-#if defined(__VOS__)
+#elif defined(__VOS__)
 #   ifdef __GNUC__
 #     include "./vos/vosish.h"
 #   else
 #     include "vos/vosish.h"
 #   endif
-#   define ISHISH "vos"
-#endif
-
-#ifdef __SYMBIAN32__
+#elif defined(__SYMBIAN32__)
 #   include "symbian/symbianish.h"
-#   define ISHISH "symbian"
-#endif
-
-
-#if defined(__HAIKU__)
+#elif defined(__HAIKU__)
 #   include "haiku/haikuish.h"
-#   define ISHISH "haiku"
-#endif
-
-#ifndef ISHISH
+#else
 #   include "unixish.h"
-#   define ISHISH "unix"
 #endif
 
 /* NSIG logic from Configure --> */
@@ -3071,15 +3015,6 @@ typedef pthread_key_t	perl_key;
 
 #ifdef PERL_CORE
 /* not used; but needed for backward compatibility with XS code? - RMB */
-#  undef VDf
-#else
-#  ifndef VDf
-#    define VDf "vd"
-#  endif
-#endif
-
-#ifdef PERL_CORE
-/* not used; but needed for backward compatibility with XS code? - RMB */
 #  undef UVf
 #else
 #  ifndef UVf
@@ -3336,8 +3271,23 @@ struct _sublex_info {
 
 typedef struct magic_state MGS;	/* struct magic_state defined in mg.c */
 
-struct scan_data_t;		/* Used in S_* functions in regcomp.c */
-struct regnode_charclass_class;	/* Used in S_* functions in regcomp.c */
+#if defined(PERL_IN_REGCOMP_C) || defined(PERL_IN_REGEXEC_C)
+
+/* These have to be predeclared, as they are used in proto.h which is #included
+ * before their definitions in regcomp.h. */
+
+struct scan_data_t;
+struct regnode_charclass_class;
+
+/* A hopefully less confusing name.  The sub-classes are all Posix classes only
+ * used under /l matching */
+typedef struct regnode_charclass_class regnode_charclass_posixl;
+
+typedef struct regnode_ssc regnode_ssc;
+typedef struct RExC_state_t RExC_state_t;
+struct _reg_trie_data;
+
+#endif
 
 struct ptr_tbl_ent {
     struct ptr_tbl_ent*		next;
@@ -4089,7 +4039,7 @@ EXT char *** environ_pointer;
    /* VMS and some other platforms don't use the environ array */
 #  ifdef USE_ENVIRON_ARRAY
 #    if !defined(DONT_DECLARE_STD) || \
-        (defined(__svr4__) && defined(__GNUC__) && defined(sun)) || \
+        (defined(__svr4__) && defined(__GNUC__) && defined(__sun)) || \
         defined(__sgi)
 extern char **	environ;	/* environment variables supplied via exec */
 #    endif
@@ -4712,6 +4662,7 @@ typedef enum {
     XATTRBLOCK,
     XATTRTERM,
     XTERMBLOCK,
+    XPOSTDEREF,
     XTERMORDORDOR /* evil hack */
     /* update exp_name[] in toke.c if adding to this enum */
 } expectation;

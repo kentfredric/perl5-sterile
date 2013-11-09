@@ -1905,6 +1905,10 @@ Abstract base class for harness output delegate
 
 Run test scripts with statistics
 
+=item TAP::Harness::Env
+
+Parsing harness related environmental variables where appropriate
+
 =item TAP::Object
 
 Base class that provides common functionality to all C<TAP::*> modules
@@ -2025,10 +2029,6 @@ Stream TAP from a Perl executable
 
 Stream output from raw TAP in a scalar/array ref.
 
-=item TAP::Parser::Utils
-
-Internal TAP::Parser utilities
-
 =item TAP::Parser::YAMLish::Reader
 
 Read YAMLish data from iterator
@@ -2072,6 +2072,10 @@ Test testsuites that have been built with
 =item Test::Builder::Tester::Color
 
 Turn on colour in Test::Builder::Tester
+
+=item Test::Harness
+
+Beyond make test
 
 =item Test::Harness
 

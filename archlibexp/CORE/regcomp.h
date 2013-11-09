@@ -183,12 +183,25 @@ struct regnode_charclass {
 
 /* has runtime (locale) \d, \w, ..., [:posix:] classes */
 struct regnode_charclass_class {
-    U8	flags;				/* ANYOF_CLASS bit must go here */
+    U8	flags;				/* ANYOF_POSIXL bit must go here */
     U8  type;
     U16 next_off;
     U32 arg1;					/* used as ptr in S_regclass */
     char bitmap[ANYOF_BITMAP_SIZE];		/* both compile-time */
     U32 classflags;	                        /* and run-time */
+};
+
+/* Synthetic start class; is a regnode_charclass_class plus an SV*.  Note that
+ * the 'next_off' field is unused, as the SSC stands alone, so there is never a
+ * next node. */
+struct regnode_ssc {
+    U8	flags;				/* ANYOF_POSIXL bit must go here */
+    U8  type;
+    U16 next_off;
+    U32 arg1;				/* used as ptr in S_regclass */
+    char bitmap[ANYOF_BITMAP_SIZE];	/* both compile-time */
+    U32 classflags;	                /* and run-time */
+    SV* invlist;                        /* list of code points matched */
 };
 
 /* XXX fix this description.
@@ -281,7 +294,7 @@ struct regnode_charclass_class {
 
 #define REG_MAGIC 0234
 
-#define SIZE_ONLY (RExC_emit == &RExC_emit_dummy)
+#define SIZE_ONLY (RExC_emit == (regnode *) & RExC_emit_dummy)
 #define PASS1 SIZE_ONLY
 #define PASS2 (! SIZE_ONLY)
 
@@ -303,14 +316,16 @@ struct regnode_charclass_class {
 
 /* Flags for node->flags of ANYOF.  These are in short supply, but there is one
  * currently available.  If more than this are needed, the ANYOF_LOCALE and
- * ANYOF_CLASS bits could be shared, making a space penalty for all locale nodes.
- * Also, the UNICODE_ALL bit could be freed up by resorting to creating a swash
- * containing everything above 255.  This introduces a performance penalty.
- * Better would be to split it off into a separate node, which actually would
- * improve performance a bit by allowing regexec.c to test for a UTF-8
- * character being above 255 without having to call a function nor calculate
- * its code point value.  However, this solution might need to have a second
- * node type, ANYOF_SYNTHETIC_ABOVE_LATIN1_ALL */
+ * ANYOF_POSIXL bits could be shared, making a space penalty for all locale
+ * nodes.  Also, the ABOVE_LATIN1_ALL bit could be freed up by resorting to
+ * creating a swash containing everything above 255.  This introduces a
+ * performance penalty.  Better would be to split it off into a separate node,
+ * which actually would improve performance a bit by allowing regexec.c to test
+ * for a UTF-8 character being above 255 without having to call a function nor
+ * calculate its code point value.  However, this solution might need to have a
+ * second node type, ANYOF_SYNTHETIC_ABOVE_LATIN1_ALL.  Several flags are not
+ * used in synthetic start class (SSC) nodes, so could be shared should new
+ * flags be needed for SSCs. */
 
 #define ANYOF_LOCALE		 0x01	    /* /l modifier */
 
@@ -322,13 +337,19 @@ struct regnode_charclass_class {
 
 #define ANYOF_INVERT		 0x04
 
-/* Set if this is a struct regnode_charclass_class vs a regnode_charclass.  This
+/* For the SSC node only, which cannot be inverted, so is shared with that bit.
+ * This means "Does this SSC match an empty string?"  This is used only during
+ * regex compilation. */
+#define ANYOF_EMPTY_STRING       ANYOF_INVERT
+
+/* Set if this is a regnode_charclass_posixl vs a regnode_charclass.  This
  * is used for runtime \d, \w, [:posix:], ..., which are used only in locale
  * and the optimizer's synthetic start class.  Non-locale \d, etc are resolved
  * at compile-time.  Could be shared with ANYOF_LOCALE, forcing all locale
  * nodes to be large */
-#define ANYOF_CLASS	         0x08
-#define ANYOF_LARGE       ANYOF_CLASS   /* Same; name retained for back compat */
+#define ANYOF_POSIXL	         0x08
+#define ANYOF_CLASS	         ANYOF_POSIXL
+#define ANYOF_LARGE              ANYOF_POSIXL
 
 /* Unused: 0x10.  When using, be sure to change ANYOF_FLAGS_ALL below */
 
@@ -336,7 +357,8 @@ struct regnode_charclass_class {
 #define ANYOF_NONBITMAP_NON_UTF8 0x20
 
 /* Matches every code point 0x100 and above*/
-#define ANYOF_UNICODE_ALL	0x40
+#define ANYOF_ABOVE_LATIN1_ALL	 0x40
+#define ANYOF_UNICODE_ALL	 ANYOF_ABOVE_LATIN1_ALL
 
 /* Match all Latin1 characters that aren't ASCII when the target string is not
  * in utf8. */
@@ -344,14 +366,9 @@ struct regnode_charclass_class {
 
 #define ANYOF_FLAGS_ALL		(0xff & ~0x10)
 
-/* These are the flags that ANYOF_INVERT being set or not doesn't affect
- * whether they are operative or not.  e.g., the node still has LOCALE
- * regardless of being inverted; whereas ANYOF_UNICODE_ALL means something
- * different if inverted */
-#define INVERSION_UNAFFECTED_FLAGS (ANYOF_LOCALE                        \
-	                           |ANYOF_LOC_FOLD                      \
-	                           |ANYOF_CLASS                         \
-	                           |ANYOF_NONBITMAP_NON_UTF8)
+#define ANYOF_LOCALE_FLAGS (ANYOF_LOCALE                        \
+                           |ANYOF_LOC_FOLD                      \
+                           |ANYOF_POSIXL)
 
 /* Character classes for node->classflags of ANYOF */
 /* Should be synchronized with a table in regprop() */
@@ -403,19 +420,21 @@ struct regnode_charclass_class {
 #   error Problem with handy.h _HIGHEST_REGCOMP_DOT_H_SYNC #define
 #endif
 
-#define ANYOF_MAX      (ANYOF_VERTWS) /* So upper loop limit is written:
-                                       *       '< ANYOF_MAX'
-                                       * Hence doesn't include VERTWS, as that
-                                       * is a pseudo class */
-#if (ANYOF_MAX > 32)   /* Must fit in 32-bit word */
+#define ANYOF_POSIXL_MAX (ANYOF_VERTWS) /* So upper loop limit is written:
+                                         *       '< ANYOF_MAX'
+                                         * Hence doesn't include VERTWS, as that
+                                         * is a pseudo class */
+#define ANYOF_MAX      ANYOF_POSIXL_MAX
+
+#if (ANYOF_POSIXL_MAX > 32)   /* Must fit in 32-bit word */
 #   error Problem with handy.h _CC_foo #defines
 #endif
 
-#define ANYOF_HORIZWS	((ANYOF_MAX)+2) /* = (ANYOF_NVERTWS + 1) */
-#define ANYOF_NHORIZWS	((ANYOF_MAX)+3)
+#define ANYOF_HORIZWS	((ANYOF_POSIXL_MAX)+2) /* = (ANYOF_NVERTWS + 1) */
+#define ANYOF_NHORIZWS	((ANYOF_POSIXL_MAX)+3)
 
-#define ANYOF_UNIPROP   ((ANYOF_MAX)+4)  /* Used to indicate a Unicode
-                                            property: \p{} or \P{} */
+#define ANYOF_UNIPROP   ((ANYOF_POSIXL_MAX)+4)  /* Used to indicate a Unicode
+                                                   property: \p{} or \P{} */
 
 /* Backward source code compatibility. */
 
@@ -429,22 +448,42 @@ struct regnode_charclass_class {
 /* Utility macros for the bitmap and classes of ANYOF */
 
 #define ANYOF_SIZE		(sizeof(struct regnode_charclass))
-#define ANYOF_CLASS_SIZE	(sizeof(struct regnode_charclass_class))
+#define ANYOF_POSIXL_SIZE	(sizeof(regnode_charclass_posixl))
+#define ANYOF_CLASS_SIZE	ANYOF_POSIXL_SIZE
 
 #define ANYOF_FLAGS(p)		((p)->flags)
 
 #define ANYOF_BIT(c)		(1 << ((c) & 7))
 
-#define ANYOF_CLASS_SET(p, c)	(((struct regnode_charclass_class*) (p))->classflags |= (1U << (c)))
-#define ANYOF_CLASS_CLEAR(p, c)	(((struct regnode_charclass_class*) (p))->classflags &= ~ (1U <<(c)))
-#define ANYOF_CLASS_TEST(p, c)	(((struct regnode_charclass_class*) (p))->classflags & (1U << (c)))
+#define ANYOF_POSIXL_SET(p, c)	(((regnode_charclass_posixl*) (p))->classflags |= (1U << (c)))
+#define ANYOF_CLASS_SET(p, c)	ANYOF_POSIXL_SET((p), (c))
 
-#define ANYOF_CLASS_ZERO(ret)	STMT_START { ((struct regnode_charclass_class*) (ret))->classflags = 0; } STMT_END
+#define ANYOF_POSIXL_CLEAR(p, c) (((regnode_charclass_posixl*) (p))->classflags &= ~ (1U <<(c)))
+#define ANYOF_CLASS_CLEAR(p, c)	ANYOF_POSIXL_CLEAR((p), (c))
+
+#define ANYOF_POSIXL_TEST(p, c)	(((regnode_charclass_posixl*) (p))->classflags & (1U << (c)))
+#define ANYOF_CLASS_TEST(p, c)	ANYOF_POSIXL_TEST((p), (c))
+
+#define ANYOF_POSIXL_ZERO(ret)	STMT_START { ((regnode_charclass_posixl*) (ret))->classflags = 0; } STMT_END
+#define ANYOF_CLASS_ZERO(ret)	ANYOF_POSIXL_ZERO(ret)
 
 /* Shifts a bit to get, eg. 0x4000_0000, then subtracts 1 to get 0x3FFF_FFFF */
-#define ANYOF_CLASS_SETALL(ret) STMT_START { ((struct regnode_charclass_class*) (ret))->classflags = ((1U << ((ANYOF_MAX) - 1))) - 1; } STMT_END
+#define ANYOF_POSIXL_SETALL(ret) STMT_START { ((regnode_charclass_posixl*) (ret))->classflags = ((1U << ((ANYOF_POSIXL_MAX) - 1))) - 1; } STMT_END
+#define ANYOF_CLASS_SETALL(ret) ANYOF_POSIXL_SETALL(ret)
 
-#define ANYOF_CLASS_OR(source, dest) STMT_START { (dest)->classflags |= source->classflags ; } STMT_END
+#define ANYOF_POSIXL_TEST_ANY_SET(p)                               \
+        ((ANYOF_FLAGS(p) & ANYOF_POSIXL)                           \
+	 && (((regnode_charclass_posixl*)(p))->classflags))
+#define ANYOF_CLASS_TEST_ANY_SET(p) ANYOF_POSIXL_TEST_ANY_SET(p)
+
+#define ANYOF_POSIXL_TEST_ALL_SET(p)                               \
+        ((ANYOF_FLAGS(p) & ANYOF_POSIXL)                           \
+         && ((regnode_charclass_posixl*) (p))->classflags == ((1U << ((ANYOF_POSIXL_MAX) - 1))) - 1)
+
+#define ANYOF_POSIXL_OR(source, dest) STMT_START { (dest)->classflags |= (source)->classflags ; } STMT_END
+#define ANYOF_CLASS_OR(source, dest) ANYOF_POSIXL_OR((source), (dest))
+
+#define ANYOF_POSIXL_AND(source, dest) STMT_START { (dest)->classflags &= (source)->classflags ; } STMT_END
 
 #define ANYOF_BITMAP_ZERO(ret)	Zero(((struct regnode_charclass*)(ret))->bitmap, ANYOF_BITMAP_SIZE, char)
 #define ANYOF_BITMAP(p)		(((struct regnode_charclass*)(p))->bitmap)
@@ -462,11 +501,8 @@ struct regnode_charclass_class {
 	memEQ (ANYOF_BITMAP(p), "\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377", ANYOF_BITMAP_SIZE)
 
 #define ANYOF_SKIP		((ANYOF_SIZE - 1)/sizeof(regnode))
-#define ANYOF_CLASS_SKIP	((ANYOF_CLASS_SIZE - 1)/sizeof(regnode))
-
-#define ANYOF_CLASS_TEST_ANY_SET(p)                               \
-        ((ANYOF_FLAGS(p) & ANYOF_CLASS)                           \
-	 && (((struct regnode_charclass_class*)(p))->classflags))
+#define ANYOF_POSIXL_SKIP	((ANYOF_POSIXL_SIZE - 1)/sizeof(regnode))
+#define ANYOF_CLASS_SKIP	ANYOF_POSIXL_SKIP
 
 /*
  * Utility definitions.

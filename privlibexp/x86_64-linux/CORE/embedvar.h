@@ -40,7 +40,6 @@
 #    define vTHX	PERL_GET_INTERP
 #  endif
 
-#define PL_ASCII		(vTHX->IASCII)
 #define PL_AboveLatin1		(vTHX->IAboveLatin1)
 #define PL_Argv			(vTHX->IArgv)
 #define PL_Cmd			(vTHX->ICmd)
@@ -66,6 +65,7 @@
 #define PL_Sock			(vTHX->ISock)
 #define PL_StdIO		(vTHX->IStdIO)
 #define PL_Sv			(vTHX->ISv)
+#define PL_UpperLatin1		(vTHX->IUpperLatin1)
 #define PL_XPosix_ptrs		(vTHX->IXPosix_ptrs)
 #define PL_Xpv			(vTHX->IXpv)
 #define PL_an			(vTHX->Ian)
@@ -218,7 +218,6 @@
 #define PL_op_exec_cnt		(vTHX->Iop_exec_cnt)
 #define PL_op_mask		(vTHX->Iop_mask)
 #define PL_opfreehook		(vTHX->Iopfreehook)
-#define PL_opsave		(vTHX->Iopsave)
 #define PL_origalen		(vTHX->Iorigalen)
 #define PL_origargc		(vTHX->Iorigargc)
 #define PL_origargv		(vTHX->Iorigargv)

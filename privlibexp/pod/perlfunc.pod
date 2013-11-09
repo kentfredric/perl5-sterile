@@ -357,10 +357,10 @@ A file test, where X is one of the letters listed below.  This unary
 operator takes one argument, either a filename, a filehandle, or a dirhandle, 
 and tests the associated file to see if something is true about it.  If the
 argument is omitted, tests C<$_>, except for C<-t>, which tests STDIN.
-Unless otherwise documented, it returns C<1> for true and C<''> for false, or
-the undefined value if the file doesn't exist.  Despite the funny
-names, precedence is the same as any other named unary operator.  The
-operator may be any of:
+Unless otherwise documented, it returns C<1> for true and C<''> for false.
+If the file doesn't exist or can't be examined, it returns C<undef> and
+sets C<$!> (errno).  Despite the funny names, precedence is the same as any
+other named unary operator.  The operator may be any of:
 
     -r  File is readable by effective uid/gid.
     -w  File is writable by effective uid/gid.
@@ -6831,18 +6831,20 @@ The following equivalences hold (assuming C<< $#a >= $i >> )
     unshift(@a,$x,$y)   splice(@a,0,0,$x,$y)
     $a[$i] = $y         splice(@a,$i,1,$y)
 
-Example, assuming array lengths are passed before arrays:
+C<splice> can be used, for example, to implement n-ary queue processing:
 
-    sub aeq {  # compare two list values
-        my(@a) = splice(@_,0,shift);
-        my(@b) = splice(@_,0,shift);
-        return 0 unless @a == @b;  # same len?
-        while (@a) {
-            return 0 if pop(@a) ne pop(@b);
-        }
-        return 1;
+    sub nary_print {
+      my $n = shift;
+      while (my @next_n = splice @_, 0, $n) {
+        say join q{ -- }, @next_n;
+      }
     }
-    if (&aeq($len,@foo[1..$len],0+@bar,@bar)) { ... }
+
+    nary_print(3, qw(a b c d e f g h));
+    # prints:
+    #   a -- b -- c
+    #   d -- e -- f
+    #   g -- h
 
 Starting with Perl 5.14, C<splice> can take scalar EXPR, which must hold a
 reference to an unblessed array.  The argument will be dereferenced
