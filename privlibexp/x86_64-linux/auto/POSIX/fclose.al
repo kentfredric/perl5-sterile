@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 257 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fclose.al)"
+#line 252 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fclose.al)"
 sub fclose {
     redef "IO::Handle::close()";
 }

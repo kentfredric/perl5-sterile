@@ -1,6 +1,6 @@
 package Carp;
 
-our $VERSION = '1.10';
+our $VERSION = '1.08';
 # this file is an utra-lightweight stub. The first time a function is
 # called, Carp::Heavy is loaded, and the real short/longmessmess_jmp
 # subs are installed
@@ -143,7 +143,7 @@ This feature is enabled by 'importing' the non-existent symbol
 
     perl -MCarp=verbose script.pl
 
-or by including the string C<-MCarp=verbose> in the PERL5OPT
+or by including the string C<MCarp=verbose> in the PERL5OPT
 environment variable.
 
 Alternately, you can set the global variable C<$Carp::Verbose> to true.
@@ -187,7 +187,7 @@ This says what packages are internal to Perl.  C<Carp> will never
 report an error as being from a line in a package that is internal to
 Perl.  For example:
 
-    $Carp::Internal{ (__PACKAGE__) }++;
+    $Carp::Internal{ __PACKAGE__ }++;
     # time passes...
     sub foo { ... or confess("whatever") };
 

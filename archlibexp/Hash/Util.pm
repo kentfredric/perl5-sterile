@@ -10,6 +10,8 @@ use Scalar::Util qw(reftype);
 require Exporter;
 our @ISA        = qw(Exporter);
 our @EXPORT_OK  = qw(
+                     fieldhash fieldhashes
+
                      all_keys
                      lock_keys unlock_keys
                      lock_value unlock_value
@@ -26,10 +28,20 @@ our @EXPORT_OK  = qw(
                      hash_seed hv_store
 
                     );
-our $VERSION    = 0.06;
+our $VERSION    = 0.07;
 require DynaLoader;
 local @ISA = qw(DynaLoader);
 bootstrap Hash::Util $VERSION;
+
+sub import {
+    my $class = shift;
+    if ( grep /fieldhash/, @_ ) {
+        require Hash::Util::FieldHash;
+        Hash::Util::FieldHash->import(':all'); # for re-export
+    }
+    unshift @_, $class;
+    goto &Exporter::import;
+}
 
 
 =head1 NAME
@@ -37,6 +49,8 @@ bootstrap Hash::Util $VERSION;
 Hash::Util - A selection of general-utility hash subroutines
 
 =head1 SYNOPSIS
+
+  # Restricted hashes
 
   use Hash::Util qw(
                      hash_seed all_keys
@@ -74,8 +88,14 @@ Hash::Util - A selection of general-utility hash subroutines
 
 =head1 DESCRIPTION
 
-C<Hash::Util> contains special functions for manipulating hashes that
-don't really warrant a keyword.
+C<Hash::Util> and C<Hash::Util::FieldHash> contain special functions
+for manipulating hashes that don't really warrant a keyword.
+
+C<Hash::Util> contains a set of functions that support
+L<restricted hashes|/"Restricted hashes">. These are described in
+this document.  C<Hash::Util::FieldHash> contains an (unrelated)
+set of functions that support the use of hashes in
+I<inside-out classes>, described in L<Hash::Util::FieldHash>.
 
 By default C<Hash::Util> does not export anything.
 
@@ -350,7 +370,7 @@ sub all_keys{}
 sub legal_keys(\%) { legal_ref_keys(@_)  }
 sub hidden_keys(\%){ hidden_ref_keys(@_) }
 
-=item b<legal_keys>
+=item B<legal_keys>
 
   my @keys = legal_keys(%hash);
 
@@ -491,8 +511,9 @@ Additional code by Yves Orton.
 
 =head1 SEE ALSO
 
-L<Scalar::Util>, L<List::Util>, L<Hash::Util>,
-and L<perlsec/"Algorithmic Complexity Attacks">.
+L<Scalar::Util>, L<List::Util> and L<perlsec/"Algorithmic Complexity Attacks">.
+
+L<Hash::Util::FieldHash>.
 
 =cut
 

@@ -9,16 +9,16 @@
 # Meaning: Script 'Arabic'
 #
 return <<'END';
-0606	060B	Arabic
-060D	061A	Arabic
+060B		Arabic
+060D	0615	Arabic
 061E		Arabic
-0621	063F	Arabic
+0621	063A	Arabic
 0641	064A	Arabic
 0656	065E	Arabic
 066A	066F	Arabic
 0671	06DC	Arabic
 06DE	06FF	Arabic
-0750	077F	Arabic
+0750	076D	Arabic
 FB50	FBB1	Arabic
 FBD3	FD3D	Arabic
 FD50	FD8F	Arabic

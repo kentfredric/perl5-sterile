@@ -323,7 +323,7 @@ use File::Spec;
 
 $main::SIG{__WARN__}=\&CGI::Carp::warn;
 
-$CGI::Carp::VERSION     = '1.30_01';
+$CGI::Carp::VERSION     = '1.29';
 $CGI::Carp::CUSTOM_MSG  = undef;
 $CGI::Carp::DIE_HANDLER = undef;
 
@@ -575,7 +575,6 @@ END
         print STDOUT $mess;
     }
     else {
-        print STDOUT "Status: 500\n";
         print STDOUT "Content-type: text/html\n\n";
         print STDOUT $mess;
     }

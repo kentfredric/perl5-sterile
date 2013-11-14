@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 585 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strtok.al)"
+#line 580 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strtok.al)"
 sub strtok {
     unimpl "strtok() is C-specific, stopped";
 }

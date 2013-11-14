@@ -14,5 +14,4 @@ return <<'END';
 06DE		
 20DD	20E0	
 20E2	20E4	
-A670	A672	
 END

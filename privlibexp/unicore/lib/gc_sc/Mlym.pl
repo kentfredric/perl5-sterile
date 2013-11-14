@@ -14,11 +14,10 @@ return <<'END';
 0D0E	0D10	Malayalam
 0D12	0D28	Malayalam
 0D2A	0D39	Malayalam
-0D3D	0D44	Malayalam
+0D3E	0D43	Malayalam
 0D46	0D48	Malayalam
 0D4A	0D4D	Malayalam
 0D57		Malayalam
-0D60	0D63	Malayalam
-0D66	0D75	Malayalam
-0D79	0D7F	Malayalam
+0D60	0D61	Malayalam
+0D66	0D6F	Malayalam
 END

@@ -41,11 +41,11 @@ values only, not array values.
     left	<< >>
     nonassoc	named unary operators
     nonassoc	< > <= >= lt gt le ge
-    nonassoc	== != <=> eq ne cmp
+    nonassoc	== != <=> eq ne cmp ~~
     left	&
     left	| ^
     left	&&
-    left	||
+    left	|| //
     nonassoc	..  ...
     right	?:
     right	= += -= *= etc.
@@ -260,11 +260,9 @@ X<*>
 Binary "/" divides two numbers.
 X</> X<slash>
 
-Binary "%" is the modulo operator, which computes the division
-remainder of its first argument with respect to its second argument.
-Given integer
+Binary "%" computes the modulus of two numbers.  Given integer
 operands C<$a> and C<$b>: If C<$b> is positive, then C<$a % $b> is
-C<$a> minus the largest multiple of C<$b> less than or equal to
+C<$a> minus the largest multiple of C<$b> that is not greater than
 C<$a>.  If C<$b> is negative, then C<$a % $b> is C<$a> minus the
 smallest multiple of C<$b> that is not less than C<$a> (i.e. the
 result will be less than or equal to zero).  If the operands
@@ -275,14 +273,14 @@ the integer portion of C<$a> and C<$b> will be used in the operation
 If the absolute value of the right operand (C<abs($b)>) is greater than
 or equal to C<(UV_MAX + 1)>, "%" computes the floating-point remainder
 C<$r> in the equation C<($r = $a - $i*$b)> where C<$i> is a certain
-integer that makes C<$r> have the same sign as the right operand
+integer that makes C<$r> should have the same sign as the right operand
 C<$b> (B<not> as the left operand C<$a> like C function C<fmod()>)
 and the absolute value less than that of C<$b>.
 Note that when C<use integer> is in scope, "%" gives you direct access
-to the modulo operator as implemented by your C compiler.  This
+to the modulus operator as implemented by your C compiler.  This
 operator is not as well defined for negative operands, but it will
 execute faster.
-X<%> X<remainder> X<modulo> X<mod>
+X<%> X<remainder> X<modulus> X<mod>
 
 Binary "x" is the repetition operator.  In scalar context or if the left
 operand is not enclosed in parentheses, it returns a string consisting
@@ -447,6 +445,12 @@ argument is stringwise less than, equal to, or greater than the right
 argument.
 X<cmp>
 
+Binary "~~" does a smart match between its arguments. Smart matching
+is described in L<perlsyn/"Smart matching in detail">.
+This operator is only available if you enable the "~~" feature:
+see L<feature> for more information.
+X<~~>
+
 "lt", "le", "ge", "gt" and "cmp" use the collation (sort) order specified
 by the current locale if C<use locale> is in effect.  See L<perllocale>.
 
@@ -492,12 +496,24 @@ if the left operand is true, the right operand is not even evaluated.
 Scalar or list context propagates down to the right operand if it
 is evaluated.
 
-The C<||> and C<&&> operators return the last value evaluated
+=head2 C-style Logical Defined-Or
+X<//> X<operator, logical, defined-or>
+
+Although it has no direct equivalent in C, Perl's C<//> operator is related
+to its C-style or.  In fact, it's exactly the same as C<||>, except that it
+tests the left hand side's definedness instead of its truth.  Thus, C<$a // $b>
+is similar to C<defined($a) || $b> (except that it returns the value of C<$a>
+rather than the value of C<defined($a)>) and is exactly equivalent to
+C<defined($a) ? $a : $b>.  This is very useful for providing default values
+for variables.  If you actually want to test if at least one of C<$a> and
+C<$b> is defined, use C<defined($a // $b)>.
+
+The C<||>, C<//> and C<&&> operators return the last value evaluated
 (unlike C's C<||> and C<&&>, which return 0 or 1). Thus, a reasonably
 portable way to find out the home directory might be:
 
-    $home = $ENV{'HOME'} || $ENV{'LOGDIR'} ||
-	(getpwuid($<))[7] || die "You're homeless!\n";
+    $home = $ENV{'HOME'} // $ENV{'LOGDIR'} //
+	(getpwuid($<))[7] // die "You're homeless!\n";
 
 In particular, this means that you shouldn't use this
 for selecting between two aggregates for assignment:
@@ -507,9 +523,9 @@ for selecting between two aggregates for assignment:
     @a = @b ? @b : @c;		# this works fine, though
 
 As more readable alternatives to C<&&> and C<||> when used for
-control flow, Perl provides C<and> and C<or> operators (see below).
-The short-circuit behavior is identical.  The precedence of "and" and
-"or" is much lower, however, so that you can safely use them after a
+control flow, Perl provides the C<and> and C<or> operators (see below).
+The short-circuit behavior is identical.  The precedence of "and"
+and "or" is much lower, however, so that you can safely use them after a
 list operator without the need for parentheses:
 
     unlink "alpha", "beta", "gamma"
@@ -710,7 +726,7 @@ That should probably be written more simply as:
 
 =head2 Assignment Operators
 X<assignment> X<operator, assignment> X<=> X<**=> X<+=> X<*=> X<&=>
-X<<< <<= >>> X<&&=> X<-=> X</=> X<|=> X<<< >>= >>> X<||=> X<.=>
+X<<< <<= >>> X<&&=> X<-=> X</=> X<|=> X<<< >>= >>> X<||=> X<//=> X<.=>
 X<%=> X<^=> X<x=>
 
 "=" is the ordinary assignment operator.
@@ -729,7 +745,7 @@ The following are recognized:
 
     **=    +=    *=    &=    <<=    &&=
            -=    /=    |=    >>=    ||=
-           .=    %=    ^=
+           .=    %=    ^=           //=
                  x=
 
 Although these are grouped by family, they all have the precedence
@@ -821,10 +837,10 @@ expressions.  It's equivalent to && except for the very low
 precedence.  This means that it short-circuits: i.e., the right
 expression is evaluated only if the left expression is true.
 
-=head2 Logical or and Exclusive Or
-X<operator, logical, or> X<operator, logical, xor> X<operator, logical, err>
+=head2 Logical or, Defined or, and Exclusive Or
+X<operator, logical, or> X<operator, logical, xor>
 X<operator, logical, defined or> X<operator, logical, exclusive or>
-X<or> X<xor> X<err>
+X<or> X<xor>
 
 Binary "or" returns the logical disjunction of the two surrounding
 expressions.  It's equivalent to || except for the very low precedence.
@@ -847,7 +863,7 @@ takes higher precedence.
     @info = stat($file) || die;     # oops, scalar sense of stat!
     @info = stat($file) or die;     # better, now @info gets its due
 
-Then again, you could always use parentheses. 
+Then again, you could always use parentheses.
 
 Binary "xor" returns the exclusive-OR of the two surrounding expressions.
 It cannot short circuit, of course.
@@ -1026,16 +1042,16 @@ matching and related activities.
 
 =over 8
 
-=item qr/STRING/msixo
-X<qr> X</i> X</m> X</o> X</s> X</x>
+=item qr/STRING/msixpo
+X<qr> X</i> X</m> X</o> X</s> X</x> X</p>
 
 This operator quotes (and possibly compiles) its I<STRING> as a regular
 expression.  I<STRING> is interpolated the same way as I<PATTERN>
 in C<m/PATTERN/>.  If "'" is used as the delimiter, no interpolation
 is done.  Returns a Perl value which may be used instead of the
-corresponding C</STRING/imosx> expression. The returned value is a
+corresponding C</STRING/msixpo> expression. The returned value is a
 normalized version of the original pattern. It magically differs from
-a string containing the same characters: ref(qr/x/) returns "Regexp",
+a string containing the same characters: C<ref(qr/x/)> returns "Regexp",
 even though dereferencing the result returns undef.
 
 For example,
@@ -1083,22 +1099,24 @@ Options are:
     s	Treat string as single line. (Make . match a newline)
     i	Do case-insensitive pattern matching.
     x	Use extended regular expressions.
+    p	When matching preserve a copy of the matched string so
+        that ${^PREMATCH}, ${^MATCH}, ${^POSTMATCH} will be defined.
     o	Compile pattern only once.
 
 If a precompiled pattern is embedded in a larger pattern then the effect
-of 'msix' will be propagated appropriately.  The effect of the 'o'
+of 'msixp' will be propagated appropriately.  The effect of the 'o'
 modifier has is not propagated, being restricted to those patterns
 explicitly using it.
 
 See L<perlre> for additional information on valid syntax for STRING, and
 for a detailed look at the semantics of regular expressions.
 
-=item m/PATTERN/msixogc
+=item m/PATTERN/msixpogc
 X<m> X<operator, match>
 X<regexp, options> X<regexp> X<regex, options> X<regex>
-X</m> X</s> X</i> X</x> X</o> X</g> X</c>
+X</m> X</s> X</i> X</x> X</p> X</o> X</g> X</c>
 
-=item /PATTERN/msixogc
+=item /PATTERN/msixpogc
 
 Searches a string for a pattern match, and in scalar context returns
 true if it succeeds, false if it fails.  If no string is specified
@@ -1131,9 +1149,7 @@ the trailing delimiter.  This avoids expensive run-time recompilations,
 and is useful when the value you are interpolating won't change over
 the life of the script.  However, mentioning C</o> constitutes a promise
 that you won't change the variables in the pattern.  If you change them,
-Perl won't even notice.  See also L<"qr/STRING/msixo">.
-
-=item The empty pattern //
+Perl won't even notice.  See also L<"qr/STRING/msixpo">.
 
 If the PATTERN evaluates to the empty string, the last
 I<successfully> matched regular expression is used instead. In this
@@ -1142,7 +1158,14 @@ the other flags are taken from the original pattern. If no match has
 previously succeeded, this will (silently) act instead as a genuine
 empty pattern (which will always match).
 
-=item Matching in list context
+Note that it's possible to confuse Perl into thinking C<//> (the empty
+regex) is really C<//> (the defined-or operator).  Perl is usually pretty
+good about this, but some pathological cases might trigger this, such as
+C<$a///> (is that C<($a) / (//)> or C<$a // />?) and C<print $fh //>
+(C<print $fh(//> or C<print($fh //>?).  In all of these examples, Perl
+will assume you meant defined-or.  If you meant the empty regex, just
+use parentheses or spaces to disambiguate, or even prefix the empty
+regex with an C<m> (so C<//> becomes C<m//>).
 
 If the C</g> option is not used, C<m//> in list context returns a
 list consisting of the subexpressions matched by the parentheses in the
@@ -1189,8 +1212,6 @@ function; see L<perlfunc/pos>.   A failed match normally resets the
 search position to the beginning of the string, but you can avoid that
 by adding the C</c> modifier (e.g. C<m//gc>).  Modifying the target
 string also resets the search position.
-
-=item \G assertion
 
 You can intermix C<m//g> matches with C<m/\G.../g>, where C<\G> is a
 zero-width assertion that matches the exact position where the previous
@@ -1291,9 +1312,9 @@ This usage is vaguely deprecated, which means it just might possibly
 be removed in some distant future version of Perl, perhaps somewhere
 around the year 2168.
 
-=item s/PATTERN/REPLACEMENT/msixogce
+=item s/PATTERN/REPLACEMENT/msixpogce
 X<substitute> X<substitution> X<replace> X<regexp, replace>
-X<regexp, substitute> X</m> X</s> X</i> X</x> X</o> X</g> X</c> X</e>
+X<regexp, substitute> X</m> X</s> X</i> X</x> X</p> X</o> X</g> X</c> X</e>
 
 Searches a string for a pattern, and if found, replaces that pattern
 with the replacement text and returns the number of substitutions
@@ -1971,18 +1992,14 @@ is emitted if the C<use warnings> pragma or the B<-w> command-line flag
 
 =item C<RE> in C<?RE?>, C</RE/>, C<m/RE/>, C<s/RE/foo/>,
 
-Processing of C<\Q>, C<\U>, C<\u>, C<\L>, C<\l>, and interpolation
-happens (almost) as with C<qq//> constructs.
+Processing of C<\Q>, C<\U>, C<\u>, C<\L>, C<\l>, C<\E>,
+and interpolation happens (almost) as with C<qq//> constructs.
 
-However combinations of C<\> followed by RE-special chars are not
-substituted but only skipped. The full list of RE-special chars is
-C<\>, C<.>, C<^>, C<$>, C<@>, C<A>, C<G>, C<Z>, C<d>, C<D>, C<w>, C<W>,
-C<s>, C<S>, C<b>, C<B>, C<p>, C<P>, C<X>, C<C>, C<+>, C<*>, C<?>, C<|>,
-C<(>, C<)>, C<->, C<N>, C<n>, C<r>, C<t>, C<f>, C<e>, C<a>, C<x>, C<c>,
-C<z>, digits (C<0> to C<9>), C<[>, C<{>, C<]>, C<}>, whitespaces
-(SPACE, TAB, LF, CR, FF, and VT in addition), and C<#>.
+However any other combinations of C<\> followed by a character
+are not substituted but only skipped, in order to parse them
+as regular expressions at the following step.
 As C<\c> is skipped at this step, C<@> of C<\c@> in RE is possibly
-treated as an array symbol (for example one of C<@foo> or C<@->),
+treated as an array symbol (for example C<@foo>),
 even though the same text in C<qq//> gives interpolation of C<\c@>.
 
 Moreover, inside C<(?{BLOCK})>, C<(?# comment )>, and
@@ -2189,18 +2206,6 @@ into the $ARGV variable.  It also uses filehandle I<ARGV>
 internally--<> is just a synonym for <ARGV>, which
 is magical.  (The pseudo code above doesn't work because it treats
 <ARGV> as non-magical.)
-
-Since the null filehandle uses the two argument form of L<perlfunc/open>
-it interprets special characters, so if you have a script like this:
-
-    while (<>) {
-        print;
-    }
-
-and call it with C<perl dangerous.pl 'rm -rfv *|'>, it actually opens a
-pipe, executes the C<rm> command and reads C<rm>'s output from that pipe.
-If you want all items in C<@ARGV> to be interpreted as file names, you
-can use the module C<ARGV::readonly> from CPAN.
 
 You can modify @ARGV before the first <> as long as the array ends up
 containing the list of filenames you really want.  Line numbers (C<$.>)

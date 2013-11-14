@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 702 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getgroups.al)"
+#line 697 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getgroups.al)"
 sub getgroups {
     usage "getgroups()" if @_ != 0;
     my %seen;

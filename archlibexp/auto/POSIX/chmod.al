@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 589 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/chmod.al)"
+#line 584 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/chmod.al)"
 sub chmod {
     usage "chmod(mode, filename)" if @_ != 2;
     CORE::chmod($_[0], $_[1]);

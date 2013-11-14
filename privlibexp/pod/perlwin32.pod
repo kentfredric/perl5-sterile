@@ -135,18 +135,21 @@ and edit win32/config.vc to change "make=nmake" into "make=dmake".  The
 latter step is only essential if you want to use dmake as your default
 make for building extensions using MakeMaker.
 
-=item Microsoft Visual C++ 2008 Express Edition
+=item Microsoft Visual C++ 2008 Express Edition Beta 2
 
 This free version of Visual C++ 2008 Professional contains the same compiler
 and linker that ship with the full version, and also contains everything
 necessary to build Perl, rather than requiring a separate download of the
 Platform SDK like previous versions did.
 
-This package can be downloaded by searching for "Visual Studio 2008 Express
-Edition" in the Download Center at
-http://www.microsoft.com/downloads/search.aspx?displaylang=en.  (Providing exact
-links to these packages has proven a pointless task because the links keep on
-changing so often.)
+The Beta 2 package is currently available from 
+
+http://msdn2.microsoft.com/en-us/express/future/default.aspx
+http://msdn2.microsoft.com/en-gb/express/future/default.aspx
+
+The final release version will probably be found by searching in the Download
+Center at http://www.microsoft.com/downloads/search.aspx?displaylang=en in due
+course.
 
 Install Visual C++ 2008, then setup your environment using
 
@@ -429,7 +432,7 @@ Be sure to read the instructions near the top of the makefiles carefully.
 Type "dmake" (or "nmake" if you are using that make).
 
 This should build everything.  Specifically, it will create perl.exe,
-perl58.dll at the perl toplevel, and various other extension dll's
+perl510.dll at the perl toplevel, and various other extension dll's
 under the lib\auto directory.  If the build fails for any reason, make
 sure you have done the previous steps correctly.
 
@@ -465,20 +468,8 @@ option -VI- for backward (bugward) compatibility for using the old Borland
 search algorithm  to locate header files.
 
 If you run the tests on a FAT partition, you may see some failures for
-C<link()> related tests:
-
-    Failed Test                     Stat Wstat Total Fail  Failed  List
-
-    ../ext/IO/lib/IO/t/io_dup.t                    6    4  66.67%  2-5
-    ../lib/File/Temp/t/mktemp.t                    9    1  11.11%  2
-    ../lib/File/Temp/t/posix.t                     7    1  14.29%  3
-    ../lib/File/Temp/t/security.t                 13    1   7.69%  2
-    ../lib/File/Temp/t/tempfile.t                 20    2  10.00%  2 4
-    comp/multiline.t                               6    2  33.33%  5-6
-    io/dup.t                                       8    6  75.00%  2-7
-    op/write.t                                    47    7  14.89%  1-3 6 9-11
-
-Testing on NTFS avoids these errors.
+C<link()> related tests (I<op/write.t>, I<op/stat.t> ...). Testing on
+NTFS avoids these errors.
 
 Furthermore, you should make sure that during C<make test> you do not
 have any GNU tool packages in your path: some toolkits like Unixutils

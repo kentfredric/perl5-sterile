@@ -6,8 +6,6 @@
 # BidiClass category 'Arabic_Number'
 #
 return <<'END';
-0600	0603	
 0660	0669	
 066B	066C	
-06DD		
 END

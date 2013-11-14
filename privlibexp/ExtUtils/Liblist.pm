@@ -2,11 +2,12 @@ package ExtUtils::Liblist;
 
 use strict;
 
-our $VERSION = '6.48';
+use vars qw($VERSION @ISA);
+$VERSION = '6.42';
 
 use File::Spec;
 require ExtUtils::Liblist::Kid;
-our @ISA = qw(ExtUtils::Liblist::Kid File::Spec);
+@ISA = qw(ExtUtils::Liblist::Kid File::Spec);
 
 # Backwards compatibility with old interface.
 sub ext {

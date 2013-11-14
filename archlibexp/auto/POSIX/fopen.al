@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 281 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fopen.al)"
+#line 276 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fopen.al)"
 sub fopen {
     redef "IO::File::open()";
 }

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 378 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/remove.al)"
+#line 373 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/remove.al)"
 sub remove {
     usage "remove(filename)" if @_ != 1;
     (-d $_[0]) ? CORE::rmdir($_[0]) : CORE::unlink($_[0]);

@@ -1,15 +1,14 @@
 package Text::ParseWords;
 
-use strict;
-require 5.006;
-our $VERSION = "3.27";
+use vars qw($VERSION @ISA @EXPORT $PERL_SINGLE_QUOTE);
+$VERSION = "3.26";
 
+require 5.000;
 
 use Exporter;
-our @ISA = qw(Exporter);
-our @EXPORT = qw(shellwords quotewords nested_quotewords parse_line);
-our @EXPORT_OK = qw(old_shellwords);
-our $PERL_SINGLE_QUOTE;
+@ISA = qw(Exporter);
+@EXPORT = qw(shellwords quotewords nested_quotewords parse_line);
+@EXPORT_OK = qw(old_shellwords);
 
 
 sub shellwords {
@@ -182,11 +181,11 @@ Text::ParseWords - parse text into an array of tokens or array of arrays
 =head1 SYNOPSIS
 
   use Text::ParseWords;
-  @lists = nested_quotewords($delim, $keep, @lines);
-  @words = quotewords($delim, $keep, @lines);
-  @words = shellwords(@lines);
-  @words = parse_line($delim, $keep, $line);
-  @words = old_shellwords(@lines); # DEPRECATED!
+  @lists = &nested_quotewords($delim, $keep, @lines);
+  @words = &quotewords($delim, $keep, @lines);
+  @words = &shellwords(@lines);
+  @words = &parse_line($delim, $keep, $line);
+  @words = &old_shellwords(@lines); # DEPRECATED!
 
 =head1 DESCRIPTION
 
@@ -223,7 +222,7 @@ Unix shells.
 The sample program:
 
   use Text::ParseWords;
-  @words = quotewords('\s+', 0, q{this   is "a test" of\ quotewords \"for you});
+  @words = &quotewords('\s+', 0, q{this   is "a test" of\ quotewords \"for you});
   $i = 0;
   foreach (@words) {
       print "$i: <$_>\n";
@@ -270,15 +269,13 @@ backslashed double-quote)
 
 =back
 
-Replacing C<quotewords('\s+', 0, q{this   is...})>
-with C<shellwords(q{this   is...})>
+Replacing C<&quotewords('\s+', 0, q{this   is...})>
+with C<&shellwords(q{this   is...})>
 is a simpler way to accomplish the same thing.
 
 =head1 AUTHORS
 
-Maintainer: Alexandr Ciornii <alexchornyATgmail.com>.
-
-Previous maintainer: Hal Pomeranz <pomeranz@netcom.com>, 1994-1997 (Original
+Maintainer is Hal Pomeranz <pomeranz@netcom.com>, 1994-1997 (Original
 author unknown).  Much of the code for &parse_line() (including the
 primary regexp) from Joerk Behrends <jbehrends@multimediaproduzenten.de>.
 

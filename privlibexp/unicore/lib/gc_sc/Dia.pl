@@ -18,7 +18,7 @@ return <<'END';
 0374	0375	Diacritic
 037A		Diacritic
 0384	0385	Diacritic
-0483	0487	Diacritic
+0483	0486	Diacritic
 0559		Diacritic
 0591	05A1	Diacritic
 05A3	05BD	Diacritic
@@ -36,7 +36,6 @@ return <<'END';
 093C		Diacritic
 094D		Diacritic
 0951	0954	Diacritic
-0971		Diacritic
 09BC		Diacritic
 09CD		Diacritic
 0A3C		Diacritic
@@ -63,20 +62,15 @@ return <<'END';
 0F86	0F87	Diacritic
 0FC6		Diacritic
 1037		Diacritic
-1039	103A	Diacritic
-1087	108D	Diacritic
-108F		Diacritic
+1039		Diacritic
 17C9	17D3	Diacritic
 17DD		Diacritic
 1939	193B	Diacritic
 1B34		Diacritic
 1B44		Diacritic
 1B6B	1B73	Diacritic
-1BAA		Diacritic
-1C36	1C37	Diacritic
-1C78	1C7D	Diacritic
 1D2C	1D6A	Diacritic
-1DC4	1DCF	Diacritic
+1DC4	1DCA	Diacritic
 1DFE	1DFF	Diacritic
 1FBD		Diacritic
 1FBF	1FC1	Diacritic
@@ -84,20 +78,13 @@ return <<'END';
 1FDD	1FDF	Diacritic
 1FED	1FEF	Diacritic
 1FFD	1FFE	Diacritic
-2E2F		Diacritic
 302A	302F	Diacritic
 3099	309C	Diacritic
 30FC		Diacritic
-A66F		Diacritic
-A67C	A67D	Diacritic
-A67F		Diacritic
-A717	A721	Diacritic
-A788		Diacritic
-A8C4		Diacritic
-A92B	A92E	Diacritic
-A953		Diacritic
+A717	A71A	Diacritic
+A720	A721	Diacritic
 FB1E		Diacritic
-FE20	FE26	Diacritic
+FE20	FE23	Diacritic
 FF3E		Diacritic
 FF40		Diacritic
 FF70		Diacritic

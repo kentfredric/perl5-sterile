@@ -21,7 +21,7 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED),
 	 ($] < 5.009 ? 'PMf_SKIPWHITE' : 'RXf_SKIPWHITE');
-$VERSION = 0.87;
+$VERSION = 0.83;
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -1456,7 +1456,6 @@ sub declare_hints {
 my %ignored_hints = (
     'open<' => 1,
     'open>' => 1,
-    ':'     => 1,
     'v_string' => 1,
     );
 
@@ -1625,9 +1624,6 @@ sub pp_chr { maybe_targmy(@_, \&unop, "chr") }
 sub pp_each { unop(@_, "each") }
 sub pp_values { unop(@_, "values") }
 sub pp_keys { unop(@_, "keys") }
-sub pp_aeach { unop(@_, "each") }
-sub pp_avalues { unop(@_, "values") }
-sub pp_akeys { unop(@_, "keys") }
 sub pp_pop { unop(@_, "pop") }
 sub pp_shift { unop(@_, "shift") }
 
@@ -1827,7 +1823,9 @@ sub pp_refgen {
     my $kid = $op->first;
     if ($kid->name eq "null") {
 	$kid = $kid->first;
-	if (!null($kid->sibling) and
+	if ($kid->name eq "anonlist" || $kid->name eq "anonhash") {
+	    return $self->anon_hash_or_list($op, $cx);
+	} elsif (!null($kid->sibling) and
 		 $kid->sibling->name eq "anoncode") {
             return $self->e_anoncode({ code => $self->padval($kid->sibling->targ) });
 	} elsif ($kid->name eq "pushmark") {
@@ -2116,7 +2114,7 @@ sub pp_aassign { binop(@_, "=", 7, SWAP_CHILDREN | LIST_CONTEXT) }
 sub pp_smartmatch {
     my ($self, $op, $cx) = @_;
     if ($op->flags & OPf_SPECIAL) {
-	return $self->deparse($op->last, $cx);
+	return $self->deparse($op->first, $cx);
     }
     else {
 	binop(@_, "~~", 14);
@@ -4597,7 +4595,9 @@ programs.
 Create an object to store the state of a deparsing operation and any
 options. The options are the same as those that can be given on the
 command line (see L</OPTIONS>); options that are separated by commas
-after B<-MO=Deparse> should be given as separate strings.
+after B<-MO=Deparse> should be given as separate strings. Some
+options, like B<-u>, don't make sense for a single subroutine, so
+don't pass them.
 
 =head2 ambient_pragmas
 

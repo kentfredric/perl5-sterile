@@ -1,7 +1,7 @@
 /*    mg.h
  *
  *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999,
- *    2000, 2002, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *    2000, 2002, 2005, 2006, 2007, by Larry Wall and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
@@ -30,9 +30,9 @@ struct magic {
     U16		mg_private;
     char	mg_type;
     U8		mg_flags;
+    I32		mg_len;
     SV*		mg_obj;
     char*	mg_ptr;
-    I32		mg_len;
 };
 
 #define MGf_TAINTEDDIR 1        /* PERL_MAGIC_envelem only */
@@ -60,13 +60,3 @@ struct magic {
 #define SvTIED_mg(sv,how) (SvRMAGICAL(sv) ? mg_find((sv),(how)) : NULL)
 #define SvTIED_obj(sv,mg) \
     ((mg)->mg_obj ? (mg)->mg_obj : sv_2mortal(newRV(sv)))
-
-/*
- * Local variables:
- * c-indentation-style: bsd
- * c-basic-offset: 4
- * indent-tabs-mode: t
- * End:
- *
- * ex: set ts=8 sts=4 sw=4 noet:
- */

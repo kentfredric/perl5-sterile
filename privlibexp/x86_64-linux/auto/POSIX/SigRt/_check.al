@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1030 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_check.al)"
+#line 1025 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_check.al)"
 sub _check {
     my ($rtsig, $ok) = &_exist;
     die "No POSIX::SigRt signal $_[1] (valid range SIGRTMIN..SIGRTMAX, or $_SIGRTMIN..$_SIGRTMAX)"

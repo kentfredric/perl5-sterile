@@ -9,8 +9,8 @@ use Config;
 use strict;
 
 "$Config{'archname'}-$Config{'osvers'}" eq
-"x86_64-linux-3.11.6-gentoo" or
-	die "Errno architecture (x86_64-linux-3.11.6-gentoo) does not match executable architecture ($Config{'archname'}-$Config{'osvers'})";
+"x86_64-linux-3.12.0-gentoo" or
+	die "Errno architecture (x86_64-linux-3.12.0-gentoo) does not match executable architecture ($Config{'archname'}-$Config{'osvers'})";
 
 $VERSION = "1.10";
 $VERSION = eval $VERSION;

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1052 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/DELETE.al)"
+#line 1047 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/DELETE.al)"
 sub DELETE { delete $SIG{ &_check } }
 # end of POSIX::SigRt::DELETE
 1;

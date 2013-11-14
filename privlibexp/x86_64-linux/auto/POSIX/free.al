@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 464 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/free.al)"
+#line 459 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/free.al)"
 sub free {
     unimpl "free() is C-specific, stopped";
 }

@@ -4,10 +4,10 @@
 
 #
 # This file supports:
-# 	\p{InAncientGreekNumbers} (and fuzzy permutations)
+# 	\p{InAncientGreekMusicalNotation} (and fuzzy permutations)
 # 
-# Meaning: Block 'Ancient Greek Numbers'
+# Meaning: Block 'Ancient Greek Musical Notation'
 #
 return <<'END';
-10140	1018F	Ancient Greek Numbers
+1D200	1D24F	Ancient Greek Musical Notation
 END

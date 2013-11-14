@@ -17,6 +17,4 @@ return <<'END';
 2090	2094	Other_Lowercase
 2170	217F	Other_Lowercase
 24D0	24E9	Other_Lowercase
-2C7D		Other_Lowercase
-A770		Other_Lowercase
 END

@@ -2,7 +2,8 @@ package Encode::Alias;
 use strict;
 use warnings;
 no warnings 'redefine';
-our $VERSION = do { my @r = ( q$Revision: 2.10 $ =~ /\d+/g ); sprintf "%d." . "%02d" x $#r, @r };
+use Encode;
+our $VERSION = do { my @r = ( q$Revision: 2.7 $ =~ /\d+/g ); sprintf "%d." . "%02d" x $#r, @r };
 sub DEBUG () { 0 }
 
 use base qw(Exporter);
@@ -19,7 +20,6 @@ our @Alias;    # ordered matching list
 our %Alias;    # cached known aliases
 
 sub find_alias {
-    require Encode;
     my $class = shift;
     my $find  = shift;
     unless ( exists $Alias{$find} ) {
@@ -128,7 +128,6 @@ sub undef_aliases {
 }
 
 sub init_aliases {
-    require Encode;
     undef_aliases();
 
     # Try all-lower-case version should all else fails
@@ -151,7 +150,7 @@ sub init_aliases {
     # ASCII
     define_alias( qr/^(?:US-?)ascii$/i       => '"ascii"' );
     define_alias( 'C'                        => 'ascii' );
-    define_alias( qr/\b(?:ISO[-_]?)?646(?:[-_]?US)?$/i => '"ascii"' );
+    define_alias( qr/\bISO[-_]?646[-_]?US$/i => '"ascii"' );
 
     # Allow variants of iso-8859-1 etc.
     define_alias( qr/\biso[-_]?(\d+)[-_](\d+)$/i => '"iso-$1-$2"' );
@@ -207,8 +206,6 @@ sub init_aliases {
     # predefined in *.ucm; unneeded
     # define_alias( qr/\bmacIcelandic$/i => '"macIceland"');
     define_alias( qr/^mac_(.*)$/i => '"mac$1"' );
-    # http://rt.cpan.org/Ticket/Display.html?id=36326
-    define_alias( qr/^macintosh$/i => '"MacRoman"' );
 
     # Ououououou. gone.  They are differente!
     # define_alias( qr/\bmacRomanian$/i => '"macRumanian"');

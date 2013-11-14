@@ -15,12 +15,10 @@ return <<'END';
 0C12	0C28	Telugu
 0C2A	0C33	Telugu
 0C35	0C39	Telugu
-0C3D	0C44	Telugu
+0C3E	0C44	Telugu
 0C46	0C48	Telugu
 0C4A	0C4D	Telugu
 0C55	0C56	Telugu
-0C58	0C59	Telugu
-0C60	0C63	Telugu
+0C60	0C61	Telugu
 0C66	0C6F	Telugu
-0C78	0C7F	Telugu
 END

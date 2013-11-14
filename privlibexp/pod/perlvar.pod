@@ -58,14 +58,14 @@ the change may affect other modules which rely on the default values
 of the special variables that you have changed. This is one of the
 correct ways to read the whole file at once:
 
-    open my $fh, "<", "foo" or die $!;
+    open my $fh, "foo" or die $!;
     local $/; # enable localized slurp mode
     my $content = <$fh>;
     close $fh;
 
 But the following code is quite bad:
 
-    open my $fh, "<", "foo" or die $!;
+    open my $fh, "foo" or die $!;
     undef $/; # enable slurp mode
     my $content = <$fh>;
     close $fh;
@@ -81,7 +81,7 @@ inside some short C<{}> block, you should create one yourself. For
 example:
 
     my $content = '';
-    open my $fh, "<", "foo" or die $!;
+    open my $fh, "foo" or die $!;
     {
         local $/;
         $content = <$fh>;
@@ -148,24 +148,18 @@ don't use it:
 
 =item *
 
-The following functions:
-
-abs, alarm, chomp, chop, chr, chroot, cos, defined, eval, exp, glob,
-hex, int, lc, lcfirst, length, log, lstat, mkdir, oct, ord, pos, print,
-quotemeta, readlink, readpipe, ref, require, reverse (in scalar context only),
-rmdir, sin, split (on its second argument), sqrt, stat, study, uc, ucfirst, 
-unlink, unpack.
+Various unary functions, including functions like ord() and int(), as well
+as the all file tests (C<-f>, C<-d>) except for C<-t>, which defaults to
+STDIN.
 
 =item *
 
-All file tests (C<-f>, C<-d>) except for C<-t>, which defaults to STDIN.
-See L<perlfunc/-X>
-
+Various list functions like print() and unlink().
 
 =item *
 
-The pattern matching operations C<m//>, C<s///> and C<tr///> (aka C<y///>)
-when used without an C<=~> operator.
+The pattern matching operations C<m//>, C<s///>, and C<tr///> when used
+without an C<=~> operator.
 
 =item *
 
@@ -178,15 +172,16 @@ The implicit iterator variable in the grep() and map() functions.
 
 =item *
 
-The implicit variable of given().
-
-=item *
-
 The default place to put an input record when a C<< <FH> >>
 operation's result is tested by itself as the sole criterion of a C<while>
 test.  Outside a C<while> test, this will not happen.
 
 =back
+
+As C<$_> is a global variable, this may lead in some cases to unwanted
+side-effects.  As of perl 5.9.1, you can now use a lexical version of
+C<$_> by declaring it in a file or in a block with C<my>.  Moreover,
+declaring C<our $_> restores the global C<$_> in the current scope.
 
 (Mnemonic: underline is understood in certain operations.)
 
@@ -233,6 +228,14 @@ performance penalty on all regular expression matches.  See L</BUGS>.
 
 See L</@-> for a replacement.
 
+=item ${^MATCH}
+X<${^MATCH}>
+
+This is similar to C<$&> (C<$POSTMATCH>) except that it does not incur the
+performance penalty associated with that variable, and is only guaranteed
+to return a defined value when the pattern was compiled or executed with
+the C</p> modifier.
+
 =item $PREMATCH
 
 =item $`
@@ -247,6 +250,14 @@ The use of this variable anywhere in a program imposes a considerable
 performance penalty on all regular expression matches.  See L</BUGS>.
 
 See L</@-> for a replacement.
+
+=item ${^PREMATCH}
+X<${^PREMATCH}>
+
+This is similar to C<$`> ($PREMATCH) except that it does not incur the
+performance penalty associated with that variable, and is only guaranteed
+to return a defined value when the pattern was compiled or executed with
+the C</p> modifier.
 
 =item $POSTMATCH
 
@@ -268,6 +279,14 @@ The use of this variable anywhere in a program imposes a considerable
 performance penalty on all regular expression matches.  See L</BUGS>.
 
 See L</@-> for a replacement.
+
+=item ${^POSTMATCH}
+X<${^POSTMATCH}>
+
+This is similar to C<$'> (C<$POSTMATCH>) except that it does not incur the
+performance penalty associated with that variable, and is only guaranteed
+to return a defined value when the pattern was compiled or executed with
+the C</p> modifier.
 
 =item $LAST_PAREN_MATCH
 
@@ -320,23 +339,28 @@ past where $2 ends, and so on.  You can use C<$#+> to determine
 how many subgroups were in the last successful match.  See the
 examples given for the C<@-> variable.
 
-=item $*
+=item %+
+X<%+>
 
-Set to a non-zero integer value to do multi-line matching within a
-string, 0 (or undefined) to tell Perl that it can assume that strings
-contain a single line, for the purpose of optimizing pattern matches.
-Pattern matches on strings containing multiple newlines can produce
-confusing results when C<$*> is 0 or undefined. Default is undefined.
-(Mnemonic: * matches multiple things.) This variable influences the
-interpretation of only C<^> and C<$>. A literal newline can be searched
-for even when C<$* == 0>.
+Similar to C<@+>, the C<%+> hash allows access to the named capture
+buffers, should they exist, in the last successful match in the
+currently active dynamic scope.
 
-Use of C<$*> is deprecated in modern Perl, supplanted by 
-the C</s> and C</m> modifiers on pattern matching.
+For example, C<$+{foo}> is equivalent to C<$1> after the following match:
 
-Assigning a non-numerical value to C<$*> triggers a warning (and makes
-C<$*> act if C<$* == 0>), while assigning a numerical value to C<$*>
-makes that an implicit C<int> is applied on the value.
+  'foo' =~ /(?<foo>foo)/;
+
+The keys of the C<%+> hash list only the names of buffers that have
+captured (and that are thus associated to defined values).
+
+The underlying behaviour of C<%+> is provided by the
+L<Tie::Hash::NamedCapture> module.
+
+B<Note:> C<%-> and C<%+> are tied views into a common internal hash
+associated with the last successful regular expression. Therefore mixing
+iterative access to them via C<each> may have unpredictable results.
+Likewise, if the last successful match changes, then the results may be
+surprising.
 
 =item HANDLE->input_line_number(EXPR)
 
@@ -347,7 +371,7 @@ makes that an implicit C<int> is applied on the value.
 =item $.
 X<$.> X<$NR> X<$INPUT_LINE_NUMBER> X<line number>
 
-Current line number for the last filehandle accessed. 
+Current line number for the last filehandle accessed.
 
 Each filehandle in Perl counts the number of lines that have been read
 from it.  (Depending on the value of C<$/>, Perl's idea of what
@@ -409,7 +433,7 @@ instead of lines, with the maximum record size being the referenced
 integer.  So this:
 
     local $/ = \32768; # or \"32768", or \$var_containing_32768
-    open my $fh, "<", $myfile or die $!;
+    open my $fh, $myfile or die $!;
     local $_ = <$fh>;
 
 will read a record of no more than 32768 bytes from FILE.  If you're
@@ -445,8 +469,7 @@ buffered otherwise.  Setting this variable is useful primarily when
 you are outputting to a pipe or socket, such as when you are running
 a Perl program under B<rsh> and want to see the output as it's
 happening.  This has no effect on input buffering.  See L<perlfunc/getc>
-for that.  See L<perldoc/select> on how to select the output channel. 
-See also L<IO::Handle>. (Mnemonic: when you want your pipes to be piping hot.)
+for that.  (Mnemonic: when you want your pipes to be piping hot.)
 
 =item IO::Handle->output_field_separator EXPR
 
@@ -516,18 +539,6 @@ taken for something more important.)
 
 Consider using "real" multidimensional arrays as described
 in L<perllol>.
-
-=item $#
-
-The output format for printed numbers.  This variable is a half-hearted
-attempt to emulate B<awk>'s OFMT variable.  There are times, however,
-when B<awk> and Perl have differing notions of what counts as 
-numeric.  The initial value is "%.I<n>g", where I<n> is the value
-of the macro DBL_DIG from your system's F<float.h>.  This is different from
-B<awk>'s default OFMT setting of "%.6g", so you need to set C<$#>
-explicitly to get B<awk>'s value.  (Mnemonic: # is the number sign.)
-
-Use of C<$#> is deprecated.
 
 =item HANDLE->format_page_number(EXPR)
 
@@ -605,6 +616,48 @@ After a match against some variable $var:
 =item C<$3> is the same as C<substr($var, $-[3], $+[3] - $-[3])>
 
 =back
+
+=item %-
+X<%->
+
+Similar to C<%+>, this variable allows access to the named capture buffers
+in the last successful match in the currently active dynamic scope. To
+each capture buffer name found in the regular expression, it associates a
+reference to an array containing the list of values captured by all
+buffers with that name (should there be several of them), in the order
+where they appear.
+
+Here's an example:
+
+    if ('1234' =~ /(?<A>1)(?<B>2)(?<A>3)(?<B>4)/) {
+        foreach my $bufname (sort keys %-) {
+            my $ary = $-{$bufname};
+            foreach my $idx (0..$#$ary) {
+                print "\$-{$bufname}[$idx] : ",
+                      (defined($ary->[$idx]) ? "'$ary->[$idx]'" : "undef"),
+                      "\n";
+            }
+        }
+    }
+
+would print out:
+
+    $-{A}[0] : '1'
+    $-{A}[1] : '3'
+    $-{B}[0] : '2'
+    $-{B}[1] : '4'
+
+The keys of the C<%-> hash correspond to all buffer names found in
+the regular expression.
+
+The behaviour of C<%-> is implemented via the
+L<Tie::Hash::NamedCapture> module.
+
+B<Note:> C<%-> and C<%+> are tied views into a common internal hash
+associated with the last successful regular expression. Therefore mixing
+iterative access to them via C<each> may have unpredictable results.
+Likewise, if the last successful match changes, then the results may be
+surprising.
 
 =item HANDLE->format_name(EXPR)
 
@@ -727,7 +780,7 @@ variable, or in other words, if a system or library call fails, it
 sets this variable.  This means that the value of C<$!> is meaningful
 only I<immediately> after a B<failure>:
 
-    if (open my $fh, "<", $filename) {
+    if (open(FH, $filename)) {
 	# Here $! is meaningless.
 	...
     } else {
@@ -989,11 +1042,6 @@ of perl in the right bracket?)  Example:
 See also the documentation of C<use VERSION> and C<require VERSION>
 for a convenient way to fail if the running Perl interpreter is too old.
 
-When testing the variable, to steer clear of floating point
-inaccuracies you might want to prefer the inequality tests C<< < >>
-and C<< > >> to the tests containing equivalence: C<< <= >>, C<< == >>,
-and C<< >= >>.
-
 The floating point representation can sometimes lead to inaccurate
 numeric comparisons.  See C<$^V> for a more modern representation of
 the Perl version that allows accurate string comparisons.
@@ -1017,6 +1065,21 @@ X<$^D> X<$DEBUGGING>
 The current value of the debugging flags.  (Mnemonic: value of B<-D>
 switch.) May be read or set. Like its command-line equivalent, you can use
 numeric or symbolic values, eg C<$^D = 10> or C<$^D = "st">.
+
+=item ${^RE_DEBUG_FLAGS}
+
+The current value of the regex debugging flags. Set to 0 for no debug output
+even when the re 'debug' module is loaded. See L<re> for details.
+
+=item ${^RE_TRIE_MAXBUF}
+
+Controls how certain regex optimisations are applied and how much memory they
+utilize. This value by default is 65536 which corresponds to a 512kB temporary
+cache. Set this to a higher value to trade memory for speed when matching
+large alternations. Set it to a lower value if you want the optimisations to
+be as conservative of memory as possible but still occur, and set it to a
+negative value to prevent the optimisation and conserve the most memory.
+Under normal situations this variable should be of no interest to you.
 
 =item $SYSTEM_FD_MAX
 
@@ -1077,11 +1140,8 @@ version of the same lexical pragma:
 
 =item %^H
 
-WARNING: This variable is strictly for internal use only.  Its availability,
-behavior, and contents are subject to change without notice.
-
 The %^H hash provides the same scoping semantic as $^H.  This makes it
-useful for implementation of lexically scoped pragmas.
+useful for implementation of lexically scoped pragmas. See L<perlpragma>.
 
 =item $INPLACE_EDIT
 
@@ -1146,8 +1206,7 @@ Debug subroutine enter/exit.
 
 =item 0x02
 
-Line-by-line debugging. Causes DB::DB() subroutine to be called for each
-statement executed. Also causes saving source code lines (like 0x400).
+Line-by-line debugging.
 
 =item 0x04
 
@@ -1184,13 +1243,12 @@ were compiled.
 
 =item 0x400
 
-Save source code lines into C<@{"_<$filename"}>.
+Debug assertion subroutines enter/exit.
 
 =back
 
 Some bits may be relevant at compile-time only, some at
 run-time only.  This is a new mechanism and the details may change.
-See also L<perldebguts>.
 
 =item $LAST_REGEXP_CODE_RESULT
 
@@ -1228,7 +1286,7 @@ and B<-C> filetests are based on this value.
 
 Reflects if taint mode is on or off.  1 for on (the program was run with
 B<-T>), 0 for off, -1 when only taint warnings are enabled (i.e. with
-B<-t> or B<-TU>).
+B<-t> or B<-TU>).  This variable is read-only.
 
 =item ${^UNICODE}
 
@@ -1256,15 +1314,12 @@ switch); see L<perlrun> for more info on this.
 X<$^V> X<$PERL_VERSION>
 
 The revision, version, and subversion of the Perl interpreter, represented
-as a string composed of characters with those ordinals.  Thus in Perl v5.6.0
-it equals C<chr(5) . chr(6) . chr(0)> and will return true for
-C<$^V eq v5.6.0>.  Note that the characters in this string value can
-potentially be greater than 255.
+as a C<version> object.
 
 This variable first appeared in perl 5.6.0; earlier versions of perl will
-see an undefined value.
+see an undefined value. Before perl 5.10.0 $^V was represented as a v-string.
 
-This can be used to determine whether the Perl interpreter executing a
+$^V can be used to determine whether the Perl interpreter executing a
 script is in the right range of versions.  (Mnemonic: use ^V for Version
 Control.)  Example:
 

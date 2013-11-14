@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 658 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/execl.al)"
+#line 653 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/execl.al)"
 sub execl {
     unimpl "execl() is C-specific, stopped";
 }

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 410 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/ungetc.al)"
+#line 405 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/ungetc.al)"
 sub ungetc {
     redef "IO::Handle::ungetc()";
 }

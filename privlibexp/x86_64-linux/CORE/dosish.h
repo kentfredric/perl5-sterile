@@ -26,9 +26,6 @@
 #  if (DJGPP==2 && DJGPP_MINOR < 2)
 #    define NO_LOCALECONV_MON_THOUSANDS_SEP
 #  endif
-#  ifdef USE_5005THREADS
-#    define OLD_PTHREADS_API
-#  endif
 #  define PERL_FS_VER_FMT	"%d_%d_%d"
 #else	/* DJGPP */
 #  ifdef WIN32
@@ -200,13 +197,3 @@
 
 /* Don't go reading from /dev/urandom */
 #define PERL_NO_DEV_RANDOM
-
-/*
- * Local variables:
- * c-indentation-style: bsd
- * c-basic-offset: 4
- * indent-tabs-mode: t
- * End:
- *
- * ex: set ts=8 sts=4 sw=4 noet:
- */

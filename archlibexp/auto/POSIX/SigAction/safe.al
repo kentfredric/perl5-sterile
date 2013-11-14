@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigAction;
 
-#line 999 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigAction/safe.al)"
+#line 994 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigAction/safe.al)"
 sub safe    { $_[0]->{SAFE}    = $_[1] if @_ > 1; $_[0]->{SAFE} };
 
 package POSIX::SigRt;

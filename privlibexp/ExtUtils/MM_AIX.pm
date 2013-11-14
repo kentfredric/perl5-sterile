@@ -1,10 +1,11 @@
 package ExtUtils::MM_AIX;
 
 use strict;
-our $VERSION = '6.48';
+use vars qw($VERSION @ISA);
+$VERSION = '6.42';
 
 require ExtUtils::MM_Unix;
-our @ISA = qw(ExtUtils::MM_Unix);
+@ISA = qw(ExtUtils::MM_Unix);
 
 use ExtUtils::MakeMaker qw(neatvalue);
 

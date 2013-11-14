@@ -14,7 +14,7 @@ use warnings; # uses #3 and #4, since warnings uses Carp
 
 use Exporter (); # use #5
 
-our $VERSION   = "0.76";
+our $VERSION   = "0.74";
 our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw( set_style set_style_standard add_callback
 		     concise_subref concise_cv concise_main
@@ -28,7 +28,7 @@ our %EXPORT_TAGS =
 # use #6
 use B qw(class ppname main_start main_root main_cv cstring svref_2object
 	 SVf_IOK SVf_NOK SVf_POK SVf_IVisUV SVf_FAKE OPf_KIDS OPf_SPECIAL
-	 CVf_ANON PAD_FAKELEX_ANON PAD_FAKELEX_MULTI SVf_ROK);
+	 CVf_ANON PAD_FAKELEX_ANON PAD_FAKELEX_MULTI);
 
 my %style =
   ("terse" =>
@@ -299,18 +299,7 @@ sub compileOpts {
 	elsif ($o =~ /^-stash=(.*)/) {
 	    my $pkg = $1;
 	    no strict 'refs';
-	    if (!defined %{$pkg.'::'}) {
-		eval "require $pkg";
-	    } else {
-		require Config;
-		if (!$Config::Config{usedl}
-		    && keys %{$pkg.'::'} == 1
-		    && $pkg->can('bootstrap')) {
-		    # It is something that we're staticly linked to, but hasn't
-		    # yet been used.
-		    eval "require $pkg";
-		}
-	    }
+	    eval "require $pkg" unless defined %{$pkg.'::'};
 	    push @render_packs, $pkg;
 	}
 	# line-style options
@@ -709,16 +698,9 @@ sub concise_sv {
 	$hr->{svval} = "*$stash" . $gv->SAFENAME;
 	return "*$stash" . $gv->SAFENAME;
     } else {
-	if ($] >= 5.011) {
-	    while (class($sv) eq "IV" && $sv->FLAGS & SVf_ROK) {
-		$hr->{svval} .= "\\";
-		$sv = $sv->RV;
-	    }
-	} else {
-	    while (class($sv) eq "RV") {
-		$hr->{svval} .= "\\";
-		$sv = $sv->RV;
-	    }
+	while (class($sv) eq "RV") {
+	    $hr->{svval} .= "\\";
+	    $sv = $sv->RV;
 	}
 	if (class($sv) eq "SPECIAL") {
 	    $hr->{svval} .= ["Null", "sv_undef", "sv_yes", "sv_no"]->[$$sv];

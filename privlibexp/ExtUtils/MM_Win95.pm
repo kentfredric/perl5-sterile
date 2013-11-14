@@ -2,10 +2,11 @@ package ExtUtils::MM_Win95;
 
 use strict;
 
-our $VERSION = '6.48';
+use vars qw($VERSION @ISA);
+$VERSION = '6.42';
 
 require ExtUtils::MM_Win32;
-our @ISA = qw(ExtUtils::MM_Win32);
+@ISA = qw(ExtUtils::MM_Win32);
 
 use ExtUtils::MakeMaker::Config;
 

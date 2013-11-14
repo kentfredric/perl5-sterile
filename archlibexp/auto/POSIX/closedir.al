@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 125 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/closedir.al)"
+#line 120 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/closedir.al)"
 sub closedir {
     usage "closedir(dirhandle)" if @_ != 1;
     CORE::closedir($_[0]);

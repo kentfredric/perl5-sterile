@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 435 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/atof.al)"
+#line 430 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/atof.al)"
 sub atof {
     unimpl "atof() is C-specific, stopped";
 }

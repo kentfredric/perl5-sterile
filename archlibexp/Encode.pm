@@ -1,10 +1,10 @@
 #
-# $Id: Encode.pm,v 2.26 2008/07/01 20:56:17 dankogai Exp dankogai $
+# $Id: Encode.pm,v 2.23 2007/05/29 18:15:32 dankogai Exp dankogai $
 #
 package Encode;
 use strict;
 use warnings;
-our $VERSION = sprintf "%d.%02d", q$Revision: 2.26 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 2.23 $ =~ /(\d+)/g;
 sub DEBUG () { 0 }
 use XSLoader ();
 XSLoader::load( __PACKAGE__, $VERSION );
@@ -36,8 +36,7 @@ our @EXPORT_OK = (
 
 our %EXPORT_TAGS = (
     all          => [ @EXPORT,    @EXPORT_OK ],
-    default      => [ @EXPORT ],
-    fallbacks    => [ @FB_CONSTS ],
+    fallbacks    => [@FB_CONSTS],
     fallback_all => [ @FB_CONSTS, @FB_FLAGS ],
 );
 
@@ -51,14 +50,7 @@ use Encode::Alias;
 our %Encoding;
 our %ExtModule;
 require Encode::Config;
-#  See
-#  https://bugzilla.redhat.com/show_bug.cgi?id=435505#c2
-#  to find why sig handers inside eval{} are disabled.
-eval {
-    local $SIG{__DIE__};
-    local $SIG{__WARN__};
-    require Encode::ConfigLocal;
-};
+eval { require Encode::ConfigLocal };
 
 sub encodings {
     my $class = shift;
@@ -742,7 +734,7 @@ you're not interested in this, then bitwise-or the bitmask with it.
 
 =back
 
-=head2 coderef for CHECK
+=Head2 coderef for CHECK
 
 As of Encode 2.12 CHECK can also be a code reference which takes the
 ord value of unmapped caharacter as an argument and returns a string

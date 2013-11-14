@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 468 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getenv.al)"
+#line 463 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getenv.al)"
 sub getenv {
     usage "getenv(name)" if @_ != 1;
     $ENV{$_[0]};

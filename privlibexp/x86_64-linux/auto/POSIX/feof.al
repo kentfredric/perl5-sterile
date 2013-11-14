@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 265 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/feof.al)"
+#line 260 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/feof.al)"
 sub feof {
     redef "IO::Handle::eof()";
 }

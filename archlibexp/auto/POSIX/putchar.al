@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 370 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/putchar.al)"
+#line 365 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/putchar.al)"
 sub putchar {
     unimpl "putchar() is C-specific--use print instead";
 }

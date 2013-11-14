@@ -6,11 +6,12 @@
 # Linebreak category 'Ambiguous'
 #
 return <<'END';
+00A1		
 00A7	00A8	
 00AA		
 00B2	00B3	
 00B6	00BA	
-00BC	00BE	
+00BC	00BF	
 00D7		
 00F7		
 02C7		

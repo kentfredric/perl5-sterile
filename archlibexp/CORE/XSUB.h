@@ -1,7 +1,7 @@
 /*    XSUB.h
  *
  *    Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
- *    2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *    2003, 2004, 2005, 2006, 2007 by Larry Wall and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
@@ -77,7 +77,7 @@ C<UNDERBAR>.
 
 =for apidoc AmU||UNDERBAR
 The SV* corresponding to the $_ variable. Works even if there
-is a lexical $_ in scope. (Lexical $_ is available in perl 5.9.2 and later)
+is a lexical $_ in scope.
 
 =cut
 */
@@ -108,9 +108,14 @@ is a lexical $_ in scope. (Lexical $_ is available in perl 5.9.2 and later)
  */
 #define XSPROTO(name) void name(pTHX_ CV* cv)
 
+#undef XS
 #if defined(__CYGWIN__) && defined(USE_DYNAMIC_LOADING)
 #  define XS(name) __declspec(dllexport) XSPROTO(name)
-#else
+#endif
+#if defined(__SYMBIAN32__)
+#  define XS(name) EXPORT_C XSPROTO(name)
+#endif
+#ifndef XS
 #  if defined(HASATTRIBUTE_UNUSED) && !defined(__cplusplus)
 #    define XS(name) void name(pTHX_ CV* cv __attribute__unused__)
 #  else
@@ -161,8 +166,10 @@ is a lexical $_ in scope. (Lexical $_ is available in perl 5.9.2 and later)
 #define XSINTERFACE_FUNC_SET(cv,f)	\
 		CvXSUBANY(cv).any_dxptr = (void (*) (pTHX_ void*))(f)
 
-#define dUNDERBAR dNOOP
-#define UNDERBAR DEFSV
+#define dUNDERBAR PADOFFSET padoff_du = find_rundefsvoffset()
+#define UNDERBAR ((padoff_du == NOT_IN_PAD \
+	    || PAD_COMPNAME_FLAGS_isOUR(padoff_du)) \
+	? DEFSV : PAD_SVl(padoff_du))
 
 /* Simple macros to put new mortal values onto the stack.   */
 /* Typically used to return values from XS functions.       */
@@ -262,7 +269,7 @@ Rethrows a previously caught exception.  See L<perlguts/"Exception Handling">.
 #define XST_mUV(i,v)  (ST(i) = sv_2mortal(newSVuv(v))  )
 #define XST_mNV(i,v)  (ST(i) = sv_2mortal(newSVnv(v))  )
 #define XST_mPV(i,v)  (ST(i) = sv_2mortal(newSVpv(v,0)))
-#define XST_mPVN(i,v,n)  (ST(i) = newSVpvn_flags(v,n, SVs_TEMP))
+#define XST_mPVN(i,v,n)  (ST(i) = sv_2mortal(newSVpvn(v,n)))
 #define XST_mNO(i)    (ST(i) = &PL_sv_no   )
 #define XST_mYES(i)   (ST(i) = &PL_sv_yes  )
 #define XST_mUNDEF(i) (ST(i) = &PL_sv_undef)
@@ -301,11 +308,17 @@ Rethrows a previously caught exception.  See L<perlguts/"Exception Handling">.
 		_sv = get_sv(Perl_form(aTHX_ "%s::%s", module,	\
 				    vn = "VERSION"), FALSE);		\
 	}								\
-	if (_sv && (!SvOK(_sv) || strNE(XS_VERSION, SvPV_nolen_const(_sv))))	\
-	    Perl_croak(aTHX_ "%s object version %s does not match %s%s%s%s %"SVf,\
-		  module, XS_VERSION,					\
-		  vn ? "$" : "", vn ? module : "", vn ? "::" : "",	\
-		  vn ? vn : "bootstrap parameter", _sv);		\
+	if (_sv) {							\
+	    SV *xssv = Perl_newSVpv(aTHX_ XS_VERSION, 0);		\
+	    xssv = new_version(xssv);					\
+	    if ( !sv_derived_from(_sv, "version") )			\
+		_sv = new_version(_sv);				\
+	    if ( vcmp(_sv,xssv) )					\
+		Perl_croak(aTHX_ "%s object version %"SVf" does not match %s%s%s%s %"SVf,\
+		      module, SVfARG(vstringify(xssv)),			\
+		      vn ? "$" : "", vn ? module : "", vn ? "::" : "",	\
+		      vn ? vn : "bootstrap parameter", SVfARG(vstringify(_sv)));\
+	}                                                               \
     } STMT_END
 #else
 #  define XS_VERSION_BOOTCHECK
@@ -402,6 +415,12 @@ Rethrows a previously caught exception.  See L<perlguts/"Exception Handling">.
 #endif
 
 #include "perlapi.h"
+#ifndef PERL_MAD
+#  undef PL_madskills
+#  undef PL_xmlfp
+#  define PL_madskills 0
+#  define PL_xmlfp 0
+#endif
 
 #if defined(PERL_IMPLICIT_CONTEXT) && !defined(PERL_NO_GET_CONTEXT) && !defined(PERL_CORE)
 #  undef aTHX

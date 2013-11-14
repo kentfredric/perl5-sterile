@@ -16,11 +16,11 @@ return <<'END';
 0B2A	0B30	Oriya
 0B32	0B33	Oriya
 0B35	0B39	Oriya
-0B3C	0B44	Oriya
+0B3C	0B43	Oriya
 0B47	0B48	Oriya
 0B4B	0B4D	Oriya
 0B56	0B57	Oriya
 0B5C	0B5D	Oriya
-0B5F	0B63	Oriya
+0B5F	0B61	Oriya
 0B66	0B71	Oriya
 END

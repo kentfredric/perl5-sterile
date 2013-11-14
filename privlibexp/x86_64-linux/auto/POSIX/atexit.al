@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 431 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/atexit.al)"
+#line 426 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/atexit.al)"
 sub atexit {
     unimpl "atexit() is C-specific: use END {} instead";
 }

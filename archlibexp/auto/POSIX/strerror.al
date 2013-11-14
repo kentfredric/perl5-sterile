@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 546 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strerror.al)"
+#line 541 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strerror.al)"
 sub strerror {
     usage "strerror(errno)" if @_ != 1;
     local $! = $_[0];

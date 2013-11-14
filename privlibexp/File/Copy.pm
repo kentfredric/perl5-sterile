@@ -10,13 +10,8 @@ package File::Copy;
 use 5.006;
 use strict;
 use warnings;
-use Carp;
 use File::Spec;
 use Config;
-# Similarly Scalar::Util
-# And then we need these games to avoid loading overload, as that will
-# confuse miniperl during the bootstrap of perl.
-my $Scalar_Util_loaded = eval q{ require Scalar::Util; require overload; 1 };
 our(@ISA, @EXPORT, @EXPORT_OK, $VERSION, $Too_Big, $Syscopy_is_copy);
 sub copy;
 sub syscopy;
@@ -28,7 +23,7 @@ sub mv;
 # package has not yet been updated to work with Perl 5.004, and so it
 # would be a Bad Thing for the CPAN module to grab it and replace this
 # module.  Therefore, we set this module's version higher than 2.0.
-$VERSION = '2.13';
+$VERSION = '2.11';
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -36,6 +31,16 @@ require Exporter;
 @EXPORT_OK = qw(cp mv);
 
 $Too_Big = 1024 * 1024 * 2;
+
+sub croak {
+    require Carp;
+    goto &Carp::croak;
+}
+
+sub carp {
+    require Carp;
+    goto &Carp::carp;
+}
 
 my $macfiles;
 if ($^O eq 'MacOS') {
@@ -60,16 +65,11 @@ sub _catname {
 }
 
 # _eq($from, $to) tells whether $from and $to are identical
+# works for strings and references
 sub _eq {
-    my ($from, $to) = map {
-        $Scalar_Util_loaded && Scalar::Util::blessed($_)
-	    && overload::Method($_, q{""})
-            ? "$_"
-            : $_
-    } (@_);
-    return '' if ( (ref $from) xor (ref $to) );
-    return $from == $to if ref $from;
-    return $from eq $to;
+    return $_[0] == $_[1] if ref $_[0] && ref $_[1];
+    return $_[0] eq $_[1] if !ref $_[0] && !ref $_[1];
+    return "";
 }
 
 sub copy {
@@ -78,12 +78,6 @@ sub copy {
 
     my $from = shift;
     my $to = shift;
-
-    my $size;
-    if (@_) {
-	$size = shift(@_) + 0;
-	croak("Bad buffer size for copy: $size\n") unless ($size > 0);
-    }
 
     my $from_a_handle = (ref($from)
 			 ? (ref($from) eq 'GLOB'
@@ -154,7 +148,7 @@ sub copy {
 
     my $closefrom = 0;
     my $closeto = 0;
-    my ($status, $r, $buf);
+    my ($size, $status, $r, $buf);
     local($\) = '';
 
     my $from_h;
@@ -163,17 +157,9 @@ sub copy {
     } else {
 	$from = _protect($from) if $from =~ /^\s/s;
        $from_h = \do { local *FH };
-       open $from_h, "<", $from or goto fail_open1;
+       open($from_h, "< $from\0") or goto fail_open1;
        binmode $from_h or die "($!,$^E)";
 	$closefrom = 1;
-    }
-
-    # Seems most logical to do this here, in case future changes would want to
-    # make this croak for some reason.
-    unless (defined $size) {
-	$size = tied(*$from_h) ? 0 : -s $from_h || 0;
-	$size = 1024 if ($size < 512);
-	$size = $Too_Big if ($size > $Too_Big);
     }
 
     my $to_h;
@@ -182,9 +168,18 @@ sub copy {
     } else {
 	$to = _protect($to) if $to =~ /^\s/s;
        $to_h = \do { local *FH };
-       open $to_h, ">", $to or goto fail_open2;
+       open($to_h,"> $to\0") or goto fail_open2;
        binmode $to_h or die "($!,$^E)";
 	$closeto = 1;
+    }
+
+    if (@_) {
+	$size = shift(@_) + 0;
+	croak("Bad buffer size for copy: $size\n") unless ($size > 0);
+    } else {
+	$size = tied(*$from_h) ? 0 : -s $from_h || 0;
+	$size = 1024 if ($size < 512);
+	$size = $Too_Big if ($size > $Too_Big);
     }
 
     $! = 0;

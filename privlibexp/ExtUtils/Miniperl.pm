@@ -59,6 +59,15 @@ static PerlInterpreter *my_perl;
 long _stksize = 64 * 1024;
 #endif
 
+#if defined(PERL_GLOBAL_STRUCT_PRIVATE)
+/* The static struct perl_vars* may seem counterproductive since the
+ * whole idea PERL_GLOBAL_STRUCT_PRIVATE was to avoid statics, but note
+ * that this static is not in the shared perl library, the globals PL_Vars
+ * and PL_VarsPtr will stay away. */
+static struct perl_vars* my_plvarsp;
+struct perl_vars* Perl_GetVarsPrivate(void) { return my_plvarsp; }
+#endif
+
 #ifdef NO_ENV_ARRAY_IN_MAIN
 extern char **environ;
 int
@@ -68,23 +77,18 @@ int
 main(int argc, char **argv, char **env)
 #endif
 {
+    dVAR;
     int exitstatus;
+#ifdef PERL_GLOBAL_STRUCT
+    struct perl_vars *plvarsp = init_global_struct();
+#  ifdef PERL_GLOBAL_STRUCT_PRIVATE
+    my_vars = my_plvarsp = plvarsp;
+#  endif
+#endif /* PERL_GLOBAL_STRUCT */
     (void)env;
 #ifndef PERL_USE_SAFE_PUTENV
     PL_use_safe_putenv = 0;
 #endif /* PERL_USE_SAFE_PUTENV */
-
-#ifdef PERL_GLOBAL_STRUCT
-#define PERLVAR(var,type) /**/
-#define PERLVARA(var,type) /**/
-#define PERLVARI(var,type,init) PL_Vars.var = init;
-#define PERLVARIC(var,type,init) PL_Vars.var = init;
-#include "perlvars.h"
-#undef PERLVAR
-#undef PERLVARA
-#undef PERLVARI
-#undef PERLVARIC
-#endif
 
     /* if user wants control of gprof profiling off by default */
     /* noop unless Configure is given -Accflags=-DPERL_GPROF_CONTROL */
@@ -96,7 +100,7 @@ main(int argc, char **argv, char **env)
     PERL_SYS_INIT3(&argc,&argv,&env);
 #endif
 
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
+#if defined(USE_ITHREADS)
     /* XXX Ideally, this should really be happening in perl_alloc() or
      * perl_construct() to keep libperl.a transparently fork()-safe.
      * It is currently done here only because Apache/mod_perl have
@@ -139,6 +143,10 @@ main(int argc, char **argv, char **env)
      */
     environ = env;
 #endif
+
+#ifdef PERL_GLOBAL_STRUCT
+    free_global_struct(plvarsp);
+#endif /* PERL_GLOBAL_STRUCT */
 
     PERL_SYS_TERM();
 

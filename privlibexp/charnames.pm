@@ -1,12 +1,10 @@
 package charnames;
 use strict;
 use warnings;
-use Carp;
 use File::Spec;
 our $VERSION = '1.06';
 
 use bytes ();		# for $bytes::hint_bits
-$charnames::hint_bits = 0x20000; # HINT_LOCALIZE_HH
 
 my %alias1 = (
 		# Icky 3.2 names with parentheses.
@@ -43,6 +41,16 @@ my %alias3 = (
 		# User defined aliasses. Even more convenient :)
 	    );
 my $txt;
+
+sub croak
+{
+  require Carp; goto &Carp::croak;
+} # croak
+
+sub carp
+{
+  require Carp; goto &Carp::carp;
+} # carp
 
 sub alias (@)
 {
@@ -183,7 +191,6 @@ sub import
   if (not @_) {
     carp("`use charnames' needs explicit imports list");
   }
-  $^H |= $charnames::hint_bits;
   $^H{charnames} = \&charnames ;
 
   ##
@@ -413,7 +420,6 @@ for ZERO WIDTH NON-JOINER and ZERO WIDTH JOINER.
 For backward compatibility one can use the old names for
 certain C0 and C1 controls
 
-    use charnames ();		# for $charnames::hint_bits
     old                         new
 
     HORIZONTAL TABULATION       CHARACTER TABULATION
@@ -505,7 +511,6 @@ following magic incantation:
 
     sub import {
 	shift;
-	$^H |= $charnames::hint_bits;
 	$^H{charnames} = \&translator;
     }
 

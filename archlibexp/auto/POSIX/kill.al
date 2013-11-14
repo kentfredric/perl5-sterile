@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 239 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/kill.al)"
+#line 234 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/kill.al)"
 sub kill {
     usage "kill(pid, sig)" if @_ != 2;
     CORE::kill $_[1], $_[0];

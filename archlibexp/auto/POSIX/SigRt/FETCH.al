@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1047 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/FETCH.al)"
+#line 1042 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/FETCH.al)"
 sub FETCH  { my $rtsig = &_check;
 	     my $oa = POSIX::SigAction->new();
 	     POSIX::sigaction($rtsig, undef, $oa);

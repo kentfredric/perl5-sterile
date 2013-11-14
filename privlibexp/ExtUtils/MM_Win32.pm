@@ -24,15 +24,17 @@ use File::Basename;
 use File::Spec;
 use ExtUtils::MakeMaker qw( neatvalue );
 
+use vars qw(@ISA $VERSION);
+
 require ExtUtils::MM_Any;
 require ExtUtils::MM_Unix;
-our @ISA = qw( ExtUtils::MM_Any ExtUtils::MM_Unix );
-our $VERSION = '6.48';
+@ISA = qw( ExtUtils::MM_Any ExtUtils::MM_Unix );
+$VERSION = '6.42';
 
 $ENV{EMXSHELL} = 'sh'; # to run `commands`
 
-my $BORLAND = $Config{'cc'} =~ /^bcc/i ? 1 : 0;
-my $GCC     = $Config{'cc'} =~ /^gcc/i ? 1 : 0;
+my $BORLAND = 1 if $Config{'cc'} =~ /^bcc/i;
+my $GCC     = 1 if $Config{'cc'} =~ /^gcc/i;
 
 
 =head2 Overridden methods
@@ -126,10 +128,12 @@ Using \ for Windows.
 sub init_DIRFILESEP {
     my($self) = shift;
 
+    my $make = $self->make;
+
     # The ^ makes sure its not interpreted as an escape in nmake
-    $self->{DIRFILESEP} = $self->is_make_type('nmake') ? '^\\' :
-                          $self->is_make_type('dmake') ? '\\\\'
-                                                       : '\\';
+    $self->{DIRFILESEP} = $make eq 'nmake' ? '^\\' :
+                          $make eq 'dmake' ? '\\\\'
+                                           : '\\';
 }
 
 =item B<init_others>
@@ -232,7 +236,7 @@ sub special_targets {
 
     my $make_frag = $self->SUPER::special_targets;
 
-    $make_frag .= <<'MAKE_FRAG' if $self->is_make_type('dmake');
+    $make_frag .= <<'MAKE_FRAG' if $self->make eq 'dmake';
 .USESHELL :
 MAKE_FRAG
 
@@ -327,7 +331,7 @@ $(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).
     } elsif ($BORLAND) {
       push(@m,
        q{	$(LD) $(LDDLFLAGS) $(OTHERLDFLAGS) }.$ldfrom.q{,$@,,}
-       .($self->is_make_type('dmake')
+       .($self->make eq 'dmake' 
                 ? q{$(PERL_ARCHIVE:s,/,\,) $(LDLOADLIBS:s,/,\,) }
 		 .q{$(MYEXTLIB:s,/,\,),$(EXPORT_LIST:s,/,\,)}
 		: q{$(subst /,\,$(PERL_ARCHIVE)) $(subst /,\,$(LDLOADLIBS)) }
@@ -415,7 +419,7 @@ banner.
 
 sub pasthru {
     my($self) = shift;
-    return "PASTHRU = " . ($self->is_make_type('nmake') ? "-nologo" : "");
+    return "PASTHRU = " . ($self->make eq 'nmake' ? "-nologo" : "");
 }
 
 
@@ -454,7 +458,7 @@ sub quote_literal {
     # quotes; however it transforms {{ into { either inside and outside double
     # quotes.  It also translates }} into }.  The escaping below is not
     # 100% correct.
-    if( $self->is_make_type('dmake') ) {
+    if( $self->make eq 'dmake' ) {
         $text =~ s/{/{{/g;
         $text =~ s/}}/}}}/g;
     }
@@ -490,7 +494,7 @@ NOTE: This only works with simple relative directories.  Throw it an absolute di
 sub cd {
     my($self, $dir, @cmds) = @_;
 
-    return $self->SUPER::cd($dir, @cmds) unless $self->is_make_type('nmake');
+    return $self->SUPER::cd($dir, @cmds) unless $self->make eq 'nmake';
 
     my $cmd = join "\n\t", map "$_", @cmds;
 
@@ -558,11 +562,6 @@ OPTIMIZE = $self->{OPTIMIZE}
 PERLTYPE = $self->{PERLTYPE}
 };
 
-}
-
-sub is_make_type {
-    my($self, $type) = @_;
-    return !! ($self->make =~ /\b$type(?:\.exe)?$/);
 }
 
 1;

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 97 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/redef.al)"
+#line 92 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/redef.al)"
 sub redef {
     my ($mess) = @_;
     croak "Use method $mess instead";

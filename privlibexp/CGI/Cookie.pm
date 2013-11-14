@@ -13,7 +13,7 @@ package CGI::Cookie;
 # wish, but if you redistribute a modified version, please attach a note
 # listing the modifications you have made.
 
-$CGI::Cookie::VERSION='1.29';
+$CGI::Cookie::VERSION='1.28';
 
 use CGI::Util qw(rearrange unescape escape);
 use CGI;
@@ -51,7 +51,7 @@ sub fetch {
    my %results;
    my($key,$value);
    
-   my @pairs = split("[;,] ?",$raw_cookie);
+   my(@pairs) = split("[;,] ?",$raw_cookie);
    foreach (@pairs) {
      s/\s*(.*?)\s*/$1/;
      if (/^([^=]+)=(.*)/) {
@@ -88,7 +88,7 @@ sub parse {
   my ($self,$raw_cookie) = @_;
   my %results;
 
-  my @pairs = split("[;,] ?",$raw_cookie);
+  my(@pairs) = split("; ?",$raw_cookie);
   foreach (@pairs) {
     s/\s*(.*?)\s*/$1/;
     my($key,$value) = split("=",$_,2);
@@ -470,7 +470,7 @@ same semantics as fetch(), but performs no unescaping.
 You may also retrieve cookies that were stored in some external
 form using the parse() class method:
 
-       $COOKIES = `cat /some/path/Cookie_stash`;
+       $COOKIES = `cat /usr/tmp/Cookie_stash`;
        %cookies = parse CGI::Cookie($COOKIES);
 
 If you are in a mod_perl environment, you can save some overhead by

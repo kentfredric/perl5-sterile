@@ -3,7 +3,7 @@ package Test::Harness::Results;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.01_01';
+$VERSION = '0.01';
 
 =head1 NAME
 

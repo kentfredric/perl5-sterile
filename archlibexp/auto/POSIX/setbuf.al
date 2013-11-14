@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 748 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/setbuf.al)"
+#line 743 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/setbuf.al)"
 sub setbuf {
     redef "IO::Handle::setbuf()";
 }

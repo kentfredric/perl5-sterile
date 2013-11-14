@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 542 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strcspn.al)"
+#line 537 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strcspn.al)"
 sub strcspn {
     unimpl "strcspn() is C-specific, use regular expressions instead";
 }

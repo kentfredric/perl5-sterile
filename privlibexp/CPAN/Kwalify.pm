@@ -49,7 +49,7 @@ use strict;
 
 package CPAN::Kwalify;
 use vars qw($VERSION $VAR1);
-$VERSION = "5.50";
+$VERSION = sprintf "%.6f", substr(q$Rev: 1418 $,4)/1000000 + 5.4;
 
 use File::Spec ();
 
@@ -85,9 +85,7 @@ sub _validate {
                 };
                 $VAR1 = undef;
                 eval $content;
-                if (my $err = $@) {
-                    die "parsing of '$schema_name.dd' failed: $err";
-                }
+                die "parsing of '$schema_name.dd' failed: $@" if $@;
                 $schema_loaded->{$schema_name} = $VAR1;
             }
         }
@@ -99,9 +97,8 @@ sub _validate {
         }
         return if $vcache{$abs}{$mtime}{$y}++;
         eval { Kwalify::validate($schema, $data) };
-        if (my $err = $@) {
-            my $info = {}; yaml($schema_name, info => $info);
-            die "validation of distropref '$abs'[$y] against schema '$info->{path}' failed: $err";
+        if ($@) {
+            die "validation of distropref '$abs'[$y] failed: $@";
         }
     }
 }
@@ -111,14 +108,11 @@ sub _clear_cache {
 }
 
 sub yaml {
-    my($schema_name, %opt) = @_;
+    my($schema_name) = @_;
     my $content = do {
         my $path = __FILE__;
         $path =~ s/\.pm$//;
         $path = File::Spec->catfile($path, "$schema_name.yml");
-        if ($opt{info}) {
-            $opt{info}{path} = $path;
-        }
         local *FH;
         open FH, $path or die "Could not open '$path': $!";
         local $/;

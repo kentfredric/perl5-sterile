@@ -4,10 +4,10 @@
 
 #
 # This file supports:
-# 	\p{InCyrillicExtendedB} (and fuzzy permutations)
+# 	\p{InCyrillicSupplement} (and fuzzy permutations)
 # 
-# Meaning: Block 'Cyrillic Extended-B'
+# Meaning: Block 'Cyrillic Supplement'
 #
 return <<'END';
-A640	A69F	Cyrillic Extended-B
+0500	052F	Cyrillic Supplement
 END

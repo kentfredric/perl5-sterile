@@ -212,7 +212,7 @@ them in big-endian mode.  To avoid this problem in network (socket)
 connections use the C<pack> and C<unpack> formats C<n> and C<N>, the
 "network" orders.  These are guaranteed to be portable.
 
-As of perl 5.8.5, you can also use the C<E<gt>> and C<E<lt>> modifiers
+As of perl 5.9.2, you can also use the C<E<gt>> and C<E<lt>> modifiers
 to force big- or little-endian byte-order.  This is useful if you want
 to store signed integers or 64-bit integers, for example.
 
@@ -432,6 +432,16 @@ case-preserving.  Don't try to clear %ENV by saying C<%ENV = ();>, or,
 if you really have to, make it conditional on C<$^O ne 'VMS'> since in
 VMS the C<%ENV> table is much more than a per-process key-value string
 table.
+
+On VMS, some entries in the %ENV hash are dynamically created when
+their key is used on a read if they did not previously exist.  The
+values for C<$ENV{HOME}>, C<$ENV{TERM}>, C<$ENV{HOME}>, and C<$ENV{USER}>,
+are known to be dynamically generated.  The specific names that are
+dynamically generated may vary with the version of the C library on VMS,
+and more may exist than is documented.
+
+On VMS by default, changes to the %ENV hash are persistent after the process
+exits.  This can cause unintended issues.
 
 Don't count on signals or C<%SIG> for anything.
 
@@ -1249,15 +1259,7 @@ names, because the VOS port of Perl interprets it as a pathname
 delimiting character, VOS files, directories, or links whose names
 contain a slash character cannot be processed.  Such files must be
 renamed before they can be processed by Perl.  Note that VOS limits
-file names to 32 or fewer characters, file names cannot start with a
-C<-> character, or contain any character matching C<< tr/ !%&'()*+;<>?// >>
-
-Perl on VOS can be built using two different compilers and two different
-versions of the POSIX runtime.  The recommended method for building full
-Perl is with the GNU C compiler and the generally-available version of
-VOS POSIX support.  See F<README.vos> (installed as L<perlvos>) for
-restrictions that apply when Perl is built using the VOS Standard C
-compiler or the alpha version of VOS POSIX support.
+file names to 32 or fewer characters.
 
 The value of C<$^O> on VOS is "VOS".  To determine the architecture that
 you are running on without resorting to loading all of C<%Config> you
@@ -1268,19 +1270,6 @@ can examine the content of the @INC array like so:
     } else {
         print "I'm not on a Stratus box!\n";
         die;
-    }
-
-    if (grep(/860/, @INC)) {
-        print "This box is a Stratus XA/R!\n";
-
-    } elsif (grep(/7100/, @INC)) {
-        print "This box is a Stratus HP 7100 or 8xxx!\n";
-
-    } elsif (grep(/8000/, @INC)) {
-        print "This box is a Stratus HP 8xxx!\n";
-
-    } else {
-        print "This box is a Stratus 68K!\n";
     }
 
 Also see:
@@ -1591,11 +1580,6 @@ C<-r>, C<-w>, and C<-x> have a limited meaning only; directories
 and applications are executable, and there are no uid/gid
 considerations.  C<-o> is not supported.  (S<Mac OS>)
 
-C<-w> only inspects the read-only file attribute (FILE_ATTRIBUTE_READONLY),
-which determines whether the directory can be deleted, not whether it can
-be written to. Directories always have read and write access unless denied
-by discretionary access control lists (DACLs).  (S<Win32>)
-
 C<-r>, C<-w>, C<-x>, and C<-o> tell whether the file is accessible,
 which may not reflect UIC-based file protections.  (VMS)
 
@@ -1627,17 +1611,6 @@ suffixes.  C<-S> is meaningless.  (Win32)
 
 C<-x> (or C<-X>) determine if a file has an executable file type.
 (S<RISC OS>)
-
-=item atan2 Y,X
-
-Due to issues with various CPUs, math libraries, compilers, and standards,
-results for C<atan2()> may vary depending on any combination of the above.
-Perl attempts to conform to the Open Group/IEEE standards for the results
-returned from C<atan2()>, but cannot force the issue if the system Perl is
-run on does not allow it.  (Tru64, HP-UX 10.20) 
-
-The current version of the standards for C<atan2()> is available at 
-L<http://www.opengroup.org/onlinepubs/009695399/functions/atan2.html>.
 
 =item atan2
 
@@ -1678,9 +1651,11 @@ in the SYSTEM environment settings.  (Cygwin)
 
 =item chown
 
-Not implemented. (S<Mac OS>, Win32, S<Plan 9>, S<RISC OS>, VOS)
+Not implemented. (S<Mac OS>, Win32, S<Plan 9>, S<RISC OS>)
 
 Does nothing, but won't fail. (Win32)
+
+A little funky, because VOS's notion of ownership is a little funky (VOS).
 
 =item chroot
 
@@ -1690,8 +1665,6 @@ Not implemented. (S<Mac OS>, Win32, VMS, S<Plan 9>, S<RISC OS>, VOS, VM/ESA)
 
 May not be available if library or source was not provided when building
 perl. (Win32)
-
-Not implemented. (VOS)
 
 =item dbmclose
 
@@ -1745,7 +1718,7 @@ Available only on Windows NT (not on Windows 95). (Win32)
 
 =item fork
 
-Not implemented. (S<Mac OS>, AmigaOS, S<RISC OS>, VOS, VM/ESA, VMS)
+Not implemented. (S<Mac OS>, AmigaOS, S<RISC OS>, VM/ESA, VMS)
 
 Emulated using multiple interpreters.  See L<perlfork>.  (Win32)
 
@@ -1758,7 +1731,7 @@ Not implemented. (S<Mac OS>, S<RISC OS>)
 
 =item getpgrp
 
-Not implemented. (S<Mac OS>, Win32, VMS, S<RISC OS>, VOS)
+Not implemented. (S<Mac OS>, Win32, VMS, S<RISC OS>)
 
 =item getppid
 
@@ -1996,7 +1969,7 @@ Not implemented. (S<Mac OS>, Win32, VMS, S<RISC OS>, VOS)
 
 =item setgrent
 
-Not implemented. (S<Mac OS>, MPE/iX, VMS, Win32, S<RISC OS>)
+Not implemented. (S<Mac OS>, MPE/iX, VMS, Win32, S<RISC OS>, VOS)
 
 =item setpgrp
 
@@ -2008,7 +1981,7 @@ Not implemented. (S<Mac OS>, Win32, VMS, S<RISC OS>, VOS)
 
 =item setpwent
 
-Not implemented. (S<Mac OS>, MPE/iX, Win32, S<RISC OS>)
+Not implemented. (S<Mac OS>, MPE/iX, Win32, S<RISC OS>, VOS)
 
 =item setsockopt
 
@@ -2031,7 +2004,7 @@ be implemented even in UNIX platforms.
 
 =item socketpair
 
-Not implemented. (S<RISC OS>, VOS, VM/ESA)
+Not implemented. (Win32, S<RISC OS>, VOS, VM/ESA)
 
 Available on 64 bit OpenVMS 8.2 and later.  (VMS)
 
@@ -2068,7 +2041,10 @@ not performing this operation. (Win32)
 
 =item symlink
 
-Not implemented. (Win32, VMS, S<RISC OS>)
+Not implemented. (Win32, S<RISC OS>)
+
+Implemented on 64 bit VMS 8.3.  VMS requires the symbolic link to be in Unix
+syntax if it is intended to resolve to a valid path.
 
 =item syscall
 
@@ -2134,7 +2110,7 @@ Not useful. (S<RISC OS>)
 
 Not implemented. (Older versions of VMS)
 
-Truncation to zero-length only. (VOS)
+Truncation to same-or-shorter lengths only. (VOS)
 
 If a FILEHANDLE is supplied, it must be writable and opened in append
 mode (i.e., use C<<< open(FH, '>>filename') >>>
@@ -2162,7 +2138,7 @@ two seconds. (Win32)
 
 =item waitpid
 
-Not implemented. (S<Mac OS>, VOS)
+Not implemented. (S<Mac OS>)
 
 Can only be applied to process handles returned for processes spawned
 using C<system(1, ...)> or pseudo processes created with C<fork()>. (Win32)
@@ -2174,8 +2150,8 @@ Not useful. (S<RISC OS>)
 
 =head1 Supported Platforms
 
-As of September 2003 (the Perl release 5.8.1), the following platforms
-are able to build Perl from the standard source code distribution
+As of July 2002 (the Perl release 5.8.0), the following platforms are
+able to build Perl from the standard source code distribution
 available at http://www.cpan.org/src/index.html
 
         AIX
@@ -2191,7 +2167,6 @@ available at http://www.cpan.org/src/index.html
         HP-UX
         IRIX
         Linux
-        LynxOS
         Mac OS Classic
         Mac OS X        (Darwin)
         MPE/iX
@@ -2210,7 +2185,6 @@ available at http://www.cpan.org/src/index.html
         Solaris
         SunOS 4
         SUPER-UX        (NEC)
-        SVR4
         Tru64 UNIX      (formerly DEC OSF/1, Digital UNIX)
         UNICOS
         UNICOS/mk
@@ -2226,18 +2200,21 @@ available at http://www.cpan.org/src/index.html
 
 The following platforms worked with the previous releases (5.6 and
 5.7), but we did not manage either to fix or to test these in time
-for the 5.8.1 release.  There is a very good chance that many of these
-will work fine with the 5.8.1.
+for the 5.8.0 release.  There is a very good chance that many of these
+will work fine with the 5.8.0.
 
+        BSD/OS
         DomainOS
         Hurd
+        LynxOS
         MachTen
         PowerMAX
         SCO SV
+        SVR4
         Unixware
         Windows 3.1
 
-Known to be broken for 5.8.0 and 5.8.1 (but 5.6.1 and 5.7.2 can be used):
+Known to be broken for 5.8.0 (but 5.6.1 and 5.7.2 can be used):
 
 	AmigaOS
 
@@ -2325,7 +2302,7 @@ Andy Dougherty <doughera@lafayette.edu>,
 Dominic Dunlop <domo@computer.org>,
 Neale Ferguson <neale@vma.tabnsw.com.au>,
 David J. Fiander <davidf@mks.com>,
-Paul Green <Paul_Green@stratus.com>,
+Paul Green <Paul.Green@stratus.com>,
 M.J.T. Guy <mjtg@cam.ac.uk>,
 Jarkko Hietaniemi <jhi@iki.fi>,
 Luther Huffman <lutherh@stratcom.com>,

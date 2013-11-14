@@ -14,7 +14,7 @@ return <<'END';
 11A8	11F9	Hangul
 3131	318E	Hangul
 3200	321E	Hangul
-3260	327E	Hangul
+3260	327D	Hangul
 AC00	D7A3	Hangul
 FFA0	FFBE	Hangul
 FFC2	FFC7	Hangul

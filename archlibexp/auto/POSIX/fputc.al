@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 289 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fputc.al)"
+#line 284 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fputc.al)"
 sub fputc {
     unimpl "fputc() is C-specific--use print instead";
 }

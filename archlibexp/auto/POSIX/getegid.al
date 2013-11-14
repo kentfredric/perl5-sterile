@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 687 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getegid.al)"
+#line 682 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getegid.al)"
 sub getegid {
     usage "getegid()" if @_ != 0;
     $) + 0;

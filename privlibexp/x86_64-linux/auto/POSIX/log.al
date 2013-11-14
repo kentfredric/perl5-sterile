@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 193 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/log.al)"
+#line 188 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/log.al)"
 sub log {
     usage "log(x)" if @_ != 1;
     CORE::log($_[0]);

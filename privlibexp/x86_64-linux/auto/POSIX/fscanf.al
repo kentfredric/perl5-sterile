@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 305 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fscanf.al)"
+#line 300 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fscanf.al)"
 sub fscanf {
     unimpl "fscanf() is C-specific--use <> and regular expressions instead";
 }

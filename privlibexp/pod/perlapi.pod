@@ -237,7 +237,7 @@ X<av_len>
 Returns the highest index in the array.  The number of elements in the
 array is C<av_len(av) + 1>.  Returns -1 if the array is empty.
 
-	I32	av_len(AV* ar)
+	I32	av_len(const AV* ar)
 
 =for hackers
 Found in file av.c
@@ -279,8 +279,7 @@ Found in file av.c
 =item av_shift
 X<av_shift>
 
-Shifts an SV off the beginning of the array. Returns C<&PL_sv_undef> if the 
-array is empty.
+Shifts an SV off the beginning of the array.
 
 	SV*	av_shift(AV* ar)
 
@@ -359,9 +358,20 @@ Sort an array. Here is an example:
 
     sortsv(AvARRAY(av), av_len(av)+1, Perl_sv_cmp_locale);
 
-See lib/sort.pm for details about controlling the sorting algorithm.
+Currently this always uses mergesort. See sortsv_flags for a more
+flexible routine.
 
 	void	sortsv(SV** array, size_t num_elts, SVCOMPARE_t cmp)
+
+=for hackers
+Found in file pp_sort.c
+
+=item sortsv_flags
+X<sortsv_flags>
+
+Sort an array, with various options.
+
+	void	sortsv_flags(SV** array, size_t num_elts, SVCOMPARE_t cmp, U32 flags)
 
 =for hackers
 Found in file pp_sort.c
@@ -418,7 +428,7 @@ L<perlcall>.
 
 NOTE: the perl_ form of this function is deprecated.
 
-	I32	call_sv(SV* sv, VOL I32 flags)
+	I32	call_sv(SV* sv, I32 flags)
 
 =for hackers
 Found in file perl.c
@@ -595,31 +605,31 @@ Create and return a new interpreter by cloning the current one.
 
 perl_clone takes these flags as parameters:
 
-CLONEf_COPY_STACKS - is used to, well, copy the stacks also, 
-without it we only clone the data and zero the stacks, 
-with it we copy the stacks and the new perl interpreter is 
-ready to run at the exact same point as the previous one. 
-The pseudo-fork code uses COPY_STACKS while the 
+CLONEf_COPY_STACKS - is used to, well, copy the stacks also,
+without it we only clone the data and zero the stacks,
+with it we copy the stacks and the new perl interpreter is
+ready to run at the exact same point as the previous one.
+The pseudo-fork code uses COPY_STACKS while the
 threads->create doesn't.
 
 CLONEf_KEEP_PTR_TABLE
-perl_clone keeps a ptr_table with the pointer of the old 
-variable as a key and the new variable as a value, 
-this allows it to check if something has been cloned and not 
-clone it again but rather just use the value and increase the 
-refcount. If KEEP_PTR_TABLE is not set then perl_clone will kill 
-the ptr_table using the function 
-C<ptr_table_free(PL_ptr_table); PL_ptr_table = NULL;>, 
-reason to keep it around is if you want to dup some of your own 
-variable who are outside the graph perl scans, example of this 
+perl_clone keeps a ptr_table with the pointer of the old
+variable as a key and the new variable as a value,
+this allows it to check if something has been cloned and not
+clone it again but rather just use the value and increase the
+refcount. If KEEP_PTR_TABLE is not set then perl_clone will kill
+the ptr_table using the function
+C<ptr_table_free(PL_ptr_table); PL_ptr_table = NULL;>,
+reason to keep it around is if you want to dup some of your own
+variable who are outside the graph perl scans, example of this
 code is in threads.xs create
 
 CLONEf_CLONE_HOST
-This is a win32 thing, it is ignored on unix, it tells perls 
-win32host code (which is c++) to clone itself, this is needed on 
-win32 if you want to run two threads at the same time, 
-if you just want to do some stuff in a separate perl interpreter 
-and then throw it away and return to the original one, 
+This is a win32 thing, it is ignored on unix, it tells perls
+win32host code (which is c++) to clone itself, this is needed on
+win32 if you want to run two threads at the same time,
+if you just want to do some stuff in a separate perl interpreter
+and then throw it away and return to the original one,
 you don't need to do anything.
 
 	PerlInterpreter*	perl_clone(PerlInterpreter* interp, UV flags)
@@ -805,6 +815,9 @@ Found in file perl.c
 =item pv_display
 X<pv_display>
 
+  char *pv_display(SV *dsv, const char *pv, STRLEN cur, STRLEN len,
+                   STRLEN pvlim, U32 flags)
+
 Similar to
 
   pv_escape(dsv,pv,cur,pvlim,PERL_PV_ESCAPE_QUOTE);
@@ -814,13 +827,16 @@ len > cur and pv[cur] is "\0".
 
 Note that the final string may be up to 7 chars longer than pvlim.
 
-	char*	pv_display(SV *dsv, char *pv, STRLEN cur, STRLEN len, STRLEN pvlim)
+	char*	pv_display(SV *dsv, const char *pv, STRLEN cur, STRLEN len, STRLEN pvlim)
 
 =for hackers
 Found in file dump.c
 
 =item pv_escape
 X<pv_escape>
+
+               |const STRLEN count|const STRLEN max
+               |STRLEN const *escaped, const U32 flags
 
 Escapes at most the first "count" chars of pv and puts the results into
 dsv such that the size of the escaped string will not exceed "max" chars
@@ -850,7 +866,13 @@ sequence. Thus the output will either be a single char,
 an octal escape sequence, a special escape like C<\n> or a 3 or 
 more digit hex value. 
 
+If PERL_PV_ESCAPE_RE is set then the escape char used will be a '%' and
+not a '\\'. This is because regexes very often contain backslashed
+sequences, whereas '%' is not a particularly common character in patterns.
+
 Returns a pointer to the escaped text as held by dsv.
+
+NOTE: the perl_ form of this function is deprecated.
 
 	char*	pv_escape(SV *dsv, char const * const str, const STRLEN count, const STRLEN max, STRLEN * const escaped, const U32 flags)
 
@@ -860,25 +882,31 @@ Found in file dump.c
 =item pv_pretty
 X<pv_pretty>
 
+           |const STRLEN count|const STRLEN max\
+           |const char const *start_color| const char const *end_color\
+           |const U32 flags
+
 Converts a string into something presentable, handling escaping via
-pv_escape() and supporting quoting and elipses. 
+pv_escape() and supporting quoting and ellipses.
 
 If the PERL_PV_PRETTY_QUOTE flag is set then the result will be 
 double quoted with any double quotes in the string escaped. Otherwise
 if the PERL_PV_PRETTY_LTGT flag is set then the result be wrapped in
 angle brackets. 
            
-If the PERL_PV_PRETTY_ELIPSES flag is set and not all characters in
-string were output then an elipses C<...> will be appended to the 
+If the PERL_PV_PRETTY_ELLIPSES flag is set and not all characters in
+string were output then an ellipsis C<...> will be appended to the
 string. Note that this happens AFTER it has been quoted.
            
 If start_color is non-null then it will be inserted after the opening
 quote (if there is one) but before the escaped text. If end_color
 is non-null then it will be inserted after the escaped text but before
-any quotes or elipses.
+any quotes or ellipses.
 
 Returns a pointer to the prettified text as held by dsv.
            
+NOTE: the perl_ form of this function is deprecated.
+
 	char*	pv_pretty(SV *dsv, char const * const str, const STRLEN count, const STRLEN max, char const * const start_color, char const * const end_color, const U32 flags)
 
 =for hackers
@@ -908,7 +936,7 @@ X<pack_cat>
 The engine implementing pack() Perl function. Note: parameters next_in_list and
 flags are not used. This call should not be used; use packlist instead.
 
-	void	pack_cat(SV *cat, char *pat, char *patend, SV **beglist, SV **endlist, SV ***next_in_list, U32 flags)
+	void	pack_cat(SV *cat, const char *pat, const char *patend, SV **beglist, SV **endlist, SV ***next_in_list, U32 flags)
 
 =for hackers
 Found in file mathoms.c
@@ -1157,7 +1185,7 @@ X<unpack_str>
 The engine implementing unpack() Perl function. Note: parameters strbeg, new_s
 and ocnt are not used. This call should not be used, use unpackstring instead.
 
-	I32	unpack_str(char *pat, char *patend, char *s, char *strbeg, char *strend, char **new_s, I32 ocnt, U32 flags)
+	I32	unpack_str(const char *pat, const char *patend, const char *s, const char *strbeg, const char *strend, char **new_s, I32 ocnt, U32 flags)
 
 =for hackers
 Found in file mathoms.c
@@ -1197,7 +1225,7 @@ X<packlist>
 
 The engine implementing pack() Perl function.
 
-	void	packlist(SV *cat, char *pat, char *patend, SV **beglist, SV **endlist)
+	void	packlist(SV *cat, const char *pat, const char *patend, SV **beglist, SV **endlist)
 
 =for hackers
 Found in file pp_pack.c
@@ -1209,76 +1237,10 @@ The engine implementing unpack() Perl function. C<unpackstring> puts the
 extracted list items on the stack and returns the number of elements.
 Issue C<PUTBACK> before and C<SPAGAIN> after the call to this function.
 
-	I32	unpackstring(char *pat, char *patend, char *s, char *strend, U32 flags)
+	I32	unpackstring(const char *pat, const char *patend, const char *s, const char *strend, U32 flags)
 
 =for hackers
 Found in file pp_pack.c
-
-
-=back
-
-=head1 Global Variables
-
-=over 8
-
-=item PL_modglobal
-X<PL_modglobal>
-
-C<PL_modglobal> is a general purpose, interpreter global HV for use by
-extensions that need to keep information on a per-interpreter basis.
-In a pinch, it can also be used as a symbol table for extensions
-to share data among each other.  It is a good idea to use keys
-prefixed by the package name of the extension that owns the data.
-
-	HV*	PL_modglobal
-
-=for hackers
-Found in file intrpvar.h
-
-=item PL_na
-X<PL_na>
-
-A convenience variable which is typically used with C<SvPV> when one
-doesn't care about the length of the string.  It is usually more efficient
-to either declare a local variable and use that instead or to use the
-C<SvPV_nolen> macro.
-
-	STRLEN	PL_na
-
-=for hackers
-Found in file thrdvar.h
-
-=item PL_sv_no
-X<PL_sv_no>
-
-This is the C<false> SV.  See C<PL_sv_yes>.  Always refer to this as
-C<&PL_sv_no>.
-
-	SV	PL_sv_no
-
-=for hackers
-Found in file intrpvar.h
-
-=item PL_sv_undef
-X<PL_sv_undef>
-
-This is the C<undef> SV.  Always refer to this as C<&PL_sv_undef>.
-
-	SV	PL_sv_undef
-
-=for hackers
-Found in file intrpvar.h
-
-=item PL_sv_yes
-X<PL_sv_yes>
-
-This is the C<true> SV.  See C<PL_sv_no>.  Always refer to this as
-C<&PL_sv_yes>.
-
-	SV	PL_sv_yes
-
-=for hackers
-Found in file intrpvar.h
 
 
 =back
@@ -1320,7 +1282,7 @@ accessible via @ISA and UNIVERSAL::.
 The argument C<level> should be either 0 or -1.  If C<level==0>, as a
 side-effect creates a glob with the given C<name> in the given C<stash>
 which in the case of success contains an alias for the subroutine, and sets
-up caching info for this glob.  Similarly for all the searched stashes.
+up caching info for this glob.
 
 This function grants C<"SUPER"> token as a postfix of the stash name. The
 GV returned from C<gv_fetchmeth> may be a method cache entry, which is not
@@ -1550,11 +1512,7 @@ variable C<PL_na>, though this is rather less efficient than using a local
 variable.  Remember though, that hash keys in perl are free to contain
 embedded nulls, so using C<strlen()> or similar is not a good way to find
 the length of hash keys. This is very similar to the C<SvPV()> macro
-described elsewhere in this document. See also C<HeUTF8>.
-
-If you are using C<HePV> to get values to pass to C<newSVpvn()> to create a
-new SV, you should consider using C<newSVhek(HeKEY_hek(he))> as it is more
-efficient.
+described elsewhere in this document.
 
 	char*	HePV(HE* he, STRLEN len)
 
@@ -1591,20 +1549,6 @@ indicate the presence of an C<SV*> key, and returns the same
 C<SV*>.
 
 	SV*	HeSVKEY_set(HE* he, SV* sv)
-
-=for hackers
-Found in file hv.h
-
-=item HeUTF8
-X<HeUTF8>
-
-Returns whether the C<char *> value returned by C<HePV> is encoded in UTF-8,
-doing any necessary dereferencing of possibly C<SV*> keys.  The value returned
-will be 0 or non-0, not necessarily 1 (or even a value with any low bits set),
-so B<do not> blindly assign this to a C<bool> variable, as C<bool> may be a
-typedef for C<char>.
-
-	char*	HeUTF8(HE* he, STRLEN len)
 
 =for hackers
 Found in file hv.h
@@ -2002,7 +1946,7 @@ X<mg_find>
 
 Finds the magic pointer for type matching the SV.  See C<sv_magic>.
 
-	MAGIC*	mg_find(SV* sv, int type)
+	MAGIC*	mg_find(const SV* sv, int type)
 
 =for hackers
 Found in file mg.c
@@ -2522,6 +2466,45 @@ C<sv_vcatpvf> instead, or getting C<vsnprintf>.
 =for hackers
 Found in file util.c
 
+=item new_version
+X<new_version>
+
+Returns a new version object based on the passed in SV:
+
+    SV *sv = new_version(SV *ver);
+
+Does not alter the passed in ver SV.  See "upg_version" if you
+want to upgrade the SV.
+
+	SV*	new_version(SV *ver)
+
+=for hackers
+Found in file util.c
+
+=item scan_version
+X<scan_version>
+
+Returns a pointer to the next character after the parsed
+version string, as well as upgrading the passed in SV to
+an RV.
+
+Function must be called with an already existing SV like
+
+    sv = newSV(0);
+    s = scan_version(s, SV *sv, bool qv);
+
+Performs some preprocessing to the string to ensure that
+it has the correct characteristics of a version.  Flags the
+object if it contains an underscore (which denotes this
+is an alpha version).  The boolean qv denotes that the version
+should be interpreted as if it had multiple decimals, even if
+it doesn't.
+
+	const char*	scan_version(const char *vstr, SV *sv, bool qv)
+
+=for hackers
+Found in file util.c
+
 =item strEQ
 X<strEQ>
 
@@ -2637,6 +2620,152 @@ potentially warn under some level of strict-ness.
 =for hackers
 Found in file util.c
 
+=item upg_version
+X<upg_version>
+
+In-place upgrade of the supplied SV to a version object.
+
+    SV *sv = upg_version(SV *sv, bool qv);
+
+Returns a pointer to the upgraded SV.  Set the boolean qv if you want
+to force this SV to be interpreted as an "extended" version.
+
+	SV*	upg_version(SV *ver, bool qv)
+
+=for hackers
+Found in file util.c
+
+=item vcmp
+X<vcmp>
+
+Version object aware cmp.  Both operands must already have been 
+converted into version objects.
+
+	int	vcmp(SV *lvs, SV *rvs)
+
+=for hackers
+Found in file util.c
+
+=item vnormal
+X<vnormal>
+
+Accepts a version object and returns the normalized string
+representation.  Call like:
+
+    sv = vnormal(rv);
+
+NOTE: you can pass either the object directly or the SV
+contained within the RV.
+
+	SV*	vnormal(SV *vs)
+
+=for hackers
+Found in file util.c
+
+=item vnumify
+X<vnumify>
+
+Accepts a version object and returns the normalized floating
+point representation.  Call like:
+
+    sv = vnumify(rv);
+
+NOTE: you can pass either the object directly or the SV
+contained within the RV.
+
+	SV*	vnumify(SV *vs)
+
+=for hackers
+Found in file util.c
+
+=item vstringify
+X<vstringify>
+
+In order to maintain maximum compatibility with earlier versions
+of Perl, this function will return either the floating point
+notation or the multiple dotted notation, depending on whether
+the original version contained 1 or more dots, respectively
+
+	SV*	vstringify(SV *vs)
+
+=for hackers
+Found in file util.c
+
+=item vverify
+X<vverify>
+
+Validates that the SV contains a valid version object.
+
+    bool vverify(SV *vobj);
+
+Note that it only confirms the bare minimum structure (so as not to get
+confused by derived classes which may contain additional hash entries):
+
+	bool	vverify(SV *vs)
+
+=for hackers
+Found in file util.c
+
+
+=back
+
+=head1 MRO Functions
+
+=over 8
+
+=item mro_get_linear_isa
+X<mro_get_linear_isa>
+
+Returns either C<mro_get_linear_isa_c3> or
+C<mro_get_linear_isa_dfs> for the given stash,
+dependant upon which MRO is in effect
+for that stash.  The return value is a
+read-only AV*.
+
+You are responsible for C<SvREFCNT_inc()> on the
+return value if you plan to store it anywhere
+semi-permanently (otherwise it might be deleted
+out from under you the next time the cache is
+invalidated).
+
+	AV*	mro_get_linear_isa(HV* stash)
+
+=for hackers
+Found in file mro.c
+
+=item mro_method_changed_in
+X<mro_method_changed_in>
+
+Invalidates method caching on any child classes
+of the given stash, so that they might notice
+the changes in this one.
+
+Ideally, all instances of C<PL_sub_generation++> in
+perl source outside of C<mro.c> should be
+replaced by calls to this.
+
+Perl automatically handles most of the common
+ways a method might be redefined.  However, there
+are a few ways you could change a method in a stash
+without the cache code noticing, in which case you
+need to call this method afterwards:
+
+1) Directly manipulating the stash HV entries from
+XS code.
+
+2) Assigning a reference to a readonly scalar
+constant into a stash entry in order to create
+a constant subroutine (like constant.pm
+does).
+
+This same method is available from pure perl
+via, C<mro::method_changed_in(classname)>.
+
+	void	mro_method_changed_in(HV* stash)
+
+=for hackers
+Found in file mro.c
+
 
 =back
 
@@ -2717,7 +2846,7 @@ C<PERL_SCAN_DISALLOW_PREFIX> is set in I<*flags> on entry. If
 C<PERL_SCAN_ALLOW_UNDERSCORES> is set in I<*flags> then the binary
 number may use '_' characters to separate digits.
 
-	UV	grok_bin(char* start, STRLEN* len, I32* flags, NV *result)
+	UV	grok_bin(const char* start, STRLEN* len_p, I32* flags, NV *result)
 
 =for hackers
 Found in file numeric.c
@@ -2746,7 +2875,7 @@ C<PERL_SCAN_DISALLOW_PREFIX> is set in I<*flags> on entry. If
 C<PERL_SCAN_ALLOW_UNDERSCORES> is set in I<*flags> then the hex
 number may use '_' characters to separate digits.
 
-	UV	grok_hex(char* start, STRLEN* len, I32* flags, NV *result)
+	UV	grok_hex(const char* start, STRLEN* len_p, I32* flags, NV *result)
 
 =for hackers
 Found in file numeric.c
@@ -2809,7 +2938,7 @@ is NULL).
 If C<PERL_SCAN_ALLOW_UNDERSCORES> is set in I<*flags> then the octal
 number may use '_' characters to separate digits.
 
-	UV	grok_oct(char* start, STRLEN* len_p, I32* flags, NV *result)
+	UV	grok_oct(const char* start, STRLEN* len_p, I32* flags, NV *result)
 
 =for hackers
 Found in file numeric.c
@@ -2850,7 +2979,7 @@ X<scan_bin>
 
 For backwards compatibility. Use C<grok_bin> instead.
 
-	NV	scan_bin(char* start, STRLEN len, STRLEN* retlen)
+	NV	scan_bin(const char* start, STRLEN len, STRLEN* retlen)
 
 =for hackers
 Found in file numeric.c
@@ -2860,7 +2989,7 @@ X<scan_hex>
 
 For backwards compatibility. Use C<grok_hex> instead.
 
-	NV	scan_hex(char* start, STRLEN len, STRLEN* retlen)
+	NV	scan_hex(const char* start, STRLEN len, STRLEN* retlen)
 
 =for hackers
 Found in file numeric.c
@@ -2870,7 +2999,7 @@ X<scan_oct>
 
 For backwards compatibility. Use C<grok_oct> instead.
 
-	NV	scan_oct(char* start, STRLEN len, STRLEN* retlen)
+	NV	scan_oct(const char* start, STRLEN len, STRLEN* retlen)
 
 =for hackers
 Found in file numeric.c
@@ -2902,7 +3031,7 @@ X<newCONSTSUB>
 Creates a constant sub equivalent to Perl C<sub FOO () { 123 }> which is
 eligible for inlining at compile-time.
 
-	CV*	newCONSTSUB(HV* stash, char* name, SV* sv)
+	CV*	newCONSTSUB(HV* stash, const char* name, SV* sv)
 
 =for hackers
 Found in file op.c
@@ -2933,6 +3062,116 @@ Use macro PAD_SV instead of calling this function directly.
 
 =for hackers
 Found in file pad.c
+
+
+=back
+
+=head1 Per-Interpreter Variables
+
+=over 8
+
+=item PL_modglobal
+X<PL_modglobal>
+
+C<PL_modglobal> is a general purpose, interpreter global HV for use by
+extensions that need to keep information on a per-interpreter basis.
+In a pinch, it can also be used as a symbol table for extensions
+to share data among each other.  It is a good idea to use keys
+prefixed by the package name of the extension that owns the data.
+
+	HV*	PL_modglobal
+
+=for hackers
+Found in file intrpvar.h
+
+=item PL_na
+X<PL_na>
+
+A convenience variable which is typically used with C<SvPV> when one
+doesn't care about the length of the string.  It is usually more efficient
+to either declare a local variable and use that instead or to use the
+C<SvPV_nolen> macro.
+
+	STRLEN	PL_na
+
+=for hackers
+Found in file intrpvar.h
+
+=item PL_sv_no
+X<PL_sv_no>
+
+This is the C<false> SV.  See C<PL_sv_yes>.  Always refer to this as
+C<&PL_sv_no>.
+
+	SV	PL_sv_no
+
+=for hackers
+Found in file intrpvar.h
+
+=item PL_sv_undef
+X<PL_sv_undef>
+
+This is the C<undef> SV.  Always refer to this as C<&PL_sv_undef>.
+
+	SV	PL_sv_undef
+
+=for hackers
+Found in file intrpvar.h
+
+=item PL_sv_yes
+X<PL_sv_yes>
+
+This is the C<true> SV.  See C<PL_sv_no>.  Always refer to this as
+C<&PL_sv_yes>.
+
+	SV	PL_sv_yes
+
+=for hackers
+Found in file intrpvar.h
+
+
+=back
+
+=head1 REGEXP Functions
+
+=over 8
+
+=item SvRX
+X<SvRX>
+
+Convenience macro to get the REGEXP from a SV. This is approximately
+equivalent to the following snippet:
+
+    if (SvMAGICAL(sv))
+        mg_get(sv);
+    if (SvROK(sv) &&
+        (tmpsv = (SV*)SvRV(sv)) &&
+        SvTYPE(tmpsv) == SVt_PVMG &&
+        (tmpmg = mg_find(tmpsv, PERL_MAGIC_qr)))
+    {
+        return (REGEXP *)tmpmg->mg_obj;
+    }
+
+NULL will be returned if a REGEXP* is not found.
+
+	REGEXP *	SvRX(SV *sv)
+
+=for hackers
+Found in file regexp.h
+
+=item SvRXOK
+X<SvRXOK>
+
+Returns a boolean indicating whether the SV contains qr magic
+(PERL_MAGIC_qr).
+
+If you want to do something with the REGEXP* later use SvRX instead
+and check for NULL.
+
+	bool	SvRXOK(SV* sv)
+
+=for hackers
+Found in file regexp.h
 
 
 =back
@@ -3049,7 +3288,8 @@ Found in file pp.h
 X<mPUSHi>
 
 Push an integer onto the stack.  The stack must have room for this element.
-Does not use C<TARG>.  See also C<PUSHi>, C<mXPUSHi> and C<XPUSHi>.
+Handles 'set' magic.  Does not use C<TARG>.  See also C<PUSHi>, C<mXPUSHi>
+and C<XPUSHi>.
 
 	void	mPUSHi(IV iv)
 
@@ -3060,7 +3300,8 @@ Found in file pp.h
 X<mPUSHn>
 
 Push a double onto the stack.  The stack must have room for this element.
-Does not use C<TARG>.  See also C<PUSHn>, C<mXPUSHn> and C<XPUSHn>.
+Handles 'set' magic.  Does not use C<TARG>.  See also C<PUSHn>, C<mXPUSHn>
+and C<XPUSHn>.
 
 	void	mPUSHn(NV nv)
 
@@ -3071,21 +3312,10 @@ Found in file pp.h
 X<mPUSHp>
 
 Push a string onto the stack.  The stack must have room for this element.
-The C<len> indicates the length of the string.  Does not use C<TARG>.
-See also C<PUSHp>, C<mXPUSHp> and C<XPUSHp>.
+The C<len> indicates the length of the string.  Handles 'set' magic.  Does
+not use C<TARG>.  See also C<PUSHp>, C<mXPUSHp> and C<XPUSHp>.
 
 	void	mPUSHp(char* str, STRLEN len)
-
-=for hackers
-Found in file pp.h
-
-=item mPUSHs
-X<mPUSHs>
-
-Push an SV onto the stack and mortalizes the SV.  The stack must have room
-for this element.  Does not use C<TARG>.  See also C<PUSHs> and C<mXPUSHs>.
-
-	void	mPUSHs(SV* sv)
 
 =for hackers
 Found in file pp.h
@@ -3094,7 +3324,8 @@ Found in file pp.h
 X<mPUSHu>
 
 Push an unsigned integer onto the stack.  The stack must have room for this
-element.  Does not use C<TARG>.  See also C<PUSHu>, C<mXPUSHu> and C<XPUSHu>.
+element.  Handles 'set' magic.  Does not use C<TARG>.  See also C<PUSHu>,
+C<mXPUSHu> and C<XPUSHu>.
 
 	void	mPUSHu(UV uv)
 
@@ -3104,8 +3335,9 @@ Found in file pp.h
 =item mXPUSHi
 X<mXPUSHi>
 
-Push an integer onto the stack, extending the stack if necessary.
-Does not use C<TARG>.  See also C<XPUSHi>, C<mPUSHi> and C<PUSHi>.
+Push an integer onto the stack, extending the stack if necessary.  Handles
+'set' magic.  Does not use C<TARG>.  See also C<XPUSHi>, C<mPUSHi> and
+C<PUSHi>.
 
 	void	mXPUSHi(IV iv)
 
@@ -3115,8 +3347,9 @@ Found in file pp.h
 =item mXPUSHn
 X<mXPUSHn>
 
-Push a double onto the stack, extending the stack if necessary.
-Does not use C<TARG>.  See also C<XPUSHn>, C<mPUSHn> and C<PUSHn>.
+Push a double onto the stack, extending the stack if necessary.  Handles
+'set' magic.  Does not use C<TARG>.  See also C<XPUSHn>, C<mPUSHn> and
+C<PUSHn>.
 
 	void	mXPUSHn(NV nv)
 
@@ -3127,21 +3360,10 @@ Found in file pp.h
 X<mXPUSHp>
 
 Push a string onto the stack, extending the stack if necessary.  The C<len>
-indicates the length of the string.  Does not use C<TARG>.  See also C<XPUSHp>,
-C<mPUSHp> and C<PUSHp>.
+indicates the length of the string.  Handles 'set' magic.  Does not use
+C<TARG>.  See also C<XPUSHp>, C<mPUSHp> and C<PUSHp>.
 
 	void	mXPUSHp(char* str, STRLEN len)
-
-=for hackers
-Found in file pp.h
-
-=item mXPUSHs
-X<mXPUSHs>
-
-Push an SV onto the stack, extending the stack if necessary and mortalizes
-the SV.  Does not use C<TARG>.  See also C<XPUSHs> and C<mPUSHs>.
-
-	void	mXPUSHs(SV* sv)
 
 =for hackers
 Found in file pp.h
@@ -3150,7 +3372,8 @@ Found in file pp.h
 X<mXPUSHu>
 
 Push an unsigned integer onto the stack, extending the stack if necessary.
-Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu> and C<PUSHu>.
+Handles 'set' magic.  Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu>
+and C<PUSHu>.
 
 	void	mXPUSHu(UV uv)
 
@@ -3264,7 +3487,8 @@ Found in file pp.h
 X<PUSHmortal>
 
 Push a new mortal SV onto the stack.  The stack must have room for this
-element.  Does not use C<TARG>.  See also C<PUSHs>, C<XPUSHmortal> and C<XPUSHs>.
+element.  Does not handle 'set' magic.  Does not use C<TARG>.  See also
+C<PUSHs>, C<XPUSHmortal> and C<XPUSHs>.
 
 	void	PUSHmortal()
 
@@ -3371,8 +3595,9 @@ Found in file pp.h
 =item XPUSHmortal
 X<XPUSHmortal>
 
-Push a new mortal SV onto the stack, extending the stack if necessary.
-Does not use C<TARG>.  See also C<XPUSHs>, C<PUSHmortal> and C<PUSHs>.
+Push a new mortal SV onto the stack, extending the stack if necessary.  Does
+not handle 'set' magic.  Does not use C<TARG>.  See also C<XPUSHs>,
+C<PUSHmortal> and C<PUSHs>.
 
 	void	XPUSHmortal()
 
@@ -3693,17 +3918,6 @@ incremented.
 =for hackers
 Found in file sv.h
 
-=item newSVpvn_utf8
-X<newSVpvn_utf8>
-
-Creates a new SV and copies a string into it.  If utf8 is true, calls
-C<SvUTF8_on> on the new SV.  Implemented as a wrapper around C<newSVpvn_flags>.
-
-	SV*	newSVpvn_utf8(NULLOK const char* s, STRLEN len, U32 utf8)
-
-=for hackers
-Found in file sv.h
-
 =item SvCUR
 X<SvCUR>
 
@@ -3732,6 +3946,20 @@ Returns a pointer to the last character in the string which is in the SV.
 See C<SvCUR>.  Access the character as *(SvEND(sv)).
 
 	char*	SvEND(SV* sv)
+
+=for hackers
+Found in file sv.h
+
+=item SvGAMAGIC
+X<SvGAMAGIC>
+
+Returns true if the SV has get magic or overloading. If either is true then
+the scalar is active data, and has the potential to return a new value every
+time it is accessed. Hence you must be careful to only read it once per user
+logical operation and work with that returned value. If neither is true then
+the scalar's value cannot change unless written to.
+
+	char*	SvGAMAGIC(SV* sv)
 
 =for hackers
 Found in file sv.h
@@ -4717,6 +4945,16 @@ Set the value of the UV pointer in sv to val.  See C<SvIV_set>.
 =for hackers
 Found in file sv.h
 
+=item SvVOK
+X<SvVOK>
+
+Returns a boolean indicating whether the SV contains a v-string.
+
+	bool	SvVOK(SV* sv)
+
+=for hackers
+Found in file sv.h
+
 =item sv_catpvn_nomg
 X<sv_catpvn_nomg>
 
@@ -4745,6 +4983,17 @@ I<at the C level>.  To check derivation at the Perl level, call C<isa()> as a
 normal Perl method.
 
 	bool	sv_derived_from(SV* sv, const char* name)
+
+=for hackers
+Found in file universal.c
+
+=item sv_does
+X<sv_does>
+
+Returns a boolean indicating whether the SV performs a specific, named role.
+The SV can be a Perl object or the name of a Perl class.
+
+	bool	sv_does(SV* sv, const char* name)
 
 =for hackers
 Found in file universal.c
@@ -4888,26 +5137,6 @@ C<len> bytes long.  If the C<s> argument is NULL the new SV will be undefined.
 =for hackers
 Found in file sv.c
 
-=item newSVpvn_flags
-X<newSVpvn_flags>
-
-Creates a new SV and copies a string into it.  The reference count for the
-SV is set to 1.  Note that if C<len> is zero, Perl will create a zero length
-string.  You are responsible for ensuring that the source string is at least
-C<len> bytes long.  If the C<s> argument is NULL the new SV will be undefined.
-Currently the only flag bits accepted are C<SVf_UTF8> and C<SVs_TEMP>.
-If C<SVs_TEMP> is set, then C<sv2mortal()> is called on the result before
-returning. If C<SVf_UTF8> is set, then it will be set on the new SV.
-C<newSVpvn_utf8()> is a convenience wrapper for this function, defined as
-
-    #define newSVpvn_utf8(s, len, u)			\
-	newSVpvn_flags((s), (len), (u) ? SVf_UTF8 : 0)
-
-	SV*	newSVpvn_flags(const char* s, STRLEN len, U32 flags)
-
-=for hackers
-Found in file sv.c
-
 =item newSVpvn_share
 X<newSVpvn_share>
 
@@ -4930,17 +5159,6 @@ X<newSVpvs>
 Like C<newSVpvn>, but takes a literal string instead of a string/length pair.
 
 	SV*	newSVpvs(const char* s)
-
-=for hackers
-Found in file handy.h
-
-=item newSVpvs_flags
-X<newSVpvs_flags>
-
-Like C<newSVpvn_flags>, but takes a literal string instead of a string/length
-pair.
-
-	SV*	newSVpvs_flags(const char* s, U32 flags)
 
 =for hackers
 Found in file handy.h
@@ -5272,7 +5490,7 @@ string. Uses the "OOK hack".
 Beware: after this function returns, C<ptr> and SvPVX_const(sv) may no longer
 refer to the same chunk of data.
 
-	void	sv_chop(SV* sv, char* ptr)
+	void	sv_chop(SV* sv, const char* ptr)
 
 =for hackers
 Found in file sv.c
@@ -5311,7 +5529,7 @@ X<sv_cmp_locale>
 
 Compares the strings in two SVs in a locale-aware manner. Is UTF-8 and
 'use bytes' aware, handles get magic, and will coerce its args to strings
-if necessary.  See also C<sv_cmp>.
+if necessary.  See also C<sv_cmp_locale>.  See also C<sv_cmp>.
 
 	I32	sv_cmp_locale(SV* sv1, SV* sv2)
 
@@ -5377,8 +5595,13 @@ X<sv_force_normal_flags>
 
 Undo various types of fakery on an SV: if the PV is a shared string, make
 a private copy; if we're a ref, stop refing; if we're a glob, downgrade to
-an xpvmg. The C<flags> parameter gets passed to  C<sv_unref_flags()>
-when unrefing. C<sv_force_normal> calls this function with flags set to 0.
+an xpvmg; if we're a copy-on-write scalar, this is the on-write time when
+we do the copy, and is also used locally. If C<SV_COW_DROP_PV> is set
+then a copy-on-write scalar drops its PV buffer (if any) and becomes
+SvPOK_off rather than making a copy. (Used where this scalar is about to be
+set to some other value.) In addition, the C<flags> parameter gets passed to
+C<sv_unref_flags()> when unrefing. C<sv_force_normal> calls this function
+with flags set to 0.
 
 	void	sv_force_normal_flags(SV *sv, U32 flags)
 
@@ -5438,7 +5661,7 @@ X<sv_insert>
 Inserts a string at the specified offset/length within the SV. Similar to
 the Perl substr() function.
 
-	void	sv_insert(SV* bigsv, STRLEN offset, STRLEN len, char* little, STRLEN littlelen)
+	void	sv_insert(SV* bigsv, STRLEN offset, STRLEN len, const char* little, STRLEN littlelen)
 
 =for hackers
 Found in file sv.c
@@ -5523,7 +5746,7 @@ to contain an C<SV*> and is stored as-is with its REFCNT incremented.
 
 (This is now used as a subroutine by C<sv_magic>.)
 
-	MAGIC *	sv_magicext(SV* sv, SV* obj, int how, MGVTBL *vtbl, const char* name, I32 namlen)
+	MAGIC *	sv_magicext(SV* sv, SV* obj, int how, const MGVTBL *vtbl, const char* name, I32 namlen)
 
 =for hackers
 Found in file sv.c
@@ -5643,7 +5866,7 @@ X<sv_reftype>
 
 Returns a string describing what the SV is a reference to.
 
-	char*	sv_reftype(SV* sv, int ob)
+	const char*	sv_reftype(const SV* sv, int ob)
 
 =for hackers
 Found in file sv.c
@@ -5669,7 +5892,7 @@ X<sv_reset>
 Underlying implementation for the C<reset> Perl function.
 Note that the perl-level function is vaguely deprecated.
 
-	void	sv_reset(char* s, HV* stash)
+	void	sv_reset(const char* s, HV* stash)
 
 =for hackers
 Found in file sv.c
@@ -5680,7 +5903,8 @@ X<sv_rvweaken>
 Weaken a reference: set the C<SvWEAKREF> flag on this RV; give the
 referred-to SV C<PERL_MAGIC_backref> magic if it hasn't already; and
 push a back-reference to this RV onto the array of backreferences
-associated with that magic.
+associated with that magic. If the RV is magical, set magic will be
+called after the RV is cleared.
 
 	SV*	sv_rvweaken(SV *sv)
 
@@ -5884,7 +6108,7 @@ of 1, and the RV will be returned.
 
 Note that C<sv_setref_pv> copies the pointer while this copies the string.
 
-	SV*	sv_setref_pvn(SV* rv, const char* classname, char* pv, STRLEN n)
+	SV*	sv_setref_pvn(SV* rv, const char* classname, const char* pv, STRLEN n)
 
 =for hackers
 Found in file sv.c
@@ -6040,7 +6264,7 @@ Upgrade an SV to a more complex form.  Generally adds a new body type to the
 SV, then copies across as much information as possible from the old body.
 You generally want to use the C<SvUPGRADE> macro wrapper. See also C<svtype>.
 
-	bool	sv_upgrade(SV* sv, U32 mt)
+	void	sv_upgrade(SV* sv, svtype new_type)
 
 =for hackers
 Found in file sv.c
@@ -6170,8 +6394,6 @@ missing (NULL).  When running with taint checks enabled, indicates via
 C<maybe_tainted> if results are untrustworthy (often due to the use of
 locales).
 
-XXX Except that it maybe_tainted is never assigned to.
-
 Usually used via one of its frontends C<sv_vcatpvf> and C<sv_vcatpvf_mg>.
 
 	void	sv_vcatpvfn(SV* sv, const char* pat, STRLEN patlen, va_list* args, SV** svargs, I32 svmax, bool *maybe_tainted)
@@ -6249,7 +6471,7 @@ is unchanged. Do nothing if C<is_utf8> points to 0. Sets C<is_utf8> to
 NOTE: this function is experimental and may change or be
 removed without notice.
 
-	U8*	bytes_from_utf8(U8 *s, STRLEN *len, bool *is_utf8)
+	U8*	bytes_from_utf8(const U8 *s, STRLEN *len, bool *is_utf8)
 
 =for hackers
 Found in file utf8.c
@@ -6267,7 +6489,7 @@ see sv_recode_to_utf8().
 NOTE: this function is experimental and may change or be
 removed without notice.
 
-	U8*	bytes_to_utf8(U8 *s, STRLEN *len)
+	U8*	bytes_to_utf8(const U8 *s, STRLEN *len)
 
 =for hackers
 Found in file utf8.c
@@ -6309,7 +6531,7 @@ character.  Note that an INVARIANT (i.e. ASCII) character is a valid
 UTF-8 character.  The actual number of bytes in the UTF-8 character
 will be returned if it is valid, otherwise 0.
 
-	STRLEN	is_utf8_char(U8 *p)
+	STRLEN	is_utf8_char(const U8 *p)
 
 =for hackers
 Found in file utf8.c
@@ -6324,7 +6546,7 @@ because a valid ASCII string is a valid UTF-8 string.
 
 See also is_utf8_string_loclen() and is_utf8_string_loc().
 
-	bool	is_utf8_string(U8 *s, STRLEN len)
+	bool	is_utf8_string(const U8 *s, STRLEN len)
 
 =for hackers
 Found in file utf8.c
@@ -6338,7 +6560,7 @@ case of "utf8ness failure") or the location s+len (in the case of
 
 See also is_utf8_string_loclen() and is_utf8_string().
 
-	bool	is_utf8_string_loc(U8 *s, STRLEN len, U8 **p)
+	bool	is_utf8_string_loc(const U8 *s, STRLEN len, const U8 **p)
 
 =for hackers
 Found in file utf8.c
@@ -6374,7 +6596,7 @@ UNI_DISPLAY_BACKSLASH and UNI_DISPLAY_ISPRINT turned on.
 
 The pointer to the PV of the dsv is returned.
 
-	char*	pv_uni_display(SV *dsv, U8 *spv, STRLEN len, STRLEN pvlim, UV flags)
+	char*	pv_uni_display(SV *dsv, const U8 *spv, STRLEN len, STRLEN pvlim, UV flags)
 
 =for hackers
 Found in file utf8.c
@@ -6455,7 +6677,7 @@ Perl_to_utf8_case().
 The "normal" is a string like "ToLower" which means the swash
 %utf8::ToLower.
 
-	UV	to_utf8_case(U8 *p, U8* ustrp, STRLEN *lenp, SV **swashp, char *normal, char *special)
+	UV	to_utf8_case(const U8 *p, U8* ustrp, STRLEN *lenp, SV **swashp, const char *normal, const char *special)
 
 =for hackers
 Found in file utf8.c
@@ -6472,7 +6694,7 @@ three characters).
 The first character of the foldcased version is returned
 (but note, as explained above, that there may be more.)
 
-	UV	to_utf8_fold(U8 *p, U8* ustrp, STRLEN *lenp)
+	UV	to_utf8_fold(const U8 *p, U8* ustrp, STRLEN *lenp)
 
 =for hackers
 Found in file utf8.c
@@ -6488,7 +6710,7 @@ lowercase version may be longer than the original character.
 The first character of the lowercased version is returned
 (but note, as explained above, that there may be more.)
 
-	UV	to_utf8_lower(U8 *p, U8* ustrp, STRLEN *lenp)
+	UV	to_utf8_lower(const U8 *p, U8* ustrp, STRLEN *lenp)
 
 =for hackers
 Found in file utf8.c
@@ -6504,7 +6726,7 @@ titlecase version may be longer than the original character.
 The first character of the titlecased version is returned
 (but note, as explained above, that there may be more.)
 
-	UV	to_utf8_title(U8 *p, U8* ustrp, STRLEN *lenp)
+	UV	to_utf8_title(const U8 *p, U8* ustrp, STRLEN *lenp)
 
 =for hackers
 Found in file utf8.c
@@ -6520,7 +6742,7 @@ the uppercase version may be longer than the original character.
 The first character of the uppercased version is returned
 (but note, as explained above, that there may be more.)
 
-	UV	to_utf8_upper(U8 *p, U8* ustrp, STRLEN *lenp)
+	UV	to_utf8_upper(const U8 *p, U8* ustrp, STRLEN *lenp)
 
 =for hackers
 Found in file utf8.c
@@ -6537,7 +6759,7 @@ length, in bytes, of that character.
 
 Allows length and flags to be passed to low level routine.
 
-	UV	utf8n_to_uvchr(U8 *s, STRLEN curlen, STRLEN *retlen, U32 flags)
+	UV	utf8n_to_uvchr(const U8 *s, STRLEN curlen, STRLEN *retlen, U32 flags)
 
 =for hackers
 Found in file utf8.c
@@ -6563,7 +6785,7 @@ the strict UTF-8 encoding (see F<utf8.h>).
 
 Most code should use utf8_to_uvchr() rather than call this directly.
 
-	UV	utf8n_to_uvuni(U8 *s, STRLEN curlen, STRLEN *retlen, U32 flags)
+	UV	utf8n_to_uvuni(const U8 *s, STRLEN curlen, STRLEN *retlen, U32 flags)
 
 =for hackers
 Found in file utf8.c
@@ -6577,7 +6799,7 @@ and C<b>.
 WARNING: use only if you *know* that the pointers point inside the
 same UTF-8 buffer.
 
-	IV	utf8_distance(U8 *a, U8 *b)
+	IV	utf8_distance(const U8 *a, const U8 *b)
 
 =for hackers
 Found in file utf8.c
@@ -6592,7 +6814,7 @@ WARNING: do not use the following unless you *know* C<off> is within
 the UTF-8 data pointed to by C<s> *and* that on entry C<s> is aligned
 on the first byte of character or just after the last byte of a character.
 
-	U8*	utf8_hop(U8 *s, I32 off)
+	U8*	utf8_hop(const U8 *s, I32 off)
 
 =for hackers
 Found in file utf8.c
@@ -6604,7 +6826,7 @@ Return the length of the UTF-8 char encoded string C<s> in characters.
 Stops at C<e> (inclusive).  If C<e E<lt> s> or if the scan would end
 up past C<e>, croaks.
 
-	STRLEN	utf8_length(U8* s, U8 *e)
+	STRLEN	utf8_length(const U8* s, const U8 *e)
 
 =for hackers
 Found in file utf8.c
@@ -6637,7 +6859,7 @@ length, in bytes, of that character.
 If C<s> does not point to a well-formed UTF-8 character, zero is
 returned and retlen is set, if possible, to -1.
 
-	UV	utf8_to_uvchr(U8 *s, STRLEN *retlen)
+	UV	utf8_to_uvchr(const U8 *s, STRLEN *retlen)
 
 =for hackers
 Found in file utf8.c
@@ -6655,7 +6877,7 @@ an index into the Unicode semantic tables (e.g. swashes).
 If C<s> does not point to a well-formed UTF-8 character, zero is
 returned and retlen is set, if possible, to -1.
 
-	UV	utf8_to_uvuni(U8 *s, STRLEN *retlen)
+	UV	utf8_to_uvuni(const U8 *s, STRLEN *retlen)
 
 =for hackers
 Found in file utf8.c
@@ -6872,7 +7094,7 @@ Found in file XSUB.h
 X<UNDERBAR>
 
 The SV* corresponding to the $_ variable. Works even if there
-is a lexical $_ in scope. (Lexical $_ is available in perl 5.9.2 and later)
+is a lexical $_ in scope.
 
 =for hackers
 Found in file XSUB.h

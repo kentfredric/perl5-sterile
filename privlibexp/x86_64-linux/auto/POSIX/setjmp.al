@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 227 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/setjmp.al)"
+#line 222 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/setjmp.al)"
 sub setjmp {
     unimpl "setjmp() is C-specific: use eval {} instead";
 }

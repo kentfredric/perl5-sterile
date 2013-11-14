@@ -19,7 +19,6 @@ return <<'END';
 208B		Dash
 2212		Dash
 2E17		Dash
-2E1A		Dash
 301C		Dash
 3030		Dash
 30A0		Dash

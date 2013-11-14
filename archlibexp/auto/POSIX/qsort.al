@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 485 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/qsort.al)"
+#line 480 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/qsort.al)"
 sub qsort {
     unimpl "qsort() is C-specific, use sort instead";
 }

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 253 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/clearerr.al)"
+#line 248 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/clearerr.al)"
 sub clearerr {
     redef "IO::Handle::clearerr()";
 }

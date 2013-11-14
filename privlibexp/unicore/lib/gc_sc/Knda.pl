@@ -22,4 +22,5 @@ return <<'END';
 0CDE		Kannada
 0CE0	0CE3	Kannada
 0CE6	0CEF	Kannada
+0CF1	0CF2	Kannada
 END

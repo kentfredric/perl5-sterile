@@ -13,6 +13,4 @@ return <<'END';
 17A3		Deprecated
 17D3		Deprecated
 206A	206F	Deprecated
-E0001		Deprecated
-E0020	E007F	Deprecated
 END

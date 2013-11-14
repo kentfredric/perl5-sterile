@@ -20,5 +20,4 @@ return <<'END';
 2E09		
 2E0C		
 2E1C		
-2E20		
 END

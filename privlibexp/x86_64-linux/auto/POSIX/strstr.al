@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 580 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strstr.al)"
+#line 575 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strstr.al)"
 sub strstr {
     usage "strstr(big, little)" if @_ != 2;
     CORE::index($_[0], $_[1]);

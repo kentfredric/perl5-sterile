@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1010 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_croak.al)"
+#line 1005 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_croak.al)"
 sub _croak {
     &_init unless defined $_sigrtn;
     die "POSIX::SigRt not available" unless defined $_sigrtn && $_sigrtn > 0;

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 530 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strchr.al)"
+#line 525 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strchr.al)"
 sub strchr {
     unimpl "strchr() is C-specific, use index() instead";
 }

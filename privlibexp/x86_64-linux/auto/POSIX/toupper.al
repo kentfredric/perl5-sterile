@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 120 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/toupper.al)"
+#line 115 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/toupper.al)"
 sub toupper {
     usage "toupper(string)" if @_ != 1;
     uc($_[0]);

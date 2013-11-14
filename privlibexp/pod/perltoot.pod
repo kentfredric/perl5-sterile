@@ -1016,7 +1016,8 @@ dubiously-OO languages like C++.
 The way it works is actually pretty simple: just put more than one package
 name in your @ISA array.  When it comes time for Perl to go finding
 methods for your object, it looks at each of these packages in order.
-Well, kinda.  It's actually a fully recursive, depth-first order.
+Well, kinda.  It's actually a fully recursive, depth-first order by
+default (see L<mro> for alternate method resolution orders).
 Consider a bunch of @ISA arrays like this:
 
     @First::ISA    = qw( Alpha );
@@ -1140,6 +1141,45 @@ following:
 Calling Foo->special_method() will return "123", but calling
 Foo->isa('REALLYUNIVERSAL') or Foo->isa('UNIVERSAL') will return
 false.
+
+If your class is using an alternate mro like C3 (see
+L<mro>), method resolution within UNIVERSAL / @UNIVERSAL::ISA will
+still occur in the default depth-first left-to-right manner,
+after the class's C3 mro is exhausted.
+
+All of the above is made more intuitive by realizing what really
+happens during method lookup, which is roughly like this
+ugly pseudo-code:
+
+    get_mro(class) {
+        # recurses down the @ISA's starting at class,
+        # builds a single linear array of all
+        # classes to search in the appropriate order.
+        # The method resolution order (mro) to use
+        # for the ordering is whichever mro "class"
+        # has set on it (either default (depth first
+        # l-to-r) or C3 ordering).
+        # The first entry in the list is the class
+        # itself.
+    }
+
+    find_method(class, methname) {
+        foreach $class (get_mro(class)) {
+            if($class->has_method(methname)) {
+                return ref_to($class->$methname);
+            }
+        }
+        foreach $class (get_mro(UNIVERSAL)) {
+            if($class->has_method(methname)) {
+                return ref_to($class->$methname);
+            }
+        }
+        return undef;
+    }
+
+However the code that implements UNIVERSAL::isa does not
+search in UNIVERSAL itself, only in the package's actual
+@ISA.
 
 =head1 Alternate Object Representations
 

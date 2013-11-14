@@ -9,15 +9,14 @@
 # Meaning: Script 'Greek'
 #
 return <<'END';
-0370	0373	Greek
-0375	0377	Greek
+0374	0375	Greek
 037A	037D	Greek
-0384		Greek
-0386		Greek
+0384	0386	Greek
 0388	038A	Greek
 038C		Greek
 038E	03A1	Greek
-03A3	03E1	Greek
+03A3	03CE	Greek
+03D0	03E1	Greek
 03F0	03FF	Greek
 1D26	1D2A	Greek
 1D5D	1D61	Greek

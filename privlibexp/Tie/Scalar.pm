@@ -1,6 +1,6 @@
 package Tie::Scalar;
 
-our $VERSION = '1.01';
+our $VERSION = '1.00';
 
 =head1 NAME
 

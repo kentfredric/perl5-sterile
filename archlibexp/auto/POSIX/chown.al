@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 653 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/chown.al)"
+#line 648 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/chown.al)"
 sub chown {
     usage "chown(uid, gid, filename)" if @_ != 3;
     CORE::chown($_[0], $_[1], $_[2]);

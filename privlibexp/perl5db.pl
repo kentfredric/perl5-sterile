@@ -511,7 +511,7 @@ package DB;
 BEGIN {eval 'use IO::Handle'};	# Needed for flush only? breaks under miniperl
 
 # Debugger for Perl 5.00x; perl5db.pl patch level:
-$VERSION = 1.31;
+$VERSION = 1.30;
 
 $header = "perl5db.pl version $VERSION";
 
@@ -941,14 +941,6 @@ sub eval {
 #   + Added macosx_get_fork_TTY support 
 # Changes: 1.30: Mar 06, 2007 Andreas Koenig <andk@cpan.org>
 #   + Added HistFile, HistSize
-# Changes: 1.31
-#   + Remove support for assertions and -A
-#   + stop NEXT::AUTOLOAD from emitting warnings under the debugger. RT #25053
-#   + "update for Mac OS X 10.5" [finding the tty device]
-#   + "What I needed to get the forked debugger to work" [on VMS]
-#   + [perl #57016] debugger: o warn=0 die=0 ignored
-#   + Note, but don't use, PERLDBf_SAVESRC
-#   + Fix #7013: lvalue subs not working inside debugger
 ########################################################################
 
 =head1 DEBUGGER INITIALIZATION
@@ -3645,10 +3637,10 @@ sub sub {
 		print "creating new thread\n"; 
 	}
 
-    # If the last ten characters are C'::AUTOLOAD', note we've traced
+    # If the last ten characters are '::AUTOLOAD', note we've traced
     # into AUTOLOAD for $sub.
     if ( length($sub) > 10 && substr( $sub, -10, 10 ) eq '::AUTOLOAD' ) {
-        $al = " for $$sub";
+        $al = " for $$sub" if defined $$sub;
     }
 
     # We stack the stack pointer and then increment it to protect us
@@ -6033,7 +6025,7 @@ sub setterm {
 } ## end sub setterm
 
 sub load_hist {
-    $histfile = option_val("HistFile", undef) unless defined $histfile;
+    $histfile //= option_val("HistFile", undef);
     return unless defined $histfile;
     open my $fh, "<", $histfile or return;
     local $/ = "\n";
@@ -6051,7 +6043,7 @@ sub save_hist {
     eval { require File::Basename } or return;
     File::Path::mkpath(File::Basename::dirname($histfile));
     open my $fh, ">", $histfile or die "Could not open '$histfile': $!";
-    $histsize = option_val("HistSize",100) unless defined $histfile;
+    $histsize //= option_val("HistSize",100);
     my @copy = grep { $_ ne '?' } @hist;
     my $start = scalar(@copy) > $histsize ? scalar(@copy)-$histsize : 0;
     for ($start .. $#copy) {
@@ -7743,8 +7735,6 @@ sub warnLevel {
         }
         elsif ($prevwarn) {
             $SIG{__WARN__} = $prevwarn;
-        } else {
-            undef $SIG{__WARN__};
         }
     } ## end if (@_)
     $warnLevel;
@@ -7786,9 +7776,6 @@ sub dieLevel {
         elsif ($prevdie) {
             $SIG{__DIE__} = $prevdie;
             print $OUT "Default die handler restored.\n";
-        } else {
-            undef $SIG{__DIE__};
-            print $OUT "Die handler removed.\n";
         }
     } ## end if (@_)
     $dieLevel;
@@ -8711,12 +8698,8 @@ BEGIN {
         PERLDBf_GOTO      => 0x80,     # Report goto: call DB::goto
         PERLDBf_NAMEEVAL  => 0x100,    # Informative names for evals
         PERLDBf_NAMEANON  => 0x200,    # Informative names for anon subs
-        PERLDBf_SAVESRC   => 0x400,    # Save source lines into @{"_<$filename"}
         PERLDB_ALL        => 0x33f,    # No _NONAME, _GOTO
     );
-    # PERLDBf_LINE also enables the actions of PERLDBf_SAVESRC, so the debugger
-    # doesn't need to set it. It's provided for the benefit of profilers and
-    # other code analysers.
 
     %DollarCaretP_flags_r = reverse %DollarCaretP_flags;
 }

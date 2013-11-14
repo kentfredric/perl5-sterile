@@ -22,7 +22,6 @@ return <<'END';
 0BBE	0BC2	Tamil
 0BC6	0BC8	Tamil
 0BCA	0BCD	Tamil
-0BD0		Tamil
 0BD7		Tamil
 0BE6	0BFA	Tamil
 END

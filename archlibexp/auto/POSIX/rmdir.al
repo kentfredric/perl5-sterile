@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 743 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rmdir.al)"
+#line 738 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rmdir.al)"
 sub rmdir {
     usage "rmdir(directoryname)" if @_ != 1;
     CORE::rmdir($_[0]);

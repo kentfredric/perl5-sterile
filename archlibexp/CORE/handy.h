@@ -1,7 +1,7 @@
 /*    handy.h
  *
- *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999, 2000,
- *    2001, 2002, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999,
+ *    2000, 2001, 2002, 2004, 2005, 2006, 2007, by Larry Wall and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
@@ -95,7 +95,7 @@ Null SV pointer.
 #  define FUNCTION__ __func__
 #else
 #  if (defined(_MSC_VER) && _MSC_VER < 1300) || /* Pre-MSVC 7.0 has neither __func__ nor __FUNCTION and no good workarounds, either. */ \
-      (defined(__DECC_VER)) /* Tru64 or VMS, and strict C89 being used. */
+      (defined(__DECC_VER)) /* Tru64 or VMS, and strict C89 being used, but not modern enough cc (in Tur64, -c99 not known, only -std1). */
 #    define FUNCTION__ ""
 #  else
 #    define FUNCTION__ __FUNCTION__ /* Common extension. */
@@ -175,7 +175,7 @@ typedef U64TYPE U64;
 #endif
 
 /* HMB H.Merijn Brand - a placeholder for preparing Configure patches */
-#if defined(HAS_MALLOC_SIZE) && defined(LOCALTIME_R_NEEDS_TZSET)
+#if defined(HAS_MALLOC_SIZE) && defined(LOCALTIME_R_NEEDS_TZSET) && defined(HAS_PSEUDOFORK)
 /* Not (yet) used at top level, but mention them for metaconfig */
 #endif
 
@@ -242,10 +242,6 @@ typedef U64TYPE U64;
 =for apidoc Ama|SV*|newSVpvs|const char* s
 Like C<newSVpvn>, but takes a literal string instead of a string/length pair.
 
-=for apidoc Ama|SV*|newSVpvs_flags|const char* s|U32 flags
-Like C<newSVpvn_flags>, but takes a literal string instead of a string/length
-pair.
-
 =for apidoc Ama|SV*|newSVpvs_share|const char* s
 Like C<newSVpvn_share>, but takes a literal string instead of a string/length
 pair and omits the hash parameter.
@@ -279,7 +275,7 @@ and omits the hash parameter.
 */
 
 /* concatenating with "" ensures that only literal strings are accepted as argument */
-#define STR_WITH_LEN(s)  ("" s ""), (sizeof(s)-1)
+#define STR_WITH_LEN(s)  (s ""), (sizeof(s)-1)
 
 /* note that STR_WITH_LEN() can't be used as argument to macros or functions that
  * under some configurations might be macros, which means that it requires the full
@@ -288,8 +284,6 @@ and omits the hash parameter.
 
 /* STR_WITH_LEN() shortcuts */
 #define newSVpvs(str) Perl_newSVpvn(aTHX_ STR_WITH_LEN(str))
-#define newSVpvs_flags(str,flags)	\
-    Perl_newSVpvn_flags(aTHX_ STR_WITH_LEN(str), flags)
 #define newSVpvs_share(str) Perl_newSVpvn_share(aTHX_ STR_WITH_LEN(str), 0)
 #define sv_catpvs(sv, str) Perl_sv_catpvn_flags(aTHX_ sv, STR_WITH_LEN(str), SV_GMAGIC)
 #define sv_setpvs(sv, str) Perl_sv_setpvn(aTHX_ sv, STR_WITH_LEN(str))
@@ -693,7 +687,9 @@ PoisonWith(0xEF) for catching access to freed memory.
 =cut */
 
 /* Maintained for backwards-compatibility only. Use newSV() instead. */
+#ifndef PERL_CORE
 #define NEWSV(x,len)	newSV(len)
+#endif
 
 #define MEM_SIZE_MAX ((MEM_SIZE)~0)
 
@@ -703,10 +699,10 @@ PoisonWith(0xEF) for catching access to freed memory.
 #ifdef PERL_MALLOC_WRAP
 #define MEM_WRAP_CHECK(n,t) MEM_WRAP_CHECK_1(n,t,PL_memory_wrap)
 #define MEM_WRAP_CHECK_1(n,t,a) \
-	(void)(sizeof(t) > 1 && ((MEM_SIZE)(n)+0.0) > MEM_SIZE_MAX/sizeof(t) && (Perl_croak_nocontext("%s",(a)),0))
+	(void)(sizeof(t) > 1 && ((MEM_SIZE)(n)+0.0) > MEM_SIZE_MAX/sizeof(t) && (Perl_croak_nocontext(a),0))
 #define MEM_WRAP_CHECK_(n,t) MEM_WRAP_CHECK(n,t),
 
-#define PERL_STRLEN_ROUNDUP(n) ((void)(((n) > MEM_SIZE_MAX - 2 * PERL_STRLEN_ROUNDUP_QUANTUM) ? (Perl_croak_nocontext("%s",PL_memory_wrap),0):0),((n-1+PERL_STRLEN_ROUNDUP_QUANTUM)&~((MEM_SIZE)PERL_STRLEN_ROUNDUP_QUANTUM-1)))
+#define PERL_STRLEN_ROUNDUP(n) ((void)(((n) > MEM_SIZE_MAX - 2 * PERL_STRLEN_ROUNDUP_QUANTUM) ? (Perl_croak_nocontext(PL_memory_wrap),0):0),((n-1+PERL_STRLEN_ROUNDUP_QUANTUM)&~((MEM_SIZE)PERL_STRLEN_ROUNDUP_QUANTUM-1)))
 
 #else
 
@@ -727,7 +723,7 @@ PoisonWith(0xEF) for catching access to freed memory.
  * line number, and C function name if available) passed in.  This info can
  * then be used for logging the calls, for which one gets a sample
  * implementation if PERL_MEM_LOG_STDERR is defined.
- * 
+ *
  * Known problems:
  * - all memory allocs do not get logged, only those
  *   that go through Newx() and derivatives (while all
@@ -777,10 +773,13 @@ Malloc_t Perl_mem_log_free(Malloc_t oldalloc, const char *filename, const int li
 #define Newx(v,n,t)	(v = (MEM_WRAP_CHECK_(n,t) MEM_LOG_ALLOC(n,t,(t*)safemalloc((MEM_SIZE)((n)*sizeof(t))))))
 #define Newxc(v,n,t,c)	(v = (MEM_WRAP_CHECK_(n,t) MEM_LOG_ALLOC(n,t,(c*)safemalloc((MEM_SIZE)((n)*sizeof(t))))))
 #define Newxz(v,n,t)	(v = (MEM_WRAP_CHECK_(n,t) MEM_LOG_ALLOC(n,t,(t*)safecalloc((n),sizeof(t)))))
+
+#ifndef PERL_CORE
 /* pre 5.9.x compatibility */
 #define New(x,v,n,t)	Newx(v,n,t)
 #define Newc(x,v,n,t,c)	Newxc(v,n,t,c)
 #define Newz(x,v,n,t)	Newxz(v,n,t)
+#endif
 
 #define Renew(v,n,t) \
 	  (v = (MEM_WRAP_CHECK_(n,t) MEM_LOG_REALLOC(n,t,v,(t*)saferealloc((Malloc_t)(v),(MEM_SIZE)((n)*sizeof(t))))))
@@ -849,12 +848,3 @@ Malloc_t Perl_mem_log_free(Malloc_t oldalloc, const char *filename, const int li
 #define pTHX__VALUE
 #endif /* USE_ITHREADS */
 
-/*
- * Local variables:
- * c-indentation-style: bsd
- * c-basic-offset: 4
- * indent-tabs-mode: t
- * End:
- *
- * ex: set ts=8 sts=4 sw=4 noet:
- */

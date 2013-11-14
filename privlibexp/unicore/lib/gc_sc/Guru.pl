@@ -21,8 +21,7 @@ return <<'END';
 0A3E	0A42	Gurmukhi
 0A47	0A48	Gurmukhi
 0A4B	0A4D	Gurmukhi
-0A51		Gurmukhi
 0A59	0A5C	Gurmukhi
 0A5E		Gurmukhi
-0A66	0A75	Gurmukhi
+0A66	0A74	Gurmukhi
 END

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 329 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fsetpos.al)"
+#line 324 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fsetpos.al)"
 sub fsetpos {
     redef "IO::Seekable::setpos()";
 }

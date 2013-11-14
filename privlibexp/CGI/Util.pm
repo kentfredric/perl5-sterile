@@ -4,7 +4,7 @@ use strict;
 use vars qw($VERSION @EXPORT_OK @ISA $EBCDIC @A2E @E2A);
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(rearrange rearrange_header make_attributes unescape escape 
+@EXPORT_OK = qw(rearrange make_attributes unescape escape 
 		expires ebcdic2ascii ascii2ebcdic);
 
 $VERSION = '1.5_01';
@@ -70,34 +70,16 @@ elsif ($EBCDIC && ord('^') == 176) { # as in codepage 037 on os400
 }
 
 # Smart rearrangement of parameters to allow named parameter
-# calling.  We do the rearrangement if:
+# calling.  We do the rearangement if:
 # the first parameter begins with a -
-
 sub rearrange {
-    my ($order,@param) = @_;
-    my ($result, $leftover) = _rearrange_params( $order, @param );
-    push @$result, make_attributes( $leftover, defined $CGI::Q ? $CGI::Q->{escape} : 1 ) 
-	if keys %$leftover;
-    @$result;
-}
-
-sub rearrange_header {
-    my ($order,@param) = @_;
-
-    my ($result,$leftover) = _rearrange_params( $order, @param );
-    push @$result, make_attributes( $leftover, 0, 1 ) if keys %$leftover;
-
-    @$result;
-}
-
-sub _rearrange_params {
     my($order,@param) = @_;
-    return [] unless @param;
+    return () unless @param;
 
     if (ref($param[0]) eq 'HASH') {
 	@param = %{$param[0]};
     } else {
-	return \@param 
+	return @param 
 	    unless (defined($param[0]) && substr($param[0],0,1) eq '-');
     }
 
@@ -121,17 +103,14 @@ sub _rearrange_params {
 	}
     }
 
-    return \@result, \%leftover;
+    push (@result,make_attributes(\%leftover,defined $CGI::Q ? $CGI::Q->{escape} : 1)) if %leftover;
+    @result;
 }
 
 sub make_attributes {
     my $attr = shift;
     return () unless $attr && ref($attr) && ref($attr) eq 'HASH';
     my $escape =  shift || 0;
-    my $do_not_quote = shift;
-
-    my $quote = $do_not_quote ? '' : '"';
-
     my(@att);
     foreach (keys %{$attr}) {
 	my($key) = $_;
@@ -143,7 +122,7 @@ sub make_attributes {
 	($key="\L$key") =~ tr/_/-/; # parameters are lower case, use dashes
 
 	my $value = $escape ? simple_escape($attr->{$_}) : $attr->{$_};
-	push(@att,defined($attr->{$_}) ? qq/$key=$quote$value$quote/ : qq/$key/);
+	push(@att,defined($attr->{$_}) ? qq/$key="$value"/ : qq/$key/);
     }
     return @att;
 }
@@ -162,12 +141,8 @@ sub simple_escape {
 
 sub utf8_chr {
         my $c = shift(@_);
-	if ($] >= 5.006){
-	    require utf8;
-	    my $u = chr($c);
-	    utf8::encode($u); # drop utf8 flag
-	    return $u;
-	}
+	return chr($c) if $] >= 5.006;
+
         if ($c < 0x80) {
                 return sprintf("%c", $c);
         } elsif ($c < 0x800) {
@@ -214,17 +189,6 @@ sub unescape {
     if ($EBCDIC) {
       $todecode =~ s/%([0-9a-fA-F]{2})/chr $A2E[hex($1)]/ge;
     } else {
-	# handle surrogate pairs first -- dankogai
-	$todecode =~ s{
-			%u([Dd][89a-bA-B][0-9a-fA-F]{2}) # hi
-		        %u([Dd][c-fC-F][0-9a-fA-F]{2})   # lo
-		      }{
-			  utf8_chr(
-				   0x10000 
-				   + (hex($1) - 0xD800) * 0x400 
-				   + (hex($2) - 0xDC00)
-				  )
-		      }gex;
       $todecode =~ s/%(?:([0-9a-fA-F]{2})|u([0-9a-fA-F]{4}))/
 	defined($1)? chr hex($1) : utf8_chr(hex($2))/ge;
     }
@@ -236,12 +200,8 @@ sub escape {
   shift() if @_ > 1 and ( ref($_[0]) || (defined $_[1] && $_[0] eq $CGI::DefaultClass));
   my $toencode = shift;
   return undef unless defined($toencode);
-  $toencode = eval { pack("C*", unpack("U0C*", $toencode))} || pack("C*", unpack("C*", $toencode));
-
   # force bytes while preserving backward compatibility -- dankogai
-  # but commented out because it was breaking CGI::Compress -- lstein
-  # $toencode = eval { pack("U*", unpack("U0C*", $toencode))} || pack("C*", unpack("C*", $toencode));
-
+  $toencode = pack("C*", unpack("U0C*", $toencode));
     if ($EBCDIC) {
       $toencode=~s/([^a-zA-Z0-9_.~-])/uc sprintf("%%%02x",$E2A[ord($1)])/eg;
     } else {

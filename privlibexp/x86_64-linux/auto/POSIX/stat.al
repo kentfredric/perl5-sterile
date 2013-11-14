@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 608 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/stat.al)"
+#line 603 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/stat.al)"
 sub stat {
     usage "stat(filename)" if @_ != 1;
     CORE::stat($_[0]);

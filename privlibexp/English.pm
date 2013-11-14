@@ -1,6 +1,6 @@
 package English;
 
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -225,7 +225,6 @@ sub import {
 
 #	*ARRAY_BASE				= *[	;
 #	*OFMT					= *#	;
-#	*MULTILINE_MATCHING			= **	;
 #	*OLD_PERL_VERSION			= *]	;
 
 1;

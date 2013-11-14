@@ -1,6 +1,6 @@
 package ExtUtils::Constant;
 use vars qw (@ISA $VERSION @EXPORT_OK %EXPORT_TAGS);
-$VERSION = 0.21;
+$VERSION = 0.20;
 
 =head1 NAME
 
@@ -149,7 +149,7 @@ sub C_constant {
 				      breakout => $breakout}, @items);
 }
 
-=item XS_constant PACKAGE, TYPES, XS_SUBNAME, C_SUBNAME
+=item XS_constant PACKAGE, TYPES, SUBNAME, C_SUBNAME
 
 A function to generate the XS code to implement the perl subroutine
 I<PACKAGE>::constant used by I<PACKAGE>::AUTOLOAD to load constants.
@@ -163,7 +163,7 @@ be the same list of types as C<C_constant> was given.
 the number of parameters passed to the C function C<constant>]
 
 You can call the perl visible subroutine something other than C<constant> if
-you give the parameter I<XS_SUBNAME>. The C subroutine it calls defaults to
+you give the parameter I<SUBNAME>. The C subroutine it calls defaults to
 the name of the perl visible subroutine, unless you give the parameter
 I<C_SUBNAME>.
 
@@ -172,10 +172,10 @@ I<C_SUBNAME>.
 sub XS_constant {
   my $package = shift;
   my $what = shift;
-  my $XS_subname = shift;
+  my $subname = shift;
   my $C_subname = shift;
-  $XS_subname ||= 'constant';
-  $C_subname ||= $XS_subname;
+  $subname ||= 'constant';
+  $C_subname ||= $subname;
 
   if (!ref $what) {
     # Convert line of the form IV,UV,NV to hash
@@ -186,7 +186,7 @@ sub XS_constant {
 
   my $xs = <<"EOT";
 void
-$XS_subname(sv)
+$subname(sv)
     PREINIT:
 #ifdef dXSTARG
 	dXSTARG; /* Faster if we have it.  */
@@ -438,10 +438,6 @@ for each group with this number or more names in.
 An array of constants' names, either scalars containing names, or hashrefs
 as detailed in L<"C_constant">.
 
-=item PROXYSUBS
-
-If true, uses proxy subs. See L<ExtUtils::Constant::ProxySubs>.
-
 =item C_FH
 
 A filehandle to write the C code to.  If not given, then I<C_FILE> is opened
@@ -465,7 +461,7 @@ for writing.
 The name of the file to write containing the XS code.  The default is
 C<const-xs.inc>.
 
-=item XS_SUBNAME
+=item SUBNAME
 
 The perl visible name of the XS subroutine generated which will return the
 constants. The default is C<constant>.
@@ -473,7 +469,7 @@ constants. The default is C<constant>.
 =item C_SUBNAME
 
 The name of the C subroutine generated which will return the constants.
-The default is I<XS_SUBNAME>.  Child subroutines have C<_> and the name
+The default is I<SUBNAME>.  Child subroutines have C<_> and the name
 length appended, so constants with 10 character names would be in
 C<constant_10> with the default I<XS_SUBNAME>.
 
@@ -486,11 +482,11 @@ sub WriteConstants {
     ( # defaults
      C_FILE =>       'const-c.inc',
      XS_FILE =>      'const-xs.inc',
-     XS_SUBNAME =>   'constant',
+     SUBNAME =>      'constant',
      DEFAULT_TYPE => 'IV',
      @_);
 
-  $ARGS{C_SUBNAME} ||= $ARGS{XS_SUBNAME}; # No-one sane will have C_SUBNAME eq '0'
+  $ARGS{C_SUBNAME} ||= $ARGS{SUBNAME}; # No-one sane will have C_SUBNAME eq '0'
 
   croak "Module name not specified" unless length $ARGS{NAME};
 

@@ -19,7 +19,7 @@ use File::Basename ();
 use File::Path ();
 use File::Spec ();
 use vars qw($VERSION $urllist);
-$VERSION = "5.5_01";
+$VERSION = sprintf "%.6f", substr(q$Rev: 2229 $,4)/1000000 + 5.4;
 
 =head1 NAME
 
@@ -160,37 +160,10 @@ for easier tracking of the session or be a plain string.
 
 Do you want the command number in the prompt (yes/no)?
 
-=item connect_to_internet_ok
-
-If you have never defined your own C<urllist> in your configuration
-then C<CPAN.pm> will be hesitant to use the built in default sites for
-downloading. It will ask you once per session if a connection to the
-internet is OK and only if you say yes, it will try to connect. But to
-avoid this question, you can choose your favorite download sites once
-and get away with it. Or, if you have no favorite download sites
-answer yes to the following question.
-
-If no urllist has been chosen yet, would you prefer CPAN.pm to connect
-to the built-in default sites without asking? (yes/no)?
-
 =item ftp_passive
 
 Shall we always set the FTP_PASSIVE environment variable when dealing
 with ftp download (yes/no)?
-
-=item ftpstats_period
-
-Statistics about downloads are truncated by size and period
-simultaneously.
-
-How many days shall we keep statistics about downloads?
-
-=item ftpstats_size
-
-Statistics about downloads are truncated by size and period
-simultaneously.
-
-How many items shall we keep in the statistics about downloads?
 
 =item getcwd
 
@@ -205,14 +178,6 @@ alternatives can be configured according to the following table:
     backtickcwd external command cwd
 
 Preferred method for determining the current working directory?
-
-=item halt_on_failure
-
-Normaly, CPAN.pm continues processing the full list of targets and
-dependencies, even if one of them fails.  However, you can specify 
-that CPAN should halt after the first failure. 
-
-Do you want to halt on failure (yes/no)?
 
 =item histfile
 
@@ -279,7 +244,7 @@ Verbosity level for loading modules (none or v)?
 
 Every Makefile.PL is run by perl in a separate process. Likewise we
 run 'make' and 'make install' in separate processes. If you have
-any parameters (e.g. PREFIX, UNINST or the like) you want to
+any parameters (e.g. PREFIX, LIB, UNINST or the like) you want to
 pass to the calls, please specify them here.
 
 If you don't understand this question, just press ENTER.
@@ -510,26 +475,6 @@ you will need to configure CPAN::Reporter before sending reports.
 
 Email test reports if CPAN::Reporter is installed (yes/no)?
 
-=item perl5lib_verbosity
-
-When CPAN.pm extends @INC via PERL5LIB, it prints a list of
-directories added (or a summary of how many directories are
-added).  Choose 'v' to get this message, 'none' to suppress it.
-
-Verbosity level for PERL5LIB changes (none or v)?
-
-=item trust_test_report_history
-
-When a distribution has already been tested by CPAN::Reporter on
-this machine, CPAN can skip the test phase and just rely on the
-test report history instead.
-
-Note that this will not apply to distributions that failed tests
-because of missing dependencies.  Also, tests can be run
-regardless of the history using "force".
-
-Do you want to rely on the test report history (yes/no)?
-
 =item use_sqlite
 
 CPAN::SQLite is a layer between the index files that are downloaded
@@ -540,10 +485,9 @@ Use CPAN::SQLite if available? (yes/no)?
 
 =item yaml_load_code
 
-Both YAML.pm and YAML::Syck are capable of deserialising code. As this
-requires a string eval, which might be a security risk, you can use
-this option to enable or disable the deserialisation of code via
-CPAN::DeferedCode. (Note: This does not work under perl 5.6)
+Both YAML.pm and YAML::Syck are capable of deserialising code. As this requires
+a string eval, which might be a security risk, you can use this option to
+enable or disable the deserialisation of code.
 
 Do you want to enable code deserialisation (yes/no)?
 
@@ -687,7 +631,7 @@ sub init {
 
         if (!$matcher or 'cpan_home' =~ /$matcher/) {
             my $cpan_home = $CPAN::Config->{cpan_home}
-                || File::Spec->catdir(CPAN::HandleConfig::home(), ".cpan");
+                || File::Spec->catdir($ENV{HOME}, ".cpan");
 
             if (-d $cpan_home) {
                 $CPAN::Frontend->myprint(qq{
@@ -764,7 +708,7 @@ Shall we use it as the general CPAN build and cache directory?
         }
 
         if (!$matcher or 'build_dir_reuse' =~ /$matcher/) {
-            my_yn_prompt(build_dir_reuse => 0, $matcher);
+            my_yn_prompt(build_dir_reuse => 1, $matcher);
         }
 
         if (!$matcher or 'prefs_dir' =~ /$matcher/) {
@@ -840,10 +784,6 @@ Shall we use it as the general CPAN build and cache directory?
             CPAN::Reporter::configure();
             $CPAN::Frontend->myprint("\nReturning to CPAN configuration.\n");
         }
-    }
-
-    if (!$matcher or 'trust_test_report_history' =~ /$matcher/) {
-        my_yn_prompt(trust_test_report_history => 0, $matcher);
     }
 
     #
@@ -989,11 +929,6 @@ substitute. You can then revisit this dialog with
                        'none|v');
     }
 
-    if (!$matcher or 'perl5lib_verbosity' =~ /$matcher/) {
-        my_prompt_loop(perl5lib_verbosity => 'v', $matcher,
-                       'none|v');
-    }
-
     my_yn_prompt(inhibit_startup_message => 0, $matcher);
 
     #
@@ -1007,13 +942,6 @@ substitute. You can then revisit this dialog with
     if (!$matcher or 'makepl_arg make_arg' =~ /$matcher/) {
         my_dflt_prompt(makepl_arg => "", $matcher);
         my_dflt_prompt(make_arg => "", $matcher);
-        if ( $CPAN::Config->{makepl_arg} =~ /LIBS=|INC=/ ) {
-            $CPAN::Frontend->mywarn( 
-                "Warning: Using LIBS or INC in makepl_arg will likely break distributions\n" . 
-                "that specify their own LIBS or INC options in Makefile.PL.\n"
-            );
-        }
-
     }
 
     require CPAN::HandleConfig;
@@ -1030,8 +958,7 @@ substitute. You can then revisit this dialog with
     my_dflt_prompt(mbuildpl_arg => "", $matcher);
     my_dflt_prompt(mbuild_arg => "", $matcher);
 
-    if (exists $CPAN::HandleConfig::keys{mbuild_install_build_command}
-        and $^O ne "MSWin32") {
+    if (exists $CPAN::HandleConfig::keys{mbuild_install_build_command}) {
         # as long as Windows needs $self->_build_command, we cannot
         # support sudo on windows :-)
         my_dflt_prompt(mbuild_install_build_command => "./Build", $matcher);
@@ -1044,13 +971,6 @@ substitute. You can then revisit this dialog with
     #
 
     my_dflt_prompt(inactivity_timeout => 0, $matcher);
-
-    #
-    #== halt_on_failure
-    #
-    if (!$matcher or 'halt_on_failure' =~ /$matcher/) {
-        my_yn_prompt(halt_on_failure => 0, $matcher);
-    }
 
     #
     #= Proxies
@@ -1198,7 +1118,6 @@ substitute. You can then revisit this dialog with
     #= MIRRORED.BY and conf_sites()
     #
 
-    my_yn_prompt("connect_to_internet_ok" => 1, $matcher);
     if ($matcher) {
         if ("urllist" =~ $matcher) {
             # conf_sites would go into endless loop with the smash prompt
@@ -1209,16 +1128,10 @@ substitute. You can then revisit this dialog with
         if ("randomize_urllist" =~ $matcher) {
             my_dflt_prompt(randomize_urllist => 0, $matcher);
         }
-        if ("ftpstats_size" =~ $matcher) {
-            my_dflt_prompt(ftpstats_size => 99, $matcher);
-        }
-        if ("ftpstats_period" =~ $matcher) {
-            my_dflt_prompt(ftpstats_period => 14, $matcher);
-        }
     } elsif ($fastread) {
         $CPAN::Frontend->myprint("Autoconfigured everything but 'urllist'.\n".
                                  "Please call 'o conf init urllist' to configure ".
-                                 "your CPAN server(s) now!\n\n");
+                                 "your CPAN server(s) now!");
     } else {
         conf_sites();
     }
@@ -1610,9 +1523,7 @@ config_intro => qq{
 The following questions are intended to help you with the
 configuration. The CPAN module needs a directory of its own to cache
 important index files and maybe keep a temporary mirror of CPAN files.
-This may be a site-wide or a personal directory.
-
-},
+This may be a site-wide or a personal directory.},
 
 # cpan_home => qq{ },
 

@@ -2,9 +2,10 @@ package ExtUtils::MakeMaker::bytes;
 
 use strict;
 
-our $VERSION = 6.48;
+use vars qw($VERSION);
+$VERSION = 6.42;
 
-my $Have_Bytes = eval { require bytes; 1; };
+my $Have_Bytes = eval q{require bytes; 1;};
 
 sub import {
     return unless $Have_Bytes;

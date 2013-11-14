@@ -2,7 +2,7 @@
 
 package XSLoader;
 
-$VERSION = "0.10";
+$VERSION = "0.08";
 
 #use strict;
 
@@ -27,8 +27,8 @@ sub load {
     my($module) = $_[0];
 
     # work with static linking too
-    my $boots = "$module\::bootstrap";
-    goto &$boots if defined &$boots;
+    my $b = "$module\::bootstrap";
+    goto &$b if defined &$b;
 
     goto retry unless $module and defined &dl_load_file;
 
@@ -45,12 +45,6 @@ sub load {
 
     my $bs = $file;
     $bs =~ s/(\.\w+)?(;\d*)?$/\.bs/; # look for .bs 'beside' the library
-
-    if (-s $bs) { # only read file if it's not empty
-#       print STDERR "BS: $bs ($^O, $dlsrc)\n" if $dl_debug;
-        eval { do $bs; };
-        warn "$bs: $@\n" if $@;
-    }
 
     goto retry if not -f $file or -s $bs;
 
@@ -87,7 +81,7 @@ sub load {
     push(@DynaLoader::dl_modules, $module); # record loaded module
 
   boot:
-    my $xs = dl_install_xsub($boots, $boot_symbol_ref, $file);
+    my $xs = dl_install_xsub("${module}::bootstrap", $boot_symbol_ref, $file);
 
     # See comment block above
     push(@DynaLoader::dl_shared_objects, $file); # record files loaded
@@ -122,7 +116,7 @@ XSLoader - Dynamically load C libraries into Perl code
 
 =head1 VERSION
 
-Version 0.10
+Version 0.08
 
 =head1 SYNOPSIS
 
@@ -348,9 +342,7 @@ E<lt>sebastien@aperghis.netE<gt>.
 Previous maintainer was Michael G Schwern <schwern@pobox.com>.
 
 
-=head1 COPYRIGHT & LICENSE
-
-Copyright (C) 1990-2007 by Larry Wall and others.
+=head1 COPYRIGHT
 
 This program is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

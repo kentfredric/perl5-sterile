@@ -1,7 +1,5 @@
 package open;
 use warnings;
-use Carp;
-$open::hint_bits = 0x20000; # HINT_LOCALIZE_HH
 
 our $VERSION = '1.06';
 
@@ -12,6 +10,10 @@ my $locale_encoding;
 sub _get_encname {
     return ($1, Encode::resolve_alias($1)) if $_[0] =~ /^:?encoding\((.+)\)$/;
     return;
+}
+
+sub croak {
+    require Carp; goto &Carp::croak;
 }
 
 sub _drop_oldenc {
@@ -39,13 +41,11 @@ sub _drop_oldenc {
     require Encode;
     my ($loname, $lcname) = _get_encname($old[-2]);
     unless (defined $lcname) { # Should we trust get_layers()?
-	require Carp;
-	Carp::croak("open: Unknown encoding '$loname'");
+	croak("open: Unknown encoding '$loname'");
     }
     my ($voname, $vcname) = _get_encname($new[-1]);
     unless (defined $vcname) {
-	require Carp;
-	Carp::croak("open: Unknown encoding '$voname'");
+	croak("open: Unknown encoding '$voname'");
     }
     if ($lcname eq $vcname) {
 	binmode($h, ":pop"); # utf8 is part of the encoding layer
@@ -56,7 +56,6 @@ sub import {
     my ($class,@args) = @_;
     croak("open: needs explicit list of PerlIO layers") unless @args;
     my $std;
-    $^H |= $open::hint_bits;
     my ($in,$out) = split(/\0/,(${^OPEN} || "\0"), -1);
     while (@args) {
 	my $type = shift(@args);

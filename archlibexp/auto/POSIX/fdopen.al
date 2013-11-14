@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 261 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fdopen.al)"
+#line 256 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fdopen.al)"
 sub fdopen {
     redef "IO::Handle::new_from_fd()";
 }

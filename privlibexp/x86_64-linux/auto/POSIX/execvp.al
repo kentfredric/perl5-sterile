@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 678 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/execvp.al)"
+#line 673 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/execvp.al)"
 sub execvp {
     unimpl "execvp() is C-specific, stopped";
 }

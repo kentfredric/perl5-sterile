@@ -68,8 +68,7 @@ use XSLoader ();
 	GDBM_WRITER
 );
 
-# This module isn't dual life, so no need for dev version numbers.
-$VERSION = '1.09';
+$VERSION = "1.08";
 
 sub AUTOLOAD {
     my($constname);

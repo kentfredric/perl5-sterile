@@ -1,15 +1,16 @@
 package ExtUtils::MM_OS2;
 
 use strict;
+use vars qw($VERSION @ISA);
 
 use ExtUtils::MakeMaker qw(neatvalue);
 use File::Spec;
 
-our $VERSION = '6.48';
+$VERSION = '6.42';
 
 require ExtUtils::MM_Any;
 require ExtUtils::MM_Unix;
-our @ISA = qw(ExtUtils::MM_Any ExtUtils::MM_Unix);
+@ISA = qw(ExtUtils::MM_Any ExtUtils::MM_Unix);
 
 =pod
 
@@ -74,12 +75,13 @@ $self->{BASEEXT}.def: Makefile.PL
     if ($self->{IMPORTS} && %{$self->{IMPORTS}}) {
 	# Make import files (needed for static build)
 	-d 'tmp_imp' or mkdir 'tmp_imp', 0777 or die "Can't mkdir tmp_imp";
-	open my $imp, '>', 'tmpimp.imp' or die "Can't open tmpimp.imp";
-	while (my($name, $exp) = each %{$self->{IMPORTS}}) {
+	open IMP, '>tmpimp.imp' or die "Can't open tmpimp.imp";
+	my ($name, $exp);
+	while (($name, $exp)= each %{$self->{IMPORTS}}) {
 	    my ($lib, $id) = ($exp =~ /(.*)\.(.*)/) or die "Malformed IMPORT `$exp'";
-	    print $imp "$name $lib $id ?\n";
+	    print IMP "$name $lib $id ?\n";
 	}
-	close $imp or die "Can't close tmpimp.imp";
+	close IMP or die "Can't close tmpimp.imp";
 	# print "emximp -o tmpimp$Config::Config{lib_ext} tmpimp.imp\n";
 	system "emximp -o tmpimp$Config::Config{lib_ext} tmpimp.imp" 
 	    and die "Cannot make import library: $!, \$?=$?";

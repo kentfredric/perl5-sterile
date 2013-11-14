@@ -1,7 +1,7 @@
 package bigrat;
-use 5.006;
+use 5.006002;
 
-$VERSION = '0.23';
+$VERSION = '0.22';
 require Exporter;
 @ISA		= qw( bigint );
 @EXPORT_OK 	= qw( PI e bpi bexp );
@@ -399,7 +399,7 @@ This method only works on Perl v5.9.4 or later.
 
 Math with the numbers is done (by default) by a module called
 
-=head2 Caveat
+=head2 Cavaet
 
 But a warning is in order. When using the following to make a copy of a number,
 only a shallow copy will be made.

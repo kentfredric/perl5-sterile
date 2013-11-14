@@ -174,8 +174,6 @@ PERL_EXPORT_C void PerlIO_clone(pTHX_ PerlInterpreter *proto,
 #endif				/* ifndef PERLIO_NOT_STDIO */
 #endif				/* PERLIO_IS_STDIO */
 
-#define specialCopIO(sv) ((sv) == NULL)
-
 /* ----------- fill in things that have not got #define'd  ---------- */
 
 #ifndef Fpos_t
@@ -384,13 +382,3 @@ typedef struct PerlIO_list_s PerlIO_list_t;
 
 END_EXTERN_C
 #endif				/* _PERLIO_H */
-
-/*
- * Local variables:
- * c-indentation-style: bsd
- * c-basic-offset: 4
- * indent-tabs-mode: t
- * End:
- *
- * ex: set ts=8 sts=4 sw=4 noet:
- */

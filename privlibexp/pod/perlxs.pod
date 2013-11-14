@@ -562,7 +562,7 @@ and $type can be used as in typemaps.
 
      bool_t
      rpcb_gettime(host,timep)
-          char *host = (char *)SvPV_nolen($arg);
+          char *host = (char *)SvPV($arg,PL_na);
           time_t &timep = 0;
         OUTPUT:
           timep
@@ -589,7 +589,7 @@ Here's a truly obscure example:
      bool_t
      rpcb_gettime(host,timep)
           time_t &timep; /* \$v{timep}=@{[$v{timep}=$arg]} */
-          char *host + SvOK($v{timep}) ? SvPV_nolen($arg) : NULL;
+          char *host + SvOK($v{timep}) ? SvPV($arg,PL_na) : NULL;
         OUTPUT:
           timep
 
@@ -950,9 +950,10 @@ The XS code, with ellipsis, follows.
           time_t timep = NO_INIT
 	PREINIT:
           char *host = "localhost";
+	  STRLEN n_a;
         CODE:
 	  if( items > 1 )
-	       host = (char *)SvPV_nolen(ST(1));
+	       host = (char *)SvPV(ST(1), n_a);
 	  RETVAL = rpcb_gettime( host, &timep );
         OUTPUT:
           timep
@@ -1093,8 +1094,8 @@ return value, should the need arise.
           time_t  timep;
           bool_t x;
         CODE:
+          ST(0) = sv_newmortal();
           if( rpcb_gettime( host, &timep ) ){
-               ST(0) = sv_newmortal();
                sv_setnv( ST(0), (double)timep);
           }
           else{
@@ -1241,9 +1242,10 @@ prototypes.
 	PROTOTYPE: $;$
 	PREINIT:
           char *host = "localhost";
+	  STRLEN n_a;
         CODE:
 		  if( items > 1 )
-		       host = (char *)SvPV_nolen(ST(1));
+		       host = (char *)SvPV(ST(1), n_a);
 		  RETVAL = rpcb_gettime( host, &timep );
         OUTPUT:
           timep
@@ -1924,7 +1926,6 @@ Below is an example module that makes use of the macros.
 	CODE:
 	MY_CXT_CLONE;
 
-
 B<REFERENCE>
 
 =over 5
@@ -2006,12 +2007,23 @@ comma, i.e.  C<_aMY_CXT>, C<aMY_CXT_>, C<_pMY_CXT> and C<pMY_CXT_>.
 =item MY_CXT_CLONE
 
 By default, when a new interpreter is created as a copy of an existing one
-(eg via C<< threads->create() >>), both interpreters share the same physical
+(eg via C<<threads->create()>>), both interpreters share the same physical
 my_cxt_t structure. Calling C<MY_CXT_CLONE> (typically via the package's
 C<CLONE()> function), causes a byte-for-byte copy of the structure to be
 taken, and any future dMY_CXT will cause the copy to be accessed instead.
 
+=item MY_CXT_INIT_INTERP(my_perl)
+
+=item dMY_CXT_INTERP(my_perl)
+
+These are versions of the macros which take an explicit interpreter as an
+argument.
+
 =back
+
+Note that these macros will only work together within the I<same> source
+file; that is, a dMY_CTX in one source file will access a different structure
+than a dMY_CTX in another source file.
 
 =head2 Thread-aware system interfaces
 

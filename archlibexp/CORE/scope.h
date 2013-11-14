@@ -1,7 +1,7 @@
 /*    scope.h
  *
- *    Copyright (C) 1993, 1994, 1996, 1997, 1998, 1999, 2000, 2001,
- *    2002, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *    Copyright (C) 1993, 1994, 1996, 1997, 1998, 1999,
+ *    2000, 2001, 2002, 2004, 2005, 2006, 2007 by Larry Wall and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
@@ -22,7 +22,7 @@
 #define SAVEt_PPTR		11
 #define SAVEt_NSTAB		12
 #define SAVEt_SVREF		13
-#define SAVEt_GP_OLD		14 /* Old style save, kept for bincompat. */
+#define SAVEt_GP		14
 #define SAVEt_FREESV		15
 #define SAVEt_FREEOP		16
 #define SAVEt_FREEPV		17
@@ -47,17 +47,13 @@
 #define SAVEt_MORTALIZESV	36
 #define SAVEt_SHARED_PVREF	37
 #define SAVEt_BOOL		38
+#define SAVEt_SET_SVFLAGS	39
 #define SAVEt_SAVESWITCHSTACK	40
 #define SAVEt_COP_ARYBASE	41
 #define SAVEt_RE_STATE		42
-#define SAVEt_GP_NEW		43
-
-#ifndef PERL_CORE
-/* There may just be something out there hand building save stacks.  */
-#  define SAVEt_GP	SAVEt_GP_OLD
-#endif
+#define SAVEt_COMPILE_WARNINGS	43
 #define SAVEt_STACK_CXPOS	44
-#define SAVEt_PADSV_AND_MORTALIZE	46
+#define SAVEt_PARSER		45
 
 #ifndef SCOPE_SAVES_SIGNAL_MASK
 #define SCOPE_SAVES_SIGNAL_MASK 0
@@ -131,7 +127,6 @@ Closing bracket on a callback.  See C<ENTER> and L<perlcall>.
 #define SAVEPPTR(s)	save_pptr((char**)&(s))
 #define SAVEVPTR(s)	save_vptr((void*)&(s))
 #define SAVEPADSV(s)	save_padsv(s)
-#define SAVEPADSVANDMORTALIZE(s)	save_padsv_and_mortalize(s)
 #define SAVEFREESV(s)	save_freesv((SV*)(s))
 #define SAVEMORTALIZESV(s)	save_mortalizesv((SV*)(s))
 #define SAVEFREEOP(o)	save_freeop((OP*)(o))
@@ -140,6 +135,7 @@ Closing bracket on a callback.  See C<ENTER> and L<perlcall>.
 #define SAVEGENERICSV(s)	save_generic_svref((SV**)&(s))
 #define SAVEGENERICPV(s)	save_generic_pvref((char**)&(s))
 #define SAVESHAREDPV(s)		save_shared_pvref((char**)&(s))
+#define SAVESETSVFLAGS(sv,mask,val)	save_set_svflags(sv,mask,val)
 #define SAVEDELETE(h,k,l) \
 	  save_delete((HV*)(h), (char*)(k), (I32)(l))
 #define SAVEDESTRUCTOR(f,p) \
@@ -159,11 +155,17 @@ Closing bracket on a callback.  See C<ENTER> and L<perlcall>.
 
 #define SAVEHINTS() \
     STMT_START {					\
-	SSCHECK(3);					\
+	SSCHECK(4);					\
 	if (PL_hints & HINT_LOCALIZE_HH) {		\
 	    SSPUSHPTR(GvHV(PL_hintgv));			\
-	    GvHV(PL_hintgv) = newHVhv(GvHV(PL_hintgv));	\
+	    GvHV(PL_hintgv) = Perl_hv_copy_hints_hv(aTHX_ GvHV(PL_hintgv)); \
 	}						\
+	if (PL_compiling.cop_hints_hash) {		\
+	    HINTS_REFCNT_LOCK;				\
+	    PL_compiling.cop_hints_hash->refcounted_he_refcnt++;	\
+	    HINTS_REFCNT_UNLOCK;			\
+	}						\
+	SSPUSHPTR(PL_compiling.cop_hints_hash);		\
 	SSPUSHINT(PL_hints);				\
 	SSPUSHINT(SAVEt_HINTS);				\
     } STMT_END
@@ -193,6 +195,17 @@ Closing bracket on a callback.  See C<ENTER> and L<perlcall>.
 	SSPUSHINT(SAVEt_COP_ARYBASE);			\
     } STMT_END
 
+/* Need to do the cop warnings like this, rather than a "SAVEFREESHAREDPV",
+   because realloc() means that the value can actually change. Possibly
+   could have done savefreesharedpvREF, but this way actually seems cleaner,
+   as it simplifies the code that does the saves, and reduces the load on the
+   save stack.  */
+#define SAVECOMPILEWARNINGS() \
+    STMT_START {					\
+	SSCHECK(2);					\
+	SSPUSHPTR(PL_compiling.cop_warnings);		\
+	SSPUSHINT(SAVEt_COMPILE_WARNINGS);		\
+    } STMT_END
 
 #define SAVESTACK_CXPOS() \
     STMT_START {                                  \
@@ -202,20 +215,27 @@ Closing bracket on a callback.  See C<ENTER> and L<perlcall>.
         SSPUSHINT(SAVEt_STACK_CXPOS);             \
     } STMT_END
 
+#define SAVEPARSER(p) \
+    STMT_START {                                  \
+        SSCHECK(2);                               \
+        SSPUSHPTR(p);		                  \
+        SSPUSHINT(SAVEt_PARSER); 	          \
+    } STMT_END
+
 #ifdef USE_ITHREADS
 #  define SAVECOPSTASH(c)	SAVEPPTR(CopSTASHPV(c))
 #  define SAVECOPSTASH_FREE(c)	SAVESHAREDPV(CopSTASHPV(c))
 #  define SAVECOPFILE(c)	SAVEPPTR(CopFILE(c))
-#  define SAVECOPFILE_FREE(c)	STMT_START {	\
-	SAVESHAREDPV(CopFILE(c));		\
-	SAVEI8((c)->op_flags);			\
-	(c)->op_flags |= OPf_COP_TEMP;		\
-    } STMT_END
+#  define SAVECOPFILE_FREE(c)	SAVESHAREDPV(CopFILE(c))
+#  define SAVECOPLABEL(c)	SAVEPPTR(CopLABEL(c))
+#  define SAVECOPLABEL_FREE(c)	SAVESHAREDPV(CopLABEL(c))
 #else
 #  define SAVECOPSTASH(c)	SAVESPTR(CopSTASH(c))
 #  define SAVECOPSTASH_FREE(c)	SAVECOPSTASH(c)	/* XXX not refcounted */
 #  define SAVECOPFILE(c)	SAVESPTR(CopFILEGV(c))
 #  define SAVECOPFILE_FREE(c)	SAVEGENERICSV(CopFILEGV(c))
+#  define SAVECOPLABEL(c)	SAVEPPTR(CopLABEL(c))
+#  define SAVECOPLABEL_FREE(c)	SAVEPPTR(CopLABEL(c))
 #endif
 
 #define SAVECOPLINE(c)		SAVEI32(CopLINE(c))
@@ -240,12 +260,3 @@ Closing bracket on a callback.  See C<ENTER> and L<perlcall>.
 #define SSPTR(off,type)         ((type)  ((char*)PL_savestack + off))
 #define SSPTRt(off,type)        ((type*) ((char*)PL_savestack + off))
 
-/*
- * Local variables:
- * c-indentation-style: bsd
- * c-basic-offset: 4
- * indent-tabs-mode: t
- * End:
- *
- * ex: set ts=8 sts=4 sw=4 noet:
- */

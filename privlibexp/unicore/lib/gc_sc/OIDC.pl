@@ -6,7 +6,5 @@
 # Binary property 'Other_ID_Continue'
 #
 return <<'END';
-00B7		Other_ID_Continue
-0387		Other_ID_Continue
 1369	1371	Other_ID_Continue
 END

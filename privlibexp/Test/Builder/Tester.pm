@@ -1,7 +1,8 @@
 package Test::Builder::Tester;
 
 use strict;
-our $VERSION = "1.13";
+use vars qw(@EXPORT $VERSION @ISA);
+$VERSION = "1.09";
 
 use Test::Builder;
 use Symbol;
@@ -55,9 +56,9 @@ my $t = Test::Builder->new;
 ###
 
 use Exporter;
-our @ISA = qw(Exporter);
+@ISA = qw(Exporter);
 
-our @EXPORT = qw(test_out test_err test_fail test_diag test_test line_num);
+@EXPORT = qw(test_out test_err test_fail test_diag test_test line_num);
 
 # _export_to_level and import stolen directly from Test::More.  I am
 # the king of cargo cult programming ;-)
@@ -187,7 +188,7 @@ output filehandles)
 
 =cut
 
-sub test_out
+sub test_out(@)
 {
     # do we need to do any setup?
     _start_testing() unless $testing;
@@ -195,7 +196,7 @@ sub test_out
     $out->expect(@_)
 }
 
-sub test_err
+sub test_err(@)
 {
     # do we need to do any setup?
     _start_testing() unless $testing;
@@ -548,36 +549,36 @@ sub complaint
     if (Test::Builder::Tester::color)
     {
       # get color
-      eval { require Term::ANSIColor };
+      eval "require Term::ANSIColor";
       unless ($@)
       {
-        # colours
+	# colours
 
-        my $green = Term::ANSIColor::color("black").
-                    Term::ANSIColor::color("on_green");
+	my $green = Term::ANSIColor::color("black").
+	            Term::ANSIColor::color("on_green");
         my $red   = Term::ANSIColor::color("black").
                     Term::ANSIColor::color("on_red");
-        my $reset = Term::ANSIColor::color("reset");
+	my $reset = Term::ANSIColor::color("reset");
 
-        # work out where the two strings start to differ
-        my $char = 0;
-        $char++ while substr($got, $char, 1) eq substr($wanted, $char, 1);
+	# work out where the two strings start to differ
+	my $char = 0;
+	$char++ while substr($got, $char, 1) eq substr($wanted, $char, 1);
 
-        # get the start string and the two end strings
-        my $start     = $green . substr($wanted, 0,   $char);
-        my $gotend    = $red   . substr($got   , $char) . $reset;
-        my $wantedend = $red   . substr($wanted, $char) . $reset;
+	# get the start string and the two end strings
+	my $start     = $green . substr($wanted, 0,   $char);
+	my $gotend    = $red   . substr($got   , $char) . $reset;
+	my $wantedend = $red   . substr($wanted, $char) . $reset;
 
-        # make the start turn green on and off
-        $start =~ s/\n/$reset\n$green/g;
+	# make the start turn green on and off
+	$start =~ s/\n/$reset\n$green/g;
 
-        # make the ends turn red on and off
-        $gotend    =~ s/\n/$reset\n$red/g;
-        $wantedend =~ s/\n/$reset\n$red/g;
+	# make the ends turn red on and off
+	$gotend    =~ s/\n/$reset\n$red/g;
+	$wantedend =~ s/\n/$reset\n$red/g;
 
-        # rebuild the strings
-        $got    = $start . $gotend;
-        $wanted = $start . $wantedend;
+	# rebuild the strings
+	$got    = $start . $gotend;
+	$wanted = $start . $wantedend;
       }
     }
 

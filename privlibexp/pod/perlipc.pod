@@ -536,7 +536,7 @@ output doesn't wind up on the user's terminal).
 				or die "Can't write to /dev/null: $!";
 	defined(my $pid = fork)	or die "Can't fork: $!";
 	exit if $pid;
-	die "Can't start a new session: $!" if setsid == -1;
+	setsid			or die "Can't start a new session: $!";
 	open STDERR, '>&STDOUT'	or die "Can't dup stdout: $!";
     }
 
@@ -581,7 +581,7 @@ you opened whatever your kid writes to his STDOUT.
 	open (FILE, "> /safe/file")
 	    || die "can't open /safe/file: $!";
 	while (<STDIN>) {
-	    print FILE; # child's STDIN is parent's KID_TO_WRITE
+	    print FILE; # child's STDIN is parent's KID
 	}
 	exit;  # don't forget this
     }

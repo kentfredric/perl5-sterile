@@ -762,6 +762,95 @@ and backreferences C<\1>, C<\2>,... only I<inside> a regexp; not doing
 so may lead to surprising and unsatisfactory results.
 
 
+=head2 Relative backreferences
+
+Counting the opening parentheses to get the correct number for a
+backreference is errorprone as soon as there is more than one
+capturing group.  A more convenient technique became available
+with Perl 5.10: relative backreferences. To refer to the immediately
+preceding capture group one now may write C<\g{-1}>, the next but
+last is available via C<\g{-2}>, and so on.
+
+Another good reason in addition to readability and maintainability
+for using relative backreferences  is illustrated by the following example,
+where a simple pattern for matching peculiar strings is used:
+
+    $a99a = '([a-z])(\d)\2\1';   # matches a11a, g22g, x33x, etc.
+
+Now that we have this pattern stored as a handy string, we might feel
+tempted to use it as a part of some other pattern:
+
+    $line = "code=e99e";
+    if ($line =~ /^(\w+)=$a99a$/){   # unexpected behavior!
+        print "$1 is valid\n";
+    } else {
+        print "bad line: '$line'\n";
+    }
+
+But this doesn't match -- at least not the way one might expect. Only
+after inserting the interpolated C<$a99a> and looking at the resulting
+full text of the regexp is it obvious that the backreferences have
+backfired -- the subexpression C<(\w+)> has snatched number 1 and
+demoted the groups in C<$a99a> by one rank. This can be avoided by
+using relative backreferences:
+
+    $a99a = '([a-z])(\d)\g{-1}\g{-2}';  # safe for being interpolated
+
+
+=head2 Named backreferences
+
+Perl 5.10 also introduced named capture buffers and named backreferences.
+To attach a name to a capturing group, you write either
+C<< (?<name>...) >> or C<< (?'name'...) >>.  The backreference may
+then be written as C<\g{name}>.  It is permissible to attach the
+same name to more than one group, but then only the leftmost one of the
+eponymous set can be referenced.  Outside of the pattern a named
+capture buffer is accessible through the C<%+> hash.
+
+Assuming that we have to match calendar dates which may be given in one
+of the three formats yyyy-mm-dd, mm/dd/yyyy or dd.mm.yyyy, we can write
+three suitable patterns where we use 'd', 'm' and 'y' respectively as the
+names of the buffers capturing the pertaining components of a date. The
+matching operation combines the three patterns as alternatives:
+
+    $fmt1 = '(?<y>\d\d\d\d)-(?<m>\d\d)-(?<d>\d\d)';
+    $fmt2 = '(?<m>\d\d)/(?<d>\d\d)/(?<y>\d\d\d\d)';
+    $fmt3 = '(?<d>\d\d)\.(?<m>\d\d)\.(?<y>\d\d\d\d)';
+    for my $d qw( 2006-10-21 15.01.2007 10/31/2005 ){
+        if ( $d =~ m{$fmt1|$fmt2|$fmt3} ){
+            print "day=$+{d} month=$+{m} year=$+{y}\n";
+        }
+    }
+
+If any of the alternatives matches, the hash C<%+> is bound to contain the
+three key-value pairs.
+
+
+=head2 Alternative capture group numbering
+
+Yet another capturing group numbering technique (also as from Perl 5.10)
+deals with the problem of referring to groups within a set of alternatives.
+Consider a pattern for matching a time of the day, civil or military style:
+
+    if ( $time =~ /(\d\d|\d):(\d\d)|(\d\d)(\d\d)/ ){
+        # process hour and minute
+    }
+
+Processing the results requires an additional if statement to determine
+whether C<$1> and C<$2> or C<$3> and C<$4> contain the goodies. It would
+be easier if we could use buffer numbers 1 and 2 in second alternative as
+well, and this is exactly what the parenthesized construct C<(?|...)>,
+set around an alternative achieves. Here is an extended version of the
+previous pattern:
+
+    if ( $time =~ /(?|(\d\d|\d):(\d\d)|(\d\d)(\d\d))\s+([A-Z][A-Z][A-Z])/ ){
+	print "hour=$1 minute=$2 zone=$3\n";
+    }
+
+Within the alternative numbering group, buffer numbers start at the same
+position for each alternative. After the group, numbering continues
+with one higher than the maximum reached across all the alternatives.
+
 =head2 Position information
 
 In addition to what was matched, Perl (since 5.6.0) also provides the
@@ -1188,6 +1277,61 @@ I<Mastering Regular Expressions> by Jeffrey Friedl gives a wonderful
 discussion of this and other efficiency issues.
 
 
+=head2 Possessive quantifiers
+
+Backtracking during the relentless search for a match may be a waste
+of time, particularly when the match is bound to fail.  Consider
+the simple pattern
+
+    /^\w+\s+\w+$/; # a word, spaces, a word
+
+Whenever this is applied to a string which doesn't quite meet the
+pattern's expectations such as S<C<"abc  ">> or S<C<"abc  def ">>,
+the regex engine will backtrack, approximately once for each character
+in the string.  But we know that there is no way around taking I<all>
+of the initial word characters to match the first repetition, that I<all>
+spaces must be eaten by the middle part, and the same goes for the second
+word.
+
+With the introduction of the I<possessive quantifiers> in Perl 5.10, we
+have a way of instructing the regex engine not to backtrack, with the
+usual quantifiers with a C<+> appended to them.  This makes them greedy as
+well as stingy; once they succeed they won't give anything back to permit
+another solution. They have the following meanings:
+
+=over 4
+
+=item *
+
+C<a{n,m}+> means: match at least C<n> times, not more than C<m> times,
+as many times as possible, and don't give anything up. C<a?+> is short
+for C<a{0,1}+>
+
+=item *
+
+C<a{n,}+> means: match at least C<n> times, but as many times as possible,
+and don't give anything up. C<a*+> is short for C<a{0,}+> and C<a++> is
+short for C<a{1,}+>.
+
+=item *
+
+C<a{n}+> means: match exactly C<n> times.  It is just there for
+notational consistency.
+
+=back
+
+These possessive quantifiers represent a special case of a more general
+concept, the I<independent subexpression>, see below.
+
+As an example where a possessive quantifier is suitable we consider
+matching a quoted string, as it appears in several programming languages.
+The backslash is used as an escape character that indicates that the
+next character is to be taken literally, as another character for the
+string.  Therefore, after the opening quote, we expect a (possibly
+empty) sequence of alternatives: either some character except an
+unescaped quote or backslash or an escaped character.
+
+    /"(?:[^"\\]++|\\.)*+"/;
 
 
 =head2 Building a regexp
@@ -2230,6 +2374,68 @@ lookahead, lookbehind or code assertions, the parentheses around the
 conditional are not needed.
 
 
+=head2 Defining named patterns
+
+Some regular expressions use identical subpatterns in several places.
+Starting with Perl 5.10, it is possible to define named subpatterns in
+a section of the pattern so that they can be called up by name
+anywhere in the pattern.  This syntactic pattern for this definition
+group is C<< (?(DEFINE)(?<name>pattern)...) >>.  An insertion
+of a named pattern is written as C<(?&name)>.
+
+The example below illustrates this feature using the pattern for
+floating point numbers that was presented earlier on.  The three
+subpatterns that are used more than once are the optional sign, the
+digit sequence for an integer and the decimal fraction.  The DEFINE
+group at the end of the pattern contains their definition.  Notice
+that the decimal fraction pattern is the first place where we can
+reuse the integer pattern.
+
+   /^ (?&osg)\ * ( (?&int)(?&dec)? | (?&dec) )
+      (?: [eE](?&osg)(?&int) )?
+    $
+    (?(DEFINE)
+      (?<osg>[-+]?)         # optional sign
+      (?<int>\d++)          # integer
+      (?<dec>\.(?&int))     # decimal fraction
+    )/x
+
+
+=head2 Recursive patterns
+
+This feature (introduced in Perl 5.10) significantly extends the
+power of Perl's pattern matching.  By referring to some other
+capture group anywhere in the pattern with the construct
+C<(?group-ref)>, the I<pattern> within the referenced group is used
+as an independent subpattern in place of the group reference itself.
+Because the group reference may be contained I<within> the group it
+refers to, it is now possible to apply pattern matching to tasks that
+hitherto required a recursive parser.
+
+To illustrate this feature, we'll design a pattern that matches if
+a string contains a palindrome. (This is a word or a sentence that,
+while ignoring spaces, interpunctuation and case, reads the same backwards
+as forwards. We begin by observing that the empty string or a string
+containing just one word character is a palindrome. Otherwise it must
+have a word character up front and the same at its end, with another
+palindrome in between.
+
+    /(?: (\w) (?...Here be a palindrome...) \{-1} | \w? )/x
+
+Adding C<\W*> at either end to eliminate was is to be ignored, we already
+have the full pattern:
+
+    my $pp = qr/^(\W* (?: (\w) (?1) \g{-1} | \w? ) \W*)$/ix;
+    for $s ( "saippuakauppias", "A man, a plan, a canal: Panama!" ){
+        print "'$s' is a palindrome\n" if $s =~ /$pp/;
+    }
+
+In C<(?...)> both absolute and relative backreferences may be used.
+The entire pattern can be reinserted with C<(?R)> or C<(?0)>.
+If you prefer to name your buffers, you can use C<(?&name)> to
+recurse into that buffer.
+
+
 =head2 A bit of magic: executing Perl code in a regular expression
 
 Normally, regexps are a part of Perl expressions.
@@ -2454,6 +2660,45 @@ The regexp without the C<//x> modifier is
 which shows that spaces are still possible in the code parts. Nevertheless,
 when working with code and conditional expressions, the extended form of
 regexps is almost necessary in creating and debugging regexps.
+
+
+=head2 Backtracking control verbs
+
+Perl 5.10 introduced a number of control verbs intended to provide
+detailed control over the backtracking process, by directly influencing
+the regexp engine and by providing monitoring techniques.  As all
+the features in this group are experimental and subject to change or
+removal in a future version of Perl, the interested reader is
+referred to L<perlre/"Special Backtracking Control Verbs"> for a
+detailed description.
+
+Below is just one example, illustrating the control verb C<(*FAIL)>,
+which may be abbreviated as C<(*F)>. If this is inserted in a regexp
+it will cause to fail, just like at some mismatch between the pattern
+and the string. Processing of the regexp continues like after any "normal"
+failure, so that, for instance, the next position in the string or another
+alternative will be tried. As failing to match doesn't preserve capture
+buffers or produce results, it may be necessary to use this in
+combination with embedded code.
+
+   %count = ();
+   "supercalifragilisticexpialidoceous" =~
+       /([aeiou])(?{ $count{$1}++; })(*FAIL)/oi;
+   printf "%3d '%s'\n", $count{$_}, $_ for (sort keys %count);
+
+The pattern begins with a class matching a subset of letters.  Whenever
+this matches, a statement like C<$count{'a'}++;> is executed, incrementing
+the letter's counter. Then C<(*FAIL)> does what it says, and
+the regexp  engine proceeds according to the book: as long as the end of
+the string  hasn't been reached, the position is advanced before looking
+for another vowel. Thus, match or no match makes no difference, and the
+regexp engine proceeds until the the entire string has been inspected.
+(It's remarkable that an alternative solution using something like
+
+   $count{lc($_)}++ for split('', "supercalifragilisticexpialidoceous");
+   printf "%3d '%s'\n", $count2{$_}, $_ for ( qw{ a e i o u } );
+
+is considerably slower.)
 
 
 =head2 Pragmas and debugging

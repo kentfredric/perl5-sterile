@@ -9,11 +9,8 @@
 # Meaning: Script 'Cyrillic'
 #
 return <<'END';
-0400	0523	Cyrillic
+0400	0486	Cyrillic
+0488	0513	Cyrillic
 1D2B		Cyrillic
 1D78		Cyrillic
-2DE0	2DFF	Cyrillic
-A640	A65F	Cyrillic
-A662	A673	Cyrillic
-A67C	A697	Cyrillic
 END

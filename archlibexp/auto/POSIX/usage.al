@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 92 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/usage.al)"
+#line 87 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/usage.al)"
 sub usage {
     my ($mess) = @_;
     croak "Usage: POSIX::$mess";

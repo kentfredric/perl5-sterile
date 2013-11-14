@@ -113,13 +113,9 @@ some of the variables described below, or may have extraneous variables
 specific to that particular port.  See the port specific documentation
 in such cases.
 
-=cut
-
 =head2 _
 
 =over 4
-
-=cut
 
 =item C<_a>
 
@@ -148,13 +144,9 @@ values include F<.obj>.
 
 =back
 
-=cut
-
 =head2 a
 
 =over 4
-
-=cut
 
 =item C<afs>
 
@@ -322,13 +314,9 @@ the value is reset to a plain C<awk> and is not useful.
 
 =back
 
-=cut
-
 =head2 b
 
 =over 4
-
-=cut
 
 =item C<baserev>
 
@@ -386,13 +374,9 @@ or 87654321 on a Cray ... or 3412 with weird order !
 
 =back
 
-=cut
-
 =head2 c
 
 =over 4
-
-=cut
 
 =item C<c>
 
@@ -700,13 +684,9 @@ is defined.
 
 =back
 
-=cut
-
 =head2 d
 
 =over 4
-
-=cut
 
 =item C<d__fwalk>
 
@@ -2452,13 +2432,6 @@ This variable conditionally defines C<MYMALLOC> in case other parts
 of the source want to take special action if C<MYMALLOC> is used.
 This may include different sorts of profiling or error detection.
 
-=item C<d_nanosleep>
-
-From F<d_nanosleep.U>:
-
-This variable conditionally defines C<HAS_NANOSLEEP>
-if nanosleep() is available to sleep with 1E-9 sec accuracy.
-
 =item C<d_nice>
 
 From F<d_nice.U>:
@@ -4104,13 +4077,9 @@ link dynamically into the package.  It is used by Makefile.
 
 =back
 
-=cut
-
 =head2 e
 
 =over 4
-
-=cut
 
 =item C<eagain>
 
@@ -4237,13 +4206,6 @@ non-xs linked into the package.  It is propagated to F<Config.pm>
 and is typically used to test whether a particular extesion
 is available.
 
-=item C<extern_C>
-
-From F<Csym.U>:
-
-C<ANSI> C requires C<extern> where C++ requires 'extern C<C>'. This
-variable can be used in Configure to do the right thing.
-
 =item C<extras>
 
 From F<Extras.U>:
@@ -4252,13 +4214,9 @@ This variable holds a list of extra modules to install.
 
 =back
 
-=cut
-
 =head2 f
 
 =over 4
-
-=cut
 
 =item C<fflushall>
 
@@ -4359,13 +4317,9 @@ F<sed.>
 
 =back
 
-=cut
-
 =head2 g
 
 =over 4
-
-=cut
 
 =item C<gccansipedantic>
 
@@ -4668,13 +4622,9 @@ the value is reset to a plain C<gzip> and is not useful.
 
 =back
 
-=cut
-
 =head2 h
 
 =over 4
-
-=cut
 
 =item C<h_fcntl>
 
@@ -4742,13 +4692,9 @@ expanded at configuration time, for convenient use in makefiles.
 
 =back
 
-=cut
-
 =head2 i
 
 =over 4
-
-=cut
 
 =item C<i16size>
 
@@ -5756,13 +5702,9 @@ This variable contains the C type used for Perl's C<IV>.
 
 =back
 
-=cut
-
 =head2 k
 
 =over 4
-
-=cut
 
 =item C<known_extensions>
 
@@ -5780,13 +5722,9 @@ The value is a plain '' and is not useful.
 
 =back
 
-=cut
-
 =head2 l
 
 =over 4
-
-=cut
 
 =item C<ld>
 
@@ -6044,13 +5982,9 @@ kernel (which also appears to be lseek's return type).
 
 =back
 
-=cut
-
 =head2 m
 
 =over 4
-
-=cut
 
 =item C<mad>
 
@@ -6116,7 +6050,7 @@ make_set_make=C<#>		# If your make program handles this for you,
 make_set_make=C<MAKE=$make>	# if it doesn't.
 
 This uses a comment character to distinguish a
-C<set> value (from a previous F<config.sh> or Configure -D option)
+C<set> value (from a previous F<config.sh> or Configure C<-D> option)
 from an uncomputed value.
 
 =item C<mallocobj>
@@ -6193,13 +6127,9 @@ See man3dir.
 
 =back
 
-=cut
-
 =head2 M
 
 =over 4
-
-=cut
 
 =item C<Mcc>
 
@@ -6310,19 +6240,15 @@ whole thing is then lower-cased.
 
 =back
 
-=cut
-
 =head2 n
 
 =over 4
-
-=cut
 
 =item C<n>
 
 From F<n.U>:
 
-This variable contains the -n flag if that is what causes the echo
+This variable contains the C<-n> flag if that is what causes the echo
 command to suppress newline.  Otherwise it is null.  Correct usage is
 $echo $n "prompt for a question: $c".
 
@@ -6474,13 +6400,9 @@ This variable contains the C type used for Perl's C<NV>.
 
 =back
 
-=cut
-
 =head2 o
 
 =over 4
-
-=cut
 
 =item C<o_nonblock>
 
@@ -6558,13 +6480,9 @@ for the next run through Configure.
 
 =back
 
-=cut
-
 =head2 p
 
 =over 4
-
-=cut
 
 =item C<package>
 
@@ -6623,13 +6541,9 @@ to determine inc_version_list.
 
 =back
 
-=cut
-
 =head2 P
 
 =over 4
-
-=cut
 
 =item C<PERL_API_REVISION>
 
@@ -6840,13 +6754,9 @@ indicates to the C program how many bytes there are in a pointer.
 
 =back
 
-=cut
-
 =head2 q
 
 =over 4
-
-=cut
 
 =item C<quadkind>
 
@@ -6864,13 +6774,9 @@ long long, int64_t, or whatever type is used for 64-bit integers.
 
 =back
 
-=cut
-
 =head2 r
 
 =over 4
-
-=cut
 
 =item C<randbits>
 
@@ -6987,13 +6893,9 @@ of usenm and the flags on the Configure command line.
 
 =back
 
-=cut
-
 =head2 s
 
 =over 4
-
-=cut
 
 =item C<sched_yield>
 
@@ -7132,9 +7034,9 @@ on this system to execute Bourne shell scripts.  Usually, this will be
 F</bin/sh>, though it's possible that some systems will have F</bin/ksh>,
 F</bin/pdksh>, F</bin/ash>, F</bin/bash>, or even something such as
 D:F</bin/sh.exe>.
-This unit comes before F<Options.U>, so you can't set sh with a -D
+This unit comes before F<Options.U>, so you can't set sh with a C<-D>
 option, though you can override this (and startsh)
-with -O -Dsh=F</bin/whatever> -Dstartsh=whatever
+with C<-O -Dsh=F</bin/whatever> -Dstartsh=whatever>
 
 =item C<shar>
 
@@ -7514,7 +7416,7 @@ sentences.
 From F<spitshell.U>:
 
 This variable contains the command necessary to spit out a runnable
-shell on this system.  It is either cat or a grep -v for # comments.
+shell on this system.  It is either cat or a grep C<-v> for # comments.
 
 =item C<sPRId64>
 
@@ -7777,13 +7679,9 @@ for unix commands (section 1 of the manual usually). See mansrc.
 
 =back
 
-=cut
-
 =head2 t
 
 =over 4
-
-=cut
 
 =item C<tail>
 
@@ -7903,13 +7801,9 @@ is defined.
 
 =back
 
-=cut
-
 =head2 u
 
 =over 4
-
-=cut
 
 =item C<u16size>
 
@@ -8283,13 +8177,9 @@ a Perl C<UV> as an unsigned hexadecimal integer in uppercase C<ABCDEF>.
 
 =back
 
-=cut
-
 =head2 v
 
 =over 4
-
-=cut
 
 =item C<vendorarch>
 
@@ -8520,13 +8410,9 @@ compiler.  See C<VOIDFLAGS> for more info.
 
 =back
 
-=cut
-
 =head2 x
 
 =over 4
-
-=cut
 
 =item C<xlibpth>
 
@@ -8538,13 +8424,9 @@ libraries on this platform, for example C<CPU>-specific libraries
 
 =back
 
-=cut
-
 =head2 y
 
 =over 4
-
-=cut
 
 =item C<yacc>
 
@@ -8562,13 +8444,9 @@ user.  It is up to the Makefile to use this.
 
 =back
 
-=cut
-
 =head2 z
 
 =over 4
-
-=cut
 
 =item C<zcat>
 

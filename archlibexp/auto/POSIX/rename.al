@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 383 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rename.al)"
+#line 378 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rename.al)"
 sub rename {
     usage "rename(oldfilename, newfilename)" if @_ != 2;
     CORE::rename($_[0], $_[1]);

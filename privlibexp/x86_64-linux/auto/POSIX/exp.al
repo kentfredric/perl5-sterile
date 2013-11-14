@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 183 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/exp.al)"
+#line 178 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/exp.al)"
 sub exp {
     usage "exp(x)" if @_ != 1;
     CORE::exp($_[0]);

@@ -18,13 +18,10 @@
    alphabeticpresentationforms		    => 'InAlphab',
 
  # InAncientGreekMusicalNotation
-   ancientgreekmusicalnotation		    => 'InAncie3',
+   ancientgreekmusicalnotation		    => 'InAncie2',
 
  # InAncientGreekNumbers
-   ancientgreeknumbers			    => 'InAncie2',
-
- # InAncientSymbols
-   ancientsymbols			    => 'InAncien',
+   ancientgreeknumbers			    => 'InAncien',
 
    arabic				    => 'Arab',
 
@@ -80,12 +77,9 @@
  # CanadianAboriginal
    canadianaboriginal			    => 'Canadian',
 
-   carian				    => 'Carian',
-
  # CasedLetter
    casedletter				    => 'LC',
 
-   cham 				    => 'Cham',
    cherokee				    => 'Cher',
 
  # InCjkCompatibility
@@ -166,14 +160,8 @@
 
    cyrillic				    => 'Cyrl',
 
- # InCyrillicExtendedA
-   cyrillicextendeda			    => 'InCyril3',
-
- # InCyrillicExtendedB
-   cyrillicextendedb			    => 'InCyril2',
-
  # InCyrillicSupplement
-   cyrillicsupplement			    => 'InCyril4',
+   cyrillicsupplement			    => 'InCyril2',
 
    dash 				    => 'Dash2',
 
@@ -193,9 +181,6 @@
 
  # InDingbats
    dingbats				    => 'InDingba',
-
- # InDominoTiles
-   dominotiles				    => 'InDomino',
 
  # InEnclosedAlphanumerics
    enclosedalphanumerics		    => 'InEnclos',
@@ -299,13 +284,10 @@
    inalphabeticpresentationforms	    => 'InAlphab',
 
  # InAncientGreekMusicalNotation
-   inancientgreekmusicalnotation	    => 'InAncie3',
+   inancientgreekmusicalnotation	    => 'InAncie2',
 
  # InAncientGreekNumbers
-   inancientgreeknumbers		    => 'InAncie2',
-
- # InAncientSymbols
-   inancientsymbols			    => 'InAncien',
+   inancientgreeknumbers		    => 'InAncien',
 
  # InArabic
    inarabic				    => 'InArabic',
@@ -357,12 +339,6 @@
 
  # InByzantineMusicalSymbols
    inbyzantinemusicalsymbols		    => 'InByzant',
-
- # InCarian
-   incarian				    => 'InCarian',
-
- # InCham
-   incham				    => 'InCham',
 
  # InCherokee
    incherokee				    => 'InCherok',
@@ -433,14 +409,8 @@
  # InCyrillic
    incyrillic				    => 'InCyrill',
 
- # InCyrillicExtendedA
-   incyrillicextendeda			    => 'InCyril3',
-
- # InCyrillicExtendedB
-   incyrillicextendedb			    => 'InCyril2',
-
  # InCyrillicSupplement
-   incyrillicsupplement 		    => 'InCyril4',
+   incyrillicsupplement 		    => 'InCyril2',
 
  # InDeseret
    indeseret				    => 'InDesere',
@@ -450,9 +420,6 @@
 
  # InDingbats
    indingbats				    => 'InDingba',
-
- # InDominoTiles
-   indominotiles			    => 'InDomino',
 
  # InEnclosedAlphanumerics
    inenclosedalphanumerics		    => 'InEnclos',
@@ -552,9 +519,6 @@
  # InKatakanaPhoneticExtensions
    inkatakanaphoneticextensions 	    => 'InKatak2',
 
- # InKayahLi
-   inkayahli				    => 'InKayahL',
-
  # InKharoshthi
    inkharoshthi 			    => 'InKharos',
 
@@ -585,9 +549,6 @@
  # InLatinExtendedD
    inlatinextendedd			    => 'InLatin3',
 
- # InLepcha
-   inlepcha				    => 'InLepcha',
-
  # InLetterlikeSymbols
    inletterlikesymbols			    => 'InLetter',
 
@@ -602,15 +563,6 @@
 
  # InLowSurrogates
    inlowsurrogates			    => 'InLowSur',
-
- # InLycian
-   inlycian				    => 'InLycian',
-
- # InLydian
-   inlydian				    => 'InLydian',
-
- # InMahjongTiles
-   inmahjongtiles			    => 'InMahjon',
 
  # InMalayalam
    inmalayalam				    => 'InMalaya',
@@ -660,9 +612,6 @@
  # InOgham
    inogham				    => 'InOgham',
 
- # InOlChiki
-   inolchiki				    => 'InOlChik',
-
  # InOldItalic
    inolditalic				    => 'InOldIta',
 
@@ -681,9 +630,6 @@
  # InPhagsPa
    inphagspa				    => 'InPhagsP',
 
- # InPhaistosDisc
-   inphaistosdisc			    => 'InPhaist',
-
  # InPhoenician
    inphoenician 			    => 'InPhoeni',
 
@@ -696,14 +642,8 @@
  # InPrivateUseArea
    inprivateusearea			    => 'InPrivat',
 
- # InRejang
-   inrejang				    => 'InRejang',
-
  # InRunic
    inrunic				    => 'InRunic',
-
- # InSaurashtra
-   insaurashtra 			    => 'InSauras',
 
  # InShavian
    inshavian				    => 'InShavia',
@@ -719,9 +659,6 @@
 
  # InSpecials
    inspecials				    => 'InSpecia',
-
- # InSundanese
-   insundanese				    => 'InSundan',
 
  # InSuperscriptsAndSubscripts
    insuperscriptsandsubscripts		    => 'InSupers',
@@ -789,9 +726,6 @@
  # InUnifiedCanadianAboriginalSyllabics
    inunifiedcanadianaboriginalsyllabics     => 'InUnifie',
 
- # InVai
-   invai				    => 'InVai',
-
  # InVariationSelectors
    invariationselectors 		    => 'InVariat',
 
@@ -828,9 +762,6 @@
  # InKatakanaPhoneticExtensions
    katakanaphoneticextensions		    => 'InKatak2',
 
- # KayahLi
-   kayahli				    => 'KayahLi',
-
    kharoshthi				    => 'Khar',
    khmer				    => 'Khmr',
 
@@ -858,7 +789,6 @@
  # InLatinExtendedD
    latinextendedd			    => 'InLatin3',
 
-   lepcha				    => 'Lepcha',
    letter				    => 'L',
 
  # InLetterlikeSymbols
@@ -891,12 +821,6 @@
 
  # InLowSurrogates
    lowsurrogates			    => 'InLowSur',
-
-   lycian				    => 'Lycian',
-   lydian				    => 'Lydian',
-
- # InMahjongTiles
-   mahjongtiles 			    => 'InMahjon',
 
    malayalam				    => 'Mlym',
    mark 				    => 'M',
@@ -959,9 +883,6 @@
    numberforms				    => 'InNumber',
 
    ogham				    => 'Ogam',
-
- # OlChiki
-   olchiki				    => 'OlChiki',
 
  # OldItalic
    olditalic				    => 'OldItali',
@@ -1027,9 +948,6 @@
  # PhagsPa
    phagspa				    => 'PhagsPa',
 
- # InPhaistosDisc
-   phaistosdisc 			    => 'InPhaist',
-
    phoenician				    => 'Phnx',
 
  # InPhoneticExtensions
@@ -1050,9 +968,7 @@
    quotationmark			    => 'Quotatio',
 
    radical				    => 'Radical2',
-   rejang				    => 'Rejang',
    runic				    => 'Runr',
-   saurashtra				    => 'Saurasht',
    separator				    => 'Z',
    shavian				    => 'Shaw',
    sinhala				    => 'Sinh',
@@ -1076,7 +992,6 @@
    specials				    => 'InSpecia',
 
    sterm				    => 'Sterm2',
-   sundanese				    => 'Sundanes',
 
  # InSuperscriptsAndSubscripts
    superscriptsandsubscripts		    => 'InSupers',
@@ -1145,8 +1060,6 @@
 
  # UppercaseLetter
    uppercaseletter			    => 'Lu',
-
-   vai					    => 'Vai',
 
  # VariationSelector
    variationselector			    => 'Variatio',

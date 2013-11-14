@@ -13,7 +13,7 @@ my @inc_version_list = reverse split / /, $Config{inc_version_list};
 
 
 our @ORIG_INC = @INC;	# take a handy copy of 'original' value
-our $VERSION = '0.61';
+our $VERSION = '0.5565';
 my $Is_MacOS = $^O eq 'MacOS';
 my $Mac_FS;
 if ($Is_MacOS) {
@@ -34,7 +34,7 @@ sub import {
 
 	$path = _nativize($path);
 
-	if ($path !~ /\.par$/i && -e $path && ! -d _) {
+	if (-e $path && ! -d _) {
 	    require Carp;
 	    Carp::carp("Parameter to use lib must be directory, not file");
 	}
@@ -150,16 +150,10 @@ For each directory in LIST (called $dir here) the lib module also
 checks to see if a directory called $dir/$archname/auto exists.
 If so the $dir/$archname directory is assumed to be a corresponding
 architecture specific directory and is added to @INC in front of $dir.
-lib.pm also checks if directories called $dir/$version and $dir/$version/$archname
-exist and adds these directories to @INC.
 
 The current value of C<$archname> can be found with this command:
 
     perl -V:archname
-
-The corresponding command to get the current value of C<$version> is:
-
-    perl -V:version
 
 To avoid memory leaks, all trailing duplicate entries in @INC are
 removed.
@@ -205,38 +199,12 @@ paths, as it does now for Mac OS (where Unix-style or Mac-style paths
 work, and Unix-style paths are converted properly to Mac-style paths
 before being added to @INC).
 
-If you try to add a file to @INC as follows:
-
-  use lib 'this_is_a_file.txt';
-
-C<lib> will warn about this. The sole exceptions are files with the
-C<.par> extension which are intended to be used as libraries.
-
 =head1 SEE ALSO
 
 FindBin - optional module which deals with paths relative to the source file.
 
-PAR - optional module which can treat C<.par> files as Perl libraries.
-
 =head1 AUTHOR
 
 Tim Bunce, 2nd June 1995.
-
-C<lib> is maintained by the perl5-porters. Please direct
-any questions to the canonical mailing list. Anything that
-is applicable to the CPAN release can be sent to its maintainer,
-though.
-
-Maintainer: The Perl5-Porters <perl5-porters@perl.org>
-
-Maintainer of the CPAN release: Steffen Mueller <smueller@cpan.org>
-
-=head1 COPYRIGHT AND LICENSE
-
-This package has been part of the perl core since perl 5.001.
-It has been released separately to CPAN so older installations
-can benefit from bug fixes.
-
-This package has the same copyright and license as the perl core.
 
 =cut

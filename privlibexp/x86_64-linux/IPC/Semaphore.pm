@@ -1,18 +1,8 @@
-################################################################################
+# IPC::Semaphore
 #
-#  $Revision: 18 $
-#  $Author: mhx $
-#  $Date: 2007/10/15 20:29:08 +0200 $
-#
-################################################################################
-#
-#  Version 2.x, Copyright (C) 2007, Marcus Holland-Moritz <mhx@cpan.org>.
-#  Version 1.x, Copyright (C) 1997, Graham Barr <gbarr@pobox.com>.
-#
-#  This program is free software; you can redistribute it and/or
-#  modify it under the same terms as Perl itself.
-#
-################################################################################
+# Copyright (c) 1997 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# This program is free software; you can redistribute it and/or
+# modify it under the same terms as Perl itself.
 
 package IPC::Semaphore;
 
@@ -22,11 +12,8 @@ use strict;
 use vars qw($VERSION);
 use Carp;
 
-$VERSION = do { my @r = '$Snapshot: /IPC-SysV/2.00 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
+$VERSION = "1.02";
 $VERSION = eval $VERSION;
-
-# Figure out if we have support for native sized types
-my $N = do { my $foo = eval { pack "L!", 0 }; $@ ? '' : '!' };
 
 {
     package IPC::Semaphore::stat;
@@ -102,7 +89,7 @@ sub op {
     @_ >= 4 || croak '$sem->op( OPLIST )';
     my $self = shift;
     croak 'Bad arg count' if @_ % 3;
-    my $data = pack("s$N*",@_);
+    my $data = pack("s!*",@_);
     semop($$self,$data);
 }
 
@@ -140,12 +127,12 @@ sub getall {
     my $data = "";
     semctl($$self,0,GETALL,$data)
 	or return ();
-    (unpack("s$N*",$data));
+    (unpack("s!*",$data));
 }
 
 sub setall {
     my $self = shift;
-    my $data = pack("s$N*",@_);
+    my $data = pack("s!*",@_);
     semctl($$self,0,SETALL,$data);
 }
 
@@ -170,7 +157,7 @@ IPC::Semaphore - SysV Semaphore IPC object class
     use IPC::SysV qw(IPC_PRIVATE S_IRUSR S_IWUSR IPC_CREAT);
     use IPC::Semaphore;
 
-    $sem = IPC::Semaphore->new(IPC_PRIVATE, 10, S_IRUSR | S_IWUSR | IPC_CREAT);
+    $sem = new IPC::Semaphore(IPC_PRIVATE, 10, S_IRUSR | S_IWUSR | IPC_CREAT);
 
     $sem->setall( (0) x 10);
 
@@ -205,7 +192,7 @@ C<KEY> is equal to C<IPC_PRIVATE>
 
 =item *
 
-C<KEY> does not already have a semaphore identifier
+C<KEY> does not already  have  a  semaphore  identifier
 associated with it, and C<I<FLAGS> & IPC_CREAT> is true.
 
 =back
@@ -300,20 +287,16 @@ of these fields see your system documentation.
 
 =head1 SEE ALSO
 
-L<IPC::SysV>, L<Class::Struct>, L<semget>, L<semctl>, L<semop> 
+L<IPC::SysV> L<Class::Struct> L<semget> L<semctl> L<semop> 
 
-=head1 AUTHORS
+=head1 AUTHOR
 
-Graham Barr <gbarr@pobox.com>,
-Marcus Holland-Moritz <mhx@cpan.org>
+Graham Barr <gbarr@pobox.com>
 
 =head1 COPYRIGHT
 
-Version 2.x, Copyright (C) 2007, Marcus Holland-Moritz.
-
-Version 1.x, Copyright (c) 1997, Graham Barr.
-
-This program is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
+Copyright (c) 1997 Graham Barr. All rights reserved.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 =cut

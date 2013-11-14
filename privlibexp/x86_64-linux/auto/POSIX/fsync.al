@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 313 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fsync.al)"
+#line 308 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fsync.al)"
 sub fsync {
     redef "IO::Handle::sync()";
 }

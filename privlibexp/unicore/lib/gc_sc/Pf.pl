@@ -19,5 +19,4 @@ return <<'END';
 2E0A		
 2E0D		
 2E1D		
-2E21		
 END

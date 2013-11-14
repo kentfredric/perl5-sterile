@@ -171,9 +171,7 @@ use strict;
 use Exporter;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 
-$VERSION = '3.29';
-my $xs_version = $VERSION;
-$VERSION = eval $VERSION;
+$VERSION = '3.2501';
 
 @ISA = qw/ Exporter /;
 @EXPORT = qw(cwd getcwd fastcwd fastgetcwd);
@@ -206,11 +204,11 @@ if ($^O eq 'os2') {
 eval {
   if ( $] >= 5.006 ) {
     require XSLoader;
-    XSLoader::load( __PACKAGE__, $xs_version);
+    XSLoader::load( __PACKAGE__, $VERSION );
   } else {
     require DynaLoader;
     push @ISA, 'DynaLoader';
-    __PACKAGE__->bootstrap( $xs_version );
+    __PACKAGE__->bootstrap( $VERSION );
   }
 };
 
@@ -542,8 +540,8 @@ sub _perl_abs_path
 	local *PARENT;
 	unless (opendir(PARENT, $dotdots))
 	{
-	    # probably a permissions issue.  Try the native command.
-	    return File::Spec->rel2abs( $start, _backtick_pwd() );
+	    _carp("opendir($dotdots): $!");
+	    return '';
 	}
 	unless (@cst = stat($dotdots))
 	{
@@ -654,25 +652,6 @@ sub _vms_abs_path {
 	    
         return _vms_abs_path($link_target);
     }
-
-    if (defined &VMS::Filespec::vms_realpath) {
-        my $path = $_[0];
-        if ($path =~ m#(?<=\^)/# ) {
-            # Unix format
-            return VMS::Filespec::vms_realpath($path);
-        }
-
-	# VMS format
-
-	my $new_path = VMS::Filespec::vms_realname($path); 
-
-	# Perl expects directories to be in directory format
-	$new_path = VMS::Filespec::pathify($new_path) if -d $path;
-	return $new_path;
-    }
-
-    # Fallback to older algorithm if correct ones are not
-    # available.
 
     # may need to turn foo.dir into [.foo]
     my $pathified = VMS::Filespec::pathify($path);

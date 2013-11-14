@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 756 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/sleep.al)"
+#line 751 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/sleep.al)"
 sub sleep {
     usage "sleep(seconds)" if @_ != 1;
     $_[0] - CORE::sleep($_[0]);

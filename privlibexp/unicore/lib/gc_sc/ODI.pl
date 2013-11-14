@@ -8,7 +8,7 @@
 return <<'END';
 034F		Other_Default_Ignorable_Code_Point
 115F	1160	Other_Default_Ignorable_Code_Point
-2065	2069	Other_Default_Ignorable_Code_Point
+2064	2069	Other_Default_Ignorable_Code_Point
 3164		Other_Default_Ignorable_Code_Point
 FFA0		Other_Default_Ignorable_Code_Point
 FFF0	FFF8	Other_Default_Ignorable_Code_Point

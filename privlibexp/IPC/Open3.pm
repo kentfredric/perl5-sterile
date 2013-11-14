@@ -9,7 +9,7 @@ require Exporter;
 use Carp;
 use Symbol qw(gensym qualify);
 
-$VERSION	= 1.03;
+$VERSION	= 1.02;
 @ISA		= qw(Exporter);
 @EXPORT		= qw(open3);
 
@@ -25,9 +25,6 @@ IPC::Open3, open3 - open a process for reading, writing, and error handling
     my($wtr, $rdr, $err);
     $pid = open3($wtr, $rdr, $err,
 		    'some cmd and args', 'optarg', ...);
-
-    waitpid( $pid, 0 );
-    my $child_exit_status = $? >> 8;
 
 =head1 DESCRIPTION
 

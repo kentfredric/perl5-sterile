@@ -51,7 +51,11 @@
 #include "perlio.h"
 
 #ifndef Sighandler_t
+#  if defined(HAS_SIGACTION) && defined(SA_SIGINFO)
+typedef Signal_t (*Sighandler_t) (int, siginfo_t*, void*);
+#  else
 typedef Signal_t (*Sighandler_t) (int);
+#  endif
 #endif
 
 #if defined(PERL_IMPLICIT_SYS)
@@ -69,10 +73,10 @@ typedef int		(*LPEof)(struct IPerlStdIO*, FILE*);
 typedef int		(*LPError)(struct IPerlStdIO*, FILE*);
 typedef void		(*LPClearerr)(struct IPerlStdIO*, FILE*);
 typedef int		(*LPGetc)(struct IPerlStdIO*, FILE*);
-typedef STDCHAR*	(*LPGetBase)(struct IPerlStdIO*, FILE*);
+typedef char*		(*LPGetBase)(struct IPerlStdIO*, FILE*);
 typedef int		(*LPGetBufsiz)(struct IPerlStdIO*, FILE*);
 typedef int		(*LPGetCnt)(struct IPerlStdIO*, FILE*);
-typedef STDCHAR*	(*LPGetPtr)(struct IPerlStdIO*, FILE*);
+typedef char*		(*LPGetPtr)(struct IPerlStdIO*, FILE*);
 typedef char*		(*LPGets)(struct IPerlStdIO*, FILE*, char*, int);
 typedef int		(*LPPutc)(struct IPerlStdIO*, FILE*, int);
 typedef int		(*LPPuts)(struct IPerlStdIO*, FILE*, const char*);
@@ -90,9 +94,9 @@ typedef int		(*LPSetVBuf)(struct IPerlStdIO*, FILE*, char*, int,
 typedef void		(*LPSetCnt)(struct IPerlStdIO*, FILE*, int);
 
 #ifndef NETWARE
-typedef void		(*LPSetPtr)(struct IPerlStdIO*, FILE*, STDCHAR*);
+typedef void		(*LPSetPtr)(struct IPerlStdIO*, FILE*, char*);
 #elif defined(NETWARE)
-typedef void		(*LPSetPtr)(struct IPerlStdIO*, FILE*, STDCHAR*, int);
+typedef void		(*LPSetPtr)(struct IPerlStdIO*, FILE*, char*, int);
 #endif
 
 typedef void		(*LPSetlinebuf)(struct IPerlStdIO*, FILE*);
@@ -335,7 +339,7 @@ struct IPerlStdIOInfo
 #define PerlSIO_set_cnt(f,c)		PerlIOProc_abort()
 #endif
 #if defined(USE_STDIO_PTR) && defined(STDIO_PTR_LVALUE)
-#define PerlSIO_set_ptr(f,p)		FILE_ptr(f) = (p)
+#define PerlSIO_set_ptr(f,p)		(FILE_ptr(f) = (p))
 #else
 #define PerlSIO_set_ptr(f,p)		PerlIOProc_abort()
 #endif
@@ -366,7 +370,7 @@ typedef int		(*LPMakedir)(struct IPerlDir*, const char*, int);
 typedef int		(*LPChdir)(struct IPerlDir*, const char*);
 typedef int		(*LPRmdir)(struct IPerlDir*, const char*);
 typedef int		(*LPDirClose)(struct IPerlDir*, DIR*);
-typedef DIR*		(*LPDirOpen)(struct IPerlDir*, char*);
+typedef DIR*		(*LPDirOpen)(struct IPerlDir*, const char*);
 typedef struct direct*	(*LPDirRead)(struct IPerlDir*, DIR*);
 typedef void		(*LPDirRewind)(struct IPerlDir*, DIR*);
 typedef void		(*LPDirSeek)(struct IPerlDir*, DIR*, long);
@@ -628,7 +632,7 @@ typedef int		(*LPLIONameStat)(struct IPerlLIO*, const char*,
 typedef char*		(*LPLIOTmpnam)(struct IPerlLIO*, char*);
 typedef int		(*LPLIOUmask)(struct IPerlLIO*, int);
 typedef int		(*LPLIOUnlink)(struct IPerlLIO*, const char*);
-typedef int		(*LPLIOUtime)(struct IPerlLIO*, char*, struct utimbuf*);
+typedef int		(*LPLIOUtime)(struct IPerlLIO*, const char*, struct utimbuf*);
 typedef int		(*LPLIOWrite)(struct IPerlLIO*, int, const void*,
 			    unsigned int);
 
@@ -1405,12 +1409,3 @@ struct IPerlSockInfo
 
 #endif	/* __Inc__IPerl___ */
 
-/*
- * Local variables:
- * c-indentation-style: bsd
- * c-basic-offset: 4
- * indent-tabs-mode: t
- * End:
- *
- * ex: set ts=8 sts=4 sw=4 noet:
- */

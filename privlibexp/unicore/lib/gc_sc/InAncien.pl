@@ -4,10 +4,10 @@
 
 #
 # This file supports:
-# 	\p{InAncientSymbols} (and fuzzy permutations)
+# 	\p{InAncientGreekNumbers} (and fuzzy permutations)
 # 
-# Meaning: Block 'Ancient Symbols'
+# Meaning: Block 'Ancient Greek Numbers'
 #
 return <<'END';
-10190	101CF	Ancient Symbols
+10140	1018F	Ancient Greek Numbers
 END

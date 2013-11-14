@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 771 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/load_imports.al)"
+#line 766 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/load_imports.al)"
 sub load_imports {
 %EXPORT_TAGS = (
 

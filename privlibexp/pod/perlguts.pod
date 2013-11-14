@@ -1038,12 +1038,13 @@ The current kinds of Magic Virtual Tables are:
     e  PERL_MAGIC_envelem        vtbl_envelem    %ENV hash element
     f  PERL_MAGIC_fm             vtbl_fm         Formline ('compiled' format)
     g  PERL_MAGIC_regex_global   vtbl_mglob      m//g target / study()ed string
+    H  PERL_MAGIC_hints          vtbl_sig        %^H hash
+    h  PERL_MAGIC_hintselem      vtbl_hintselem  %^H hash element
     I  PERL_MAGIC_isa            vtbl_isa        @ISA array
     i  PERL_MAGIC_isaelem        vtbl_isaelem    @ISA array element
     k  PERL_MAGIC_nkeys          vtbl_nkeys      scalar(keys()) lvalue
     L  PERL_MAGIC_dbfile         (none)          Debugger %_<filename
     l  PERL_MAGIC_dbline         vtbl_dbline     Debugger %_<filename element
-    m  PERL_MAGIC_mutex          vtbl_mutex      ???
     o  PERL_MAGIC_collxfrm       vtbl_collxfrm   Locale collate transformation
     P  PERL_MAGIC_tied           vtbl_pack       Tied array or hash
     p  PERL_MAGIC_tiedelem       vtbl_packelem   Tied array or hash element
@@ -1060,11 +1061,13 @@ The current kinds of Magic Virtual Tables are:
     y  PERL_MAGIC_defelem        vtbl_defelem    Shadow "foreach" iterator
                                                  variable / smart parameter
                                                  vivification
-    *  PERL_MAGIC_glob           vtbl_glob       GV (typeglob)
     #  PERL_MAGIC_arylen         vtbl_arylen     Array length ($#ary)
     .  PERL_MAGIC_pos            vtbl_pos        pos() lvalue
     <  PERL_MAGIC_backref        vtbl_backref    back pointer to a weak ref 
     ~  PERL_MAGIC_ext            (none)          Available for use by extensions
+    :  PERL_MAGIC_symtab         (none)          hash used as symbol table
+    %  PERL_MAGIC_rhash          (none)          hash used as restricted hash
+    @  PERL_MAGIC_arylen_p       vtbl_arylen_p   pointer to $#a from @a
 
 
 When an uppercase and lowercase letter both exist in the table, then the
@@ -1106,6 +1109,17 @@ sv_magic, so you can safely allocate it on the stack.
         uf.uf_set   = &my_set_fn;
         uf.uf_index = 0;
         sv_magic(sv, 0, PERL_MAGIC_uvar, (char*)&uf, sizeof(uf));
+
+Attaching C<PERL_MAGIC_uvar> to arrays is permissible but has no effect.
+
+For hashes there is a specialized hook that gives control over hash
+keys (but not values).  This hook calls C<PERL_MAGIC_uvar> 'get' magic
+if the "set" function in the C<ufuncs> structure is NULL.  The hook
+is activated whenever the hash is accessed with a key specified as
+an C<SV> through the functions C<hv_store_ent>, C<hv_fetch_ent>,
+C<hv_delete_ent>, and C<hv_exists_ent>.  Accessing the key as a string
+through the functions without the C<..._ent> suffix circumvents the
+hook.  See L<Hash::Util::Fieldhash/Guts> for a detailed description.
 
 Note that because multiple extensions may be using C<PERL_MAGIC_ext>
 or C<PERL_MAGIC_uvar> magic, it is important for extensions to take
@@ -1365,7 +1379,8 @@ Similar to C<save_scalar>, but localize C<@gv> and C<%gv>.
 
 Duplicates the current value of C<SV>, on the exit from the current
 C<ENTER>/C<LEAVE> I<pseudo-block> will restore the value of C<SV>
-using the stored value.
+using the stored value. It doesn't handle magic. Use C<save_scalar> if
+magic is affected.
 
 =item C<void save_list(SV **sarg, I32 maxsarg)>
 
@@ -1875,13 +1890,39 @@ interpreters, with one interpreter represented either as a C structure,
 or inside a thread-specific structure.  These structures contain all
 the context, the state of that interpreter.
 
-Two macros control the major Perl build flavors: MULTIPLICITY and
-USE_5005THREADS.  The MULTIPLICITY build has a C structure
-that packages all the interpreter state, and there is a similar thread-specific
-data structure under USE_5005THREADS.  In both cases,
-PERL_IMPLICIT_CONTEXT is also normally defined, and enables the
-support for passing in a "hidden" first argument that represents all three
-data structures.
+One macro controls the major Perl build flavor: MULTIPLICITY. The
+MULTIPLICITY build has a C structure that packages all the interpreter
+state. With multiplicity-enabled perls, PERL_IMPLICIT_CONTEXT is also
+normally defined, and enables the support for passing in a "hidden" first
+argument that represents all three data structures. MULTIPLICITY makes
+mutli-threaded perls possible (with the ithreads threading model, related
+to the macro USE_ITHREADS.)
+
+Two other "encapsulation" macros are the PERL_GLOBAL_STRUCT and
+PERL_GLOBAL_STRUCT_PRIVATE (the latter turns on the former, and the
+former turns on MULTIPLICITY.)  The PERL_GLOBAL_STRUCT causes all the
+internal variables of Perl to be wrapped inside a single global struct,
+struct perl_vars, accessible as (globals) &PL_Vars or PL_VarsPtr or
+the function  Perl_GetVars().  The PERL_GLOBAL_STRUCT_PRIVATE goes
+one step further, there is still a single struct (allocated in main()
+either from heap or from stack) but there are no global data symbols
+pointing to it.  In either case the global struct should be initialised
+as the very first thing in main() using Perl_init_global_struct() and
+correspondingly tear it down after perl_free() using Perl_free_global_struct(),
+please see F<miniperlmain.c> for usage details.  You may also need
+to use C<dVAR> in your coding to "declare the global variables"
+when you are using them.  dTHX does this for you automatically.
+
+To see whether you have non-const data you can use a BSD-compatible C<nm>:
+
+  nm libperl.a | grep -v ' [TURtr] '
+
+If this displays any C<D> or C<d> symbols, you have non-const data.
+
+For backward compatibility reasons defining just PERL_GLOBAL_STRUCT
+doesn't actually hide all symbols inside a big global struct: some
+PerlIO_xxx vtables are left visible.  The PERL_GLOBAL_STRUCT_PRIVATE
+then hides everything (see how the PERLIO_FUNCS_DECL is used).
 
 All this obviously requires a way for the Perl internal functions to be
 either subroutines taking some kind of structure as the first
@@ -2084,6 +2125,13 @@ Never add a comma after C<pTHX> yourself--always use the form of the
 macro with the underscore for functions that take explicit arguments,
 or the form without the argument for functions with no explicit arguments.
 
+If one is compiling Perl with the C<-DPERL_GLOBAL_STRUCT> the C<dVAR>
+definition is needed if the Perl global variables (see F<perlvars.h>
+or F<globvar.sym>) are accessed in the function and C<dTHX> is not
+used (the C<dTHX> includes the C<dVAR> if necessary).  One notices
+the need for C<dVAR> only with the said compile-time define, because
+otherwise the Perl global variables are visible as-is.
+
 =head2 Should I do anything special if I call perl from multiple threads?
 
 If you create interpreters in one thread and then proceed to call them in
@@ -2110,8 +2158,8 @@ Just as PERL_IMPLICIT_CONTEXT provides a way to bundle up everything
 that the interpreter knows about itself and pass it around, so too are
 there plans to allow the interpreter to bundle up everything it knows
 about the environment it's running on.  This is enabled with the
-PERL_IMPLICIT_SYS macro.  Currently it only works with USE_ITHREADS
-and USE_5005THREADS on Windows (see inside iperlsys.h).
+PERL_IMPLICIT_SYS macro.  Currently it only works with USE_ITHREADS on
+Windows.
 
 This allows the ability to provide an extra pointer (called the "host"
 environment) for all the system calls.  This makes it possible for
@@ -2291,7 +2339,7 @@ be able to use these macros:
 You can use these macros if you call code that may croak, but you need
 to do some cleanup before giving control back to Perl. For example:
 
-        dXCPT;    /* set up neccessary variables */
+        dXCPT;    /* set up necessary variables */
 
         XCPT_TRY_START {
           code_that_may_croak();

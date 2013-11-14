@@ -18,7 +18,7 @@ my(@XSStack);	# Stack of conditionals and INCLUDEs
 my($XSS_work_idx, $cpp_next_tmp);
 
 use vars qw($VERSION);
-$VERSION = '2.19';
+$VERSION = '2.18_02';
 
 use vars qw(%input_expr %output_expr $ProtoUsed @InitFileCode $FH $proto_re $Overload $errors $Fallback
 	    $cplusplus $hiertype $WantPrototypes $WantVersionChk $except $WantLineNumbers
@@ -76,7 +76,7 @@ sub process_file {
   $proto_re = "[" . quotemeta('\$%&*@;[]') . "]" ;
   $Overload = 0;
   $errors = 0;
-  $Fallback = '&PL_sv_undef';
+  $Fallback = 'PL_sv_undef';
 
   # Most of the 1500 lines below uses these globals.  We'll have to
   # clean this up sometime, probably.  For now, we just pull them out
@@ -193,8 +193,15 @@ sub process_file {
     close(TYPEMAP);
   }
 
-  foreach my $key (keys %input_expr) {
-    $input_expr{$key} =~ s/;*\s+\z//;
+  foreach my $value (values %input_expr) {
+    $value =~ s/;*\s+\z//;
+    # Move C pre-processor instructions to column 1 to be strictly ANSI
+    # conformant. Some pre-processors are fussy about this.
+    $value =~ s/^\s+#/#/mg;
+  }
+  foreach my $value (values %output_expr) {
+    # And again.
+    $value =~ s/^\s+#/#/mg;
   }
 
   my ($cast, $size);
@@ -360,7 +367,7 @@ EOF
 	   ." followed by a statement on column one?)")
       if $line[0] =~ /^\s/;
     
-    my ($class, $externC, $static, $elipsis, $wantRETVAL, $RETVAL_no_return);
+    my ($class, $externC, $static, $ellipsis, $wantRETVAL, $RETVAL_no_return);
     my (@fake_INPUT_pre);	# For length(s) generated variables
     my (@fake_INPUT);
     
@@ -513,7 +520,7 @@ EOF
     my $report_args = '';
     foreach my $i (0 .. $#args) {
       if ($args[$i] =~ s/\.\.\.//) {
-	$elipsis = 1;
+	$ellipsis = 1;
 	if ($args[$i] eq '' && $i == $#args) {
 	  $report_args .= ", ...";
 	  pop(@args);
@@ -577,7 +584,7 @@ EOF
     print Q(<<"EOF") if $INTERFACE ;
 #    dXSFUNCTION($ret_type);
 EOF
-    if ($elipsis) {
+    if ($ellipsis) {
       $cond = ($min_args ? qq(items < $min_args) : 0);
     } elsif ($min_args == $num_args) {
       $cond = qq(items != $min_args);
@@ -842,7 +849,7 @@ EOF
 	  $proto_arg[$min_args] .= ";" ;
 	}
 	push @proto_arg, "$s\@"
-	  if $elipsis ;
+	  if $ellipsis ;
 	
 	$proto = join ("", grep defined, @proto_arg);
       }
@@ -896,7 +903,6 @@ EOF
 #XS(XS_${Packid}_nil); /* prototype to pass -Wmissing-prototypes */
 #XS(XS_${Packid}_nil)
 #{
-#   dXSARGS;
 #   XSRETURN_EMPTY;
 #}
 #
@@ -1319,9 +1325,9 @@ sub FALLBACK_handler()
   
   TrimWhitespace($_) ;
   my %map = (
-	     TRUE => "&PL_sv_yes", 1 => "&PL_sv_yes",
-	     FALSE => "&PL_sv_no", 0 => "&PL_sv_no",
-	     UNDEF => "&PL_sv_undef",
+	     TRUE => "PL_sv_yes", 1 => "PL_sv_yes",
+	     FALSE => "PL_sv_no", 0 => "PL_sv_no",
+	     UNDEF => "PL_sv_undef",
 	    ) ;
   
   # check for valid FALLBACK value
@@ -1895,7 +1901,7 @@ sub DESTROY {
 }
 
 sub UNTIE {
-  # This sub does nothing, but is necessary for references to be released.
+  # This sub does nothing, but is neccessary for references to be released.
 }
 
 sub end_marker {
@@ -1964,7 +1970,7 @@ Adds C<extern "C"> to the C code.  Default is false.
 
 =item B<hiertype>
 
-Retains C<::> in type names so that C++ hierarchical types can be
+Retains C<::> in type names so that C++ hierachical types can be
 mapped.  Default is false.
 
 =item B<except>

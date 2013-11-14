@@ -5,9 +5,7 @@ use 5.008;
 use strict;
 use warnings;
 
-use Scalar::Util qw(reftype refaddr blessed);
-
-our $VERSION = '1.27';
+our $VERSION = '1.14';
 my $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -43,7 +41,7 @@ sub import
 {
     # Exported subroutines
     my @EXPORT = qw(share is_shared cond_wait cond_timedwait
-                    cond_signal cond_broadcast shared_clone);
+                    cond_signal cond_broadcast);
     if ($threads::threads) {
         push(@EXPORT, 'bless');
     }
@@ -57,10 +55,6 @@ sub import
 }
 
 
-# Predeclarations for internal functions
-my ($make_shared);
-
-
 ### Methods, etc. ###
 
 sub threads::shared::tie::SPLICE
@@ -68,114 +62,6 @@ sub threads::shared::tie::SPLICE
     require Carp;
     Carp::croak('Splice not implemented for shared arrays');
 }
-
-
-# Create a thread-shared clone of a complex data structure or object
-sub shared_clone
-{
-    if (@_ != 1) {
-        require Carp;
-        Carp::croak('Usage: shared_clone(REF)');
-    }
-
-    return $make_shared->(shift, {});
-}
-
-
-### Internal Functions ###
-
-# Used by shared_clone() to recursively clone
-#   a complex data structure or object
-$make_shared = sub {
-    my ($item, $cloned) = @_;
-
-    # Just return the item if:
-    # 1. Not a ref;
-    # 2. Already shared; or
-    # 3. Not running 'threads'.
-    return $item if (! ref($item) || is_shared($item) || ! $threads::threads);
-
-    # Check for previously cloned references
-    #   (this takes care of circular refs as well)
-    my $addr = refaddr($item);
-    if (exists($cloned->{$addr})) {
-        # Return the already existing clone
-        return $cloned->{$addr};
-    }
-
-    # Make copies of array, hash and scalar refs and refs of refs
-    my $copy;
-    my $ref_type = reftype($item);
-
-    # Copy an array ref
-    if ($ref_type eq 'ARRAY') {
-        # Make empty shared array ref
-        $copy = &share([]);
-        # Add to clone checking hash
-        $cloned->{$addr} = $copy;
-        # Recursively copy and add contents
-        push(@$copy, map { $make_shared->($_, $cloned) } @$item);
-    }
-
-    # Copy a hash ref
-    elsif ($ref_type eq 'HASH') {
-        # Make empty shared hash ref
-        $copy = &share({});
-        # Add to clone checking hash
-        $cloned->{$addr} = $copy;
-        # Recursively copy and add contents
-        foreach my $key (keys(%{$item})) {
-            $copy->{$key} = $make_shared->($item->{$key}, $cloned);
-        }
-    }
-
-    # Copy a scalar ref
-    elsif ($ref_type eq 'SCALAR') {
-        $copy = \do{ my $scalar = $$item; };
-        share($copy);
-        # Add to clone checking hash
-        $cloned->{$addr} = $copy;
-    }
-
-    # Copy of a ref of a ref
-    elsif ($ref_type eq 'REF') {
-        # Special handling for $x = \$x
-        if ($addr == refaddr($$item)) {
-            $copy = \$copy;
-            share($copy);
-            $cloned->{$addr} = $copy;
-        } else {
-            my $tmp;
-            $copy = \$tmp;
-            share($copy);
-            # Add to clone checking hash
-            $cloned->{$addr} = $copy;
-            # Recursively copy and add contents
-            $tmp = $make_shared->($$item, $cloned);
-        }
-
-    } else {
-        require Carp;
-        Carp::croak("Unsupported ref type: ", $ref_type);
-    }
-
-    # If input item is an object, then bless the copy into the same class
-    if (my $class = blessed($item)) {
-        bless($copy, $class);
-    }
-
-    # Clone READONLY flag
-    if ($ref_type eq 'SCALAR') {
-        if (Internals::SvREADONLY($$item)) {
-            Internals::SvREADONLY($$copy, 1) if ($] >= 5.008003);
-        }
-    }
-    if (Internals::SvREADONLY($item)) {
-        Internals::SvREADONLY($copy, 1) if ($] >= 5.008003);
-    }
-
-    return $copy;
-};
 
 1;
 
@@ -187,7 +73,7 @@ threads::shared - Perl extension for sharing data structures between threads
 
 =head1 VERSION
 
-This document describes threads::shared version 1.27
+This document describes threads::shared version 1.14
 
 =head1 SYNOPSIS
 
@@ -195,28 +81,16 @@ This document describes threads::shared version 1.27
   use threads::shared;
 
   my $var :shared;
-  my %hsh :shared;
-  my @ary :shared;
+  $var = $scalar_value;
+  $var = $shared_ref_value;
+  $var = share($simple_unshared_ref_value);
 
   my ($scalar, @array, %hash);
   share($scalar);
   share(@array);
   share(%hash);
-
-  $var = $scalar_value;
-  $var = $shared_ref_value;
-  $var = shared_clone($non_shared_ref_value);
-  $var = shared_clone({'foo' => [qw/foo bar baz/]});
-
-  $hsh{'foo'} = $scalar_value;
-  $hsh{'bar'} = $shared_ref_value;
-  $hsh{'baz'} = shared_clone($non_shared_ref_value);
-  $hsh{'quz'} = shared_clone([1..3]);
-
-  $ary[0] = $scalar_value;
-  $ary[1] = $shared_ref_value;
-  $ary[2] = shared_clone($non_shared_ref_value);
-  $ary[3] = shared_clone([ {}, [] ]);
+  my $bar = &share([]);
+  $hash{bar} = &share({});
 
   { lock(%hash); ...  }
 
@@ -234,17 +108,13 @@ This document describes threads::shared version 1.27
 
 By default, variables are private to each thread, and each newly created
 thread gets a private copy of each existing variable.  This module allows you
-to share variables across different threads (and pseudo-forks on Win32).  It
-is used together with the L<threads> module.
-
-This module supports the sharing of the following data types only:  scalars
-and scalar refs, arrays and array refs, and hashes and hash refs.
+to share variables across different threads (and pseudo-forks on Win32).  It is
+used together with the L<threads> module.
 
 =head1 EXPORT
 
-The following functions are exported by this module: C<share>,
-C<shared_clone>, C<is_shared>, C<cond_wait>, C<cond_timedwait>, C<cond_signal>
-and C<cond_broadcast>
+C<share>, C<cond_wait>, C<cond_timedwait>, C<cond_signal>, C<cond_broadcast>,
+C<is_shared>
 
 Note that if this module is imported when L<threads> has not yet been loaded,
 then these functions all become no-ops.  This makes it possible to write
@@ -256,60 +126,33 @@ modules that will work in both threaded and non-threaded environments.
 
 =item share VARIABLE
 
-C<share> takes a variable and marks it as shared:
+C<share> takes a value and marks it as shared. You can share a scalar, array,
+hash, scalar ref, array ref, or hash ref.  C<share> will return the shared
+rvalue, but always as a reference.
 
-  my ($scalar, @array, %hash);
-  share($scalar);
-  share(@array);
-  share(%hash);
+A variable can also be marked as shared at compile time by using the
+C<:shared> attribute: C<my $var :shared;>.
 
-C<share> will return the shared rvalue, but always as a reference.
+Due to problems with Perl's prototyping, if you want to share a newly created
+reference, you need to use the C<&share([])> and C<&share({})> syntax.
 
-Variables can also be marked as shared at compile time by using the
-C<:shared> attribute:
+The only values that can be assigned to a shared scalar are other scalar
+values, or shared refs:
 
-  my ($var, %hash, @array) :shared;
+  my $var :shared;
+  $var = 1;              # ok
+  $var = [];             # error
+  $var = &share([]);     # ok
 
-Shared variables can only store scalars, refs of shared variables, or
-refs of shared data (discussed in next section):
+C<share> will traverse up references exactly I<one> level.  C<share(\$a)> is
+equivalent to C<share($a)>, while C<share(\\$a)> is not.  This means that you
+must create nested shared data structures by first creating individual shared
+leaf nodes, and then adding them to a shared hash or array.
 
-  my ($var, %hash, @array) :shared;
-  my $bork;
-
-  # Storing scalars
-  $var = 1;
-  $hash{'foo'} = 'bar';
-  $array[0] = 1.5;
-
-  # Storing shared refs
-  $var = \%hash;
-  $hash{'ary'} = \@array;
-  $array[1] = \$var;
-
-  # The following are errors:
-  #   $var = \$bork;                    # ref of non-shared variable
-  #   $hash{'bork'} = [];               # non-shared array ref
-  #   push(@array, { 'x' => 1 });       # non-shared hash ref
-
-=item shared_clone REF
-
-C<shared_clone> takes a reference, and returns a shared version of its
-argument, performing a deep copy on any non-shared elements.  Any shared
-elements in the argument are used as is (i.e., they are not cloned).
-
-  my $cpy = shared_clone({'foo' => [qw/foo bar baz/]});
-
-Object status (i.e., the class an object is blessed into) is also cloned.
-
-  my $obj = {'foo' => [qw/foo bar baz/]};
-  bless($obj, 'Foo');
-  my $cpy = shared_clone($obj);
-  print(ref($cpy), "\n");         # Outputs 'Foo'
-
-For cloning empty array or hash refs, the following may also be used:
-
-  $var = &share([]);   # Same as $var = shared_clone([]);
-  $var = &share({});   # Same as $var = shared_clone({});
+  my %hash :shared;
+  $hash{'meaning'} = &share([]);
+  $hash{'meaning'}[0] = &share({});
+  $hash{'meaning'}[0]{'life'} = 42;
 
 =item is_shared VARIABLE
 
@@ -436,13 +279,17 @@ a C<cond_wait> on the locked variable, rather than only one.
 L<threads::shared> exports a version of L<bless()|perlfunc/"bless REF"> that
 works on shared objects such that I<blessings> propagate across threads.
 
-  # Create a shared 'Foo' object
-  my $foo :shared = shared_clone({});
-  bless($foo, 'Foo');
+  # Create a shared 'foo' object
+  my $foo;
+  share($foo);
+  $foo = &share({});
+  bless($foo, 'foo');
 
-  # Create a shared 'Bar' object
-  my $bar :shared = shared_clone({});
-  bless($bar, 'Bar');
+  # Create a shared 'bar' object
+  my $bar;
+  share($bar);
+  $bar = &share({});
+  bless($bar, 'bar');
 
   # Put 'bar' inside 'foo'
   $foo->{'bar'} = $bar;
@@ -450,29 +297,26 @@ works on shared objects such that I<blessings> propagate across threads.
   # Rebless the objects via a thread
   threads->create(sub {
       # Rebless the outer object
-      bless($foo, 'Yin');
+      bless($foo, 'yin');
 
       # Cannot directly rebless the inner object
-      #bless($foo->{'bar'}, 'Yang');
+      #bless($foo->{'bar'}, 'yang');
 
       # Retrieve and rebless the inner object
       my $obj = $foo->{'bar'};
-      bless($obj, 'Yang');
+      bless($obj, 'yang');
       $foo->{'bar'} = $obj;
 
   })->join();
 
-  print(ref($foo),          "\n");    # Prints 'Yin'
-  print(ref($foo->{'bar'}), "\n");    # Prints 'Yang'
-  print(ref($bar),          "\n");    # Also prints 'Yang'
+  print(ref($foo),          "\n");    # Prints 'yin'
+  print(ref($foo->{'bar'}), "\n");    # Prints 'yang'
+  print(ref($bar),          "\n");    # Also prints 'yang'
 
 =head1 NOTES
 
-L<threads::shared> is designed to disable itself silently if threads are not
-available.  This allows you to write modules and packages that can be used
-in both threaded and non-threaded applications.
-
-If you want access to threads, you must C<use threads> before you
+threads::shared is designed to disable itself silently if threads are not
+available. If you want access to threads, you must C<use threads> before you
 C<use threads::shared>.  L<threads> will emit a warning if you use it after
 L<threads::shared>.
 
@@ -515,47 +359,8 @@ error message.  But the C<< $hashref->{key} >> is B<not> shared, causing the
 error "locking can only be used on shared values" to occur when you attempt to
 C<< lock($hasref->{key}) >>.
 
-Using L<refaddr()|Scalar::Util/"refaddr EXPR">) is unreliable for testing
-whether or not two shared references are equivalent (e.g., when testing for
-circular references).  Use L<is_shared()/"is_shared VARIABLE">, instead:
-
-    use threads;
-    use threads::shared;
-    use Scalar::Util qw(refaddr);
-
-    # If ref is shared, use threads::shared's internal ID.
-    # Otherwise, use refaddr().
-    my $addr1 = is_shared($ref1) || refaddr($ref1);
-    my $addr2 = is_shared($ref2) || refaddr($ref2);
-
-    if ($addr1 == $addr2) {
-        # The refs are equivalent
-    }
-
-L<each()|perlfunc/"each HASH"> does not work properly on shared references
-embedded in shared structures.  For example:
-
-    my %foo :shared;
-    $foo{'bar'} = shared_clone({'a'=>'x', 'b'=>'y', 'c'=>'z'});
-
-    while (my ($key, $val) = each(%{$foo{'bar'}})) {
-        ...
-    }
-
-Either of the following will work instead:
-
-    my $ref = $foo{'bar'};
-    while (my ($key, $val) = each(%{$ref})) {
-        ...
-    }
-
-    foreach my $key (keys(%{$foo{'bar'}})) {
-        my $val = $foo{'bar'}{$key};
-        ...
-    }
-
 View existing bug reports at, and submit any new bugs, problems, patches, etc.
-to: L<http://rt.cpan.org/Public/Dist/Display.html?Name=threads-shared>
+to: L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=threads-shared>
 
 =head1 SEE ALSO
 
@@ -563,7 +368,7 @@ L<threads::shared> Discussion Forum on CPAN:
 L<http://www.cpanforum.com/dist/threads-shared>
 
 Annotated POD for L<threads::shared>:
-L<http://annocpan.org/~JDHEDDEN/threads-shared-1.27/shared.pm>
+L<http://annocpan.org/~JDHEDDEN/threads-shared-1.14/shared.pm>
 
 Source repository:
 L<http://code.google.com/p/threads-shared/>
@@ -580,12 +385,10 @@ L<http://lists.cpan.org/showlist.cgi?name=iThreads>
 
 Artur Bergman E<lt>sky AT crucially DOT netE<gt>
 
+threads::shared is released under the same license as Perl.
+
 Documentation borrowed from the old Thread.pm.
 
 CPAN version produced by Jerry D. Hedden E<lt>jdhedden AT cpan DOT orgE<gt>.
-
-=head1 LICENSE
-
-threads::shared is released under the same license as Perl.
 
 =cut
