@@ -1672,10 +1672,11 @@ Each hash or array has its own internal iterator, accessed by C<each>,
 C<keys>, and C<values>.  The iterator is implicitly reset when C<each> has
 reached the end as just described; it can be explicitly reset by calling
 C<keys> or C<values> on the hash or array.  If you add or delete a hash's
-elements while iterating over it, entries may be skipped or duplicated--so
-don't do that.  Exception: In the current implementation, it is always safe
-to delete the item most recently returned by C<each()>, so the following
-code works properly:
+elements while iterating over it, the effect on the iterator is
+unspecified; for example, entries may be skipped or duplicated--so don't
+do that.  Exception: In the current implementation, it is always safe to
+delete the item most recently returned by C<each()>, so the following code
+works properly:
 
         while (($key, $value) = each %hash) {
           print $key, "\n";
@@ -3777,7 +3778,9 @@ enclosing block, file, or C<eval>.  If more than one variable is listed,
 the list must be placed in parentheses.
 
 The exact semantics and interface of TYPE and ATTRS are still
-evolving.  TYPE is currently bound to the use of the C<fields> pragma,
+evolving.  TYPE may be a bareword, a constant declared
+with C<use constant>, or C<__PACKAGE__>.  It is
+currently bound to the use of the C<fields> pragma,
 and attributes are handled using the C<attributes> pragma, or starting
 from Perl 5.8.0 also via the C<Attribute::Handlers> module.  See
 L<perlsub/"Private Variables via my()"> for details, and L<fields>,
@@ -4490,11 +4493,11 @@ TEMPLATE (the second column lists letters for which the modifier is valid):
     !   sSlLiI     Forces native (short, long, int) sizes instead
                    of fixed (16-/32-bit) sizes.
 
-        xX         Make x and X act as alignment commands.
+    !   xX         Make x and X act as alignment commands.
 
-        nNvV       Treat integers as signed instead of unsigned.
+    !   nNvV       Treat integers as signed instead of unsigned.
 
-        @.         Specify position as byte offset in the internal
+    !   @.         Specify position as byte offset in the internal
                    representation of the packed string.  Efficient
                    but dangerous.
 
@@ -5786,45 +5789,45 @@ would have semantics similar to the following:
     use version;
 
     sub require {
-       my ($filename) = @_;
-       if ( my $version = eval { version->parse($filename) } ) {
-           if ( $version > $^V ) {
+        my ($filename) = @_;
+        if ( my $version = eval { version->parse($filename) } ) {
+            if ( $version > $^V ) {
                my $vn = $version->normal;
                croak "Perl $vn required--this is only $^V, stopped";
-           }
-           return 1;
-       }
-       if (exists $INC{$filename}) {
-           return 1 if $INC{$filename};
-           croak "Compilation failed in require";
-       }
-       my ($realfilename,$result);
-       ITER: {
-           foreach $prefix (@INC) {
-               $realfilename = "$prefix/$filename";
-               if (-f $realfilename) {
-                   $INC{$filename} = $realfilename;
-                   my $caller = caller;
-                   my $do_as_caller = eval qq{
-                       package $caller;
-                       sub { do \$_[0] }
-                   };
-                   $result = $do_as_caller->($realfilename);
-                   last ITER;
-               }
-           }
-           croak "Can't locate $filename in \@INC";
-       }
-       if ($@) {
-           $INC{$filename} = undef;
-           croak $@;
-       } elsif (!$result) {
-           delete $INC{$filename};
-           croak "$filename did not return true value";
-       } else {
-           $! = 0;
-           return $result;
-       }
+            }
+            return 1;
+        }
+
+        if (exists $INC{$filename}) {
+            return 1 if $INC{$filename};
+            croak "Compilation failed in require";
+        }
+
+        foreach $prefix (@INC) {
+            if (ref($prefix)) {
+                #... do other stuff - see text below ....
+            }
+            # (see text below about possible appending of .pmc
+            # suffix to $filename)
+            my $realfilename = "$prefix/$filename";
+            next if ! -e $realfilename || -d _ || -b _;
+            $INC{$filename} = $realfilename;
+            my $result = do($realfilename);
+                         # but run in caller's namespace
+
+            if (!defined $result) {
+                $INC{$filename} = undef;
+                croak $@ ? "$@Compilation failed in require"
+                         : "Can't locate $filename: $!\n";
+            }
+            if (!$result) {
+                delete $INC{$filename};
+                croak "$filename did not return true value";
+            }
+            $! = 0;
+            return $result;
+        }
+        croak "Can't locate $filename in \@INC ...";
     }
 
 Note that the file will not be included twice under the same specified
@@ -8252,7 +8255,7 @@ Portability issues: L<perlport/times>.
 =for Pod::Functions transliterate a string
 
 The transliteration operator.  Same as C<y///>.  See
-L<perlop/"Quote and Quote-like Operators">.
+L<perlop/"Quote-Like Operators">.
 
 =item truncate FILEHANDLE,LENGTH
 X<truncate>
@@ -9136,7 +9139,7 @@ Note that write is I<not> the opposite of C<read>.  Unfortunately.
 =for Pod::Functions transliterate a string
 
 The transliteration operator.  Same as C<tr///>.  See
-L<perlop/"Quote and Quote-like Operators">.
+L<perlop/"Quote-Like Operators">.
 
 =back
 

@@ -1357,7 +1357,7 @@ EXT Perl_check_t PL_check[] /* or perlvars.h */
 	Perl_ck_null,		/* srefgen */
 	Perl_ck_fun,		/* ref */
 	Perl_ck_fun,		/* bless */
-	Perl_ck_open,		/* backtick */
+	Perl_ck_backtick,	/* backtick */
 	Perl_ck_glob,		/* glob */
 	Perl_ck_readline,	/* readline */
 	Perl_ck_null,		/* rcatline */
@@ -1514,7 +1514,7 @@ EXT Perl_check_t PL_check[] /* or perlvars.h */
 	Perl_ck_null,		/* leavesublv */
 	Perl_ck_fun,		/* caller */
 	Perl_ck_fun,		/* warn */
-	Perl_ck_die,		/* die */
+	Perl_ck_fun,		/* die */
 	Perl_ck_fun,		/* reset */
 	Perl_ck_null,		/* lineseq */
 	Perl_ck_null,		/* nextstate */
@@ -1533,7 +1533,7 @@ EXT Perl_check_t PL_check[] /* or perlvars.h */
 	Perl_ck_null,		/* redo */
 	Perl_ck_null,		/* dump */
 	Perl_ck_null,		/* goto */
-	Perl_ck_exit,		/* exit */
+	Perl_ck_fun,		/* exit */
 	Perl_ck_null,		/* method_named */
 	Perl_ck_null,		/* entergiven */
 	Perl_ck_null,		/* leavegiven */
@@ -1865,7 +1865,7 @@ EXTCONST U32 PL_opargs[] = {
 	0x00004b08,	/* keys */
 	0x00001b00,	/* delete */
 	0x00001b04,	/* exists */
-	0x00000148,	/* rv2hv */
+	0x00000140,	/* rv2hv */
 	0x00014204,	/* helem */
 	0x00024401,	/* hslice */
 	0x00024401,	/* kvhslice */

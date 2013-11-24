@@ -20,7 +20,7 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
          CVf_METHOD CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED);
-$VERSION = '1.23';
+$VERSION = '1.24';
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -248,6 +248,9 @@ BEGIN {
 #
 # subs_deparsed
 # Keeps track of fully qualified names of all deparsed subs.
+#
+# in_subst_repl
+# True when deparsing the replacement part of a substitution.
 #
 # parens: -p
 # linenums: -l
@@ -1808,7 +1811,6 @@ my %feature_keywords = (
 # keywords that are strong and also have a prototype
 #
 my %strong_proto_keywords = map { $_ => 1 } qw(
-    glob
     pos
     prototype
     scalar
@@ -2662,7 +2664,6 @@ sub listop {
 		: $self->keyword($name) . '()' x (7 < $cx);
     }
     my $first;
-    $name = "socketpair" if $name eq "sockpair";
     my $fullname = $self->keyword($name);
     my $proto = prototype("CORE::$name");
     if (
@@ -2761,7 +2762,7 @@ sub pp_fcntl { listop(@_, "fcntl") }
 sub pp_ioctl { listop(@_, "ioctl") }
 sub pp_flock { maybe_targmy(@_, \&listop, "flock") }
 sub pp_socket { listop(@_, "socket") }
-sub pp_sockpair { listop(@_, "sockpair") }
+sub pp_sockpair { listop(@_, "socketpair") }
 sub pp_bind { listop(@_, "bind") }
 sub pp_connect { listop(@_, "connect") }
 sub pp_listen { listop(@_, "listen") }
@@ -2807,13 +2808,19 @@ sub pp_syscall { listop(@_, "syscall") }
 sub pp_glob {
     my $self = shift;
     my($op, $cx) = @_;
-    my $text = $self->dq($op->first->sibling);  # skip pushmark
+    my $kid = $op->first->sibling;  # skip pushmark
     my $keyword =
 	$op->flags & OPf_SPECIAL ? 'glob' : $self->keyword('glob');
-    if ($text =~ /^\$?(\w|::|\`)+$/ # could look like a readline
-	or $keyword =~ /^CORE::/
+    my $text;
+    if ($keyword =~ /^CORE::/
+	or $kid->name ne 'const'
+	or ($text = $self->dq($kid))
+	     =~ /^\$?(\w|::|\`)+$/ # could look like a readline
         or $text =~ /[<>]/) {
-	return "$keyword(" . single_delim('qq', '"', $text) . ')';
+	$text = $self->deparse($kid);
+	return $cx >= 5 || $self->{'parens'}
+	    ? "$keyword($text)"
+	    : "$keyword $text";
     } else {
 	return '<' . $text . '>';
     }
@@ -4198,7 +4205,11 @@ sub const {
 	    }
 	}
 	
-	return $self->maybe_parens("\\" . $self->const($ref, 20), $cx, 20);
+	my $const = $self->const($ref, 20);
+	if ($self->{in_subst_repl} && $const =~ /^[0-9]/) {
+	    $const = "($const)";
+	}
+	return $self->maybe_parens("\\$const", $cx, 20);
     } elsif ($sv->FLAGS & SVf_POK) {
 	my $str = $sv->PV;
 	if ($str =~ /[[:^print:]]/) {
@@ -4869,10 +4880,13 @@ sub pp_subst {
 	    $repl = $repl->first;
 	    $flags .= "e";
     }
-    if ($pmflags & PMf_EVAL) {
+    {
+	local $self->{in_subst_repl} = 1;
+	if ($pmflags & PMf_EVAL) {
 	    $repl = $self->deparse($repl->first, 0);
-    } else {
+	} else {
 	    $repl = $self->dq($repl);	
+	}
     }
     my $extended = ($pmflags & PMf_EXTENDED);
     if (null $kid) {

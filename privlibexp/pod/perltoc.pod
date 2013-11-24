@@ -4391,8 +4391,8 @@ TAP::Parser::SourceHandler::Perl, TAP::Parser::SourceHandler::RawTAP,
 TAP::Parser::YAMLish::Reader, TAP::Parser::YAMLish::Writer,
 Term::ANSIColor, Term::Cap, Term::Complete, Term::ReadLine, Test,
 Test::Builder, Test::Builder::Module, Test::Builder::Tester,
-Test::Builder::Tester::Color, Test::Harness, Test::Harness, Test::More,
-Test::Simple, Test::Tutorial, Text::Abbrev, Text::Balanced,
+Test::Builder::Tester::Color, Test::Harness, Test::Harness::Beyond,
+Test::More, Test::Simple, Test::Tutorial, Text::Abbrev, Text::Balanced,
 Text::ParseWords, Text::Tabs, Text::Wrap, Thread, Thread::Queue,
 Thread::Semaphore, Tie::Array, Tie::File, Tie::Handle, Tie::Hash,
 Tie::Hash::NamedCapture, Tie::Memoize, Tie::RefHash, Tie::Scalar,
@@ -5841,7 +5841,8 @@ X<cop_hints_fetch_pvs>, cop_hints_fetch_sv X<cop_hints_fetch_sv>
 
 custom_op_register X<custom_op_register>, custom_op_xop X<custom_op_xop>,
 XopDISABLE X<XopDISABLE>, XopENABLE X<XopENABLE>, XopENTRY X<XopENTRY>,
-XopENTRY_set X<XopENTRY_set>, XopFLAGS X<XopFLAGS>
+XopENTRYCUSTOM X<XopENTRYCUSTOM>, XopENTRY_set X<XopENTRY_set>, XopFLAGS
+X<XopFLAGS>
 
 =item CV Manipulation Functions
 
@@ -6556,25 +6557,25 @@ av_reify X<av_reify>, bind_match X<bind_match>, block_end X<block_end>,
 block_start X<block_start>, boot_core_PerlIO X<boot_core_PerlIO>,
 boot_core_UNIVERSAL X<boot_core_UNIVERSAL>, boot_core_mro X<boot_core_mro>,
 cando X<cando>, check_utf8_print X<check_utf8_print>, ck_anoncode
-X<ck_anoncode>, ck_bitop X<ck_bitop>, ck_cmp X<ck_cmp>, ck_concat
-X<ck_concat>, ck_defined X<ck_defined>, ck_delete X<ck_delete>, ck_die
-X<ck_die>, ck_each X<ck_each>, ck_entersub_args_core
+X<ck_anoncode>, ck_backtick X<ck_backtick>, ck_bitop X<ck_bitop>, ck_cmp
+X<ck_cmp>, ck_concat X<ck_concat>, ck_defined X<ck_defined>, ck_delete
+X<ck_delete>, ck_each X<ck_each>, ck_entersub_args_core
 X<ck_entersub_args_core>, ck_eof X<ck_eof>, ck_eval X<ck_eval>, ck_exec
-X<ck_exec>, ck_exists X<ck_exists>, ck_exit X<ck_exit>, ck_ftst X<ck_ftst>,
-ck_fun X<ck_fun>, ck_glob X<ck_glob>, ck_grep X<ck_grep>, ck_index
-X<ck_index>, ck_join X<ck_join>, ck_length X<ck_length>, ck_lfun
-X<ck_lfun>, ck_listiob X<ck_listiob>, ck_match X<ck_match>, ck_method
-X<ck_method>, ck_null X<ck_null>, ck_open X<ck_open>, ck_readline
-X<ck_readline>, ck_repeat X<ck_repeat>, ck_require X<ck_require>, ck_return
-X<ck_return>, ck_rfun X<ck_rfun>, ck_rvconst X<ck_rvconst>, ck_sassign
-X<ck_sassign>, ck_select X<ck_select>, ck_shift X<ck_shift>, ck_smartmatch
-X<ck_smartmatch>, ck_sort X<ck_sort>, ck_spair X<ck_spair>, ck_split
-X<ck_split>, ck_subr X<ck_subr>, ck_substr X<ck_substr>, ck_svconst
-X<ck_svconst>, ck_tell X<ck_tell>, ck_trunc X<ck_trunc>, closest_cop
-X<closest_cop>, compute_EXACTish X<compute_EXACTish>, convert X<convert>,
-coresub_op X<coresub_op>, create_eval_scope X<create_eval_scope>,
-croak_no_mem X<croak_no_mem>, croak_popstack X<croak_popstack>,
-current_re_engine X<current_re_engine>, cv_ckproto_len_flags
+X<ck_exec>, ck_exists X<ck_exists>, ck_ftst X<ck_ftst>, ck_fun X<ck_fun>,
+ck_glob X<ck_glob>, ck_grep X<ck_grep>, ck_index X<ck_index>, ck_join
+X<ck_join>, ck_length X<ck_length>, ck_lfun X<ck_lfun>, ck_listiob
+X<ck_listiob>, ck_match X<ck_match>, ck_method X<ck_method>, ck_null
+X<ck_null>, ck_open X<ck_open>, ck_readline X<ck_readline>, ck_repeat
+X<ck_repeat>, ck_require X<ck_require>, ck_return X<ck_return>, ck_rfun
+X<ck_rfun>, ck_rvconst X<ck_rvconst>, ck_sassign X<ck_sassign>, ck_select
+X<ck_select>, ck_shift X<ck_shift>, ck_smartmatch X<ck_smartmatch>, ck_sort
+X<ck_sort>, ck_spair X<ck_spair>, ck_split X<ck_split>, ck_subr X<ck_subr>,
+ck_substr X<ck_substr>, ck_svconst X<ck_svconst>, ck_tell X<ck_tell>,
+ck_trunc X<ck_trunc>, closest_cop X<closest_cop>, compute_EXACTish
+X<compute_EXACTish>, convert X<convert>, coresub_op X<coresub_op>,
+create_eval_scope X<create_eval_scope>, croak_no_mem X<croak_no_mem>,
+croak_popstack X<croak_popstack>, current_re_engine X<current_re_engine>,
+custom_op_get_field X<custom_op_get_field>, cv_ckproto_len_flags
 X<cv_ckproto_len_flags>, cv_clone_into X<cv_clone_into>, cv_const_sv_or_av
 X<cv_const_sv_or_av>, cvgv_set X<cvgv_set>, cvstash_set X<cvstash_set>,
 deb_stack_all X<deb_stack_all>, defelem_target X<defelem_target>,
@@ -6600,13 +6601,13 @@ X<get_invlist_iter_addr>, get_invlist_offset_addr
 X<get_invlist_offset_addr>, get_invlist_previous_index_addr
 X<get_invlist_previous_index_addr>, get_no_modify X<get_no_modify>,
 get_opargs X<get_opargs>, get_re_arg X<get_re_arg>, getenv_len
-X<getenv_len>, grok_bslash_x X<grok_bslash_x>, hfree_next_entry
-X<hfree_next_entry>, hv_backreferences_p X<hv_backreferences_p>,
-hv_kill_backrefs X<hv_kill_backrefs>, hv_placeholders_p
-X<hv_placeholders_p>, hv_undef_flags X<hv_undef_flags>, init_argv_symbols
-X<init_argv_symbols>, init_constants X<init_constants>, init_dbargs
-X<init_dbargs>, init_debugger X<init_debugger>, invert X<invert>,
-invlist_array X<invlist_array>, invlist_clone X<invlist_clone>,
+X<getenv_len>, grok_bslash_x X<grok_bslash_x>, gv_override X<gv_override>,
+hfree_next_entry X<hfree_next_entry>, hv_backreferences_p
+X<hv_backreferences_p>, hv_kill_backrefs X<hv_kill_backrefs>,
+hv_placeholders_p X<hv_placeholders_p>, hv_undef_flags X<hv_undef_flags>,
+init_argv_symbols X<init_argv_symbols>, init_constants X<init_constants>,
+init_dbargs X<init_dbargs>, init_debugger X<init_debugger>, invert
+X<invert>, invlist_array X<invlist_array>, invlist_clone X<invlist_clone>,
 invlist_highest X<invlist_highest>, invlist_is_iterating
 X<invlist_is_iterating>, invlist_iterfinish X<invlist_iterfinish>,
 invlist_iterinit X<invlist_iterinit>, invlist_max X<invlist_max>,
@@ -6677,14 +6678,15 @@ X<report_evil_fh>, report_redefined_cv X<report_redefined_cv>,
 report_wrongway_fh X<report_wrongway_fh>, rpeep X<rpeep>, rsignal_restore
 X<rsignal_restore>, rsignal_save X<rsignal_save>, rxres_save X<rxres_save>,
 same_dirent X<same_dirent>, save_strlen X<save_strlen>, sawparens
-X<sawparens>, scalar X<scalar>, scalarvoid X<scalarvoid>, sighandler
-X<sighandler>, softref2xv X<softref2xv>, ssc_add_range X<ssc_add_range>,
-ssc_clear_locale X<ssc_clear_locale>, ssc_cp_and X<ssc_cp_and>,
-ssc_intersection X<ssc_intersection>, ssc_union X<ssc_union>,
-sub_crush_depth X<sub_crush_depth>, sv_add_backref X<sv_add_backref>,
-sv_catxmlpv X<sv_catxmlpv>, sv_catxmlpvn X<sv_catxmlpvn>, sv_catxmlsv
-X<sv_catxmlsv>, sv_del_backref X<sv_del_backref>, sv_free2 X<sv_free2>,
-sv_kill_backrefs X<sv_kill_backrefs>, sv_len_utf8_nomg X<sv_len_utf8_nomg>,
+X<sawparens>, scalar X<scalar>, scalarvoid X<scalarvoid>, set_caret_X
+X<set_caret_X>, sighandler X<sighandler>, softref2xv X<softref2xv>,
+ssc_add_range X<ssc_add_range>, ssc_clear_locale X<ssc_clear_locale>,
+ssc_cp_and X<ssc_cp_and>, ssc_intersection X<ssc_intersection>, ssc_union
+X<ssc_union>, sub_crush_depth X<sub_crush_depth>, sv_add_backref
+X<sv_add_backref>, sv_catxmlpv X<sv_catxmlpv>, sv_catxmlpvn
+X<sv_catxmlpvn>, sv_catxmlsv X<sv_catxmlsv>, sv_del_backref
+X<sv_del_backref>, sv_free2 X<sv_free2>, sv_kill_backrefs
+X<sv_kill_backrefs>, sv_len_utf8_nomg X<sv_len_utf8_nomg>,
 sv_magicext_mglob X<sv_magicext_mglob>, sv_mortalcopy_flags
 X<sv_mortalcopy_flags>, sv_or_pv_pos_u2b X<sv_or_pv_pos_u2b>, sv_resetpvn
 X<sv_resetpvn>, sv_sethek X<sv_sethek>, sv_setsv_cow X<sv_setsv_cow>,
@@ -7051,11 +7053,15 @@ F<podtidy>
 =item Using a source-level debugger
 
 run [args], break function_name, break source.c:xxx, step, next, continue,
-finish, 'enter', print
+finish, 'enter', ptype, print
 
 =item gdb macro support
 
 =item Dumping Perl Data Structures
+
+=item Using gdb to look at specific parts of a program
+
+=item Using gdb to look at what the parser/lexer are doing
 
 =back
 
@@ -7113,6 +7119,8 @@ finish, 'enter', print
 =item Poison
 
 =item Read-only optrees
+
+=item When is a bool not a bool?
 
 =item The .i Targets
 
@@ -7371,7 +7379,7 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.19.5
+=head2 perldelta - what is new for perl v5.19.6
 
 =over 4
 
@@ -7381,19 +7389,17 @@ B<-i>, B<-V>
 
 =over 4
 
-=item Unicode 6.3 now supported
-
-=item Experimental Postfix Dereferencing
-
-=item C<sub>s now take a C<prototype> attribute
+=item $a and $b warnings exemption
 
 =back
 
-=item Incompatible Changes
+=item Deprecations
 
 =over 4
 
-=item Functions C<PerlIO_vsprintf> and C<PerlIO_sprintf> have been removed
+=item Module removals
+
+L<Package::Constants>
 
 =back
 
@@ -7419,11 +7425,9 @@ B<-i>, B<-V>
 
 =over 4
 
-=item New Diagnostics
+=item Changes to Existing Diagnostics
 
 =back
-
-=item Utility Changes
 
 =item Testing
 
@@ -7431,13 +7435,21 @@ B<-i>, B<-V>
 
 =over 4
 
+=item New Platforms
+
+Synology
+
 =item Platform-Specific Notes
 
-Windows
+Windows, WinCE
 
 =back
 
+=item Internal Changes
+
 =item Selected Bug Fixes
+
+=item Known Problems
 
 =item Acknowledgements
 
@@ -7447,7 +7459,87 @@ Windows
 
 =back
 
-=head2 perl5195delta, perldelta - what is new for perl v5.19.5
+=head2 perl5196delta, perldelta - what is new for perl v5.19.6
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=over 4
+
+=item $a and $b warnings exemption
+
+=back
+
+=item Deprecations
+
+=over 4
+
+=item Module removals
+
+L<Package::Constants>
+
+=back
+
+=item Performance Enhancements
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Diagnostics
+
+=over 4
+
+=item Changes to Existing Diagnostics
+
+=back
+
+=item Testing
+
+=item Platform Support
+
+=over 4
+
+=item New Platforms
+
+Synology
+
+=item Platform-Specific Notes
+
+Windows, WinCE
+
+=back
+
+=item Internal Changes
+
+=item Selected Bug Fixes
+
+=item Known Problems
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5195delta - what is new for perl v5.19.5
 
 =over 4
 
@@ -13240,6 +13332,37 @@ DATAMODEL_NATIVE specified", sh: ar: not found
 
 =back
 
+=head2 perlsynology - Perl 5 on Synology DSM systems
+
+=over 4
+
+=item DESCRIPTION
+
+=over 4
+
+=item Setting up the build environment
+
+=item Compiling Perl 5
+
+=item Known problems
+
+Error message "No error definitions found",
+C<ext/DynaLoader/t/DynaLoader.t>
+
+=item Smoke testing Perl 5
+
+=item Adding libraries
+
+=back
+
+=item REVISION
+
+=item AUTHOR
+
+=item THANKS
+
+=back
+
 =head2 perltru64 - Perl version 5 on Tru64 (formerly known as Digital UNIX
 formerly known as DEC OSF/1) systems
 
@@ -13398,10 +13521,10 @@ L<http://mingw.org>, L<http://mingw-w64.sf.net>
 
 =item Setting Up Perl on Windows
 
-Make, Command Shell, Microsoft Visual C++, Microsoft Visual C++
-2008/2010/2012 Express Edition, Microsoft Visual C++ 2005 Express Edition,
-Microsoft Visual C++ Toolkit 2003, Microsoft Platform SDK 64-bit Compiler,
-MinGW release 3 with gcc
+Make, Command Shell, Microsoft Visual C++, Microsoft Visual C++ 2008-2013
+Express Edition, Microsoft Visual C++ 2005 Express Edition, Microsoft
+Visual C++ Toolkit 2003, Microsoft Platform SDK 64-bit Compiler, MinGW
+release 3 with gcc, Intel C++ Compiler
 
 =item Building
 
@@ -14796,6 +14919,11 @@ VARIABLE, cond_broadcast VARIABLE
 
 =item NOTES
 
+=item WARNINGS
+
+cond_broadcast() called on unlocked variable, cond_signal() called on
+unlocked variable
+
 =item BUGS AND LIMITATIONS
 
 =item SEE ALSO
@@ -15497,7 +15625,13 @@ FILE, HARDLINK, SYMLINK, CHARDEV, BLOCKDEV, DIR, FIFO, SOCKET
 
 =item $Archive::Tar::ZERO_PAD_NUMBERS
 
+=item Tuning the way RESOLVE_SYMLINK will works
+
 =back
+
+=back
+
+=over 4
 
 =item FAQ
 
@@ -31222,7 +31356,7 @@ L</new>, L</runtests>, L</summary>
 
 =back
 
-=head2 TAP::Harness::Beyond, Test::Harness - Beyond make test
+=head2 TAP::Harness::Beyond, Test::Harness::Beyond - Beyond make test
 
 =over 4
 

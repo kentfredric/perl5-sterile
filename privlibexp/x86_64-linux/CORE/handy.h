@@ -69,7 +69,7 @@ Null SV pointer. (No longer available when C<PERL_CORE> is defined.)
 #define MUTABLE_IO(p)	((IO *)MUTABLE_PTR(p))
 #define MUTABLE_SV(p)	((SV *)MUTABLE_PTR(p))
 
-#ifdef I_STDBOOL
+#if defined(I_STDBOOL) && !defined(PERL_BOOL_AS_CHAR)
 #  include <stdbool.h>
 #  ifndef HAS_BOOL
 #    define HAS_BOOL 1
@@ -85,9 +85,11 @@ Null SV pointer. (No longer available when C<PERL_CORE> is defined.)
    Andy Dougherty	February 2000
 */
 #ifdef __GNUG__		/* GNU g++ has bool built-in */
+# ifndef PERL_BOOL_AS_CHAR
 #  ifndef HAS_BOOL
 #    define HAS_BOOL 1
 #  endif
+# endif
 #endif
 
 /* The NeXT dynamic loader headers will not build with the bool macro
@@ -104,11 +106,10 @@ Null SV pointer. (No longer available when C<PERL_CORE> is defined.)
 #endif /* NeXT || __NeXT__ */
 
 #ifndef HAS_BOOL
-# if defined(VMS)
-#  define bool int
-# else
-#  define bool char
+# ifdef bool
+#  undef bool
 # endif
+# define bool char
 # define HAS_BOOL 1
 #endif
 
@@ -1778,6 +1779,12 @@ void Perl_mem_log_del_sv(const SV *sv, const char *filename, const int linenumbe
 #define PoisonNew(d,n,t)	PoisonWith(d,n,t,0xAB)
 #define PoisonFree(d,n,t)	PoisonWith(d,n,t,0xEF)
 #define Poison(d,n,t)		PoisonFree(d,n,t)
+
+#ifdef PERL_POISON
+#  define PERL_POISON_EXPR(x) x
+#else
+#  define PERL_POISON_EXPR(x)
+#endif
 
 #ifdef USE_STRUCT_COPY
 #define StructCopy(s,d,t) (*((t*)(d)) = *((t*)(s)))

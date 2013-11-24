@@ -2075,11 +2075,11 @@ Turn on colour in Test::Builder::Tester
 
 =item Test::Harness
 
-Beyond make test
-
-=item Test::Harness
-
 Run Perl standard test scripts with statistics
+
+=item Test::Harness::Beyond
+
+Beyond make test
 
 =item Test::More
 

@@ -1704,8 +1704,10 @@ Found in file op.c
 =item custom_op_xop
 X<custom_op_xop>
 
-Return the XOP structure for a given custom op. This function should be
+Return the XOP structure for a given custom op. This macro should be
 considered internal to OP_NAME and the other access macros: use them instead.
+This macro does call a function. Prior to 5.19.6, this was implemented as a
+function.
 
 NOTE: this function must be explicitly called as Perl_custom_op_xop with an aTHX_ parameter.
 
@@ -1739,9 +1741,22 @@ X<XopENTRY>
 
 Return a member of the XOP structure. I<which> is a cpp token indicating
 which entry to return. If the member is not set this will return a
-default value. The return type depends on I<which>.
+default value. The return type depends on I<which>. This macro evaluates its
+arguments more than once. If you are using C<Perl_custom_op_xop> to retreive a
+C<XOP *> from a C<OP *>, use the more efficient L</XopENTRYCUSTOM> instead.
 
 		XopENTRY(XOP *xop, which)
+
+=for hackers
+Found in file op.h
+
+=item XopENTRYCUSTOM
+X<XopENTRYCUSTOM>
+
+Exactly like C<XopENTRY(XopENTRY(Perl_custom_op_xop(aTHX_ o), which)> but more
+efficient. The I<which> parameter is identical to L</XopENTRY>.
+
+		XopENTRYCUSTOM(const OP *o, which)
 
 =for hackers
 Found in file op.h
@@ -1751,7 +1766,8 @@ X<XopENTRY_set>
 
 Set a member of the XOP structure. I<which> is a cpp token indicating
 which entry to set. See L<perlguts/"Custom Operators"> for details about
-the available members and how they are used.
+the available members and how they are used. This macro evaluates its argument
+more than once.
 
 	void	XopENTRY_set(XOP *xop, which, value)
 
@@ -3059,16 +3075,16 @@ means yes, look for AUTOLOAD; zero means no, don't look for AUTOLOAD.
 Calling C<gv_fetchmethod> is equivalent to calling C<gv_fetchmethod_autoload>
 with a non-zero C<autoload> parameter.
 
-These functions grant C<"SUPER"> token as a prefix of the method name. Note
+These functions grant C<"SUPER"> token
+as a prefix of the method name.  Note
 that if you want to keep the returned glob for a long time, you need to
 check for it being "AUTOLOAD", since at the later time the call may load a
-different subroutine due to $AUTOLOAD changing its value. Use the glob
-created via a side effect to do this.
+different subroutine due to $AUTOLOAD changing its value.  Use the glob
+created as a side effect to do this.
 
-These functions have the same side-effects and as C<gv_fetchmeth> with
-C<level==0>.  C<name> should be writable if contains C<':'> or C<'
-''>. The warning against passing the GV returned by C<gv_fetchmeth> to
-C<call_sv> apply equally to these functions.
+These functions have the same side-effects as C<gv_fetchmeth> with
+C<level==0>.  The warning against passing the GV returned by
+C<gv_fetchmeth> to C<call_sv> applies equally to these functions.
 
 	GV*	gv_fetchmethod_autoload(HV* stash,
 		                        const char* name,
@@ -7114,7 +7130,9 @@ NOTE: this function is experimental and may change or be
 removed without notice.
 
 
-The index of the last pad in the padlist.
+The index of the last allocated space in the padlist.  Note that the last
+pad may be in an earlier slot.  Any entries following it will be NULL in
+that case.
 
 	SSize_t	PadlistMAX(PADLIST padlist)
 
@@ -8637,11 +8655,11 @@ Found in file sv.h
 =item SvIsCOW
 X<SvIsCOW>
 
-Returns a boolean indicating whether the SV is Copy-On-Write (either shared
+Returns a U32 value indicating whether the SV is Copy-On-Write (either shared
 hash key scalars, or full Copy On Write scalars if 5.9.0 is configured for
 COW).
 
-	bool	SvIsCOW(SV* sv)
+	U32	SvIsCOW(SV* sv)
 
 =for hackers
 Found in file sv.h
@@ -9991,7 +10009,7 @@ X<newSVrv>
 Creates a new SV for the existing RV, C<rv>, to point to.  If C<rv> is not an
 RV then it will be upgraded to one.  If C<classname> is non-null then the new
 SV will be blessed in the specified package.  The new SV is returned and its
-reference count is 1. The reference count 1 is owned by C<rv>.
+reference count is 1.  The reference count 1 is owned by C<rv>.
 
 	SV*	newSVrv(SV *const rv,
 		        const char *const classname)
@@ -10052,7 +10070,7 @@ the latter's argument is neither SvPOK, SvIOK nor SvNOK.  If the flags
 contain SV_GMAGIC, then it does an mg_get() first.
 
 
-	bool	sv_2bool_flags(SV *const sv, const I32 flags)
+	bool	sv_2bool_flags(SV *sv, I32 flags)
 
 =for hackers
 Found in file sv.c
@@ -10595,8 +10613,8 @@ Found in file sv.c
 X<sv_gets>
 
 Get a line from the filehandle and store it into the SV, optionally
-appending to the currently-stored string. If C<append> is not 0, the
-line is appended to the SV instead of overwriting it. C<append> should
+appending to the currently-stored string.  If C<append> is not 0, the
+line is appended to the SV instead of overwriting it.  C<append> should
 be set to the byte offset that the appended string should start at
 in the SV (typically, C<SvCUR(sv)> is a suitable choice).
 
@@ -11224,9 +11242,10 @@ X<sv_setsv>
 
 Copies the contents of the source SV C<ssv> into the destination SV
 C<dsv>.  The source SV may be destroyed if it is mortal, so don't use this
-function if the source SV needs to be reused.  Does not handle 'set' magic.
-Loosely speaking, it performs a copy-by-value, obliterating any previous
-content of the destination.
+function if the source SV needs to be reused.  Does not handle 'set' magic on
+destination SV.  Calls 'get' magic on source SV.  Loosely speaking, it
+performs a copy-by-value, obliterating any previous content of the
+destination.
 
 You probably want to use one of the assortment of wrappers, such as
 C<SvSetSV>, C<SvSetSV_nosteal>, C<SvSetMagicSV> and
@@ -11247,7 +11266,7 @@ Loosely speaking, it performs a copy-by-value, obliterating any previous
 content of the destination.
 If the C<flags> parameter has the C<SV_GMAGIC> bit set, will C<mg_get> on
 C<ssv> if appropriate, else not.  If the C<flags>
-parameter has the C<NOSTEAL> bit set then the
+parameter has the C<SV_NOSTEAL> bit set then the
 buffers of temps will not be stolen.  <sv_setsv>
 and C<sv_setsv_nomg> are implemented in terms of this function.
 

@@ -4,6 +4,9 @@ BEGIN {
     unless ("A" eq pack('U', 0x41)) {
 	die "Unicode::Collate cannot stringify a Unicode code point\n";
     }
+    unless (0x41 == unpack('U', 'A')) {
+	die "Unicode::Collate cannot get a Unicode code point\n";
+    }
 }
 
 use 5.006;
@@ -14,7 +17,7 @@ use File::Spec;
 
 no warnings 'utf8';
 
-our $VERSION = '0.99';
+our $VERSION = '1.02';
 our $PACKAGE = __PACKAGE__;
 
 ### begin XS only ###
@@ -86,9 +89,9 @@ my $DefaultRearrange = [ 0x0E40..0x0E44, 0x0EC0..0x0EC4 ];
 my $HighestVCE = pack(VCE_TEMPLATE, 0, 0xFFFE, 0x20, 0x5, 0xFFFF);
 my $minimalVCE = pack(VCE_TEMPLATE, 0,      1, 0x20, 0x5, 0xFFFE);
 
-sub UCA_Version { "26" }
+sub UCA_Version { "28" }
 
-sub Base_Unicode_Version { "6.2.0" }
+sub Base_Unicode_Version { "6.3.0" }
 
 ######
 
@@ -179,6 +182,7 @@ my %DerivCode = (
    22 => \&_derivCE_22,
    24 => \&_derivCE_24,
    26 => \&_derivCE_24, # 26 == 24
+   28 => \&_derivCE_24, # 28 == 24
 );
 
 sub checkCollator {
@@ -608,6 +612,7 @@ sub _pack_override ($$$) {
     } elsif (defined $r) {
 	return pack(VCE_TEMPLATE, NON_VAR, $r, Min2Wt, Min3Wt, $u);
     } else {
+	$u = 0xFFFD if 0x10FFFF < $u;
 	return $der->($u);
     }
 }
@@ -1080,7 +1085,7 @@ If the revision (previously "tracking version") number of UCA is given,
 behavior of that revision is emulated on collating.
 If omitted, the return value of C<UCA_Version()> is used.
 
-The following revisions are supported.  The default is 26.
+The following revisions are supported.  The default is 28.
 
      UCA       Unicode Standard         DUCET (@version)
    -------------------------------------------------------
@@ -1094,6 +1099,7 @@ The following revisions are supported.  The default is 26.
      22             6.0.0               6.0.0 (6.0.0)
      24             6.1.0               6.1.0 (6.1.0)
      26             6.2.0               6.2.0 (6.2.0)
+     28             6.3.0               6.3.0 (6.3.0)
 
 * Noncharacters (e.g. U+FFFF) are not ignored, and can be overridden
 since C<UCA_Version> 22.
@@ -1390,12 +1396,12 @@ those in the CJK Unified Ideographs Extension A etc.
     U+4E00..U+9FBB if UCA_Version is 14 or 16.
     U+4E00..U+9FC3 if UCA_Version is 18.
     U+4E00..U+9FCB if UCA_Version is 20 or 22.
-    U+4E00..U+9FCC if UCA_Version is 24 or 26.
+    U+4E00..U+9FCC if UCA_Version is 24 or later.
 
     In the CJK Unified Ideographs Extension blocks:
     Ext.A (U+3400..U+4DB5) and Ext.B (U+20000..U+2A6D6) in any UCA_Version.
-    Ext.C (U+2A700..U+2B734) if UCA_Version is 20 or greater.
-    Ext.D (U+2B740..U+2B81D) if UCA_Version is 22 or greater.
+    Ext.C (U+2A700..U+2B734) if UCA_Version is 20 or later.
+    Ext.D (U+2B740..U+2B81D) if UCA_Version is 22 or later.
 
 Through C<overrideCJK>, ordering of CJK unified ideographs (including
 extensions) can be overridden.
@@ -1500,19 +1506,21 @@ If a false value (including C<undef>) is passed, C<overrideOut>
 has no effect.
 C<$Collator-E<gt>change(overrideOut =E<gt> 0)> resets the old one.
 
+B<NOTE ABOUT U+FFFD:>
+
 UCA recommends that out-of-range values should not be ignored for security
 reasons. Say, C<"pe\x{110000}rl"> should not be equal to C<"perl">.
 However, C<U+FFFD> is wrongly mapped to a variable collation element
 in DUCET for Unicode 6.0.0 to 6.2.0, that means out-of-range values will be
 ignored when C<variable> isn't C<Non-ignorable>.
 
-Unicode 6.3.0 will correct the mapping of C<U+FFFD>.
-see L<http://www.unicode.org/reports/tr10/tr10-27.html#Trailing_Weights>.
-Such a correction is reproduced by this.
+The mapping of C<U+FFFD> is corrected in Unicode 6.3.0.
+see L<http://www.unicode.org/reports/tr10/tr10-28.html#Trailing_Weights>
+(7.1.4 Trailing Weights). Such a correction is reproduced by this.
 
   overrideOut => sub { 0xFFFD }, # CODEREF returning a very large integer
 
-Since Unicode 6.3.0, C<(overrideOut =E<gt> sub { 0xFFFD })> may be unnecesssary.
+This workaround is unnecessary since Unicode 6.3.0.
 
 =item preprocess
 
@@ -1800,19 +1808,18 @@ If C<$substring> does not match any part of C<$string>,
 returns C<-1> in scalar context and
 an empty list in list context.
 
-e.g. you say
+e.g. when the content of C<$str> is C<"Ich mu>E<szlig>C< studieren Perl.">,
+you say the following where C<$sub> is C<"M>E<uuml>C<SS">,
 
   my $Collator = Unicode::Collate->new( normalization => undef, level => 1 );
                                      # (normalization => undef) is REQUIRED.
-  my $str = "Ich muß studieren Perl.";
-  my $sub = "MÜSS";
   my $match;
   if (my($pos,$len) = $Collator->index($str, $sub)) {
       $match = substr($str, $pos, $len);
   }
 
-and get C<"muß"> in C<$match> since C<"muß">
-is primary equal to C<"MÜSS">.
+and get C<"mu>E<szlig>C<"> in C<$match>, since C<"mu>E<szlig>C<">
+is primary equal to C<"M>E<uuml>C<SS">.
 
 =item C<$match_ref = $Collator-E<gt>match($string, $substring)>
 
@@ -2023,7 +2030,7 @@ This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
 The file Unicode/Collate/allkeys.txt was copied verbatim
-from L<http://www.unicode.org/Public/UCA/6.2.0/allkeys.txt>.
+from L<http://www.unicode.org/Public/UCA/6.3.0/allkeys.txt>.
 For this file, Copyright (c) 2001-2012 Unicode, Inc.
 Distributed under the Terms of Use in L<http://www.unicode.org/copyright.html>.
 

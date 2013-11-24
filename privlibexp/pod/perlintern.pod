@@ -352,7 +352,7 @@ X<core_prototype>
 This function assigns the prototype of the named core function to C<sv>, or
 to a new mortal SV if C<sv> is NULL.  It returns the modified C<sv>, or
 NULL if the core function has no prototype.  C<code> is a code as returned
-by C<keyword()>.  It must not be equal to 0 or -KEY_CORE.
+by C<keyword()>.  It must not be equal to 0.
 
 	SV *	core_prototype(SV *sv, const char *name,
 		               const int code,
@@ -1620,6 +1620,9 @@ X<check_utf8_print>
 =item ck_anoncode
 X<ck_anoncode>
 
+=item ck_backtick
+X<ck_backtick>
+
 =item ck_bitop
 X<ck_bitop>
 
@@ -1634,9 +1637,6 @@ X<ck_defined>
 
 =item ck_delete
 X<ck_delete>
-
-=item ck_die
-X<ck_die>
 
 =item ck_each
 X<ck_each>
@@ -1655,9 +1655,6 @@ X<ck_exec>
 
 =item ck_exists
 X<ck_exists>
-
-=item ck_exit
-X<ck_exit>
 
 =item ck_ftst
 X<ck_ftst>
@@ -1775,6 +1772,9 @@ X<croak_popstack>
 
 =item current_re_engine
 X<current_re_engine>
+
+=item custom_op_get_field
+X<custom_op_get_field>
 
 =item cv_ckproto_len_flags
 X<cv_ckproto_len_flags>
@@ -1952,6 +1952,9 @@ X<getenv_len>
 
 =item grok_bslash_x
 X<grok_bslash_x>
+
+=item gv_override
+X<gv_override>
 
 =item hfree_next_entry
 X<hfree_next_entry>
@@ -2426,6 +2429,9 @@ X<scalar>
 
 =item scalarvoid
 X<scalarvoid>
+
+=item set_caret_X
+X<set_caret_X>
 
 =item sighandler
 X<sighandler>

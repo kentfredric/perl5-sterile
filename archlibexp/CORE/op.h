@@ -172,6 +172,9 @@ Deprecated.  Use C<GIMME_V> instead.
 /* Private for OP_LEAVE, OP_LEAVESUB, OP_LEAVESUBLV and OP_LEAVEWRITE */
 #define OPpREFCOUNTED		64	/* op_targ carries a refcount */
 
+/* Private for OP_LEAVE and OP_LEAVELOOP */
+#define OPpLVALUE		128	/* Do not copy return value */
+
 /* Private for OP_AASSIGN */
 #define OPpASSIGN_COMMON	64	/* Left & right have syms in common. */
 
@@ -247,8 +250,8 @@ is no conversion of op type.
 #define OPpEARLY_CV		32	/* foo() called before sub foo was parsed */
   /* OP_?ELEM only */
 #define OPpLVAL_DEFER		16	/* Defer creation of array/hash elem */
-  /* OP_RV2[AH]V OP_KV[AH]SLICE OP_[AH]SLICE */
-#define OPpSLICEWARNING		4	/* warn about %hash{$scalar} */
+  /* OP_RV2[AH]V OP_[AH]SLICE */
+#define OPpSLICEWARNING		4	/* warn about @hash{$scalar} */
   /* OP_RV2[SAH]V, OP_GVSV, OP_ENTERITER only */
 #define OPpOUR_INTRO		16	/* Variable was in an our() */
   /* OP_RV2[AGH]V, OP_PAD[AH]V, OP_[AH]ELEM, OP_[AH]SLICE OP_AV2ARYLEN,
@@ -320,9 +323,13 @@ is no conversion of op type.
 #define OPpOPEN_OUT_RAW		64	/* binmode(F,":raw") on output fh */
 #define OPpOPEN_OUT_CRLF	128	/* binmode(F,":crlf") on output fh */
 
-/* Private for OP_EXIT, HUSH also for OP_DIE */
-#define OPpHUSH_VMSISH		64	/* hush DCL exit msg vmsish mode*/
-#define OPpEXIT_VMSISH		128	/* exit(0) vs. exit(1) vmsish mode*/
+/* Private for COPs */
+#define OPpHUSH_VMSISH		32	/* hush DCL exit msg vmsish mode*/
+/* Note: Used for NATIVE_HINTS (shifted from the values in PL_hints),
+	 currently defined by vms/vmsish.h:
+				64
+				128
+ */
 
 /* Private for OP_FTXXX */
 #define OPpFT_ACCESS		2	/* use filetest 'access' */
@@ -893,12 +900,19 @@ Return the XOP's flags.
 =for apidoc Am||XopENTRY|XOP *xop|which
 Return a member of the XOP structure. I<which> is a cpp token indicating
 which entry to return. If the member is not set this will return a
-default value. The return type depends on I<which>.
+default value. The return type depends on I<which>. This macro evaluates its
+arguments more than once. If you are using C<Perl_custom_op_xop> to retreive a
+C<XOP *> from a C<OP *>, use the more efficient L</XopENTRYCUSTOM> instead.
+
+=for apidoc Am||XopENTRYCUSTOM|const OP *o|which
+Exactly like C<XopENTRY(XopENTRY(Perl_custom_op_xop(aTHX_ o), which)> but more
+efficient. The I<which> parameter is identical to L</XopENTRY>.
 
 =for apidoc Am|void|XopENTRY_set|XOP *xop|which|value
 Set a member of the XOP structure. I<which> is a cpp token indicating
 which entry to set. See L<perlguts/"Custom Operators"> for details about
-the available members and how they are used.
+the available members and how they are used. This macro evaluates its argument
+more than once.
 
 =for apidoc Am|void|XopDISABLE|XOP *xop|which
 Temporarily disable a member of the XOP, by clearing the appropriate flag.
@@ -917,12 +931,32 @@ struct custom_op {
     void	  (*xop_peep)(pTHX_ OP *o, OP *oldop);
 };
 
+/* return value of Perl_custom_op_get_field, similar to void * then casting but
+   the U32 doesn't need truncation on 64 bit platforms in the caller, also
+   for easier macro writing */
+typedef union {
+    const char	   *xop_name;
+    const char	   *xop_desc;
+    U32		    xop_class;
+    void	  (*xop_peep)(pTHX_ OP *o, OP *oldop);
+    XOP            *xop_ptr;
+} XOPRETANY;
+
 #define XopFLAGS(xop) ((xop)->xop_flags)
 
 #define XOPf_xop_name	0x01
 #define XOPf_xop_desc	0x02
 #define XOPf_xop_class	0x04
 #define XOPf_xop_peep	0x08
+
+/* used by Perl_custom_op_get_field for option checking */
+typedef enum {
+    XOPe_xop_ptr = 0, /* just get the XOP *, don't look inside it */
+    XOPe_xop_name = XOPf_xop_name,
+    XOPe_xop_desc = XOPf_xop_desc,
+    XOPe_xop_class = XOPf_xop_class,
+    XOPe_xop_peep = XOPf_xop_peep,
+} xop_flags_enum;
 
 #define XOPd_xop_name	PL_op_name[OP_CUSTOM]
 #define XOPd_xop_desc	PL_op_desc[OP_CUSTOM]
@@ -938,12 +972,18 @@ struct custom_op {
 #define XopENTRY(xop, which) \
     ((XopFLAGS(xop) & XOPf_ ## which) ? (xop)->which : XOPd_ ## which)
 
+#define XopENTRYCUSTOM(o, which) \
+    (Perl_custom_op_get_field(aTHX_ o, XOPe_ ## which).which)
+
 #define XopDISABLE(xop, which) ((xop)->xop_flags &= ~XOPf_ ## which)
 #define XopENABLE(xop, which) \
     STMT_START { \
 	(xop)->xop_flags |= XOPf_ ## which; \
 	assert(XopENTRY(xop, which)); \
     } STMT_END
+
+#define Perl_custom_op_xop(x) \
+    (Perl_custom_op_get_field(x, XOPe_xop_ptr).xop_ptr)
 
 /*
 =head1 Optree Manipulation Functions
@@ -967,13 +1007,13 @@ one of the OA_* constants from op.h.
 */
 
 #define OP_NAME(o) ((o)->op_type == OP_CUSTOM \
-		    ? XopENTRY(Perl_custom_op_xop(aTHX_ o), xop_name) \
+                    ? XopENTRYCUSTOM(o, xop_name) \
 		    : PL_op_name[(o)->op_type])
 #define OP_DESC(o) ((o)->op_type == OP_CUSTOM \
-		    ? XopENTRY(Perl_custom_op_xop(aTHX_ o), xop_desc) \
+                    ? XopENTRYCUSTOM(o, xop_desc) \
 		    : PL_op_desc[(o)->op_type])
 #define OP_CLASS(o) ((o)->op_type == OP_CUSTOM \
-		     ? XopENTRY(Perl_custom_op_xop(aTHX_ o), xop_class) \
+		     ? XopENTRYCUSTOM(o, xop_class) \
 		     : (PL_opargs[(o)->op_type] & OA_CLASS_MASK))
 
 #define newSUB(f, o, p, b)	Perl_newATTRSUB(aTHX_ (f), (o), (p), NULL, (b))

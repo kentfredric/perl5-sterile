@@ -14,7 +14,7 @@ use warnings; # uses #3 and #4, since warnings uses Carp
 
 use Exporter (); # use #5
 
-our $VERSION   = "0.99";
+our $VERSION   = "0.991";
 our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw( set_style set_style_standard add_callback
 		     concise_subref concise_cv concise_main
@@ -46,7 +46,8 @@ my %style =
     "gt_#seq ",
     "(?(#seq)?)#noise#arg(?([#targarg])?)"],
    "debug" =>
-   ["#class (#addr)\n\top_next\t\t#nextaddr\n\top_sibling\t#sibaddr\n\t"
+   ["#class (#addr)\n\top_next\t\t#nextaddr\n\t(?(op_other\t#otheraddr\n\t)?)"
+    . "op_sibling\t#sibaddr\n\t"
     . "op_ppaddr\tPL_ppaddr[OP_#NAME]\n\top_type\t\t#typenum\n"
     . "\top_flags\t#flagval\n\top_private\t#privval\t#hintsval\n"
     . "(?(\top_first\t#firstaddr\n)?)(?(\top_last\t\t#lastaddr\n)?)"
@@ -598,6 +599,7 @@ $priv{$_}{128} = "LVINTRO"
          aelem helem aslice hslice padsv padav padhv enteriter entersub
          padrange pushmark);
 $priv{$_}{64} = "REFC" for qw(leave leavesub leavesublv leavewrite);
+$priv{$_}{128} = "LV" for qw(leave leaveloop);
 @{$priv{aassign}}{32,64} = qw(STATE COMMON);
 @{$priv{sassign}}{32,64,128} = qw(STATE BKWARD CV2GV);
 $priv{$_}{64} = "RTIME" for qw(match subst substcont qr);
@@ -619,7 +621,7 @@ $priv{$_}{8} = "LVSUB"
   for qw(rv2av rv2gv rv2hv padav padhv aelem helem aslice hslice
          av2arylen keys rkeys substr pos vec);
 $priv{$_}{4} = "SLICEWARN"
-  for qw(rv2hv rv2av kvhslice kvaslice padav padhv hslice aslice);
+  for qw(rv2hv rv2av padav padhv hslice aslice);
 @{$priv{$_}}{32,64} = qw(BOOL BOOL?) for qw(rv2hv padhv);
 $priv{substr}{16} = "REPL1ST";
 $priv{$_}{16} = "TARGMY"
@@ -643,7 +645,7 @@ $priv{reverse}{8} = "INPLACE";
 $priv{threadsv}{64} = "SVREFd";
 @{$priv{$_}}{16,32,64,128} = qw(INBIN INCR OUTBIN OUTCR)
   for qw(open backtick);
-$priv{exit}{128} = "VMS";
+$priv{$_}{32} = "HUSH" for qw(nextstate dbstate);
 $priv{$_}{2} = "FTACCESS"
   for qw(ftrread ftrwrite ftrexec fteread ftewrite fteexec);
 @{$priv{entereval}}{2,4,8,16} = qw(HAS_HH UNI BYTES COPHH);
@@ -886,6 +888,7 @@ sub concise_op {
     } elsif ($h{class} eq "LOGOP") {
 	undef $lastnext;
 	$h{arg} = "(other->" . seq($op->other) . ")";
+	$h{otheraddr} = sprintf("%#x", $ {$op->other});
     }
     elsif ($h{class} eq "SVOP" or $h{class} eq "PADOP") {
 	unless ($h{name} eq 'aelemfast' and $op->flags & OPf_SPECIAL) {
