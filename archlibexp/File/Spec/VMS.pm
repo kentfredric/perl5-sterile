@@ -4,7 +4,7 @@ use strict;
 use vars qw(@ISA $VERSION);
 require File::Spec::Unix;
 
-$VERSION = '3.40';
+$VERSION = '3.41';
 $VERSION =~ tr/_//;
 
 @ISA = qw(File::Spec::Unix);
@@ -27,7 +27,7 @@ there. This package overrides the implementation of these methods, not
 the semantics.
 
 The default behavior is to allow either VMS or Unix syntax on input and to 
-return VMS syntax on output unless Unix syntax has been explicity requested
+return VMS syntax on output unless Unix syntax has been explicitly requested
 via the C<DECC$FILENAME_UNIX_REPORT> CRTL feature.
 
 =over 4
@@ -271,21 +271,22 @@ from the following list or '' if none are writable:
     sys$scratch:
     $ENV{TMPDIR}
 
-Since perl 5.8.0, if running under taint mode, and if $ENV{TMPDIR}
+If running under taint mode, and if $ENV{TMPDIR}
 is tainted, it is not used.
 
 =cut
 
-my $tmpdir;
 sub tmpdir {
     my $self = shift @_;
+    my $tmpdir = $self->_cached_tmpdir('TMPDIR');
     return $tmpdir if defined $tmpdir;
     if ($self->_unix_rpt) {
         $tmpdir = $self->_tmpdir('/tmp', '/sys$scratch', $ENV{TMPDIR});
-        return $tmpdir;
     }
-
-    $tmpdir = $self->_tmpdir( 'sys$scratch:', $ENV{TMPDIR} );
+    else {
+        $tmpdir = $self->_tmpdir( 'sys$scratch:', $ENV{TMPDIR} );
+    }
+    $self->_cache_tmpdir($tmpdir, 'TMPDIR');
 }
 
 =item updir (override)

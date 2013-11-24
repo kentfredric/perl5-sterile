@@ -20,7 +20,7 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
          CVf_METHOD CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED);
-$VERSION = '1.20';
+$VERSION = '1.21';
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -401,7 +401,7 @@ sub _pessimise_walk_exe {
     }
 }
 
-# Go through an optree and and "remove" some optimisations by using an
+# Go through an optree and "remove" some optimisations by using an
 # overlay to selectively modify or un-null some ops. Deparsing in the
 # absence of those optimisations is then easier.
 #
@@ -972,6 +972,9 @@ sub indent {
 	    }
 	    $line = substr($line, 1);
 	}
+	if (index($line, "\f") > 0) {
+		$line =~ s/\f/\n/;
+	}
 	if (substr($line, 0, 1) eq "\f") {
 	    $line = substr($line, 1); # no indent
 	} else {
@@ -1226,12 +1229,12 @@ sub padname_sv {
 
 sub maybe_my {
     my $self = shift;
-    my($op, $cx, $text) = @_;
+    my($op, $cx, $text, $forbid_parens) = @_;
     if ($op->private & OPpLVAL_INTRO and not $self->{'avoid_local'}{$$op}) {
 	my $my = $op->private & OPpPAD_STATE
 	    ? $self->keyword("state")
 	    : "my";
-	if (want_scalar($op)) {
+	if ($forbid_parens || want_scalar($op)) {
 	    return "$my $text";
 	} else {
 	    return $self->maybe_parens_func($my, $text, $cx, 16);
@@ -3111,7 +3114,7 @@ sub loop_common {
 		# thread special var, under 5005threads
 		$var = $self->pp_threadsv($enter, 1);
 	    } else { # regular my() variable
-		$var = $self->pp_padsv($enter, 1);
+		$var = $self->pp_padsv($enter, 1, 1);
 	    }
 	} elsif ($var->name eq "rv2gv") {
 	    $var = $self->pp_rv2sv($var, 1);
@@ -3267,8 +3270,9 @@ sub padany {
 
 sub pp_padsv {
     my $self = shift;
-    my($op, $cx) = @_;
-    return $self->maybe_my($op, $cx, $self->padname($op->targ));
+    my($op, $cx, $forbid_parens) = @_;
+    return $self->maybe_my($op, $cx, $self->padname($op->targ),
+			   $forbid_parens);
 }
 
 sub pp_padav { pp_padsv(@_) }
@@ -3511,7 +3515,9 @@ sub elem {
     }
     if (my $array_name=$self->elem_or_slice_array_name
 	    ($array, $left, $padname, 1)) {
-	return ($array_name =~ /->\z/ ? $array_name : "\$" . $array_name)
+	return ($array_name =~ /->\z/
+		    ? $array_name
+		    : $array_name eq '#' ? '${#}' : "\$" . $array_name)
 	      . $left . $idx . $right;
     } else {
 	# $x[20][3]{hi} or expr->[20]
@@ -3934,7 +3940,7 @@ sub re_uninterp_extended {
 }
 }
 
-my %unctrl = # portable to to EBCDIC
+my %unctrl = # portable to EBCDIC
     (
      "\c@" => '\c@',	# unused
      "\cA" => '\cA',

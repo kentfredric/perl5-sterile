@@ -5,7 +5,7 @@ use warnings;
 no warnings 'surrogate';    # surrogates can be inputs to this
 use charnames ();
 
-our $VERSION = '0.51';
+our $VERSION = '0.53';
 
 require Exporter;
 
@@ -24,6 +24,7 @@ our @EXPORT_OK = qw(charinfo
                     prop_value_aliases
                     prop_invlist
                     prop_invmap
+                    search_invlist
                     MAX_CP
                 );
 
@@ -79,6 +80,9 @@ Unicode::UCD - Unicode character database
     use Unicode::UCD 'prop_invmap';
     my ($list_ref, $map_ref, $format, $missing)
                                       = prop_invmap("General Category");
+
+    use Unicode::UCD 'search_invlist';
+    my $index = search_invlist(\@invlist, $code_point);
 
     use Unicode::UCD 'compexcl';
     my $compexcl = compexcl($codepoint);
@@ -1687,7 +1691,7 @@ Those discouraged forms are accepted as input to C<prop_aliases>, but are not
 returned in the lists.  C<prop_aliases('isL&')> and C<prop_aliases('isL_')>,
 which are old synonyms for C<"Is_LC"> and should not be used in new code, are
 examples of this.  These both return C<(Is_LC, Cased_Letter)>.  Thus this
-function allows you to take a discourarged form, and find its acceptable
+function allows you to take a discouraged form, and find its acceptable
 alternatives.  The same goes with single-form Block property equivalences.
 Only the forms that begin with C<"In_"> are not discouraged; if you pass
 C<prop_aliases> a discouraged form, you will get back the equivalent ones that
@@ -2087,7 +2091,7 @@ the same result:
 And both raise a warning that a Unicode property is being used on a
 non-Unicode code point.  It is arguable as to which is the correct thing to do
 here.  This function has chosen the way opposite to the Perl regular
-expression behavior.  This allows you to easily flip to to the Perl regular
+expression behavior.  This allows you to easily flip to the Perl regular
 expression way (for you to go in the other direction would be far harder).
 Simply add 0x110000 at the end of the non-empty returned list if it isn't
 already that value; and pop that value if it is; like:
@@ -2123,6 +2127,9 @@ code points that have the property-value:
 
 C<prop_invlist> does not know about any user-defined nor Perl internal-only
 properties, and will return C<undef> if called with one of those.
+
+The L</search_invlist()> function is provided for finding a code point within
+an inversion list.
 
 =cut
 
@@ -2261,71 +2268,12 @@ sub prop_invlist ($;$) {
     return @invlist;
 }
 
-sub _search_invlist {
-    # Find the range in the inversion list which contains a code point; that
-    # is, find i such that l[i] <= code_point < l[i+1].  Returns undef if no
-    # such i.
-
-    # If this is ever made public, could use to speed up .t specials.  Would
-    # need to use code point argument, as in other functions in this pm
-
-    my $list_ref = shift;
-    my $code_point = shift;
-    # Verify non-neg numeric  XXX
-
-    my $max_element = @$list_ref - 1;
-
-    # Return undef if list is empty or requested item is before the first element.
-    return if $max_element < 0;
-    return if $code_point < $list_ref->[0];
-
-    # Short cut something at the far-end of the table.  This also allows us to
-    # refer to element [$i+1] without fear of being out-of-bounds in the loop
-    # below.
-    return $max_element if $code_point >= $list_ref->[$max_element];
-
-    use integer;        # want integer division
-
-    my $i = $max_element / 2;
-
-    my $lower = 0;
-    my $upper = $max_element;
-    while (1) {
-
-        if ($code_point >= $list_ref->[$i]) {
-
-            # Here we have met the lower constraint.  We can quit if we
-            # also meet the upper one.
-            last if $code_point < $list_ref->[$i+1];
-
-            $lower = $i;        # Still too low.
-
-        }
-        else {
-
-            # Here, $code_point < $list_ref[$i], so look lower down.
-            $upper = $i;
-        }
-
-        # Split search domain in half to try again.
-        my $temp = ($upper + $lower) / 2;
-
-        # No point in continuing unless $i changes for next time
-        # in the loop.
-        return $i if $temp == $i;
-        $i = $temp;
-    } # End of while loop
-
-    # Here we have found the offset
-    return $i;
-}
-
 =pod
 
 =head2 B<prop_invmap()>
 
  use Unicode::UCD 'prop_invmap';
- my ($list_ref, $map_ref, $format, $missing)
+ my ($list_ref, $map_ref, $format, $default)
                                       = prop_invmap("General Category");
 
 C<prop_invmap> is used to get the complete mapping definition for a property,
@@ -2350,10 +2298,13 @@ properties acceptable as inputs to this function.
 
 It is a fatal error to call this function except in list context.
 
-In addition to the the two arrays that form the inversion map, C<prop_invmap>
+In addition to the two arrays that form the inversion map, C<prop_invmap>
 returns two other values; one is a scalar that gives some details as to the
-format of the entries of the map array; the other is used for specialized
-purposes, described at the end of this section.
+format of the entries of the map array; the other is a default value, useful
+in maps whose format name begins with the letter C<"a">, as described
+L<below in its subsection|/a>; and for specialized purposes, such as
+converting to another data structure, described at the end of this main
+section.
 
 This means that C<prop_invmap> returns a 4 element list.  For example,
 
@@ -2413,7 +2364,8 @@ that, instead of treating these as unassigned Unicode code points, the value
 for this range should be C<undef>.  If you wish, you can change the returned
 arrays accordingly.
 
-The maps are almost always simple scalars that should be interpreted as-is.
+The maps for almost all properties are simple scalars that should be
+interpreted as-is.
 These values are those given in the Unicode-supplied data files, which may be
 inconsistent as to capitalization and as to which synonym for a property-value
 is given.  The results may be normalized by using the L</prop_value_aliases()>
@@ -2508,7 +2460,7 @@ is like C<"s"> in that all the map array elements are scalars, but here they are
 restricted to all being integers, and some have to be adjusted (hence the name
 C<"a">) to get the correct result.  For example, in:
 
- my ($uppers_ranges_ref, $uppers_maps_ref, $format)
+ my ($uppers_ranges_ref, $uppers_maps_ref, $format, $default)
                           = prop_invmap("Simple_Uppercase_Mapping");
 
 the returned arrays look like this:
@@ -2521,22 +2473,24 @@ the returned arrays look like this:
      182                      0
      ...
 
+and C<$default> is 0.
+
 Let's start with the second line.  It says that the uppercase of code point 97
 is 65; or C<uc("a")> == "A".  But the line is for the entire range of code
-points 97 through 122.  To get the mapping for any code point in a range, you
-take the offset it has from the beginning code point of the range, and add
+points 97 through 122.  To get the mapping for any code point in this range,
+you take the offset it has from the beginning code point of the range, and add
 that to the mapping for that first code point.  So, the mapping for 122 ("z")
 is derived by taking the offset of 122 from 97 (=25) and adding that to 65,
 yielding 90 ("z").  Likewise for everything in between.
 
-The first line works the same way.  The first map in a range is always the
-correct value for its code point (because the adjustment is 0).  Thus the
-C<uc(chr(0))> is just itself.  Also, C<uc(chr(1))> is also itself, as the
-adjustment is 0+1-0 .. C<uc(chr(96))> is 96.
-
 Requiring this simple adjustment allows the returned arrays to be
 significantly smaller than otherwise, up to a factor of 10, speeding up
 searching through them.
+
+Ranges that map to C<$default>, C<"0">, behave somewhat differently.  For
+these, each code point maps to itself.  So, in the first line in the example,
+S<C<ord(uc(chr(0)))>> is 0, S<C<ord(uc(chr(1)))>> is 1, ..
+S<C<ord(uc(chr(96)))>> is 96.
 
 =item B<C<al>>
 
@@ -2544,7 +2498,7 @@ means that some of the map array elements have the form given by C<"a">, and
 the rest are ordered lists of code points.
 For example, in:
 
- my ($uppers_ranges_ref, $uppers_maps_ref, $format)
+ my ($uppers_ranges_ref, $uppers_maps_ref, $format, $default)
                                  = prop_invmap("Uppercase_Mapping");
 
 the returned arrays look like this:
@@ -2570,6 +2524,9 @@ CAPITAL LETTER N).
 
 No adjustments are needed to entries that are references to arrays; each such
 entry will have exactly one element in its range, so the offset is always 0.
+
+The fourth (index [3]) element (C<$default>) in the list returned for this
+format is 0.
 
 =item B<C<ae>>
 
@@ -2600,6 +2557,9 @@ represents 0+1-0 = 1; ... code point 0x39, (DIGIT NINE), represents 0+9-0 = 9;
 (ARABIC-INDIC DIGIT ZERO), represents 0; ... 0x07C1 (NKO DIGIT ONE),
 represents 0+1-0 = 1 ...
 
+The fourth (index [3]) element (C<$default>) in the list returned for this
+format is the empty string.
+
 =item B<C<ale>>
 
 is a combination of the C<"al"> type and the C<"ae"> type.  Some of
@@ -2616,6 +2576,9 @@ An example slice is:
    0x00AF     [ 0x0020, 0x0304 ]  MACRON => SPACE . COMBINING MACRON
    0x00B0        0
    ...
+
+The fourth (index [3]) element (C<$default>) in the list returned for this
+format is 0.
 
 =item B<C<ar>>
 
@@ -2656,6 +2619,9 @@ C<"ar">.
         0x660            0           ARABIC-INDIC DIGIT ZERO .. NINE
         0x66A          "NaN"
 
+The fourth (index [3]) element (C<$default>) in the list returned for this
+format is C<"NaN">.
+
 =item B<C<n>>
 
 means the Name property.  All the elements of the map array are simple
@@ -2693,13 +2659,16 @@ properties, except that one of the scalar elements is of the form:
 
 This signifies that this entry should be replaced by the decompositions for
 all the code points whose decomposition is algorithmically calculated.  (All
-of them are currently in one range and no others outisde the range are likely
+of them are currently in one range and no others outside the range are likely
 to ever be added to Unicode; the C<"n"> format
 has this same entry.)  These can be generated via the function
 L<Unicode::Normalize::NFD()|Unicode::Normalize>.
 
 Note that the mapping is the one that is specified in the Unicode data files,
 and to get the final decomposition, it may need to be applied recursively.
+
+The fourth (index [3]) element (C<$default>) in the list returned for this
+format is 0.
 
 =back
 
@@ -2713,29 +2682,31 @@ which is an integer.  That is, it must match the regular expression:
 Further, the first element in a range never needs adjustment, as the
 adjustment would be just adding 0.
 
-A binary search can be used to quickly find a code point in the inversion
-list, and hence its corresponding mapping.
+A binary search such as that provided by L</search_invlist()>, can be used to
+quickly find a code point in the inversion list, and hence its corresponding
+mapping.
 
-The final element (index [3], assigned to C<$default> in the "block" example) in
-the four element list returned by this function may be useful for applications
+The final, fourth element (index [3], assigned to C<$default> in the "block"
+example) in the four element list returned by this function is used with the
+C<"a"> format types; it may also be useful for applications
 that wish to convert the returned inversion map data structure into some
 other, such as a hash.  It gives the mapping that most code points map to
 under the property.  If you establish the convention that any code point not
 explicitly listed in your data structure maps to this value, you can
 potentially make your data structure much smaller.  As you construct your data
 structure from the one returned by this function, simply ignore those ranges
-that map to this value, generally called the "default" value.  For example, to
+that map to this value.  For example, to
 convert to the data structure searchable by L</charinrange()>, you can follow
 this recipe for properties that don't require adjustments:
 
- my ($list_ref, $map_ref, $format, $missing) = prop_invmap($property);
+ my ($list_ref, $map_ref, $format, $default) = prop_invmap($property);
  my @range_list;
 
  # Look at each element in the list, but the -2 is needed because we
  # look at $i+1 in the loop, and the final element is guaranteed to map
- # to $missing by prop_invmap(), so we would skip it anyway.
+ # to $default by prop_invmap(), so we would skip it anyway.
  for my $i (0 .. @$list_ref - 2) {
-    next if $map_ref->[$i] eq $missing;
+    next if $map_ref->[$i] eq $default;
     push @range_list, [ $list_ref->[$i],
                         $list_ref->[$i+1],
                         $map_ref->[$i]
@@ -2745,13 +2716,13 @@ this recipe for properties that don't require adjustments:
  print charinrange(\@range_list, $code_point), "\n";
 
 With this, C<charinrange()> will return C<undef> if its input code point maps
-to C<$missing>.  You can avoid this by omitting the C<next> statement, and adding
+to C<$default>.  You can avoid this by omitting the C<next> statement, and adding
 a line after the loop to handle the final element of the inversion map.
 
 Similarly, this recipe can be used for properties that do require adjustments:
 
  for my $i (0 .. @$list_ref - 2) {
-    next if $map_ref->[$i] eq $missing;
+    next if $map_ref->[$i] eq $default;
 
     # prop_invmap() guarantees that if the mapping is to an array, the
     # range has just one element, so no need to worry about adjustments.
@@ -2817,7 +2788,7 @@ sub prop_invmap ($) {
 
     # The swash has two components we look at, the base list, and a hash,
     # named 'SPECIALS', containing any additional members whose mappings don't
-    # fit into the the base list scheme of things.  These generally 'override'
+    # fit into the base list scheme of things.  These generally 'override'
     # any value in the base list for the same code point.
     my $overrides;
 
@@ -3161,7 +3132,7 @@ RETRY:
                         $list .= "$hex_begin\t$hex_end\t$decimal_map\n";
                     } else {
 
-                        # Here, no combining done.  Just appen the initial
+                        # Here, no combining done.  Just append the initial
                         # (and current) values.
                         $list .= "$hex_begin\t\t$decimal_map\n";
                     }
@@ -3411,7 +3382,7 @@ RETRY:
                 }
 
                 # Find the range that the override applies to.
-                my $i = _search_invlist(\@invlist, $cp);
+                my $i = search_invlist(\@invlist, $cp);
                 if ($cp < $invlist[$i] || $cp >= $invlist[$i + 1]) {
                     croak __PACKAGE__, "::prop_invmap: wrong_range, cp=$cp; i=$i, current=$invlist[$i]; next=$invlist[$i + 1]"
                 }
@@ -3518,6 +3489,100 @@ RETRY:
     }
 
     return (\@invlist, \@invmap, $format, $missing);
+}
+
+sub search_invlist {
+
+=pod
+
+=head2 B<search_invlist()>
+
+ use Unicode::UCD qw(prop_invmap prop_invlist);
+ use Unicode::UCD 'search_invlist';
+
+ my @invlist = prop_invlist($property_name);
+ print $code_point, ((search_invlist(\@invlist, $code_point) // -1) % 2)
+                     ? " isn't"
+                     : " is",
+     " in $property_name\n";
+
+ my ($blocks_ranges_ref, $blocks_map_ref) = prop_invmap("Block");
+ my $index = search_invlist($blocks_ranges_ref, $code_point);
+ print "$code_point is in block ", $blocks_map_ref->[$index], "\n";
+
+C<search_invlist> is used to search an inversion list returned by
+C<prop_invlist> or C<prop_invmap> for a particular L</code point argument>.
+C<undef> is returned if the code point is not found in the inversion list
+(this happens only when it is not a legal L<code point argument>, or is less
+than the list's first element).  A warning is raised in the first instance.
+
+Otherwise, it returns the index into the list of the range that contains the
+code point.; that is, find C<i> such that
+
+    list[i]<= code_point < list[i+1].
+
+As explained in L</prop_invlist()>, whether a code point is in the list or not
+depends on if the index is even (in) or odd (not in).  And as explained in
+L</prop_invmap()>, the index is used with the returned parallel array to find
+the mapping.
+
+=cut
+
+
+    my $list_ref = shift;
+    my $input_code_point = shift;
+    my $code_point = _getcode($input_code_point);
+
+    if (! defined $code_point) {
+        carp __PACKAGE__, "::search_invlist: unknown code '$input_code_point'";
+        return;
+    }
+
+    my $max_element = @$list_ref - 1;
+
+    # Return undef if list is empty or requested item is before the first element.
+    return if $max_element < 0;
+    return if $code_point < $list_ref->[0];
+
+    # Short cut something at the far-end of the table.  This also allows us to
+    # refer to element [$i+1] without fear of being out-of-bounds in the loop
+    # below.
+    return $max_element if $code_point >= $list_ref->[$max_element];
+
+    use integer;        # want integer division
+
+    my $i = $max_element / 2;
+
+    my $lower = 0;
+    my $upper = $max_element;
+    while (1) {
+
+        if ($code_point >= $list_ref->[$i]) {
+
+            # Here we have met the lower constraint.  We can quit if we
+            # also meet the upper one.
+            last if $code_point < $list_ref->[$i+1];
+
+            $lower = $i;        # Still too low.
+
+        }
+        else {
+
+            # Here, $code_point < $list_ref[$i], so look lower down.
+            $upper = $i;
+        }
+
+        # Split search domain in half to try again.
+        my $temp = ($upper + $lower) / 2;
+
+        # No point in continuing unless $i changes for next time
+        # in the loop.
+        return $i if $temp == $i;
+        $i = $temp;
+    } # End of while loop
+
+    # Here we have found the offset
+    return $i;
 }
 
 =head2 Unicode::UCD::UnicodeVersion

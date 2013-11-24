@@ -3,16 +3,17 @@ use 5.006;
 use strict;
 use warnings;
 package CPAN::Meta::Spec;
-our $VERSION = '2.120921'; # VERSION
+our $VERSION = '2.131560'; # VERSION
 
 1;
 
 # ABSTRACT: specification for CPAN distribution metadata
 
-
-
 __END__
+
 =pod
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -20,7 +21,7 @@ CPAN::Meta::Spec - specification for CPAN distribution metadata
 
 =head1 VERSION
 
-version 2.120921
+version 2.131560
 
 =head1 SYNOPSIS
 
@@ -658,19 +659,22 @@ PAUSE, CPAN, and search.cpan.org to build indexes saying in which
 distribution various packages can be found.
 
 The keys of C<provides> are package names that can be found within
-the distribution.  The values are Maps with the following valid subkeys:
+the distribution.  If a package name key is provided, it must
+have a Map with the following valid subkeys:
 
 =over
 
 =item file
 
-This field is required.  The value must contain a Unix-style relative
-file path from the root of the distribution to the module containing the
-package.
+This field is required.  It must contain a Unix-style relative file path
+from the root of the distribution directory to a file that contains or
+generates the package.
 
 =item version
 
-This field contains a I<Version> String for the package, if one exists.
+If it exists, this field must contains a I<Version> String for the
+package.  If the package does not have a C<$VERSION>, this field must
+be omitted.
 
 =back
 
@@ -1136,6 +1140,68 @@ Ricardo Signes <rjbs@cpan.org>
 
 =back
 
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item *
+
+Ansgar Burchardt <ansgar@cpan.org>
+
+=item *
+
+Avar Arnfjord Bjarmason <avar@cpan.org>
+
+=item *
+
+Christopher J. Madsen <cjm@cpan.org>
+
+=item *
+
+Cory G Watson <gphat@cpan.org>
+
+=item *
+
+Damyan Ivanov <dam@cpan.org>
+
+=item *
+
+Eric Wilhelm <ewilhelm@cpan.org>
+
+=item *
+
+Gregor Hermann <gregoa@debian.org>
+
+=item *
+
+Ken Williams <kwilliams@cpan.org>
+
+=item *
+
+Kenichi Ishigaki <ishigaki@cpan.org>
+
+=item *
+
+Lars Dieckow <daxim@cpan.org>
+
+=item *
+
+Leon Timmermans <leont@cpan.org>
+
+=item *
+
+Mark Fowler <markf@cpan.org>
+
+=item *
+
+Michael G. Schwern <mschwern@cpan.org>
+
+=item *
+
+Randy Sims <randys@thepierianspring.org>
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2010 by David Golden and Ricardo Signes.
@@ -1144,4 +1210,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

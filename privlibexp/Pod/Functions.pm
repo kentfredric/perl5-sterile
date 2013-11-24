@@ -134,7 +134,7 @@ bind	Socket	binds an address to a socket
 binmode	I/O	prepare binary files for I/O
 bless	Objects	create an object
 break	Flow	break out of a C<given> block
-caller	Flow	Namespace	get context of the current subroutine call
+caller	Namespace	Flow	get context of the current subroutine call
 chdir	File	change your current working directory
 chmod	File	changes the permissions on a list of files
 chomp	String	remove a trailing record separator from a string
@@ -155,7 +155,7 @@ delete	HASH	deletes a value from a hash
 die	Flow	I/O	raise an exception or bail out
 do	Modules	Flow	turn a BLOCK into a TERM
 dump	Flow	create an immediate core dump
-each	ARRAY	HASH	retrieve the next key/value pair from a hash
+each	HASH	ARRAY	retrieve the next key/value pair from a hash
 endgrent	User	be done using group file
 endhostent	User	be done using hosts file
 endnetent	User	be done using networks file
@@ -207,13 +207,13 @@ glob	File	expand filenames using wildcards
 gmtime	Time	convert UNIX time into record or string using Greenwich time
 goto	Flow	create spaghetti code
 grep	LIST	locate elements in a list test true against a given criterion
-hex	String	Math	convert a string to a hexadecimal number
+hex	Math	String	convert a string to a hexadecimal number
 import	Modules	Namespace	patch a module's namespace into your own
 index	String	find a substring within a string
 int	Math	get the integer portion of a number
 ioctl	File	system-dependent device control system call
 join	LIST	join a list into a string using a separator
-keys	ARRAY	HASH	retrieve list of indices from a hash
+keys	HASH	ARRAY	retrieve list of indices from a hash
 kill	Process	send a signal to a process or process group
 last	Flow	exit a block prematurely
 lc	String	return lower-case version of a string
@@ -237,7 +237,7 @@ msgsnd	SysV	send a SysV IPC message to a message queue
 my	Namespace	declare and assign a local variable (lexical scoping)
 next	Flow	iterate a block prematurely
 no	Modules	unimport some module symbols or semantics at compile time
-oct	String	Math	convert a string to an octal number
+oct	Math	String	convert a string to an octal number
 open	File	open a file, pipe, or descriptor
 opendir	File	open a directory
 ord	String	find a character's numeric representation
@@ -271,7 +271,7 @@ rename	File	change a filename
 require	Modules	load in external functions from a library at runtime
 reset	Misc	clear all variables of a given name
 return	Flow	get out of a function early
-reverse	String	LIST	flip a string or a list
+reverse	LIST	String	flip a string or a list
 rewinddir	I/O	reset directory handle
 rindex	String	right-to-left substring search
 rmdir	File	remove a directory
@@ -336,12 +336,12 @@ ucfirst	String	return a string with just the next letter in upper case
 umask	File	set file creation mode mask
 undef	Misc	remove a variable or function definition
 unlink	File	remove one link to a file
-unpack	Binary	LIST	convert binary structure into normal perl variables
+unpack	LIST	Binary	convert binary structure into normal perl variables
 unshift	ARRAY	prepend more elements to the beginning of a list
 untie	Objects	break a tie binding to a variable
 use	Objects	Modules	Namespace	load in a module at compile time and import its namespace
 utime	File	set a file's last access and modify times
-values	ARRAY	HASH	return a list of the values in a hash
+values	HASH	ARRAY	return a list of the values in a hash
 vec	Binary	test or set particular bits in a string
 wait	Process	wait for any child process to die
 waitpid	Process	wait for a particular child process to die

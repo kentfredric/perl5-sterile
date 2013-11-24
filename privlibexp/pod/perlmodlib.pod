@@ -71,6 +71,10 @@ Exceptions from autodying system().
 
 Provide hints about user subroutines to autodie
 
+=item autodie::skip
+
+Skip a package when throwing autodie exceptions
+
 =item autouse
 
 Postpone load of modules until a function is used
@@ -1574,6 +1578,10 @@ DEPRECATED
 
 What modules shipped with versions of perl
 
+=item Module::CoreList::Utils
+
+What utilities shipped with versions of perl
+
 =item Module::Load
 
 Runtime require of both modules and files
@@ -1885,6 +1893,10 @@ Convert POD data to formatted color ASCII text
 =item Pod::Text::Termcap
 
 Convert POD data to ASCII text with format escapes
+
+=item Pod::Usage
+
+Print a usage message from embedded pod documentation
 
 =item SDBM_File
 

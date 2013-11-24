@@ -451,7 +451,7 @@
 #define pv_pretty(a,b,c,d,e,f,g)	Perl_pv_pretty(aTHX_ a,b,c,d,e,f,g)
 #define pv_uni_display(a,b,c,d,e)	Perl_pv_uni_display(aTHX_ a,b,c,d,e)
 #define re_compile(a,b)		Perl_re_compile(aTHX_ a,b)
-#define re_intuit_start(a,b,c,d,e,f)	Perl_re_intuit_start(aTHX_ a,b,c,d,e,f)
+#define re_intuit_start(a,b,c,d,e,f,g)	Perl_re_intuit_start(aTHX_ a,b,c,d,e,f,g)
 #define re_intuit_string(a)	Perl_re_intuit_string(aTHX_ a)
 #define reentrant_free()	Perl_reentrant_free(aTHX)
 #define reentrant_init()	Perl_reentrant_init(aTHX)
@@ -774,11 +774,6 @@
 #define dump_mstats(a)		Perl_dump_mstats(aTHX_ a)
 #define get_mstats(a,b,c)	Perl_get_mstats(aTHX_ a,b,c)
 #endif
-#if defined(MYSWAP)
-#define my_htonl(a)		Perl_my_htonl(aTHX_ a)
-#define my_ntohl(a)		Perl_my_ntohl(aTHX_ a)
-#define my_swap(a)		Perl_my_swap(aTHX_ a)
-#endif
 #if defined(PERL_GLOBAL_STRUCT)
 #define GetVars()		Perl_GetVars(aTHX)
 #define free_global_struct(a)	Perl_free_global_struct(aTHX_ a)
@@ -981,7 +976,7 @@
 #  endif
 #  if defined(PERL_IN_REGEXEC_C)
 #define core_regclass_swash(a,b,c,d)	S_core_regclass_swash(aTHX_ a,b,c,d)
-#define find_byclass(a,b,c,d,e,f)	S_find_byclass(aTHX_ a,b,c,d,e,f)
+#define find_byclass(a,b,c,d,e)	S_find_byclass(aTHX_ a,b,c,d,e)
 #define isFOO_lc(a,b)		S_isFOO_lc(aTHX_ a,b)
 #define isFOO_utf8_lc(a,b)	S_isFOO_utf8_lc(aTHX_ a,b)
 #define reg_check_named_buff_matched(a,b)	S_reg_check_named_buff_matched(aTHX_ a,b)
@@ -1095,6 +1090,7 @@
 #define dump_packsubs_perl(a,b)	Perl_dump_packsubs_perl(aTHX_ a,b)
 #define dump_sub_perl(a,b)	Perl_dump_sub_perl(aTHX_ a,b)
 #define finalize_optree(a)	Perl_finalize_optree(aTHX_ a)
+#define find_lexical_cv(a)	Perl_find_lexical_cv(aTHX_ a)
 #define find_runcv_where(a,b,c)	Perl_find_runcv_where(aTHX_ a,b,c)
 #define find_rundefsv2(a,b)	Perl_find_rundefsv2(aTHX_ a,b)
 #define find_script(a,b,c,d)	Perl_find_script(aTHX_ a,b,c,d)
@@ -1174,7 +1170,6 @@
 #define my_clearenv()		Perl_my_clearenv(aTHX)
 #define my_lstat_flags(a)	Perl_my_lstat_flags(aTHX_ a)
 #define my_stat_flags(a)	Perl_my_stat_flags(aTHX_ a)
-#define my_swabn		Perl_my_swabn
 #define my_unexec()		Perl_my_unexec(aTHX)
 #define newATTRSUB_flags(a,b,c,d,e,f)	Perl_newATTRSUB_flags(aTHX_ a,b,c,d,e,f)
 #define newSTUB(a,b)		Perl_newSTUB(aTHX_ a,b)
@@ -1507,7 +1502,7 @@
 #define make_matcher(a)		S_make_matcher(aTHX_ a)
 #define matcher_matches_sv(a,b)	S_matcher_matches_sv(aTHX_ a,b)
 #define num_overflow		S_num_overflow
-#define path_is_absolute	S_path_is_absolute
+#define path_is_searchable	S_path_is_searchable
 #define run_user_filter(a,b,c)	S_run_user_filter(aTHX_ a,b,c)
 #define rxres_free(a)		S_rxres_free(aTHX_ a)
 #define rxres_restore(a,b)	S_rxres_restore(aTHX_ a,b)
@@ -1602,7 +1597,7 @@
 #define force_next(a)		S_force_next(aTHX_ a)
 #define force_strict_version(a)	S_force_strict_version(aTHX_ a)
 #define force_version(a,b)	S_force_version(aTHX_ a,b)
-#define force_word(a,b,c,d,e)	S_force_word(aTHX_ a,b,c,d,e)
+#define force_word(a,b,c,d)	S_force_word(aTHX_ a,b,c,d)
 #define get_and_check_backslash_N_name(a,b)	S_get_and_check_backslash_N_name(aTHX_ a,b)
 #define incline(a)		S_incline(aTHX_ a)
 #define intuit_method(a,b,c)	S_intuit_method(aTHX_ a,b,c)
@@ -1700,78 +1695,6 @@
 #define xmldump_sub(a)		Perl_xmldump_sub(aTHX_ a)
 #define xmldump_sub_perl(a,b)	Perl_xmldump_sub_perl(aTHX_ a,b)
 #define xmldump_vindent(a,b,c,d)	Perl_xmldump_vindent(aTHX_ a,b,c,d)
-#  endif
-#  if defined(PERL_NEED_MY_BETOH16)
-#define my_betoh16		Perl_my_betoh16
-#  endif
-#  if defined(PERL_NEED_MY_BETOH32)
-#define my_betoh32		Perl_my_betoh32
-#  endif
-#  if defined(PERL_NEED_MY_BETOH64)
-#define my_betoh64		Perl_my_betoh64
-#  endif
-#  if defined(PERL_NEED_MY_BETOHI)
-#define my_betohi		Perl_my_betohi
-#  endif
-#  if defined(PERL_NEED_MY_BETOHL)
-#define my_betohl		Perl_my_betohl
-#  endif
-#  if defined(PERL_NEED_MY_BETOHS)
-#define my_betohs		Perl_my_betohs
-#  endif
-#  if defined(PERL_NEED_MY_HTOBE16)
-#define my_htobe16		Perl_my_htobe16
-#  endif
-#  if defined(PERL_NEED_MY_HTOBE32)
-#define my_htobe32		Perl_my_htobe32
-#  endif
-#  if defined(PERL_NEED_MY_HTOBE64)
-#define my_htobe64		Perl_my_htobe64
-#  endif
-#  if defined(PERL_NEED_MY_HTOBEI)
-#define my_htobei		Perl_my_htobei
-#  endif
-#  if defined(PERL_NEED_MY_HTOBEL)
-#define my_htobel		Perl_my_htobel
-#  endif
-#  if defined(PERL_NEED_MY_HTOBES)
-#define my_htobes		Perl_my_htobes
-#  endif
-#  if defined(PERL_NEED_MY_HTOLE16)
-#define my_htole16		Perl_my_htole16
-#  endif
-#  if defined(PERL_NEED_MY_HTOLE32)
-#define my_htole32		Perl_my_htole32
-#  endif
-#  if defined(PERL_NEED_MY_HTOLE64)
-#define my_htole64		Perl_my_htole64
-#  endif
-#  if defined(PERL_NEED_MY_HTOLEI)
-#define my_htolei		Perl_my_htolei
-#  endif
-#  if defined(PERL_NEED_MY_HTOLEL)
-#define my_htolel		Perl_my_htolel
-#  endif
-#  if defined(PERL_NEED_MY_HTOLES)
-#define my_htoles		Perl_my_htoles
-#  endif
-#  if defined(PERL_NEED_MY_LETOH16)
-#define my_letoh16		Perl_my_letoh16
-#  endif
-#  if defined(PERL_NEED_MY_LETOH32)
-#define my_letoh32		Perl_my_letoh32
-#  endif
-#  if defined(PERL_NEED_MY_LETOH64)
-#define my_letoh64		Perl_my_letoh64
-#  endif
-#  if defined(PERL_NEED_MY_LETOHI)
-#define my_letohi		Perl_my_letohi
-#  endif
-#  if defined(PERL_NEED_MY_LETOHL)
-#define my_letohl		Perl_my_letohl
-#  endif
-#  if defined(PERL_NEED_MY_LETOHS)
-#define my_letohs		Perl_my_letohs
 #  endif
 #  if defined(PERL_USES_PL_PIDSTATUS) && defined(PERL_IN_UTIL_C)
 #define pidgone(a,b)		S_pidgone(aTHX_ a,b)

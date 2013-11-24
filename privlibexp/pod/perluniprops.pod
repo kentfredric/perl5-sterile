@@ -233,20 +233,34 @@ B<Legend summary:>
 
 =over 4
 
-=item Z<>B<*> is a wild-card
+=item *
 
-=item B<(\d+)> in the info column gives the number of code points matched by
+B<*> is a wild-card
+
+=item *
+
+B<(\d+)> in the info column gives the number of code points matched by
 this property.
 
-=item B<D> means this is deprecated.
+=item *
 
-=item B<O> means this is obsolete.
+B<D> means this is deprecated.
 
-=item B<S> means this is stabilized.
+=item *
 
-=item B<T> means tighter (stricter) name matching applies.
+B<O> means this is obsolete.
 
-=item B<X> means use of this form is discouraged, and may not be
+=item *
+
+B<S> means this is stabilized.
+
+=item *
+
+B<T> means tighter (stricter) name matching applies.
+
+=item *
+
+B<X> means use of this form is discouraged, and may not be
 stable.
 
 =back

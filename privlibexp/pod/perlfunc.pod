@@ -482,7 +482,7 @@ Example:
 
 As of Perl 5.10.0, as a form of purely syntactic sugar, you can stack file
 test operators, in a way that C<-f -w -x $file> is equivalent to
-C<-x $file && -w _ && -f _>.  (This is only fancy fancy: if you use
+C<-x $file && -w _ && -f _>.  (This is only fancy syntax: if you use
 the return value of C<-f $file> as an argument to another filetest
 operator, no special magic will happen.)
 
@@ -884,7 +884,8 @@ If VARIABLE is omitted, it chomps C<$_>.  Example:
         # ...
     }
 
-If VARIABLE is a hash, it chomps the hash's values, but not its keys.
+If VARIABLE is a hash, it chomps the hash's values, but not its keys,
+resetting the C<each> iterator in the process.
 
 You can actually chomp anything that's an lvalue, including an assignment:
 
@@ -913,7 +914,8 @@ X<chop>
 Chops off the last character of a string and returns the character
 chopped.  It is much more efficient than C<s/.$//s> because it neither
 scans nor copies the string.  If VARIABLE is omitted, chops C<$_>.
-If VARIABLE is a hash, it chops the hash's values, but not its keys.
+If VARIABLE is a hash, it chops the hash's values, but not its keys,
+resetting the C<each> iterator in the process.
 
 You can actually chop anything that's an lvalue, including an assignment.
 
@@ -1775,7 +1777,8 @@ X<error, handling> X<exception, handling>
 
 =for Pod::Functions catch exceptions or compile and run code
 
-In the first form, the return value of EXPR is parsed and executed as if it
+In the first form, often referred to as a "string eval", the return
+value of EXPR is parsed and executed as if it
 were a little Perl program.  The value of the expression (which is itself
 determined within scalar context) is first parsed, and if there were no
 errors, executed as a block within the lexical context of the current Perl
@@ -1797,6 +1800,12 @@ exhibit the erratic, but historical, behaviour of affecting some outer file
 scope that is still compiling.  See also the L</evalbytes> keyword, which
 always treats its input as a byte stream and works properly with source
 filters, and the L<feature> pragma.
+
+Problems can arise if the string expands a scalar containing a floating
+point number.  That scalar can expand to letters, such as C<"NaN"> or
+C<"Infinity">; or, within the scope of a C<use locale>, the decimal
+point character may be something other than a dot (such as a comma).
+None of these are likely to parse as you are likely expecting.
 
 In the second form, the code within the BLOCK is parsed only once--at the
 same time the code surrounding the C<eval> itself was parsed--and executed
@@ -2174,8 +2183,16 @@ Case Charts available at L<http://www.unicode.org/charts/case/>.
 
 If EXPR is omitted, uses C<$_>.
 
-This function behaves the same way under various pragma, such as in a locale,
-as L</lc> does.
+This function behaves the same way under various pragma, such as within
+S<C<"use feature 'unicode_strings">>, as L</lc> does, with the single
+exception of C<fc> of LATIN CAPITAL LETTER SHARP S (U+1E9E) within the
+scope of S<C<use locale>>.  The foldcase of this character would
+normally be C<"ss">, but as explained in the L</lc> section, case
+changes that cross the 255/256 boundary are problematic under locales,
+and are hence prohibited.  Therefore, this function under locale returns
+instead the string C<"\x{17F}\x{17F}">, which is the LATIN SMALL LETTER
+LONG S.  Since that character itself folds to C<"s">, the string of two
+of them together should be equivalent to a single U+1E9E when foldcased.
 
 While the Unicode Standard defines two additional forms of casefolding,
 one for Turkic languages and one that never maps one character into multiple
@@ -2252,8 +2269,12 @@ filehandle, generally its name.
 You can use this to find out whether two handles refer to the
 same underlying descriptor:
 
-    if (fileno(THIS) == fileno(THAT)) {
+    if (fileno(THIS) != -1 && fileno(THIS) == fileno(THAT)) {
         print "THIS and THAT are dups\n";
+    } elsif (fileno(THIS) != -1 && fileno(THAT) != -1) {
+        print "THIS and THAT have different underlying file descriptors\n";
+    } else {
+        print "At least one of THIS and THAT does not have a real file descriptor\n";
     }
 
 =item flock FILEHANDLE,OPERATION
@@ -2463,8 +2484,7 @@ is left as an exercise to the reader.
 
 The C<POSIX::getattr> function can do this more portably on
 systems purporting POSIX compliance.  See also the C<Term::ReadKey>
-module from your nearest CPAN site; details on CPAN can be found under
-L<perlmodlib/CPAN>.
+module from your nearest L<CPAN|http://www.cpan.org> site.
 
 =item getlogin
 X<getlogin> X<login>
@@ -2899,7 +2919,7 @@ X<goto> X<jump> X<jmp>
 
 =for Pod::Functions create spaghetti code
 
-The C<goto-LABEL> form finds the statement labeled with LABEL and
+The C<goto LABEL> form finds the statement labeled with LABEL and
 resumes execution there.  It can't be used to get out of a block or
 subroutine given to C<sort>.  It can be used to go almost anywhere
 else within the dynamic scope, including out of subroutines, but it's
@@ -2909,25 +2929,30 @@ The author of Perl has never felt the need to use this form of C<goto>
 does not offer named loops combined with loop control.  Perl does, and
 this replaces most structured uses of C<goto> in other languages.)
 
-The C<goto-EXPR> form expects a label name, whose scope will be resolved
+The C<goto EXPR> form expects to evaluate C<EXPR> to a code reference or
+a label name.  If it evaluates to a code reference, it will be handled
+like C<goto &NAME>, below.  This is especially useful for implementing
+tail recursion via C<goto __SUB__>.
+
+If the expression evaluates to a label name, its scope will be resolved
 dynamically.  This allows for computed C<goto>s per FORTRAN, but isn't
 necessarily recommended if you're optimizing for maintainability:
 
     goto ("FOO", "BAR", "GLARCH")[$i];
 
-As shown in this example, C<goto-EXPR> is exempt from the "looks like a
+As shown in this example, C<goto EXPR> is exempt from the "looks like a
 function" rule.  A pair of parentheses following it does not (necessarily)
 delimit its argument.  C<goto("NE")."XT"> is equivalent to C<goto NEXT>.
 Also, unlike most named operators, this has the same precedence as
 assignment.
 
-Use of C<goto-LABEL> or C<goto-EXPR> to jump into a construct is
+Use of C<goto LABEL> or C<goto EXPR> to jump into a construct is
 deprecated and will issue a warning.  Even then, it may not be used to
 go into any construct that requires initialization, such as a
 subroutine or a C<foreach> loop.  It also can't be used to go into a
 construct that is optimized away.
 
-The C<goto-&NAME> form is quite different from the other forms of
+The C<goto &NAME> form is quite different from the other forms of
 C<goto>.  In fact, it isn't a goto in the normal sense at all, and
 doesn't have the stigma associated with other gotos.  Instead, it
 exits the current subroutine (losing any changes set by local()) and
@@ -6759,8 +6784,8 @@ If LENGTH is omitted, removes everything from OFFSET onward.
 If LENGTH is negative, removes the elements from OFFSET onward
 except for -LENGTH elements at the end of the array.
 If both OFFSET and LENGTH are omitted, removes everything.  If OFFSET is
-past the end of the array, Perl issues a warning, and splices at the
-end of the array.
+past the end of the array and a LENGTH was provided, Perl issues a warning,
+and splices at the end of the array.
 
 The following equivalences hold (assuming C<< $#a >= $i >> )
 
@@ -9045,9 +9070,11 @@ explicitly by assigning the name of the format to the C<$~> variable.
 
 Top of form processing is handled automatically:  if there is insufficient
 room on the current page for the formatted record, the page is advanced by
-writing a form feed, a special top-of-page format is used to format the new
+writing a form feed and a special top-of-page
+format is used to format the new
 page header before the record is written.  By default, the top-of-page
-format is the name of the filehandle with "_TOP" appended.  This would be a
+format is the name of the filehandle with "_TOP" appended, or "top"
+in the current package if the former does not exist.  This would be a
 problem with autovivified filehandles, but it may be dynamically set to the
 format of your choice by assigning the name to the C<$^> variable while
 that filehandle is selected.  The number of lines remaining on the current
@@ -9189,7 +9216,7 @@ These flow-control keywords are documented in L<perlsyn/"Compound Statements">.
 =item when
 
 These flow-control keywords related to the experimental switch feature are
-documented in L<perlsyn/"Switch Statements"> .
+documented in L<perlsyn/"Switch Statements">.
 
 =back
 

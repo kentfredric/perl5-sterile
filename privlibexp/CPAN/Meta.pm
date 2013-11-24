@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 package CPAN::Meta;
-our $VERSION = '2.120921'; # VERSION
+our $VERSION = '2.131560'; # VERSION
 
 
 use Carp qw(carp croak);
@@ -336,9 +336,11 @@ sub TO_JSON {
 
 # ABSTRACT: the distribution metadata for a CPAN dist
 
-
+__END__
 
 =pod
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -346,25 +348,39 @@ CPAN::Meta - the distribution metadata for a CPAN dist
 
 =head1 VERSION
 
-version 2.120921
+version 2.131560
 
 =head1 SYNOPSIS
 
-  my $meta = CPAN::Meta->load_file('META.json');
+    use v5.10;
+    use strict;
+    use warnings;
+    use CPAN::Meta;
+    use Module::Load;
 
-  printf "testing requirements for %s version %s\n",
+    my $meta = CPAN::Meta->load_file('META.json');
+
+    printf "testing requirements for %s version %s\n",
     $meta->name,
     $meta->version;
 
-  my $prereqs = $meta->requirements_for('configure');
+    my $prereqs = $meta->effective_prereqs;
 
-  for my $module ($prereqs->required_modules) {
-    my $version = get_local_version($module);
-
-    die "missing required module $module" unless defined $version;
-    die "version for $module not in range"
-      unless $prereqs->accepts_module($module, $version);
-  }
+    for my $phase ( qw/configure runtime build test/ ) {
+        say "Requirements for $phase:";
+        my $reqs = $prereqs->requirements_for($phase, "requires");
+        for my $module ( sort $reqs->required_modules ) {
+            my $status;
+            if ( eval { load $module unless $module eq 'perl'; 1 } ) {
+                my $version = $module eq 'perl' ? $] : $module->VERSION;
+                $status = $reqs->accepts_module($module, $version)
+                        ? "$version ok" : "$version not ok";
+            } else {
+                $status = "missing"
+            };
+            say "  $module ($status)";
+        }
+    }
 
 =head1 DESCRIPTION
 
@@ -701,6 +717,68 @@ Ricardo Signes <rjbs@cpan.org>
 
 =back
 
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item *
+
+Ansgar Burchardt <ansgar@cpan.org>
+
+=item *
+
+Avar Arnfjord Bjarmason <avar@cpan.org>
+
+=item *
+
+Christopher J. Madsen <cjm@cpan.org>
+
+=item *
+
+Cory G Watson <gphat@cpan.org>
+
+=item *
+
+Damyan Ivanov <dam@cpan.org>
+
+=item *
+
+Eric Wilhelm <ewilhelm@cpan.org>
+
+=item *
+
+Gregor Hermann <gregoa@debian.org>
+
+=item *
+
+Ken Williams <kwilliams@cpan.org>
+
+=item *
+
+Kenichi Ishigaki <ishigaki@cpan.org>
+
+=item *
+
+Lars Dieckow <daxim@cpan.org>
+
+=item *
+
+Leon Timmermans <leont@cpan.org>
+
+=item *
+
+Mark Fowler <markf@cpan.org>
+
+=item *
+
+Michael G. Schwern <mschwern@cpan.org>
+
+=item *
+
+Randy Sims <randys@thepierianspring.org>
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2010 by David Golden and Ricardo Signes.
@@ -709,8 +787,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-
-__END__
-
-

@@ -5785,7 +5785,7 @@ suitable for use in the C<PERL_INC_VERSION_LIST> initialization.
 From F<usrinc.U>:
 
 This variable must precede the normal include path to get the
-right one, as in F<$F<incpath/usr/include>> or F<$F<incpath/usr/lib>>.
+right one, as in F<$incpath/usr/include> or F<$incpath/usr/lib>.
 Value can be "" or F</bsd43> on mips.
 
 =item C<inews>
@@ -8628,7 +8628,7 @@ From F<d_sitecustomize.U>:
 
 This variable is set to true when the user requires a mechanism that
 allows the sysadmin to add entries to @C<INC> at runtime.  This variable
-being set, makes perl run F<$F<sitelib/sitecustomize.pl>> at startup.
+being set, makes perl run F<$sitelib/sitecustomize.pl> at startup.
 
 =item C<usesocks>
 

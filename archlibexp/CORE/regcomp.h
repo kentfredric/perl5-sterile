@@ -26,13 +26,6 @@
 #define RE_TRACK_PATTERN_OFFSETS
 #endif
 
-/* Unless the next line is uncommented it is illegal to combine lazy 
-   matching with possessive matching. Frankly it doesn't make much sense 
-   to allow it as X*?+ matches nothing, X+?+ matches a single char only, 
-   and X{min,max}?+ matches min times only.
- */
-/* #define REG_ALLOW_MINMOD_SUSPEND */
-
 /*
  * The "internal use only" fields in regexp.h are present to pass info from
  * compile to execute that permits the execute phase to run lots faster on
@@ -288,7 +281,7 @@ struct regnode_charclass_class {
 
 #define REG_MAGIC 0234
 
-#define SIZE_ONLY (RExC_emit == &PL_regdummy)
+#define SIZE_ONLY (RExC_emit == &RExC_emit_dummy)
 
 /* If the bitmap doesn't fully represent what this ANYOF node can match, the
  * ARG is set to this special value (since 0, 1, ... are legal, but will never
