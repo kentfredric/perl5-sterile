@@ -2755,6 +2755,21 @@ This variable conditionally defines the C<PORTABLE> symbol, which
 indicates to the C program that it should not assume that it is
 running on the machine it was compiled on.
 
+=item C<d_prctl>
+
+From F<d_prctl.U>:
+
+This variable conditionally defines the C<HAS_PRCTL> symbol, which
+indicates to the C program that the prctl() routine is available.
+
+=item C<d_prctl_set_name>
+
+From F<d_prctl.U>:
+
+This variable conditionally defines the C<HAS_PRCTL_SET_NAME> symbol,
+which indicates to the C program that the prctl() routine supports
+the C<PR_SET_NAME> option.
+
 =item C<d_PRId64>
 
 From F<quadfio.U>:

@@ -4347,32 +4347,146 @@ X<CLONE> X<CLONE_SKIP> X<thread> X<threads> X<ithread>
 
 =item Pragmatic Modules
 
-attributes, autouse, blib, bytes, charnames, deprecate, diagnostics,
-feature, filetest, integer, less, locale, mro, open, ops, overload,
-overloading, re, sigtrap, sort, strict, subs, utf8, vars, version, vmsish,
-warnings, warnings::register
+attributes, autodie, autodie::exception, autodie::exception::system,
+autodie::hints, autouse, base, bigint, bignum, bigrat, blib, bytes,
+charnames, constant, deprecate, diagnostics, encoding, encoding::warnings,
+feature, fields, filetest, if, inc::latest, integer, less, lib, locale,
+mro, open, ops, overload, overloading, parent, re, sigtrap, sort, strict,
+subs, threads, threads::shared, utf8, vars, version, vmsish, warnings,
+warnings::register
 
 =item Standard Modules
 
-AnyDBM_File, B, B::Concise, B::Showlex, B::Terse, B::Xref, Benchmark, CORE,
-Carp, Class::Struct, Config, DB, DBM_Filter, DBM_Filter::compress,
-DBM_Filter::encode, DBM_Filter::int32, DBM_Filter::null, DBM_Filter::utf8,
-Devel::DProf, Devel::Peek, Devel::SelfStubber, DirHandle, Dumpvalue,
-DynaLoader, English, Env, Errno, Exporter, Exporter::Heavy,
-ExtUtils::Embed, ExtUtils::XSSymSet, Fcntl, File::Basename,
-File::CheckTree, File::Compare, File::Copy, File::DosGlob, File::Find,
-File::Glob, File::stat, FileCache, FileHandle, FindBin, GDBM_File,
-Getopt::Std, Hash::Util, Hash::Util::FieldHash, I18N::Collate,
-I18N::Langinfo, IPC::Open2, IPC::Open3, NDBM_File, Net::hostent,
-Net::netent, Net::protoent, Net::servent, O, ODBM_File, Opcode, POSIX,
-PerlIO, PerlIO::encoding, PerlIO::scalar, PerlIO::via, Pod::Functions,
-Pod::Html, SDBM_File, Search::Dict, SelectSaver, Socket, Symbol,
-Sys::Hostname, Term::Complete, Term::ReadLine, Text::Abbrev, Thread,
-Tie::Array, Tie::Handle, Tie::Hash, Tie::Hash::NamedCapture, Tie::Memoize,
-Tie::Scalar, Tie::StdHandle, Tie::SubstrHash, Time::Local, Time::gmtime,
-Time::localtime, Time::tm, UNIVERSAL, Unicode::UCD, User::grent,
-User::pwent, VMS::DCLsym, VMS::Stdio, Win32CORE, XS::APItest,
-XS::APItest::KeywordRPN, XS::Typemap, version::Internals
+AnyDBM_File, App::Cpan, App::Prove, App::Prove::State,
+App::Prove::State::Result, App::Prove::State::Result::Test,
+Archive::Extract, Archive::Tar, Archive::Tar::File, Attribute::Handlers,
+AutoLoader, AutoSplit, B, B::Concise, B::Debug, B::Deparse, B::Lint,
+B::Lint::Debug, B::Showlex, B::Terse, B::Xref, Benchmark, CGI, CGI::Apache,
+CGI::Carp, CGI::Cookie, CGI::Fast, CGI::Pretty, CGI::Push, CGI::Switch,
+CGI::Util, CORE, CPAN, CPAN::API::HOWTO, CPAN::Distroprefs,
+CPAN::FirstTime, CPAN::Kwalify, CPAN::Nox, CPAN::Version, CPANPLUS,
+CPANPLUS::Dist::Base, CPANPLUS::Dist::Build,
+CPANPLUS::Dist::Build::Constants, CPANPLUS::Dist::Sample,
+CPANPLUS::Internals::Source::Memory, CPANPLUS::Internals::Source::SQLite,
+CPANPLUS::Shell::Classic, CPANPLUS::Shell::Default::Plugins::HOWTO, Carp,
+Class::ISA, Class::Struct, Compress::Raw::Bzip2, Compress::Raw::Bzip2::FAQ,
+Compress::Raw::Zlib, Compress::Raw::Zlib::FAQ, Compress::Zlib, Config, Cwd,
+DB, DBM_Filter, DBM_Filter::compress, DBM_Filter::encode,
+DBM_Filter::int32, DBM_Filter::null, DBM_Filter::utf8, DB_File,
+Data::Dumper, Devel::DProf, Devel::InnerPackage, Devel::PPPort,
+Devel::Peek, Devel::SelfStubber, Digest, Digest::MD5, Digest::SHA,
+Digest::base, Digest::file, DirHandle, Dumpvalue, DynaLoader, Encode,
+Encode::Alias, Encode::Byte, Encode::CJKConstants, Encode::CN,
+Encode::CN::HZ, Encode::Config, Encode::EBCDIC, Encode::Encoder,
+Encode::Encoding, Encode::GSM0338, Encode::Guess, Encode::JP,
+Encode::JP::H2Z, Encode::JP::JIS7, Encode::KR, Encode::KR::2022_KR,
+Encode::MIME::Header, Encode::MIME::Name, Encode::PerlIO,
+Encode::Supported, Encode::Symbol, Encode::TW, Encode::Unicode,
+Encode::Unicode::UTF7, English, Env, Errno, Exporter, Exporter::Heavy,
+ExtUtils::CBuilder, ExtUtils::CBuilder::Platform::Windows,
+ExtUtils::Command, ExtUtils::Command::MM, ExtUtils::Constant,
+ExtUtils::Constant::Base, ExtUtils::Constant::Utils,
+ExtUtils::Constant::XS, ExtUtils::Embed, ExtUtils::Install,
+ExtUtils::Installed, ExtUtils::Liblist, ExtUtils::MM, ExtUtils::MM_AIX,
+ExtUtils::MM_Any, ExtUtils::MM_BeOS, ExtUtils::MM_Cygwin, ExtUtils::MM_DOS,
+ExtUtils::MM_Darwin, ExtUtils::MM_MacOS, ExtUtils::MM_NW5,
+ExtUtils::MM_OS2, ExtUtils::MM_QNX, ExtUtils::MM_UWIN, ExtUtils::MM_Unix,
+ExtUtils::MM_VMS, ExtUtils::MM_VOS, ExtUtils::MM_Win32, ExtUtils::MM_Win95,
+ExtUtils::MY, ExtUtils::MakeMaker, ExtUtils::MakeMaker::Config,
+ExtUtils::MakeMaker::FAQ, ExtUtils::MakeMaker::Tutorial,
+ExtUtils::Manifest, ExtUtils::Mkbootstrap, ExtUtils::Mksymlists,
+ExtUtils::Packlist, ExtUtils::ParseXS, ExtUtils::XSSymSet,
+ExtUtils::testlib, Fatal, Fcntl, File::Basename, File::CheckTree,
+File::Compare, File::Copy, File::DosGlob, File::Fetch, File::Find,
+File::Glob, File::GlobMapper, File::Path, File::Spec, File::Spec::Cygwin,
+File::Spec::Epoc, File::Spec::Functions, File::Spec::Mac, File::Spec::OS2,
+File::Spec::Unix, File::Spec::VMS, File::Spec::Win32, File::Temp,
+File::stat, FileCache, FileHandle, Filter::Simple, Filter::Util::Call,
+FindBin, GDBM_File, Getopt::Long, Getopt::Std, Hash::Util,
+Hash::Util::FieldHash, I18N::Collate, I18N::LangTags,
+I18N::LangTags::Detect, I18N::LangTags::List, I18N::Langinfo, IO,
+IO::Compress::Base, IO::Compress::Bzip2, IO::Compress::Deflate,
+IO::Compress::FAQ, IO::Compress::Gzip, IO::Compress::RawDeflate,
+IO::Compress::Zip, IO::Dir, IO::File, IO::Handle, IO::Pipe, IO::Poll,
+IO::Seekable, IO::Select, IO::Socket, IO::Socket::INET, IO::Socket::UNIX,
+IO::Uncompress::AnyInflate, IO::Uncompress::AnyUncompress,
+IO::Uncompress::Base, IO::Uncompress::Bunzip2, IO::Uncompress::Gunzip,
+IO::Uncompress::Inflate, IO::Uncompress::RawInflate, IO::Uncompress::Unzip,
+IO::Zlib, IPC::Cmd, IPC::Msg, IPC::Open2, IPC::Open3, IPC::Semaphore,
+IPC::SharedMem, IPC::SysV, List::Util, List::Util::XS, Locale::Constants,
+Locale::Country, Locale::Currency, Locale::Language, Locale::Maketext,
+Locale::Maketext::Simple, Locale::Maketext::TPJ13, Locale::Script,
+Log::Message, Log::Message::Config, Log::Message::Handlers,
+Log::Message::Item, Log::Message::Simple, MIME::Base64, MIME::QuotedPrint,
+Math::BigFloat, Math::BigInt, Math::BigInt::Calc, Math::BigInt::CalcEmu,
+Math::BigInt::FastCalc, Math::BigRat, Math::Complex, Math::Trig, Memoize,
+Memoize::AnyDBM_File, Memoize::Expire, Memoize::ExpireFile,
+Memoize::ExpireTest, Memoize::NDBM_File, Memoize::SDBM_File,
+Memoize::Storable, Module::Build, Module::Build::API,
+Module::Build::Authoring, Module::Build::Base, Module::Build::Bundling,
+Module::Build::Compat, Module::Build::ConfigData, Module::Build::Cookbook,
+Module::Build::ModuleInfo, Module::Build::Notes, Module::Build::PPMMaker,
+Module::Build::Platform::Amiga, Module::Build::Platform::Default,
+Module::Build::Platform::EBCDIC, Module::Build::Platform::MPEiX,
+Module::Build::Platform::MacOS, Module::Build::Platform::RiscOS,
+Module::Build::Platform::Unix, Module::Build::Platform::VMS,
+Module::Build::Platform::VOS, Module::Build::Platform::Windows,
+Module::Build::Platform::aix, Module::Build::Platform::cygwin,
+Module::Build::Platform::darwin, Module::Build::Platform::os2,
+Module::CoreList, Module::Load, Module::Load::Conditional, Module::Loaded,
+Module::Pluggable, Module::Pluggable::Object, NDBM_File, NEXT, Net::Cmd,
+Net::Config, Net::Domain, Net::FTP, Net::NNTP, Net::Netrc, Net::POP3,
+Net::Ping, Net::SMTP, Net::Time, Net::hostent, Net::libnetFAQ, Net::netent,
+Net::protoent, Net::servent, O, ODBM_File, Object::Accessor, Opcode, POSIX,
+Package::Constants, Params::Check, Parse::CPAN::Meta, PerlIO,
+PerlIO::encoding, PerlIO::scalar, PerlIO::via, PerlIO::via::QuotedPrint,
+Pod::Checker, Pod::Escapes, Pod::Find, Pod::Functions, Pod::Html,
+Pod::InputObjects, Pod::LaTeX, Pod::Man, Pod::ParseLink, Pod::ParseUtils,
+Pod::Parser, Pod::Perldoc, Pod::Perldoc::BaseTo, Pod::Perldoc::GetOptsOO,
+Pod::Perldoc::ToChecker, Pod::Perldoc::ToMan, Pod::Perldoc::ToNroff,
+Pod::Perldoc::ToPod, Pod::Perldoc::ToRtf, Pod::Perldoc::ToText,
+Pod::Perldoc::ToTk, Pod::Perldoc::ToXml, Pod::PlainText, Pod::Plainer,
+Pod::Select, Pod::Simple, Pod::Simple::Checker, Pod::Simple::Debug,
+Pod::Simple::DumpAsText, Pod::Simple::DumpAsXML, Pod::Simple::HTML,
+Pod::Simple::HTMLBatch, Pod::Simple::LinkSection, Pod::Simple::Methody,
+Pod::Simple::PullParser, Pod::Simple::PullParserEndToken,
+Pod::Simple::PullParserStartToken, Pod::Simple::PullParserTextToken,
+Pod::Simple::PullParserToken, Pod::Simple::RTF, Pod::Simple::Search,
+Pod::Simple::SimpleTree, Pod::Simple::Subclassing, Pod::Simple::Text,
+Pod::Simple::TextContent, Pod::Simple::XHTML, Pod::Simple::XMLOutStream,
+Pod::Text, Pod::Text::Color, Pod::Text::Termcap, Pod::Usage, SDBM_File,
+Safe, Scalar::Util, Search::Dict, SelectSaver, SelfLoader, Shell, Socket,
+Storable, Switch, Symbol, Sys::Hostname, Sys::Syslog, Sys::Syslog::Win32,
+TAP::Base, TAP::Formatter::Color, TAP::Formatter::Console,
+TAP::Formatter::Console, TAP::Formatter::Console::ParallelSession,
+TAP::Formatter::Console::Session, TAP::Formatter::File,
+TAP::Formatter::File::Session, TAP::Formatter::Session, TAP::Harness,
+TAP::Object, TAP::Parser, TAP::Parser::Aggregator, TAP::Parser::Grammar,
+TAP::Parser::Iterator, TAP::Parser::Iterator::Array,
+TAP::Parser::Iterator::Process, TAP::Parser::Iterator::Stream,
+TAP::Parser::IteratorFactory, TAP::Parser::Multiplexer,
+TAP::Parser::Result, TAP::Parser::Result::Bailout,
+TAP::Parser::Result::Comment, TAP::Parser::Result::Plan,
+TAP::Parser::Result::Pragma, TAP::Parser::Result::Test,
+TAP::Parser::Result::Unknown, TAP::Parser::Result::Version,
+TAP::Parser::Result::YAML, TAP::Parser::ResultFactory,
+TAP::Parser::Scheduler, TAP::Parser::Scheduler::Job,
+TAP::Parser::Scheduler::Spinner, TAP::Parser::Source,
+TAP::Parser::Source::Perl, TAP::Parser::Utils,
+TAP::Parser::YAMLish::Reader, TAP::Parser::YAMLish::Writer,
+Term::ANSIColor, Term::Cap, Term::Complete, Term::ReadLine, Term::UI, Test,
+Test::Builder, Test::Builder::Module, Test::Builder::Tester,
+Test::Builder::Tester::Color, Test::Harness, Test::More, Test::Simple,
+Test::Tutorial, Text::Abbrev, Text::Balanced, Text::ParseWords,
+Text::Soundex, Text::Tabs, Text::Wrap, Thread, Thread::Queue,
+Thread::Semaphore, Tie::Array, Tie::File, Tie::Handle, Tie::Hash,
+Tie::Hash::NamedCapture, Tie::Memoize, Tie::RefHash, Tie::Scalar,
+Tie::StdHandle, Tie::SubstrHash, Time::HiRes, Time::Local, Time::Piece,
+Time::Seconds, Time::gmtime, Time::localtime, Time::tm, UNIVERSAL,
+Unicode::Collate, Unicode::Normalize, Unicode::UCD, User::grent,
+User::pwent, VMS::DCLsym, VMS::Stdio, Win32API::File, Win32CORE,
+XS::APItest, XS::APItest::KeywordRPN, XS::Typemap, XSLoader,
+version::Internals
 
 =item Extension Modules
 
@@ -6846,16 +6960,19 @@ the perl core
 
 =item DESCRIPTION
 
+=item MAINTENANCE BRANCHES
+
+=over 4
+
+=item Getting changes into a maint branch
+
+=back
+
 =item CONTRIBUTED MODULES
 
 =over 4
 
 =item A Social Contract about Artistic Control
-
-The version of the module in the core should still be considered the	
-work of the original author.  All patches, bug reports, and so forth	
-should be fed back to them.  Their development directions should be    
-respected whenever possible
 
 =back
 
@@ -7150,8 +7267,6 @@ C<cc> (in F<cc.U>), C<ld> (in F<dlsrc.U>)
 
 =item regexp optimiser optional
 
-=item delete &function
-
 =item C</w> regex modifier
 
 =item optional optimizer
@@ -7269,6 +7384,51 @@ B<-V>
 =back
 
 =item THE KEEPERS OF THE RECORDS
+
+=back
+
+=head2 perl5130delta, perldelta - what is new for perl v5.13.0
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=over 4
+
+=item "safe signals" optimization
+
+=item Assignment to C<$0> sets the legacy process name with C<prctl()> on
+Linux
+
+=back
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules
+
+CGI, Data::Dumper, MIME::Base64, threads, threads-shared
+
+=back
+
+=item Installation and Configuration Improvements
+
+=over 4
+
+=item Platform Specific Changes
+
+AIX
+
+=back
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
 
 =back
 
@@ -7490,7 +7650,7 @@ OpenVMS, Stratus VOS, Symbian, Windows
 
 =back
 
-=head2 perldelta, perl5120delta - what is new for perl v5.12.0
+=head2 perldelta - what is new for perl v5.13.0
 
 =over 4
 
@@ -7500,205 +7660,32 @@ OpenVMS, Stratus VOS, Symbian, Windows
 
 =over 4
 
-=item New C<package NAME VERSION> syntax
+=item "safe signals" optimization
 
-=item The C<...> operator
-
-=item Implicit strictures
-
-=item Unicode improvements
-
-=item Y2038 compliance
-
-=item qr overloading
-
-=item Pluggable keywords
-
-=item APIs for more internals
-
-=item Overridable function lookup
-
-=item A proper interface for pluggable Method Resolution Orders
-
-=item C<\N> experimental regex escape
-
-=item DTrace support
-
-=item Support for C<configure_requires> in CPAN module metadata
-
-=item C<each> is now more flexible
-
-=item C<when> as a statement modifier
-
-=item C<$,> flexibility
-
-=item // in when clauses
-
-=item Enabling warnings from your shell environment
-
-=item C<delete local>
-
-=item New support for Abstract namespace sockets
-
-=item 32-bit limit on substr arguments removed
+=item Assignment to C<$0> sets the legacy process name with C<prctl()> on
+Linux
 
 =back
-
-=item Potentially Incompatible Changes
-
-=over 4
-
-=item Deprecations warn by default
-
-=item Version number formats
-
-=item @INC reorganization
-
-=item REGEXPs are now first class
-
-=item Switch statement changes
-
-flip-flop operators, defined-or operator
-
-=item Smart match changes
-
-=item Other potentially incompatible changes
-
-=back
-
-=item Deprecations
-
-suidperl, Use of C<:=> to mean an empty attribute list, C<<
-UNIVERSAL->import() >>, Use of "goto" to jump into a construct, Custom
-character names in \N{name} that don't look like names, Deprecated Modules,
-L<Class::ISA>, L<Pod::Plainer>, L<Shell>, L<Switch>, Assignment to $[, Use
-of the attribute :locked on subroutines, Use of "locked" with the
-attributes pragma, Use of "unique" with the attributes pragma, Perl_pmflag,
-Numerous Perl 4-era libraries
-
-=item Unicode overhaul
 
 =item Modules and Pragmata
 
 =over 4
 
-=item New Modules and Pragmata
-
-C<autodie>, C<Compress::Raw::Bzip2>, C<overloading>, C<parent>,
-C<Parse::CPAN::Meta>, C<VMS::DCLsym>, C<VMS::Stdio>,
-C<XS::APItest::KeywordRPN>
-
-=item Updated Pragmata
-
-C<base>, C<bignum>, C<charnames>, C<constant>, C<diagnostics>, C<feature>,
-C<less>, C<lib>, C<mro>, C<overload>, C<threads>, C<threads::shared>,
-C<version>, C<warnings>
-
 =item Updated Modules
 
-C<Archive::Extract>, C<Archive::Tar>, C<Attribute::Handlers>,
-C<AutoLoader>, C<B::Concise>, C<B::Debug>, C<B::Deparse>, C<B::Lint>,
-C<CGI>, C<Class::ISA>, C<Compress::Raw::Zlib>, C<CPAN>, C<CPANPLUS>,
-C<CPANPLUS::Dist::Build>, C<Data::Dumper>, C<DB_File>, C<Devel::PPPort>,
-C<Digest>, C<Digest::MD5>, C<Digest::SHA>, C<Encode>, C<Exporter>,
-C<ExtUtils::CBuilder>, C<ExtUtils::Command>, C<ExtUtils::Constant>,
-C<ExtUtils::Install>, C<ExtUtils::MakeMaker>, C<ExtUtils::Manifest>,
-C<ExtUtils::ParseXS>, C<File::Fetch>, C<File::Path>, C<File::Temp>,
-C<Filter::Simple>, C<Filter::Util::Call>, C<Getopt::Long>, C<IO>,
-C<IO::Zlib>, C<IPC::Cmd>, C<IPC::SysV>, C<Locale::Maketext>,
-C<Locale::Maketext::Simple>, C<Log::Message>, C<Log::Message::Simple>,
-C<Math::BigInt>, C<Math::BigInt::FastCalc>, C<Math::BigRat>,
-C<Math::Complex>, C<Memoize>, C<MIME::Base64>, C<Module::Build>,
-C<Module::CoreList>, C<Module::Load>, C<Module::Load::Conditional>,
-C<Module::Loaded>, C<Module::Pluggable>, C<Net::Ping>, C<NEXT>,
-C<Object::Accessor>, C<Package::Constants>, C<PerlIO>, C<Pod::Parser>,
-C<Pod::Perldoc>, C<Pod::Plainer>, C<Pod::Simple>, C<Safe>, C<SelfLoader>,
-C<Storable>, C<Switch>, C<Sys::Syslog>, C<Term::ANSIColor>, C<Term::UI>,
-C<Test>, C<Test::Harness>, C<Test::Simple>, C<Text::Balanced>,
-C<Text::ParseWords>, C<Text::Soundex>, C<Thread::Queue>,
-C<Thread::Semaphore>, C<Tie::RefHash>, C<Time::HiRes>, C<Time::Local>,
-C<Time::Piece>, C<Unicode::Collate>, C<Unicode::Normalize>, C<Win32>,
-C<Win32API::File>, C<XSLoader>
-
-=item Removed Modules and Pragmata
-
-C<attrs>, C<CPAN::API::HOWTO>, C<CPAN::DeferedCode>, C<CPANPLUS::inc>,
-C<DCLsym>, C<ExtUtils::MakeMaker::bytes>, C<ExtUtils::MakeMaker::vmsish>,
-C<Stdio>, C<Test::Harness::Assert>, C<Test::Harness::Iterator>,
-C<Test::Harness::Point>, C<Test::Harness::Results>,
-C<Test::Harness::Straps>, C<Test::Harness::Util>, C<XSSymSet>
-
-=item Deprecated Modules and Pragmata
+CGI, Data::Dumper, MIME::Base64, threads, threads-shared
 
 =back
-
-=item Documentation
-
-=over 4
-
-=item New Documentation
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Selected Performance Enhancements
 
 =item Installation and Configuration Improvements
 
-=item Internal Changes
-
-=item Testing
-
 =over 4
-
-=item Testing improvements
-
-Parallel tests, Test harness flexibility, Test watchdog
-
-=item New Tests
-
-=back
-
-=item New or Changed Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=item Changed Diagnostics
-
-C<Illegal character in prototype for %s : %s>, C<Prototype after '%c' for
-%s : %s>
-
-=back
-
-=item Utility Changes
-
-=item Selected Bug Fixes
 
 =item Platform Specific Changes
 
-=over 4
-
-=item New Platforms
-
-Haiku, MirOS BSD
-
-=item Discontinued Platforms
-
-Domain/OS, MiNT, Tenon MachTen
-
-=item Updated Platforms
-
-AIX, Cygwin, Darwin (Mac OS X), DragonFly BSD, FreeBSD, Irix, NetBSD,
-OpenVMS, Stratus VOS, Symbian, Windows
+AIX
 
 =back
-
-=item Known Problems
-
-=item Errata
 
 =item Acknowledgements
 
@@ -14691,10 +14678,10 @@ signal name: ..
 
 =item BUGS AND LIMITATIONS
 
-Thread-safe modules, Using non-thread-safe modules, Current working
-directory, Environment variables, Parent-child threads, Creating threads
-inside special blocks, Unsafe signals, Perl has been built with
-C<PERL_OLD_SIGNALS> (see C<perl -V>), The environment variable
+Thread-safe modules, Using non-thread-safe modules, Memory consumption,
+Current working directory, Environment variables, Parent-child threads,
+Creating threads inside special blocks, Unsafe signals, Perl has been built
+with C<PERL_OLD_SIGNALS> (see C<perl -V>), The environment variable
 C<PERL_SIGNALS> is set to C<unsafe> (see L<perlrun/"PERL_SIGNALS">), The
 module L<Perl::Unsafe::Signals> is used, Returning closures from threads,
 Returning objects from threads, END blocks in threads, Perl Bugs and the
@@ -19390,31 +19377,31 @@ C<d_ndbm>, C<d_ndbm_h_uses_prototypes>, C<d_nice>, C<d_nl_langinfo>,
 C<d_nv_preserves_uv>, C<d_nv_zero_is_allbits_zero>, C<d_off64_t>,
 C<d_old_pthread_create_joinable>, C<d_oldpthreads>, C<d_oldsock>,
 C<d_open3>, C<d_pathconf>, C<d_pause>, C<d_perl_otherlibdirs>,
-C<d_phostname>, C<d_pipe>, C<d_poll>, C<d_portable>, C<d_PRId64>,
-C<d_PRIeldbl>, C<d_PRIEUldbl>, C<d_PRIfldbl>, C<d_PRIFUldbl>,
-C<d_PRIgldbl>, C<d_PRIGUldbl>, C<d_PRIi64>, C<d_printf_format_null>,
-C<d_PRIo64>, C<d_PRIu64>, C<d_PRIx64>, C<d_PRIXU64>, C<d_procselfexe>,
-C<d_pseudofork>, C<d_pthread_atfork>, C<d_pthread_attr_setscope>,
-C<d_pthread_yield>, C<d_pwage>, C<d_pwchange>, C<d_pwclass>,
-C<d_pwcomment>, C<d_pwexpire>, C<d_pwgecos>, C<d_pwpasswd>, C<d_pwquota>,
-C<d_qgcvt>, C<d_quad>, C<d_random_r>, C<d_readdir>, C<d_readdir64_r>,
-C<d_readdir_r>, C<d_readlink>, C<d_readv>, C<d_recvmsg>, C<d_rename>,
-C<d_rewinddir>, C<d_rmdir>, C<d_safebcpy>, C<d_safemcpy>, C<d_sanemcmp>,
-C<d_sbrkproto>, C<d_scalbnl>, C<d_sched_yield>, C<d_scm_rights>,
-C<d_SCNfldbl>, C<d_seekdir>, C<d_select>, C<d_sem>, C<d_semctl>,
-C<d_semctl_semid_ds>, C<d_semctl_semun>, C<d_semget>, C<d_semop>,
-C<d_sendmsg>, C<d_setegid>, C<d_seteuid>, C<d_setgrent>, C<d_setgrent_r>,
-C<d_setgrps>, C<d_sethent>, C<d_sethostent_r>, C<d_setitimer>,
-C<d_setlinebuf>, C<d_setlocale>, C<d_setlocale_r>, C<d_setnent>,
-C<d_setnetent_r>, C<d_setpent>, C<d_setpgid>, C<d_setpgrp>, C<d_setpgrp2>,
-C<d_setprior>, C<d_setproctitle>, C<d_setprotoent_r>, C<d_setpwent>,
-C<d_setpwent_r>, C<d_setregid>, C<d_setresgid>, C<d_setresuid>,
-C<d_setreuid>, C<d_setrgid>, C<d_setruid>, C<d_setsent>, C<d_setservent_r>,
-C<d_setsid>, C<d_setvbuf>, C<d_sfio>, C<d_shm>, C<d_shmat>,
-C<d_shmatprototype>, C<d_shmctl>, C<d_shmdt>, C<d_shmget>, C<d_sigaction>,
-C<d_signbit>, C<d_sigprocmask>, C<d_sigsetjmp>, C<d_sitearch>,
-C<d_snprintf>, C<d_sockatmark>, C<d_sockatmarkproto>, C<d_socket>,
-C<d_socklen_t>, C<d_sockpair>, C<d_socks5_init>,
+C<d_phostname>, C<d_pipe>, C<d_poll>, C<d_portable>, C<d_prctl>,
+C<d_prctl_set_name>, C<d_PRId64>, C<d_PRIeldbl>, C<d_PRIEUldbl>,
+C<d_PRIfldbl>, C<d_PRIFUldbl>, C<d_PRIgldbl>, C<d_PRIGUldbl>, C<d_PRIi64>,
+C<d_printf_format_null>, C<d_PRIo64>, C<d_PRIu64>, C<d_PRIx64>,
+C<d_PRIXU64>, C<d_procselfexe>, C<d_pseudofork>, C<d_pthread_atfork>,
+C<d_pthread_attr_setscope>, C<d_pthread_yield>, C<d_pwage>, C<d_pwchange>,
+C<d_pwclass>, C<d_pwcomment>, C<d_pwexpire>, C<d_pwgecos>, C<d_pwpasswd>,
+C<d_pwquota>, C<d_qgcvt>, C<d_quad>, C<d_random_r>, C<d_readdir>,
+C<d_readdir64_r>, C<d_readdir_r>, C<d_readlink>, C<d_readv>, C<d_recvmsg>,
+C<d_rename>, C<d_rewinddir>, C<d_rmdir>, C<d_safebcpy>, C<d_safemcpy>,
+C<d_sanemcmp>, C<d_sbrkproto>, C<d_scalbnl>, C<d_sched_yield>,
+C<d_scm_rights>, C<d_SCNfldbl>, C<d_seekdir>, C<d_select>, C<d_sem>,
+C<d_semctl>, C<d_semctl_semid_ds>, C<d_semctl_semun>, C<d_semget>,
+C<d_semop>, C<d_sendmsg>, C<d_setegid>, C<d_seteuid>, C<d_setgrent>,
+C<d_setgrent_r>, C<d_setgrps>, C<d_sethent>, C<d_sethostent_r>,
+C<d_setitimer>, C<d_setlinebuf>, C<d_setlocale>, C<d_setlocale_r>,
+C<d_setnent>, C<d_setnetent_r>, C<d_setpent>, C<d_setpgid>, C<d_setpgrp>,
+C<d_setpgrp2>, C<d_setprior>, C<d_setproctitle>, C<d_setprotoent_r>,
+C<d_setpwent>, C<d_setpwent_r>, C<d_setregid>, C<d_setresgid>,
+C<d_setresuid>, C<d_setreuid>, C<d_setrgid>, C<d_setruid>, C<d_setsent>,
+C<d_setservent_r>, C<d_setsid>, C<d_setvbuf>, C<d_sfio>, C<d_shm>,
+C<d_shmat>, C<d_shmatprototype>, C<d_shmctl>, C<d_shmdt>, C<d_shmget>,
+C<d_sigaction>, C<d_signbit>, C<d_sigprocmask>, C<d_sigsetjmp>,
+C<d_sitearch>, C<d_snprintf>, C<d_sockatmark>, C<d_sockatmarkproto>,
+C<d_socket>, C<d_socklen_t>, C<d_sockpair>, C<d_socks5_init>,
 C<d_sprintf_returns_strlen>, C<d_sqrtl>, C<d_srand48_r>, C<d_srandom_r>,
 C<d_sresgproto>, C<d_sresuproto>, C<d_statblks>, C<d_statfs_f_flags>,
 C<d_statfs_s>, C<d_statvfs>, C<d_stdio_cnt_lval>, C<d_stdio_ptr_lval>,

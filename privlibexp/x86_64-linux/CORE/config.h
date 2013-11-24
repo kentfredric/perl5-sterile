@@ -13,7 +13,7 @@
 /*
  * Package name      : perl5
  * Source directory  : .
- * Configuration time: Sun Nov 24 21:24:35 NZDT 2013
+ * Configuration time: Sun Nov 24 21:31:55 NZDT 2013
  * Configured by     : kent
  * Target system     : linux katipo2 3.12.0-gentoo #54 smp wed nov 6 04:43:49 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
  */
@@ -950,8 +950,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0/x86_64-linux"		/**/
-#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0/x86_64-linux"		/**/
+#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0/x86_64-linux"		/**/
+#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0/x86_64-linux"		/**/
 
 /* ARCHNAME:
  *	This symbol holds a string representing the architecture name.
@@ -973,8 +973,8 @@
  *	This symbol, if defined, indicates that we'd like to relocate entries
  *	in @INC at run time based on the location of the perl binary.
  */
-#define BIN "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/bin"	/**/
-#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/bin"	/**/
+#define BIN "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin"	/**/
+#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin"	/**/
 #define PERL_RELOCATABLE_INC "undef" 		/**/
 
 /* CAT2:
@@ -1151,6 +1151,26 @@
  */
 /*#define HAS_CTIME_R	   / **/
 #define CTIME_R_PROTO 0	   /**/
+
+/* SETUID_SCRIPTS_ARE_SECURE_NOW:
+ *	This symbol, if defined, indicates that the bug that prevents
+ *	setuid scripts from being secure is not present in this kernel.
+ */
+/* DOSUID:
+ *	This symbol, if defined, indicates that the C program should
+ *	check the script that it is executing for setuid/setgid bits, and
+ *	attempt to emulate setuid/setgid on systems that have disabled
+ *	setuid #! scripts because the kernel can't do it securely.
+ *	It is up to the package designer to make sure that this emulation
+ *	is done securely.  Among other things, it should do an fstat on
+ *	the script it just opened to make sure it really is a setuid/setgid
+ *	script, it should make sure the arguments passed correspond exactly
+ *	to the argument on the #! line, and it should not trust any
+ *	subprocesses to which it must pass the filename rather than the
+ *	file descriptor of the script to be executed.
+ */
+/*#define SETUID_SCRIPTS_ARE_SECURE_NOW	/ **/
+/*#define DOSUID		/ **/
 
 /* HAS_DRAND48_R:
  *	This symbol, if defined, indicates that the drand48_r routine
@@ -2617,8 +2637,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0"		/**/
-#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0"		/**/
+#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0"		/**/
+#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0"		/**/
 
 /* CAN_PROTOTYPE:
  *	If defined, this macro indicates that the C compiler can handle
@@ -2710,8 +2730,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0/x86_64-linux"		/**/
-#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0/x86_64-linux"		/**/
+#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0/x86_64-linux"		/**/
+#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0/x86_64-linux"		/**/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -2733,9 +2753,9 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0"		/**/
-#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0"		/**/
-#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl"		/**/
+#define SITELIB "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0"		/**/
+#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0"		/**/
+#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl"		/**/
 
 /* Size_t_size:
  *	This symbol holds the size of a Size_t in bytes.
@@ -3276,32 +3296,12 @@
  */
 /*#define	EBCDIC 		/ **/
 
-/* SETUID_SCRIPTS_ARE_SECURE_NOW:
- *	This symbol, if defined, indicates that the bug that prevents
- *	setuid scripts from being secure is not present in this kernel.
- */
-/* DOSUID:
- *	This symbol, if defined, indicates that the C program should
- *	check the script that it is executing for setuid/setgid bits, and
- *	attempt to emulate setuid/setgid on systems that have disabled
- *	setuid #! scripts because the kernel can't do it securely.
- *	It is up to the package designer to make sure that this emulation
- *	is done securely.  Among other things, it should do an fstat on
- *	the script it just opened to make sure it really is a setuid/setgid
- *	script, it should make sure the arguments passed correspond exactly
- *	to the argument on the #! line, and it should not trust any
- *	subprocesses to which it must pass the filename rather than the
- *	file descriptor of the script to be executed.
- */
-/*#define SETUID_SCRIPTS_ARE_SECURE_NOW	/ **/
-/*#define DOSUID		/ **/
-
 /* PERL_USE_DEVEL:
  *	This symbol, if defined, indicates that Perl was configured with
  *	-Dusedevel, to enable development features.  This should not be
  *	done for production builds.
  */
-/*#define	PERL_USE_DEVEL		/ **/
+#define	PERL_USE_DEVEL		/**/
 
 /* HAS_ATOLF:
  *	This symbol, if defined, indicates that the atolf routine is
@@ -3773,6 +3773,17 @@
  *	This symbol will be defined if the C compiler supports off64_t.
  */
 /*#define	HAS_OFF64_T    		/ **/
+
+/* HAS_PRCTL:
+ *	This symbol, if defined, indicates that the prctl routine is
+ *	available to set process title.
+ */
+/* HAS_PRCTL_SET_NAME:
+ *	This symbol, if defined, indicates that the prctl routine is
+ *	available to set process title and supports PR_SET_NAME.
+ */
+#define HAS_PRCTL		/**/
+#define HAS_PRCTL_SET_NAME		/**/
 
 /* HAS_PROCSELFEXE:
  *	This symbol is defined if PROCSELFEXE_PATH is a symlink
@@ -4519,7 +4530,7 @@
  *	script to make sure (one hopes) that it runs with perl and not
  *	some shell.
  */
-#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.12.0-pristine/bin/perl"		/**/
+#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin/perl5.13.0"		/**/
 
 /* HAS_STDIO_STREAM_ARRAY:
  *	This symbol, if defined, tells that there is an array

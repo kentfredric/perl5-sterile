@@ -14,7 +14,7 @@
  * exactly on the third column */
 
 #define PERL_REVISION	5		/* age */
-#define PERL_VERSION	12		/* epoch */
+#define PERL_VERSION	13		/* epoch */
 #define PERL_SUBVERSION	0		/* generation */
 
 /* The following numbers describe the earliest compatible version of
@@ -31,7 +31,7 @@
    to include in @INC.  See INSTALL for how this works.
 */
 #define PERL_API_REVISION	5	/* Adjust manually as needed.  */
-#define PERL_API_VERSION	12	/* Adjust manually as needed.  */
+#define PERL_API_VERSION	13	/* Adjust manually as needed.  */
 #define PERL_API_SUBVERSION	0	/* Adjust manually as needed.  */
 /*
    XXX Note:  The selection of non-default Configure options, such
@@ -92,6 +92,8 @@ my $seen=0;
 while (<PLIN>) {
     if (/\t,NULL/ and $seen) {
        while (my $c = shift @ARGV){
+	    $c =~ s|\\|\\\\|g;
+	    $c =~ s|"|\\"|g;
             print PLOUT qq{\t,"$c"\n};
        }
     }
