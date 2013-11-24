@@ -13,7 +13,7 @@ $Params::Check::VERBOSE = 1;
 
 =head1 NAME
 
-CPANPLUS::Selfupdate
+CPANPLUS::Selfupdate - self-updating for CPANPLUS
 
 =head1 SYNOPSIS
 
@@ -49,7 +49,7 @@ CPANPLUS::Selfupdate
             'Module::Load'              => '0.10',
             'Module::Load::Conditional' => '0.38', # returns dir for loaded
                                                    # modules
-            'version'                   => '0.73', # needed for M::L::C
+            'version'                   => '0.77', # needed for M::L::C
                                                    # addresses #24630 and
                                                    # #24675
                                                    # Address ~0 overflow issue
@@ -69,7 +69,7 @@ CPANPLUS::Selfupdate
             'Parse::CPAN::Meta'         => '1.4200', # config_requires support
             'ExtUtils::Install'         => '1.42', # uninstall outside @INC
             ( check_install( module => 'CPANPLUS::Dist::Build' )
-              ? ( 'CPANPLUS::Dist::Build' => '0.24' ) : () ),
+              ? ( 'CPANPLUS::Dist::Build' => '0.60' ) : () ),
         },
 
         features => {
@@ -82,7 +82,7 @@ CPANPLUS::Selfupdate
                     my $cb = shift;
                     $cb->configure_object->get_conf('prefer_makefile')
                         ? { }
-                        : { 'CPANPLUS::Dist::Build' => '0.24'  };
+                        : { 'CPANPLUS::Dist::Build' => '0.60'  };
                 },
                 sub { return 1 },   # always enabled
             ],

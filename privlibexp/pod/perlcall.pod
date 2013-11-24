@@ -203,7 +203,6 @@ As with G_SCALAR, this flag has 2 effects:
 It indicates to the subroutine being called that it is executing in a
 list context (if it executes I<wantarray> the result will be true).
 
-
 =item 2.
 
 It ensures that all items returned from the subroutine will be
@@ -1901,7 +1900,7 @@ The pattern of macro calls is like this:
 
     dMULTICALL;			/* Declare local variables */
     I32 gimme = G_SCALAR;	/* context of the call: G_SCALAR,
-				 * G_LIST, or G_VOID */
+				 * G_ARRAY, or G_VOID */
 
     PUSH_MULTICALL(cv);		/* Set up the context for calling cv,
 				   and set local vars appropriately */

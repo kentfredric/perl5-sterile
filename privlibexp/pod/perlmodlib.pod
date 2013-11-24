@@ -47,6 +47,10 @@ The following pragmas are defined (and have their own documentation).
 
 =over 12
 
+=item arybase
+
+Set indexing base via $[
+
 =item attributes
 
 Get/set subroutine or variable attributes
@@ -153,7 +157,7 @@ Manipulate @INC at compile time
 
 =item locale
 
-Use and avoid POSIX locales for built-in operations
+Use or avoid POSIX locales for built-in operations
 
 =item mro
 
@@ -178,6 +182,78 @@ Lexically control overloading
 =item parent
 
 Establish an ISA relationship with base classes at compile time
+
+=item perldoc
+
+Look up Perl documentation in Pod format.
+
+=item perlfaq
+
+Frequently asked questions about Perl
+
+=item perlfaq1
+
+General Questions About Perl
+
+=item perlfaq2
+
+Obtaining and Learning about Perl
+
+=item perlfaq3
+
+Programming Tools
+
+=item perlfaq4
+
+Data Manipulation
+
+=item perlfaq5
+
+Files and Formats
+
+=item perlfaq6
+
+Regular Expressions
+
+=item perlfaq7
+
+General Perl Language Issues
+
+=item perlfaq8
+
+System Interaction
+
+=item perlfaq9
+
+Web, Email and Networking
+
+=item perlfunc
+
+Perl builtin functions
+
+=item perlglossary
+
+Perl Glossary
+
+=item perlpodspeccopy
+
+Plain Old Documentation: format specification and notes
+
+=item perlvarcopy
+
+Perl predefined variables
+
+=item perlxs
+
+XS language reference manual
+
+=item perlxstut
+
+Tutorial for writing XSUBs
+
+=item perlxstypemap
+
+Perl XS C/Perl type mapping
 
 =item re
 
@@ -230,6 +306,7 @@ Control optional warnings
 =item warnings::register
 
 Warnings import function
+
 
 =back
 
@@ -333,6 +410,10 @@ Generates cross reference reports for Perl programs
 
 Benchmark running times of Perl code
 
+=item C<Socket>
+
+Networking constants and support functions
+
 =item CGI
 
 Handle Common Gateway Interface requests and responses
@@ -371,7 +452,7 @@ Internal utilities used by CGI module
 
 =item CORE
 
-Pseudo-namespace for Perl's core routines
+Namespace for Perl's core routines
 
 =item CPAN
 
@@ -413,6 +494,10 @@ History of CPAN Meta Spec changes
 
 A set of distribution prerequisites by phase and type
 
+=item CPAN::Meta::Requirements
+
+A set of version requirements for a CPAN dist
+
 =item CPAN::Meta::Spec
 
 Specification for CPAN distribution metadata
@@ -437,6 +522,30 @@ Utility functions to compare CPAN versions
 
 API & CLI access to the CPAN mirrors
 
+=item CPANPLUS::Backend
+
+Programmer's interface to CPANPLUS
+
+=item CPANPLUS::Backend::RV
+
+Return value objects
+
+=item CPANPLUS::Config
+
+Configuration defaults and heuristics for CPANPLUS
+
+=item CPANPLUS::Configure
+
+Configuration for CPANPLUS
+
+=item CPANPLUS::Dist
+
+Base class for plugins
+
+=item CPANPLUS::Dist::Autobundle
+
+Distribution class for installation snapshots
+
 =item CPANPLUS::Dist::Base
 
 Base class for custom distribution classes
@@ -449,9 +558,49 @@ CPANPLUS plugin to install packages that use Build.PL
 
 Constants for CPANPLUS::Dist::Build
 
+=item CPANPLUS::Dist::MM
+
+Distribution class for MakeMaker related modules
+
 =item CPANPLUS::Dist::Sample
 
 Sample code to create your own Dist::* plugin
+
+=item CPANPLUS::Error
+
+Error handling for CPANPLUS
+
+=item CPANPLUS::FAQ
+
+CPANPLUS Frequently Asked Questions
+
+=item CPANPLUS::Hacking
+
+Developing CPANPLUS
+
+=item CPANPLUS::Internals
+
+CPANPLUS internals
+
+=item CPANPLUS::Internals::Extract
+
+Internals for archive extraction
+
+=item CPANPLUS::Internals::Fetch
+
+Internals for fetching files
+
+=item CPANPLUS::Internals::Report
+
+Internals for sending test reports
+
+=item CPANPLUS::Internals::Search
+
+Internals for searching for modules
+
+=item CPANPLUS::Internals::Source
+
+Internals for updating source files
 
 =item CPANPLUS::Internals::Source::Memory
 
@@ -461,13 +610,61 @@ In memory implementation
 
 SQLite implementation
 
+=item CPANPLUS::Internals::Utils
+
+Convenience functions for CPANPLUS
+
+=item CPANPLUS::Module
+
+CPAN module objects for CPANPLUS
+
+=item CPANPLUS::Module::Author
+
+CPAN author object for CPANPLUS
+
+=item CPANPLUS::Module::Author::Fake
+
+Dummy author object for CPANPLUS
+
+=item CPANPLUS::Module::Checksums
+
+Checking the checksum of a distribution
+
+=item CPANPLUS::Module::Fake
+
+Fake module object for internal use
+
+=item CPANPLUS::Selfupdate
+
+Self-updating for CPANPLUS
+
+=item CPANPLUS::Shell
+
+Base class for CPANPLUS shells
+
 =item CPANPLUS::Shell::Classic
 
 CPAN.pm emulation for CPANPLUS
 
+=item CPANPLUS::Shell::Default
+
+The default CPANPLUS shell
+
+=item CPANPLUS::Shell::Default::Plugins::CustomSource
+
+Add custom sources to CPANPLUS
+
 =item CPANPLUS::Shell::Default::Plugins::HOWTO
 
 Documentation on how to write your own plugins
+
+=item CPANPLUS::Shell::Default::Plugins::Remote
+
+Connect to a remote CPANPLUS
+
+=item CPANPLUS::Shell::Default::Plugins::Source
+
+Read in CPANPLUS commands
 
 =item Carp
 
@@ -481,17 +678,9 @@ Declare struct-like datatypes as Perl classes
 
 Low-Level Interface to bzip2 compression library
 
-=item Compress::Raw::Bzip2::FAQ
-
-Frequently Asked Questions about Compress::Raw::Bzip2
-
 =item Compress::Raw::Zlib
 
 Low-Level Interface to zlib compression library
-
-=item Compress::Raw::Zlib::FAQ
-
-Frequently Asked Questions about Compress::Raw::Zlib
 
 =item Compress::Zlib
 
@@ -865,6 +1054,34 @@ Manage .packlist files
 
 Converts Perl XS code into C code
 
+=item ExtUtils::ParseXS::Constants
+
+Initialization values for some globals
+
+=item ExtUtils::ParseXS::Utilities
+
+Subroutines used with ExtUtils::ParseXS
+
+=item ExtUtils::Typemaps
+
+Read/Write/Modify Perl/XS typemap files
+
+=item ExtUtils::Typemaps::Cmd
+
+Quick commands for handling typemaps
+
+=item ExtUtils::Typemaps::InputMap
+
+Entry in the INPUT section of a typemap
+
+=item ExtUtils::Typemaps::OutputMap
+
+Entry in the OUTPUT section of a typemap
+
+=item ExtUtils::Typemaps::Type
+
+Entry in the TYPEMAP section of a typemap
+
 =item ExtUtils::XSSymSet
 
 Keep sets of symbol names palatable to the VMS linker
@@ -1185,29 +1402,101 @@ Indicate if List::Util was compiled with a C compiler
 
 A distribution of modules to handle locale codes
 
+=item Locale::Codes::API
+
+A description of the callable function in each module
+
 =item Locale::Codes::Changes
 
-Details important changes after 2.07
+Details changes to Locale::Codes
+
+=item Locale::Codes::Constants
+
+Constants for Locale codes
 
 =item Locale::Codes::Country
 
-Country codes for the Locale::Country module
+Standard codes for country identification
+
+=item Locale::Codes::Country_Codes
+
+Country codes for the Locale::Codes::Country module
+
+=item Locale::Codes::Country_Retired
+
+Retired country codes for the Locale::Codes::Country module
 
 =item Locale::Codes::Currency
 
-Currency codes for the Locale::Currency module
+Standard codes for currency identification
+
+=item Locale::Codes::Currency_Codes
+
+Currency codes for the Locale::Codes::Currency module
+
+=item Locale::Codes::Currency_Retired
+
+Retired currency codes for the Locale::Codes::Currency module
+
+=item Locale::Codes::LangExt
+
+Standard codes for language extension identification
+
+=item Locale::Codes::LangExt_Codes
+
+Langext codes for the Locale::Codes::LangExt module
+
+=item Locale::Codes::LangExt_Retired
+
+Retired langext codes for the Locale::Codes::LangExt module
+
+=item Locale::Codes::LangFam
+
+Standard codes for language extension identification
+
+=item Locale::Codes::LangFam_Codes
+
+Langfam codes for the Locale::Codes::LangFam module
+
+=item Locale::Codes::LangFam_Retired
+
+Retired langfam codes for the Locale::Codes::LangFam module
+
+=item Locale::Codes::LangVar
+
+Standard codes for language variation identification
+
+=item Locale::Codes::LangVar_Codes
+
+Langvar codes for the Locale::Codes::LangVar module
+
+=item Locale::Codes::LangVar_Retired
+
+Retired langvar codes for the Locale::Codes::LangVar module
 
 =item Locale::Codes::Language
 
-Language codes for the Locale::Language module
+Standard codes for language identification
+
+=item Locale::Codes::Language_Codes
+
+Language codes for the Locale::Codes::Language module
+
+=item Locale::Codes::Language_Retired
+
+Retired language codes for the Locale::Codes::Language module
 
 =item Locale::Codes::Script
 
-Script codes for the Locale::Script module
+Standard codes for script identification
 
-=item Locale::Constants
+=item Locale::Codes::Script_Codes
 
-Constants for Locale codes
+Script codes for the Locale::Codes::Script module
+
+=item Locale::Codes::Script_Retired
+
+Retired script codes for the Locale::Codes::Script module
 
 =item Locale::Country
 
@@ -1589,6 +1878,10 @@ On demand loader for PerlIO layers and root of PerlIO::* name space
 
 Encoding layer
 
+=item PerlIO::mmap
+
+Memory mapped IO
+
 =item PerlIO::scalar
 
 In-memory IO, scalar IO
@@ -1657,6 +1950,10 @@ Base for Pod::Perldoc formatters
 
 Customized option parser for Pod::Perldoc
 
+=item Pod::Perldoc::ToANSI
+
+Render Pod with ANSI color escapes 
+
 =item Pod::Perldoc::ToChecker
 
 Let Perldoc check Pod for errors
@@ -1676,6 +1973,10 @@ Let Perldoc render Pod as ... Pod!
 =item Pod::Perldoc::ToRtf
 
 Let Perldoc render Pod as RTF
+
+=item Pod::Perldoc::ToTerm
+
+Render Pod with terminal escapes 
 
 =item Pod::Perldoc::ToText
 
@@ -1815,7 +2116,7 @@ A selection of general-utility scalar subroutines
 
 =item Search::Dict
 
-Search for key in dictionary file
+Look - search for key in dictionary file
 
 =item SelectSaver
 
@@ -1824,10 +2125,6 @@ Save and restore selected file handle
 =item SelfLoader
 
 Load functions only on demand
-
-=item Socket
-
-Load the C socket.h defines and structure manipulators 
 
 =item Storable
 
@@ -2041,6 +2338,10 @@ Perl interface to various C<readline> packages.
 
 Term::ReadLine UI made easy
 
+=item Term::UI::History
+
+History function
+
 =item Test
 
 Provides a simple framework for writing test scripts
@@ -2079,7 +2380,7 @@ A tutorial about writing really basic tests
 
 =item Text::Abbrev
 
-Create an abbreviation table from a list
+Abbrev - create an abbreviation table from a list
 
 =item Text::Balanced
 
@@ -2268,6 +2569,7 @@ Dynamically load C libraries into Perl code
 =item version::Internals
 
 Perl extension for Version Objects
+
 
 =back
 
@@ -3152,7 +3454,7 @@ its methods by loading dynamic C or C++ objects, but that should be
 totally transparent to the user of the module.  Likewise, the module
 might set up an AUTOLOAD function to slurp in subroutine definitions on
 demand, but this is also transparent.  Only the F<.pm> file is required to
-exist.  See L<perlsub>, L<perltoot>, and L<AutoLoader> for details about
+exist.  See L<perlsub>, L<perlobj>, and L<AutoLoader> for details about
 the AUTOLOAD mechanism.
 
 =head2 Guidelines for Module Creation
@@ -3212,7 +3514,7 @@ Let the objects look after themselves! Generally, avoid hard-wired
 class names as far as possible.
 
 Avoid C<< $r->Class::func() >> where using C<@ISA=qw(... Class ...)> and
-C<< $r->func() >> would work (see L<perlbot> for more details).
+C<< $r->func() >> would work.
 
 Use autosplit so little used or newly added functions won't be a
 burden to programs that don't use them. Add test functions to
@@ -3436,7 +3738,7 @@ Give the module a version/issue/release number.
 
 To be fully compatible with the Exporter and MakeMaker modules you
 should store your module's version number in a non-my package
-variable called $VERSION.  This should be a floating point
+variable called $VERSION.  This should be a positive floating point
 number with at least two digits after the decimal (i.e., hundredths,
 e.g, C<$VERSION = "0.01">).  Don't use a "1.3.2" style version.
 See L<Exporter> for details.
@@ -3611,3 +3913,4 @@ that a module doesn't pollute any namespace it wasn't asked to.  The
 written contract for the module (A.K.A. documentation) may make other
 provisions.  But then you know when you C<use RedefineTheWorld> that
 you're redefining the world and willing to take the consequences.
+

@@ -55,6 +55,15 @@ typedef struct regexp_paren_pair {
     I32 end;
 } regexp_paren_pair;
 
+#if defined(PERL_IN_REGCOMP_C) || defined(PERL_IN_UTF8_C)
+#define _invlist_union(a, b, output) _invlist_union_maybe_complement_2nd(a, b, FALSE, output)
+#define _invlist_intersection(a, b, output) _invlist_intersection_maybe_complement_2nd(a, b, FALSE, output)
+
+/* Subtracting b from a leaves in a everything that was there that isn't in b,
+ * that is the intersection of a with b's complement */
+#define _invlist_subtract(a, b, output) _invlist_intersection_maybe_complement_2nd(a, b, TRUE, output)
+#endif
+
 /*
   The regexp/REGEXP struct, see L<perlreapi> for further documentation
   on the individual fields. The struct is ordered so that the most
@@ -298,9 +307,10 @@ and check for NULL.
  * unshared area without affecting binary compatibility */
 #define RXf_BASE_SHIFT (_RXf_PMf_SHIFT_NEXT+1)
 
-/* embed.pl doesn't yet know how to handle static inline functions, so
-   manually decorate them here with gcc-style attributes.
-*/
+/* Manually decorate this function with gcc-style attributes just to
+ * avoid having to restructure the header files and their called order,
+ * as proto.h would have to be included before this file, and isn't */
+
 PERL_STATIC_INLINE const char *
 get_regex_charset_name(const U32 flags, STRLEN* const lenp)
     __attribute__warn_unused_result__;
@@ -326,7 +336,6 @@ get_regex_charset_name(const U32 flags, STRLEN* const lenp)
         default:
 	    return "?";	    /* Unknown */
     }
-    return "?";	    /* Unknown */
 }
 
 /* Anchor and GPOS related stuff */
@@ -380,7 +389,7 @@ get_regex_charset_name(const U32 flags, STRLEN* const lenp)
 #define RXf_START_ONLY		(1<<(RXf_BASE_SHIFT+19)) /* Pattern is /^/ */
 #define RXf_SKIPWHITE		(1<<(RXf_BASE_SHIFT+20)) /* Pattern is for a split / / */
 #define RXf_WHITE		(1<<(RXf_BASE_SHIFT+21)) /* Pattern is /\s+/ */
-#define RXf_NULL		(1<<(RXf_BASE_SHIFT+22)) /* Pattern is // */
+#define RXf_NULL		(1U<<(RXf_BASE_SHIFT+22)) /* Pattern is // */
 #if RXf_BASE_SHIFT+22 > 31
 #   error Too many RXf_PMf bits used.  See regnodes.h for any spare in middle
 #endif

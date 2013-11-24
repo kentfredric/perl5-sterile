@@ -54,11 +54,11 @@ sub import {
     return;
 }
 
-die "Perl lib version (5.15.0) doesn't match executable '$0' version ($])"
+die "Perl lib version (5.16.0) doesn't match executable '$0' version ($])"
     unless $^V;
 
-$^V eq 5.15.0
-    or die "Perl lib version (5.15.0) doesn't match executable '$0' version (" .
+$^V eq 5.16.0
+    or die "Perl lib version (5.16.0) doesn't match executable '$0' version (" .
 	sprintf("v%vd",$^V) . ")";
 
 
@@ -83,7 +83,7 @@ sub AUTOLOAD {
 
 # tie returns the object, so the value returned to require will be true.
 tie %Config, 'Config', {
-    archlibexp => '/home/kent/perl5/perlbrew/perls/5.15.0-pristine/lib/5.15.0/x86_64-linux',
+    archlibexp => '/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/5.16.0/x86_64-linux',
     archname => 'x86_64-linux',
     cc => 'cc',
     d_readlink => 'define',
@@ -92,19 +92,19 @@ tie %Config, 'Config', {
     dlsrc => 'dl_dlopen.xs',
     dont_use_nlink => undef,
     exe_ext => '',
-    inc_version_list => '',
+    inc_version_list => ' ',
     intsize => '4',
     ldlibpthname => 'LD_LIBRARY_PATH',
     libpth => '/lib/../lib64 /usr/lib/../lib64 /lib /usr/lib /lib64 /usr/lib64',
     osname => 'linux',
     osvers => '3.12.0-gentoo',
     path_sep => ':',
-    privlibexp => '/home/kent/perl5/perlbrew/perls/5.15.0-pristine/lib/5.15.0',
-    scriptdir => '/home/kent/perl5/perlbrew/perls/5.15.0-pristine/bin',
-    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.15.0-pristine/lib/site_perl/5.15.0/x86_64-linux',
-    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.15.0-pristine/lib/site_perl/5.15.0',
+    privlibexp => '/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/5.16.0',
+    scriptdir => '/home/kent/perl5/perlbrew/perls/5.16.0-pristine/bin',
+    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/site_perl/5.16.0/x86_64-linux',
+    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.16.0-pristine/lib/site_perl/5.16.0',
     so => 'so',
     useithreads => undef,
     usevendorprefix => undef,
-    version => '5.15.0',
+    version => '5.16.0',
 };

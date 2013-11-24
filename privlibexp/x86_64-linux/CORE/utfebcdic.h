@@ -1,7 +1,7 @@
 /*    utfebcdic.h
  *
- *    Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009 by Larry Wall,
- *    Nick Ing-Simmons, and others
+ *    Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009,
+ *    2010, 2011 by Larry Wall, Nick Ing-Simmons, and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
@@ -544,7 +544,9 @@ END_EXTERN_C
 #define ASCII_TO_NATIVE(ch)      PL_a2e[(U8)(ch)]
 /* Transform after encoding, essentially converts to/from I8 */
 #define NATIVE_TO_UTF(ch)        PL_e2utf[(U8)(ch)]	/* to I8 */
+#define NATIVE_TO_I8(ch)         NATIVE_TO_UTF(ch)	/* synonym */
 #define UTF_TO_NATIVE(ch)        PL_utf2e[(U8)(ch)]	/* from I8 */
+#define I8_TO_NATIVE(ch)         UTF_TO_NATIVE(ch)	/* synonym */
 /* Transform in wide UV char space */
 #define NATIVE_TO_UNI(ch)        (((ch) > 255) ? (ch) : NATIVE_TO_ASCII(ch))
 #define UNI_TO_NATIVE(ch)        (((ch) > 255) ? (ch) : ASCII_TO_NATIVE(ch))
@@ -582,10 +584,11 @@ END_EXTERN_C
 
 #define UNI_IS_INVARIANT(c)		((c) <  0xA0)
 /* UTF-EBCDIC semantic macros - transform back into I8 and then compare */
-#define UTF8_IS_START(c)		(NATIVE_TO_UTF(c) >= 0xA0 && (NATIVE_TO_UTF(c) & 0xE0) != 0xA0)
+
+#define UTF8_IS_START(c)		(NATIVE_TO_UTF(c) >= 0xC5 && NATIVE_TO_UTF(c) != 0xE0)
 #define UTF8_IS_CONTINUATION(c)		((NATIVE_TO_UTF(c) & 0xE0) == 0xA0)
 #define UTF8_IS_CONTINUED(c) 		(NATIVE_TO_UTF(c) >= 0xA0)
-#define UTF8_IS_DOWNGRADEABLE_START(c)	(NATIVE_TO_UTF(c) >= 0xA0 && (NATIVE_TO_UTF(c) & 0xF8) == 0xC0)
+#define UTF8_IS_DOWNGRADEABLE_START(c)	(NATIVE_TO_UTF(c) >= 0xC5 && NATIVE_TO_UTF(c) <= 0xC7)
 
 #define UTF_START_MARK(len) (((len) >  7) ? 0xFF : ((U8)(0xFE << (7-(len)))))
 #define UTF_START_MASK(len) (((len) >= 6) ? 0x01 : (0x1F >> ((len)-2)))

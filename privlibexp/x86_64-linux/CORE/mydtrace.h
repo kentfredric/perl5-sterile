@@ -1,6 +1,6 @@
 /*    mydtrace.h
  *
- *    Copyright (C) 2008, by Larry Wall and others
+ *    Copyright (C) 2008, 2010, 2011 by Larry Wall and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
@@ -13,14 +13,42 @@
 
 #  include "perldtrace.h"
 
-#  define ENTRY_PROBE(func, file, line, stash)  	\
+#  if defined(STAP_PROBE_ADDR) && !defined(DEBUGGING)
+
+/* SystemTap 1.2 uses a construct that chokes on passing a char array
+ * as a char *, in this case hek_key in struct hek.  Workaround it
+ * with a temporary.
+ */
+
+#    define ENTRY_PROBE(func, file, line, stash)  	\
+    if (PERL_SUB_ENTRY_ENABLED()) {	        	\
+	const char *tmp_func = func;			\
+	PERL_SUB_ENTRY(tmp_func, file, line, stash); 	\
+    }
+
+#    define RETURN_PROBE(func, file, line, stash) 	\
+    if (PERL_SUB_RETURN_ENABLED()) {    		\
+	const char *tmp_func = func;			\
+	PERL_SUB_RETURN(tmp_func, file, line, stash);	\
+    }
+
+#  else
+
+#    define ENTRY_PROBE(func, file, line, stash) 	\
     if (PERL_SUB_ENTRY_ENABLED()) {	        	\
 	PERL_SUB_ENTRY(func, file, line, stash); 	\
     }
 
-#  define RETURN_PROBE(func, file, line, stash) 	\
+#    define RETURN_PROBE(func, file, line, stash)	\
     if (PERL_SUB_RETURN_ENABLED()) {    		\
 	PERL_SUB_RETURN(func, file, line, stash); 	\
+    }
+
+#  endif
+
+#  define PHASE_CHANGE_PROBE(new_phase, old_phase)      \
+    if (PERL_PHASE_CHANGE_ENABLED()) {                  \
+	PERL_PHASE_CHANGE(new_phase, old_phase);        \
     }
 
 #else
@@ -28,6 +56,7 @@
 /* NOPs */
 #  define ENTRY_PROBE(func, file, line, stash)
 #  define RETURN_PROBE(func, file, line, stash)
+#  define PHASE_CHANGE_PROBE(new_phase, old_phase)
 
 #endif
 

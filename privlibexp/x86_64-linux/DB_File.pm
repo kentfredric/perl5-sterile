@@ -165,7 +165,7 @@ our ($db_version, $use_XSLoader, $splice_end_array_no_length, $splice_end_array,
 use Carp;
 
 
-$VERSION = "1.822" ;
+$VERSION = "1.826" ;
 $VERSION = eval $VERSION; # needed for dev releases
 
 {
@@ -576,6 +576,20 @@ sub get_dup
  
     return ($wantarray ? ($flag ? %values : @values) : $counter) ;
 }
+
+
+sub STORABLE_freeze
+{
+    my $type = ref shift;
+    croak "Cannot freeze $type object\n";
+}
+
+sub STORABLE_thaw
+{
+    my $type = ref shift;
+    croak "Cannot thaw $type object\n";
+}
+
 
 
 1;
@@ -2263,13 +2277,9 @@ All versions of Berkeley DB are available there.
 Alternatively, Berkeley DB version 1 is available at your nearest CPAN
 archive in F<src/misc/db.1.85.tar.gz>.
 
-If you are running IRIX, then get Berkeley DB version 1 from
-F<http://reality.sgi.com/ariel>. It has the patches necessary to
-compile properly on IRIX 5.3.
-
 =head1 COPYRIGHT
 
-Copyright (c) 1995-2007 Paul Marquess. All rights reserved. This program
+Copyright (c) 1995-2012 Paul Marquess. All rights reserved. This program
 is free software; you can redistribute it and/or modify it under the
 same terms as Perl itself.
 

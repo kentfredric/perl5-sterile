@@ -1,7 +1,7 @@
 
 package IO::Uncompress::Gunzip ;
 
-require 5.004 ;
+require 5.006 ;
 
 # for RFC1952
 
@@ -9,12 +9,12 @@ use strict ;
 use warnings;
 use bytes;
 
-use IO::Uncompress::RawInflate 2.035 ;
+use IO::Uncompress::RawInflate 2.048 ;
 
-use Compress::Raw::Zlib 2.035 qw( crc32 ) ;
-use IO::Compress::Base::Common 2.035 qw(:Status createSelfTiedObject);
-use IO::Compress::Gzip::Constants 2.035 ;
-use IO::Compress::Zlib::Extra 2.035 ;
+use Compress::Raw::Zlib 2.048 () ;
+use IO::Compress::Base::Common 2.048 qw(:Status createSelfTiedObject);
+use IO::Compress::Gzip::Constants 2.048 ;
+use IO::Compress::Zlib::Extra 2.048 ;
 
 require Exporter ;
 
@@ -28,7 +28,7 @@ Exporter::export_ok_tags('all');
 
 $GunzipError = '';
 
-$VERSION = '2.035';
+$VERSION = '2.048';
 
 sub new
 {
@@ -47,7 +47,7 @@ sub gunzip
 
 sub getExtraParams
 {
-    use IO::Compress::Base::Common  2.035 qw(:Parse);
+    use IO::Compress::Base::Common  2.048 qw(:Parse);
     return ( 'ParseExtra' => [1, 1, Parse_boolean,  0] ) ;
 }
 
@@ -222,7 +222,7 @@ sub _readGzipHeader($)
             or return $self->TruncatedHeader("FHCRC");
 
         $HeaderCRC = unpack("v", $buffer) ;
-        my $crc16 = crc32($keep) & 0xFF ;
+        my $crc16 = Compress::Raw::Zlib::crc32($keep) & 0xFF ;
 
         return $self->HeaderError("CRC16 mismatch.")
             if *$self->{Strict} && $crc16 != $HeaderCRC;
@@ -1075,7 +1075,7 @@ See L<IO::Uncompress::Gunzip::FAQ|IO::Uncompress::Gunzip::FAQ/"Compressed files 
 
 L<Compress::Zlib>, L<IO::Compress::Gzip>, L<IO::Compress::Deflate>, L<IO::Uncompress::Inflate>, L<IO::Compress::RawDeflate>, L<IO::Uncompress::RawInflate>, L<IO::Compress::Bzip2>, L<IO::Uncompress::Bunzip2>, L<IO::Compress::Lzma>, L<IO::Uncompress::UnLzma>, L<IO::Compress::Xz>, L<IO::Uncompress::UnXz>, L<IO::Compress::Lzop>, L<IO::Uncompress::UnLzop>, L<IO::Compress::Lzf>, L<IO::Uncompress::UnLzf>, L<IO::Uncompress::AnyInflate>, L<IO::Uncompress::AnyUncompress>
 
-L<Compress::Zlib::FAQ|Compress::Zlib::FAQ>
+L<IO::Compress::FAQ|IO::Compress::FAQ>
 
 L<File::GlobMapper|File::GlobMapper>, L<Archive::Zip|Archive::Zip>,
 L<Archive::Tar|Archive::Tar>,
@@ -1104,7 +1104,7 @@ See the Changes file.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005-2011 Paul Marquess. All rights reserved.
+Copyright (c) 2005-2012 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

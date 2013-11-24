@@ -621,8 +621,8 @@ From F<Options.U>:
 
 This variable contains the number of command-line arguments
 passed to Configure, as reported by the shell in the $# variable.
-The individual arguments are stored as variables config_argc1,
-config_argc2, etc.
+The individual arguments are stored as variables config_arg1,
+config_arg2, etc.
 
 =item C<config_args>
 
@@ -2214,12 +2214,26 @@ From F<d_int64_t.U>:
 
 This symbol will be defined if the C compiler supports int64_t.
 
+=item C<d_ipv6_mreq>
+
+From F<d_socket.U>:
+
+This variable conditionally defines the HAS_IPV6_MREQ symbol, which
+indicates the availability of a struct ipv6_mreq.
+
 =item C<d_isascii>
 
 From F<d_isascii.U>:
 
 This variable conditionally defines the C<HAS_ISASCII> constant,
 which indicates to the C program that isascii() is available.
+
+=item C<d_isblank>
+
+From F<d_isblank.U>:
+
+This variable conditionally defines the C<HAS_ISBLANK> constant,
+which indicates to the C program that isblank() is available.
 
 =item C<d_isfinite>
 
@@ -3559,6 +3573,13 @@ From F<d_snprintf.U>:
 This variable conditionally defines the C<HAS_SNPRINTF> symbol, which
 indicates to the C program that the snprintf () library function
 is available.
+
+=item C<d_sockaddr_in6>
+
+From F<d_socket.U>:
+
+This variable conditionally defines the HAS_SOCKADDR_IN6 symbol, which
+indicates the availability of a struct sockaddr_in6.
 
 =item C<d_sockaddr_sa_len>
 
@@ -5378,6 +5399,14 @@ This variable conditionally defines the C<I_STDARG> symbol, which
 indicates to the C program that <stdarg.h> exists and should
 be included.
 
+=item C<i_stdbool>
+
+From F<i_stdbool.U>:
+
+This variable conditionally defines the C<I_STDBOOL> symbol, which
+indicates to the C program that <stdbool.h> exists and should
+be included.
+
 =item C<i_stddef>
 
 From F<i_stddef.U>:
@@ -6090,6 +6119,14 @@ This variable indicates the program to be used to link
 libraries for dynamic loading.  On some systems, it is C<ld>.
 On C<ELF> systems, it should be $cc.  Mostly, we'll try to respect
 the hint file setting.
+
+=item C<ld_can_script>
+
+From F<dlsrc.U>:
+
+This variable shows if the loader accepts scripts in the form of
+-Wl,--version-script=F<ld.script>. This is currently only supported
+for C<GNU> ld on C<ELF> in dynamic loading builds.
 
 =item C<lddlflags>
 
@@ -7976,6 +8013,19 @@ long or int.  It is used by functions that return a count
 of bytes or an error condition.  It must be a signed type.
 We will pick a type such that sizeof(SSize_t) == sizeof(Size_t).
 
+=item C<st_ino_sign>
+
+From F<st_ino_def.U>:
+
+This variable contains the signedness of struct stat's st_ino.
+1 for unsigned, -1 for signed.
+
+=item C<st_ino_size>
+
+From F<st_ino_def.U>:
+
+This variable contains the size of struct stat's st_ino in bytes.
+
 =item C<startperl>
 
 From F<startperl.U>:
@@ -8411,6 +8461,14 @@ This variable conditionally defines the C<USE_ITHREADS> symbol,
 and indicates that Perl should be built to use the interpreter-based
 threading implementation.
 
+=item C<usekernprocpathname>
+
+From F<usekernprocpathname.U>:
+
+This variable, indicates that we can use sysctl with
+C<KERN_PROC_PATHNAME> to get a full path for the executable, and hence
+convert $^X to an absolute path.
+
 =item C<uselargefiles>
 
 From F<uselfs.U>:
@@ -8464,6 +8522,14 @@ From F<usenm.U>:
 
 This variable contains C<true> or C<false> depending whether the
 nm extraction is wanted or not.
+
+=item C<usensgetexecutablepath>
+
+From F<usensgetexecutablepath.U>:
+
+This symbol, if defined, indicates that we can use _NSGetExecutablePath
+and realpath to get a full path for the executable, and hence convert
+$^X to an absolute path.
 
 =item C<useopcode>
 

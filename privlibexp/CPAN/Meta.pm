@@ -2,10 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 package CPAN::Meta;
-BEGIN {
-  $CPAN::Meta::VERSION = '2.110930';
-}
-# ABSTRACT: the distribution metadata for a CPAN dist
+our $VERSION = '2.120630'; # VERSION
 
 
 use Carp qw(carp croak);
@@ -15,13 +12,7 @@ use CPAN::Meta::Converter;
 use CPAN::Meta::Validator;
 use Parse::CPAN::Meta 1.4400 ();
 
-sub _dclone {
-  my $ref = shift;
-  my $backend = Parse::CPAN::Meta->json_backend();
-  return $backend->new->decode(
-    $backend->new->convert_blessed->encode($ref)
-  );
-}
+BEGIN { *_dclone = \&CPAN::Meta::Converter::_dclone }
 
 
 BEGIN {
@@ -343,6 +334,8 @@ sub TO_JSON {
 
 1;
 
+# ABSTRACT: the distribution metadata for a CPAN dist
+
 
 
 =pod
@@ -353,7 +346,7 @@ CPAN::Meta - the distribution metadata for a CPAN dist
 
 =head1 VERSION
 
-version 2.110930
+version 2.120630
 
 =head1 SYNOPSIS
 
@@ -648,6 +641,10 @@ particular keys may be retrieved with the C<custom> method.
 
 If a custom key refers to a data structure, a deep clone is returned.
 
+=for Pod::Coverage TO_JSON abstract author authors custom custom_keys description dynamic_config
+generated_by keywords license licenses meta_spec name no_index
+optional_features prereqs provides release_status resources version
+
 =head1 BUGS
 
 Please report any bugs or feature using the CPAN Request Tracker.
@@ -670,6 +667,25 @@ L<CPAN::Meta::Converter>
 L<CPAN::Meta::Validator>
 
 =back
+
+=for :stopwords cpan testmatrix url annocpan anno bugtracker rt cpants kwalitee diff irc mailto metadata placeholders metacpan
+
+=head1 SUPPORT
+
+=head2 Bugs / Feature Requests
+
+Please report any bugs or feature requests through the issue tracker
+at L<http://rt.cpan.org/Public/Dist/Display.html?Name=CPAN-Meta>.
+You will be notified automatically of any progress on your issue.
+
+=head2 Source Code
+
+This is open source software.  The code repository is available for
+public review and contribution under the terms of the license.
+
+L<http://github.com/dagolden/cpan-meta>
+
+  git clone git://github.com/dagolden/cpan-meta.git
 
 =head1 AUTHORS
 

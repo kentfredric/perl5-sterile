@@ -138,7 +138,7 @@ typedef struct jmpenv JMPENV;
 	    PerlProc_longjmp(PL_top_env->je_buf, (v));		\
 	if ((v) == 2)						\
 	    PerlProc_exit(STATUS_EXIT);		                \
-	PerlIO_printf(PerlIO_stderr(), "panic: top_env\n");	\
+	PerlIO_printf(PerlIO_stderr(), "panic: top_env, v=%d\n", (int)v); \
 	PerlProc_exit(1);					\
     } STMT_END
 
@@ -389,6 +389,7 @@ struct cop {
 #ifdef USE_ITHREADS
     char *	cop_stashpv;	/* package line was compiled in */
     char *	cop_file;	/* file name the following line # is from */
+    I32         cop_stashlen;	/* negative for UTF8 */
 #else
     HV *	cop_stash;	/* package line was compiled in */
     GV *	cop_filegv;	/* file the following line # is from */
@@ -428,14 +429,32 @@ struct cop {
 #  define CopSTASHPV(c)		((c)->cop_stashpv)
 
 #  ifdef NETWARE
-#    define CopSTASHPV_set(c,pv)	((c)->cop_stashpv = ((pv) ? savepv(pv) : NULL))
+#    define CopSTASHPV_set(c,pv,n)	((c)->cop_stashpv = \
+					   ((pv) ? savepvn(pv,n) : NULL))
 #  else
-#    define CopSTASHPV_set(c,pv)	((c)->cop_stashpv = savesharedpv(pv))
+#    define CopSTASHPV_set(c,pv,n)	((c)->cop_stashpv = (pv) \
+					    ? savesharedpvn(pv,n) : NULL)
 #  endif
 
-#  define CopSTASH(c)		(CopSTASHPV(c) \
-				 ? gv_stashpv(CopSTASHPV(c),GV_ADD) : NULL)
-#  define CopSTASH_set(c,hv)	CopSTASHPV_set(c, (hv) ? HvNAME_get(hv) : NULL)
+#  define CopSTASH_len_set(c,n)	((c)->cop_stashlen = (n))
+#  define CopSTASH_len(c)	((c)->cop_stashlen)
+
+#  define CopSTASH(c)          (CopSTASHPV(c)                                 \
+                                ? gv_stashpvn(CopSTASHPV(c),		  \
+				    CopSTASH_len(c) < 0			  \
+					? -CopSTASH_len(c)		  \
+					:  CopSTASH_len(c),		  \
+                                    GV_ADD|SVf_UTF8*(CopSTASH_len(c) < 0) \
+                                  )					  \
+                                 : NULL)
+#  define CopSTASH_set(c,hv)   (CopSTASHPV_set(c,			\
+				    (hv) ? HvNAME_get(hv) : NULL,	\
+				    (hv) ? HvNAMELEN(hv)  : 0),		\
+				CopSTASH_len_set(c,			\
+				    (hv) ? HvNAMEUTF8(hv)		\
+					    ? -HvNAMELEN(hv)		\
+					    :  HvNAMELEN(hv)		\
+					 : 0))
 #  define CopSTASH_eq(c,hv)	((hv) && stashpv_hvname_match(c,hv))
 #  ifdef NETWARE
 #    define CopSTASH_free(c) SAVECOPSTASH_FREE(c)
@@ -542,7 +561,9 @@ be zero.
 #define cop_hints_2hv(cop, flags) \
     cophh_2hv(CopHINTHASH_get(cop), flags)
 
-#define CopLABEL(c)  Perl_fetch_cop_label(aTHX_ (c), NULL, NULL)
+#define CopLABEL(c)  Perl_cop_fetch_label(aTHX_ (c), NULL, NULL)
+#define CopLABEL_len(c,len)  Perl_cop_fetch_label(aTHX_ (c), len, NULL)
+#define CopLABEL_len_flags(c,len,flags)  Perl_cop_fetch_label(aTHX_ (c), len, flags)
 #define CopLABEL_alloc(pv)	((pv)?savepv(pv):NULL)
 
 #define CopSTASH_ne(c,hv)	(!CopSTASH_eq(c,hv))
@@ -553,30 +574,6 @@ be zero.
 
 /* OutCopFILE() is CopFILE for output (caller, die, warn, etc.) */
 #define OutCopFILE(c) CopFILE(c)
-
-/* If $[ is non-zero, it's stored in cop_hints under the key "$[", and
-   HINT_ARYBASE is set to indicate this.
-   Setting it is inefficient due to the need to create 2 mortal SVs, but as
-   using $[ is highly discouraged, no sane Perl code will be using it.  */
-#define CopARYBASE_get(c)	\
-	((CopHINTS_get(c) & HINT_ARYBASE)				\
-	 ? SvIV(cop_hints_fetch_pvs((c), "$[", 0))			\
-	 : 0)
-#define CopARYBASE_set(c, b) STMT_START { \
-	if (b || ((c)->cop_hints & HINT_ARYBASE)) {			\
-	    (c)->cop_hints |= HINT_ARYBASE;				\
-	    if ((c) == &PL_compiling) {					\
-		SV *val = newSViv(b);					\
-		(void)hv_stores(GvHV(PL_hintgv), "$[", val);		\
-		mg_set(val);						\
-		PL_hints |= HINT_ARYBASE;				\
-	    } else {							\
-		CopHINTHASH_set((c),					\
-		    cophh_store_pvs(CopHINTHASH_get((c)), "$[",		\
-			sv_2mortal(newSViv(b)), 0));			\
-	    }								\
-	}								\
-    } STMT_END
 
 /* FIXME NATIVE_HINTS if this is changed from op_private (see perl.h)  */
 #define CopHINTS_get(c)		((c)->cop_hints + 0)
@@ -633,9 +630,18 @@ struct block_format {
 
 
 #define PUSHSUB(cx)							\
+    {									\
+	/* If the context is indeterminate, then only the lvalue */	\
+	/* flags that the caller also has are applicable.        */	\
+	U8 phlags =							\
+	   (PL_op->op_flags & OPf_WANT)					\
+	       ? OPpENTERSUB_LVAL_MASK					\
+	       : !(PL_op->op_private & OPpENTERSUB_LVAL_MASK)		\
+	           ? 0 : Perl_was_lvalue_sub(aTHX);			\
 	PUSHSUB_BASE(cx)						\
 	cx->blk_u16 = PL_op->op_private &				\
-	              (OPpLVAL_INTRO|OPpENTERSUB_INARGS|OPpENTERSUB_DEREF);
+	                  (phlags|OPpDEREF);				\
+    }
 
 /* variant for use by OP_DBSTATE, where op_private holds hint bits */
 #define PUSHSUB_DB(cx)							\
@@ -782,6 +788,8 @@ struct block_loop {
 	 : (SV**)NULL)
 
 #define CxLABEL(c)	(0 + CopLABEL((c)->blk_oldcop))
+#define CxLABEL_len(c,len)	(0 + CopLABEL_len((c)->blk_oldcop, len))
+#define CxLABEL_len_flags(c,len,flags)	(0 + CopLABEL_len_flags((c)->blk_oldcop, len, flags))
 #define CxHASARGS(c)	(((c)->cx_type & CXp_HASARGS) == CXp_HASARGS)
 #define CxLVAL(c)	(0 + (c)->blk_u16)
 

@@ -1,6 +1,7 @@
 /*    pad.h
  *
- *    Copyright (C) 2002, 2003, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *    Copyright (C) 2002, 2003, 2005, 2006, 2007, 2008,
+ *    2009, 2010, 2011 by Larry Wall and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
@@ -10,7 +11,9 @@
  * variables, op targets and constants.
  */
 
-
+/*
+=head1 Pad Data Structures
+*/
 
 
 /* a padlist is currently just an AV; but that might change,
@@ -118,15 +121,12 @@ typedef enum {
 	padtidy_FORMAT		/* or a format */
 } padtidy_type;
 
-#ifdef PERL_CORE
+/* flags for pad_add_name_pvn. */
 
-/* flags for pad_add_name. SVf_UTF8 will also be valid in the future.  */
-
-#  define padadd_OUR		0x01	/* our declaration. */
-#  define padadd_STATE		0x02	/* state declaration. */
-#  define padadd_NO_DUP_CHECK	0x04	/* skip warning on dups. */
-
-#endif
+#define padadd_OUR		0x01	   /* our declaration. */
+#define padadd_STATE		0x02	   /* state declaration. */
+#define padadd_NO_DUP_CHECK	0x04	   /* skip warning on dups. */
+#define padadd_UTF8_NAME	SVf_UTF8   /* name is UTF-8 encoded. */
 
 /* ASSERT_CURPAD_LEGAL and ASSERT_CURPAD_ACTIVE respectively determine
  * whether PL_comppad and PL_curpad are consistent and whether they have
@@ -323,26 +323,11 @@ ling pad (lvalue) to C<gen>.  Note that C<SvUV_set> is hijacked for this purpose
 
 
 /*
-=for apidoc m|void|PAD_DUP|PADLIST dstpad|PADLIST srcpad|CLONE_PARAMS* param
-Clone a padlist.
-
 =for apidoc m|void|PAD_CLONE_VARS|PerlInterpreter *proto_perl|CLONE_PARAMS* param
 Clone the state variables associated with running and compiling pads.
 
 =cut
 */
-
-
-#define PAD_DUP(dstpad, srcpad, param)				\
-    if ((srcpad) && !AvREAL(srcpad)) {				\
-	/* XXX padlists are real, but pretend to be not */ 	\
-	AvREAL_on(srcpad);					\
-	(dstpad) = av_dup_inc((srcpad), param);			\
-	AvREAL_off(srcpad);					\
-	AvREAL_off(dstpad);					\
-    }								\
-    else							\
-	(dstpad) = av_dup_inc((srcpad), param);			
 
 /* NB - we set PL_comppad to null unless it points at a value that
  * has already been dup'ed, ie it points to part of an active padlist.
@@ -353,7 +338,7 @@ Clone the state variables associated with running and compiling pads.
  * sub's CV or padlist. */
 
 #define PAD_CLONE_VARS(proto_perl, param)				\
-    PL_comppad = MUTABLE_AV(ptr_table_fetch(PL_ptr_table, proto_perl->Icomppad)); \
+    PL_comppad			= av_dup(proto_perl->Icomppad, param);	\
     PL_curpad = PL_comppad ?  AvARRAY(PL_comppad) : NULL;		\
     PL_comppad_name		= av_dup(proto_perl->Icomppad_name, param); \
     PL_comppad_name_fill	= proto_perl->Icomppad_name_fill;	\
@@ -364,6 +349,30 @@ Clone the state variables associated with running and compiling pads.
     PL_padix_floor		= proto_perl->Ipadix_floor;		\
     PL_pad_reset_pending	= proto_perl->Ipad_reset_pending;	\
     PL_cop_seqmax		= proto_perl->Icop_seqmax;
+
+/*
+=for apidoc Am|PADOFFSET|pad_add_name_pvs|const char *name|U32 flags|HV *typestash|HV *ourstash
+
+Exactly like L</pad_add_name_pvn>, but takes a literal string instead
+of a string/length pair.
+
+=cut
+*/
+
+#define pad_add_name_pvs(name,flags,typestash,ourstash) \
+    Perl_pad_add_name_pvn(aTHX_ STR_WITH_LEN(name), flags, typestash, ourstash)
+
+/*
+=for apidoc Am|PADOFFSET|pad_findmy_pvs|const char *name|U32 flags
+
+Exactly like L</pad_findmy_pvn>, but takes a literal string instead
+of a string/length pair.
+
+=cut
+*/
+
+#define pad_findmy_pvs(name,flags) \
+    Perl_pad_findmy_pvn(aTHX_ STR_WITH_LEN(name), flags)
 
 /*
  * Local variables:

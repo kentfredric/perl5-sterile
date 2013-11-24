@@ -131,12 +131,11 @@ Deprecated.  Use C<GIMME_V> instead.
 				/*  On OP_DBSTATE, indicates breakpoint
 				 *    (runtime property) */
 				/*  On OP_REQUIRE, was seen as CORE::require */
-				/*  On OP_ENTERWHEN, there's no condition */
-				/*  On OP_BREAK, an implicit break */
+				/*  On OP_(ENTER|LEAVE)WHEN, there's
+				    no condition */
 				/*  On OP_SMARTMATCH, an implicit smartmatch */
 				/*  On OP_ANONHASH and OP_ANONLIST, create a
 				    reference to the new anon hash or array */
-				/*  On OP_ENTER, store caller context */
 				/*  On OP_HELEM and OP_HSLICE, localization will be followed
 				    by assignment, so do not wipe the target if it is special
 				    (e.g. a glob or a magic SV) */
@@ -145,7 +144,10 @@ Deprecated.  Use C<GIMME_V> instead.
 				    that was optimised away, so it should
 				    not be bound via =~ */
 				/*  On OP_CONST, from a constant CV */
-				/*  On OP_GLOB, use Perl glob function */
+				/*  On OP_GLOB, two meanings:
+				    - Before ck_glob, called as CORE::glob
+				    - After ck_glob, use Perl glob function
+			         */
 
 /* old names; don't use in new code, but don't break them, either */
 #define OPf_LIST	OPf_WANT_LIST
@@ -158,11 +160,18 @@ Deprecated.  Use C<GIMME_V> instead.
 	      : G_SCALAR)						\
 	   : dowantarray())
 
-/* NOTE: OP_NEXTSTATE and OP_DBSTATE (i.e. COPs) carry lower
- * bits of PL_hints in op_private */
+/* Lower bits of op_private often carry the number of arguments, as
+ * set by newBINOP, newUNOP and ck_fun */
+
+/* NOTE: OP_NEXTSTATE and OP_DBSTATE (i.e. COPs) carry NATIVE_HINTS
+ * in op_private */
 
 /* Private for lvalues */
 #define OPpLVAL_INTRO	128	/* Lvalue must be localized or lvalue sub */
+
+/* Private for OPs with TARGLEX */
+  /* (lower bits may carry MAXARG) */
+#define OPpTARGET_MY		16	/* Target is PADMY. */
 
 /* Private for OP_LEAVE, OP_LEAVESUB, OP_LEAVESUBLV and OP_LEAVEWRITE */
 #define OPpREFCOUNTED		64	/* op_targ carries a refcount */
@@ -196,14 +205,17 @@ Deprecated.  Use C<GIMME_V> instead.
 #define OPpDEREF_AV		32	/*   Want ref to AV. */
 #define OPpDEREF_HV		64	/*   Want ref to HV. */
 #define OPpDEREF_SV		(32|64)	/*   Want ref to SV. */
-/* Private for OP_RV2SV, OP_RV2AV, OP_RV2AV */
-#define OPpDEREFed		4	/* prev op was OPpDEREF */
+
   /* OP_ENTERSUB only */
 #define OPpENTERSUB_DB		16	/* Debug subroutine. */
-#define OPpENTERSUB_HASTARG	32	/* Called from OP tree. */
-#define OPpENTERSUB_NOMOD	64	/* Immune to op_lvalue() for :attrlist. */
-#define OPpENTERSUB_INARGS	4	/* Lval used as arg to a sub. */
-#define OPpENTERSUB_DEREF	1	/* Lval call that autovivifies. */
+#define OPpENTERSUB_HASTARG	4	/* Called from OP tree. */
+#define OPpENTERSUB_INARGS	1	/* Lval used as arg to a sub. */
+/* used by OPpDEREF             (32|64) */
+/* used by HINT_STRICT_SUBS     2          */
+  /* Mask for OP_ENTERSUB flags, the absence of which must be propagated
+     in dynamic context */
+#define OPpENTERSUB_LVAL_MASK (OPpLVAL_INTRO|OPpENTERSUB_INARGS)
+
   /* OP_RV2CV only */
 #define OPpENTERSUB_AMPER	8	/* Used & form to call. */
 #define OPpENTERSUB_NOPAREN	128	/* bare sub call (without parens) */
@@ -213,11 +225,15 @@ Deprecated.  Use C<GIMME_V> instead.
 #define OPpEARLY_CV		32	/* foo() called before sub foo was parsed */
   /* OP_?ELEM only */
 #define OPpLVAL_DEFER		16	/* Defer creation of array/hash elem */
-  /* OP_RV2?V, OP_GVSV, OP_ENTERITER only */
+  /* OP_RV2[SAH]V, OP_GVSV, OP_ENTERITER only */
 #define OPpOUR_INTRO		16	/* Variable was in an our() */
   /* OP_RV2[AGH]V, OP_PAD[AH]V, OP_[AH]ELEM, OP_[AH]SLICE OP_AV2ARYLEN,
      OP_R?KEYS, OP_SUBSTR, OP_POS, OP_VEC */
 #define OPpMAYBE_LVSUB		8	/* We might be an lvalue to return */
+
+  /* OP_SUBSTR only */
+#define OPpSUBSTR_REPL_FIRST	16	/* 1st arg is replacement string */
+
   /* OP_PADSV only */
 #define OPpPAD_STATE		16	/* is a "state" pad */
   /* for OP_RV2?V, lower bits carry hints (currently only HINT_STRICT_REFS) */
@@ -226,10 +242,7 @@ Deprecated.  Use C<GIMME_V> instead.
 #define OPpDONT_INIT_GV		4	/* Call gv_fetchpv with GV_NOINIT */
 /* (Therefore will return whatever is currently in the symbol table, not
    guaranteed to be a PVGV)  */
-
-/* Private for OPs with TARGLEX */
-  /* (lower bits may carry MAXARG) */
-#define OPpTARGET_MY		16	/* Target is PADMY. */
+#define OPpALLOW_FAKE		16	/* OK to return fake glob */
 
 /* Private for OP_ENTERITER and OP_ITER */
 #define OPpITER_REVERSED	4	/* for (reverse ...) */
@@ -240,7 +253,6 @@ Deprecated.  Use C<GIMME_V> instead.
 #define	OPpCONST_SHORTCIRCUIT	4	/* eg the constant 5 in (5 || foo) */
 #define	OPpCONST_STRICT		8	/* bareword subject to strict 'subs' */
 #define OPpCONST_ENTERED	16	/* Has been entered as symbol. */
-#define OPpCONST_ARYBASE	32	/* Was a $[ translated to constant. */
 #define OPpCONST_BARE		64	/* Was a bare word (filehandle?). */
 #define OPpCONST_WARNING	128	/* Was a $^W translated to constant. */
 
@@ -281,14 +293,33 @@ Deprecated.  Use C<GIMME_V> instead.
 
 /* Private for OP_FTXXX */
 #define OPpFT_ACCESS		2	/* use filetest 'access' */
-#define OPpFT_STACKED		4	/* stacked filetest, as in "-f -x $f" */
+#define OPpFT_STACKED		4	/* stacked filetest, as "-f" in "-f -x $f" */
+#define OPpFT_STACKING		8	/* stacking filetest, as "-x" in "-f -x $f" */
+#define OPpFT_AFTER_t		16	/* previous op was -t */
 
 /* Private for OP_(MAP|GREP)(WHILE|START) */
 #define OPpGREP_LEX		2	/* iterate over lexical $_ */
     
 /* Private for OP_ENTEREVAL */
 #define OPpEVAL_HAS_HH		2	/* Does it have a copy of %^H */
+#define OPpEVAL_UNICODE		4
+#define OPpEVAL_BYTES		8
+#define OPpEVAL_COPHH		16	/* Construct %^H from cop hints */
     
+/* Private for OP_CALLER, OP_WANTARRAY and OP_RUNCV */
+#define OPpOFFBYONE		128	/* Treat caller(1) as caller(2) */
+
+/* Private for OP_COREARGS */
+/* These must not conflict with OPpDONT_INIT_GV or OPpALLOW_FAKE.
+   See pp.c:S_rv2gv. */
+#define OPpCOREARGS_DEREF1	1	/* Arg 1 is a handle constructor */
+#define OPpCOREARGS_DEREF2	2	/* Arg 2 is a handle constructor */
+#define OPpCOREARGS_SCALARMOD	64	/* \$ rather than \[$@%*] */
+#define OPpCOREARGS_PUSHMARK	128	/* Call pp_pushmark */
+
+/* Private for OP_(LAST|REDO|NEXT|GOTO|DUMP) */
+#define OPpPV_IS_UTF8		128	/* label is in UTF8 */
+
 struct op {
     BASEOP
 };
@@ -337,7 +368,10 @@ struct pmop {
     union {
 	OP *	op_pmreplstart;	/* Only used in OP_SUBST */
 #ifdef USE_ITHREADS
-	char *	op_pmstashpv;	/* Only used in OP_MATCH, with PMf_ONCE set */
+	struct {
+            char *	op_pmstashpv;	/* Only used in OP_MATCH, with PMf_ONCE set */
+            U32     op_pmstashflags;  /* currently only SVf_UTF8 or 0 */
+        } op_pmstashthr;
 #else
 	HV *	op_pmstash;
 #endif
@@ -407,19 +441,27 @@ struct pmop {
 #ifdef USE_ITHREADS
 
 #  define PmopSTASHPV(o)						\
-    (((o)->op_pmflags & PMf_ONCE) ? (o)->op_pmstashstartu.op_pmstashpv : NULL)
+    (((o)->op_pmflags & PMf_ONCE) ? (o)->op_pmstashstartu.op_pmstashthr.op_pmstashpv : NULL)
 #  if defined (DEBUGGING) && defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
 #    define PmopSTASHPV_set(o,pv)	({				\
 	assert((o)->op_pmflags & PMf_ONCE);				\
-	((o)->op_pmstashstartu.op_pmstashpv = savesharedpv(pv));	\
+	((o)->op_pmstashstartu.op_pmstashthr.op_pmstashpv = savesharedpv(pv));	\
     })
 #  else
 #    define PmopSTASHPV_set(o,pv)					\
-    ((o)->op_pmstashstartu.op_pmstashpv = savesharedpv(pv))
+    ((o)->op_pmstashstartu.op_pmstashthr.op_pmstashpv = savesharedpv(pv))
 #  endif
-#  define PmopSTASH(o)		(PmopSTASHPV(o) \
-				 ? gv_stashpv((o)->op_pmstashstartu.op_pmstashpv,GV_ADD) : NULL)
-#  define PmopSTASH_set(o,hv)	PmopSTASHPV_set(o, ((hv) ? HvNAME_get(hv) : NULL))
+#  define PmopSTASH_flags(o)           ((o)->op_pmstashstartu.op_pmstashthr.op_pmstashflags)
+#  define PmopSTASH_flags_set(o,flags) ((o)->op_pmstashstartu.op_pmstashthr.op_pmstashflags = flags)
+#  define PmopSTASH(o)         (PmopSTASHPV(o)                                     \
+                                ? gv_stashpv((o)->op_pmstashstartu.op_pmstashthr.op_pmstashpv,   \
+                                            GV_ADD | PmopSTASH_flags(o)) : NULL)
+#  define PmopSTASH_set(o,hv)  (PmopSTASHPV_set(o, (hv) ? HvNAME_get(hv) : NULL), \
+                                PmopSTASH_flags_set(o,                            \
+                                            ((hv) && HvNAME_HEK(hv) &&           \
+                                                        HvNAMEUTF8(hv))           \
+                                                ? SVf_UTF8                        \
+                                                : 0))
 #  define PmopSTASH_free(o)	PerlMemShared_free(PmopSTASHPV(o))
 
 #else
@@ -538,7 +580,7 @@ struct loop {
 #  define Nullop ((OP*)NULL)
 #endif
 
-/* Lowest byte-and-a-bit of PL_opargs */
+/* Lowest byte of PL_opargs */
 #define OA_MARK 1
 #define OA_FOLDCONST 2
 #define OA_RETSCALAR 4
@@ -642,7 +684,7 @@ least an C<UNOP>.
 /* no longer used anywhere in core */
 #ifndef PERL_CORE
 #define cv_ckproto(cv, gv, p) \
-   cv_ckproto_len((cv), (gv), (p), (p) ? strlen(p) : 0)
+   cv_ckproto_len_flags((cv), (gv), (p), (p) ? strlen(p) : 0, 0)
 #endif
 
 #ifdef PERL_CORE
@@ -762,6 +804,12 @@ preprocessing token; the type of I<arg> depends on I<which>.
 
 #define RV2CVOPCV_MARK_EARLY     0x00000001
 #define RV2CVOPCV_RETURN_NAME_GV 0x00000002
+
+#define op_lvalue(op,t) Perl_op_lvalue_flags(aTHX_ op,t,0)
+
+/* flags for op_lvalue_flags */
+
+#define OP_LVALUE_NO_CROAK 1
 
 /*
 =head1 Custom Operators
@@ -953,6 +1001,22 @@ struct token {
  * _       whitespace/comments preceding anything else
  * ~       =~ operator
  */
+
+/*
+=head1 Hook manipulation
+*/
+
+#ifdef USE_ITHREADS
+#  define OP_CHECK_MUTEX_INIT		MUTEX_INIT(&PL_check_mutex)
+#  define OP_CHECK_MUTEX_LOCK		MUTEX_LOCK(&PL_check_mutex)
+#  define OP_CHECK_MUTEX_UNLOCK		MUTEX_UNLOCK(&PL_check_mutex)
+#  define OP_CHECK_MUTEX_TERM		MUTEX_DESTROY(&PL_check_mutex)
+#else
+#  define OP_CHECK_MUTEX_INIT		NOOP
+#  define OP_CHECK_MUTEX_LOCK		NOOP
+#  define OP_CHECK_MUTEX_UNLOCK		NOOP
+#  define OP_CHECK_MUTEX_TERM		NOOP
+#endif
 
 /*
  * Local variables:

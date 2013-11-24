@@ -49,7 +49,6 @@
 #define SAVEt_BOOL		38
 #define SAVEt_SET_SVFLAGS	39
 #define SAVEt_SAVESWITCHSTACK	40
-#define SAVEt_COP_ARYBASE	41
 #define SAVEt_RE_STATE		42
 #define SAVEt_COMPILE_WARNINGS	43
 #define SAVEt_STACK_CXPOS	44
@@ -218,8 +217,6 @@ scope has the given name. Name must be a literal string.
 	PL_curstackinfo->si_stack = (t);		\
     } STMT_END
 
-#define SAVECOPARYBASE(c) save_pushi32ptr(CopARYBASE_get(c), c, SAVEt_COP_ARYBASE);
-
 /* Need to do the cop warnings like this, rather than a "SAVEFREESHAREDPV",
    because realloc() means that the value can actually change. Possibly
    could have done savefreesharedpvREF, but this way actually seems cleaner,
@@ -238,7 +235,8 @@ scope has the given name. Name must be a literal string.
 #define SAVEPARSER(p) save_pushptr((p), SAVEt_PARSER)
 
 #ifdef USE_ITHREADS
-#  define SAVECOPSTASH(c)	SAVEPPTR(CopSTASHPV(c))
+#  define SAVECOPSTASH(c)	(SAVEPPTR(CopSTASHPV(c)), \
+				 SAVEI32(CopSTASH_len(c)))
 #  define SAVECOPSTASH_FREE(c)	SAVESHAREDPV(CopSTASHPV(c))
 #  define SAVECOPFILE(c)	SAVEPPTR(CopFILE(c))
 #  define SAVECOPFILE_FREE(c)	SAVESHAREDPV(CopFILE(c))

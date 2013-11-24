@@ -23,7 +23,7 @@ local $Params::Check::VERBOSE = 1;
 
 =head1 NAME
 
-CPANPLUS::Dist::MM
+CPANPLUS::Dist::MM - distribution class for MakeMaker related modules
 
 =head1 SYNOPSIS
 
@@ -353,20 +353,8 @@ sub prepare {
             ### in @INC, stopping us from resolving dependencies on CPANPLUS
             ### at bootstrap time properly.
 
-            ### XXX this fails under ipc::run due to the extra quotes,
-            ### but it works in ipc::open3. however, ipc::open3 doesn't work
-            ### on win32/cygwin. XXX TODO get a windows box and sort this out
-            # my $cmd =  qq[$perl -MEnglish -le ] .
-            #            QUOTE_PERL_ONE_LINER->(
-            #                qq[\$OUTPUT_AUTOFLUSH++,do(q($makefile_pl))]
-            #            )
-            #            . $mmflags;
-
-            # my $flush = OPT_AUTOFLUSH;
-            # my $cmd     = "$perl $flush $makefile_pl $mmflags";
-
-            my $run_perl    = $conf->get_program('perlwrapper');
-            my $cmd         = [$perl, $run_perl, $makefile_pl, @mmflags];
+            my @run_perl    = ( '-e', PERL_WRAPPER );
+            my $cmd         = [$perl, @run_perl, $makefile_pl, @mmflags];
 
             ### set ENV var to tell underlying code this is what we're
             ### executing.
@@ -414,6 +402,17 @@ sub prepare {
 
         ### if we got here, we managed to make a 'makefile' ###
         $dist->status->makefile( MAKEFILE->($dir) );
+
+        ### Make (haha) sure that Makefile.PL is older than the Makefile
+        ### we just generated.
+        eval {
+          my $makestat = ( stat MAKEFILE->( $dir ) )[9];
+          my $mplstat = ( stat MAKEFILE_PL->( $cb->_safe_path( path => $dir ) ) )[9];
+          if ( $makestat < $mplstat ) {
+            my $ftime = $makestat - 60;
+            utime $ftime, $ftime, MAKEFILE_PL->( $cb->_safe_path( path => $dir ) );
+          }
+        };
 
         ### start resolving prereqs ###
         my $prereqs = $self->status->prereqs;
@@ -605,6 +604,7 @@ sub create {
     }
 
     my $fail; my $prereq_fail; my $test_fail;
+    my $status = { };
     RUN: {
         ### this will set the directory back to the start
         ### dir, so we must chdir /again/
@@ -646,6 +646,10 @@ sub create {
                                 verbose => $verbose )
             ) {
                 error( loc( "MAKE failed: %1 %2", $!, $captured ) );
+                if ( $conf->get_conf('cpantest') ) {
+                  $status->{stage} = 'build';
+                  $status->{capture} = $captured;
+                }
                 $dist->status->make(0);
                 $fail++; last RUN;
             }
@@ -696,9 +700,19 @@ sub create {
                     msg( loc( "MAKE TEST passed: %1", $captured ), 0 );
                 }
 
+                if ( $conf->get_conf('cpantest') ) {
+                  $status->{stage} = 'test';
+                  $status->{capture} = $captured;
+                }
+
                 $dist->status->test(1);
             } else {
                 error( loc( "MAKE TEST failed: %1", $captured ), ( $run_verbose ? 0 : 1 ) );
+
+                if ( $conf->get_conf('cpantest') ) {
+                  $status->{stage} = 'test';
+                  $status->{capture} = $captured;
+                }
 
                 ### send out error report here? or do so at a higher level?
                 ### --higher level --kane.
@@ -721,6 +735,7 @@ sub create {
         error( loc( "Could not chdir back to start dir '%1'", $orig ) );
     }
 
+    ### TODO: Add $stage to _send_report()
     ### send out test report?
     ### only do so if the failure is this module, not its prereq
     if( $conf->get_conf('cpantest') and not $prereq_fail) {
@@ -728,6 +743,7 @@ sub create {
             module  => $self,
             failed  => $test_fail || $fail,
             buffer  => CPANPLUS::Error->stack_as_string,
+            status  => $status,
             verbose => $verbose,
             force   => $force,
         ) or error(loc("Failed to send test report for '%1'",

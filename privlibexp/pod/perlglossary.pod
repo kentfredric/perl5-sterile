@@ -6,7 +6,7 @@ perlglossary - Perl Glossary
 
 A glossary of terms (technical and otherwise) used in the Perl documentation.
 Other useful sources include the Free On-Line Dictionary of Computing
-L<http://foldoc.doc.ic.ac.uk/foldoc/index.html>, the Jargon File
+L<http://foldoc.org/>, the Jargon File
 L<http://catb.org/~esr/jargon/>, and Wikipedia L<http://www.wikipedia.org/>.
 
 =head2 A
@@ -507,7 +507,7 @@ the class (its L<objects|/object>).  See also L</inheritance>.
 
 =item class method
 
-A L</method> whose L</invocand> is a L</package> name, not an
+A L</method> whose L</invocant> is a L</package> name, not an
 L</object> reference.  A method associated with the class as a whole.
 
 =item client
@@ -699,7 +699,7 @@ kinds of fatal error.
 
 =item CPAN
 
-The Comprehensive Perl Archive Network.  (See L<perlfaq2/What modules and extensions are available for Perl?  What is CPAN?  What does CPANE<sol>srcE<sol>... mean?>).
+The Comprehensive Perl Archive Network.  (See L<perlfaq2/What modules and extensions are available for Perl?  What is CPAN?>).
 
 =item cracker
 
@@ -950,6 +950,10 @@ When something is contained in something else, particularly when that
 might be considered surprising: "I've embedded a complete Perl
 interpreter in my editor!"
 
+=item empty list
+
+See </null list>.
+
 =item empty subclass test
 
 The notion that an empty L</derived class> should behave exactly like
@@ -1067,7 +1071,8 @@ such as multithreading.
 
 In Perl, any value that would look like C<""> or C<"0"> if evaluated
 in a string context.  Since undefined values evaluate to C<"">, all
-undefined values are false, but not all false values are undefined.
+undefined values are false (including the L</null list>), but not all
+false values are undefined.
 
 =item FAQ
 
@@ -1357,7 +1362,8 @@ you can easily use a string L</key> to look up its associated data
 L</value>.  This glossary is like a hash, where the word to be defined
 is the key, and the definition is the value.  A hash is also sometimes
 septisyllabically called an "associative array", which is a pretty
-good reason for simply calling it a "hash" instead.
+good reason for simply calling it a "hash" instead. A hash can optionally
+be L<restricted|/restricted hash> to a fixed set of keys.
 
 =item hash table
 
@@ -1470,7 +1476,7 @@ Perl, C<print STDOUT "$foo\n";> can be understood as "verb
 indirect-object object" where L</STDOUT> is the recipient of the
 L<print|perlfunc/print> action, and C<"$foo"> is the object being
 printed.  Similarly, when invoking a L</method>, you might place the
-invocand between the method and its arguments:
+invocant between the method and its arguments:
 
   $gollum = new Pathetic::Creature "Smeagol";
   give $gollum "Fisssssh!";
@@ -1548,11 +1554,11 @@ of compiler that takes a program and turns it into a more executable
 form (L<syntax trees|/syntax tree>) within the I<perl> process itself,
 which the Perl L</run time> system then interprets.
 
-=item invocand
+=item invocant
 
 The agent on whose behalf a L</method> is invoked.  In a L</class>
-method, the invocand is a package name.  In an L</instance> method,
-the invocand is an object reference.
+method, the invocant is a package name.  In an L</instance> method,
+the invocant is an object reference.
 
 =item invocation
 
@@ -2023,7 +2029,9 @@ strings, but Perl allows strings to contain a null.
 
 =item null list
 
-A L</list value> with zero elements, represented in Perl by C<()>.
+A valueless value represented in Perl by C<()>.  It is not really a
+L</LIST>, but an expression that yields C<undef> in L</scalar context> and
+a L</list value> with zero elements in L</list context>.
 
 =item null string
 
@@ -2519,6 +2527,10 @@ it's illegal to use reserved words to name anything else.  (Which is
 why they're reserved, after all.)  In Perl, you just can't use them to
 name L<labels|/label> or L<filehandles|/filehandle>.  Also called
 "keywords".
+
+=item restricted hash
+
+A L</hash> with a closed set of allowed keys. See L<Hash::Util>.
 
 =item return value
 
@@ -3378,11 +3390,11 @@ in the three-argument form of L<open|perlfunc/open>.
 
 =item XS
 
-An extraordinarily exported, expeditiously excellent, expressly
-eXternal Subroutine, executed in existing C or C++ or in an exciting
-new extension language called (exasperatingly) XS.  Examine L<perlxs>
-for the exact explanation or L<perlxstut> for an exemplary unexacting
-one.
+A language to extend Perl with L<C> and C++. XS is an interface description
+file format used to create an extension interface between
+Perl and C code (or a C library) which one wishes to use with Perl.
+See L<perlxs> for the exact explanation or read the L<perlxstut>
+tutorial.
 
 =item XSUB
 

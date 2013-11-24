@@ -14,7 +14,7 @@ use File::Spec;
 
 no warnings 'utf8';
 
-our $VERSION = '0.76';
+our $VERSION = '0.89';
 our $PACKAGE = __PACKAGE__;
 
 ### begin XS only ###
@@ -84,9 +84,9 @@ use constant Hangul_SFin   => 0xD7A3;
 # Logical_Order_Exception in PropList.txt
 my $DefaultRearrange = [ 0x0E40..0x0E44, 0x0EC0..0x0EC4 ];
 
-sub UCA_Version { "22" }
+sub UCA_Version { "24" }
 
-sub Base_Unicode_Version { "6.0.0" }
+sub Base_Unicode_Version { "6.1.0" }
 
 ######
 
@@ -175,6 +175,7 @@ my %DerivCode = (
    18 => \&_derivCE_18,
    20 => \&_derivCE_20,
    22 => \&_derivCE_22,
+   24 => \&_derivCE_24,
 );
 
 sub checkCollator {
@@ -269,7 +270,7 @@ sub new
 
     if ($self->{entry}) {
 	while ($self->{entry} =~ /([^\n]+)/g) {
-	    $self->parseEntry($1);
+	    $self->parseEntry($1, TRUE);
 	}
     }
 
@@ -367,6 +368,7 @@ sub parseEntry
 {
     my $self = shift;
     my $line = shift;
+    my $tailoring = shift;
     my($name, $entry, @uv, @key);
 
     if (defined $self->{rewrite}) {
@@ -387,7 +389,7 @@ sub parseEntry
 
     @uv = _getHexArray($e);
     return if !@uv;
-    return if @uv > 1 && $self->{suppressHash} &&
+    return if @uv > 1 && $self->{suppressHash} && !$tailoring &&
 		  exists $self->{suppressHash}{$uv[0]};
     $entry = join(CODE_SEP, @uv); # in JCPS
 
@@ -584,7 +586,6 @@ sub splitEnt
 	}
 
 	# skip completely ignorable
-
 	if ($uXS && $jcps !~ /;/ && _ignorable_simple($jcps) || ### XS only
 	    $map->{$jcps} && @{ $map->{$jcps} } == 0) {
 	    if ($wLen && @buf) {
@@ -789,9 +790,9 @@ sub _eqArray($$$)
 
 ##
 ## (int position, int length)
-## int position = index(string, substring, position, [undoc'ed grobal])
+## int position = index(string, substring, position, [undoc'ed global])
 ##
-## With "grobal" (only for the list context),
+## With "global" (only for the list context),
 ##  returns list of arrayref[position, length].
 ##
 sub index
@@ -802,7 +803,7 @@ sub index
     my $subE = $self->splitEnt(shift);
     my $pos  = @_ ? shift : 0;
        $pos  = 0 if $pos < 0;
-    my $grob = shift;
+    my $glob = shift;
 
     my $lev  = $self->{level};
     my $v2i  = $self->{UCA_Version} >= 9 &&
@@ -810,7 +811,7 @@ sub index
 
     if (! @$subE) {
 	my $temp = $pos <= 0 ? 0 : $len <= $pos ? $len : $pos;
-	return $grob
+	return $glob
 	    ? map([$_, 0], $temp..$len)
 	    : wantarray ? ($temp,0) : $temp;
     }
@@ -896,7 +897,7 @@ sub index
 			_eqArray(\@strWt, \@subWt, $lev)) {
 		my $temp = $iniPos[0] + $pos;
 
-		if ($grob) {
+		if ($glob) {
 		    push @g_ret, [$temp, $finPos[$#subWt] - $iniPos[0]];
 		    splice @strWt,  0, $#subWt;
 		    splice @iniPos, 0, $#subWt;
@@ -914,7 +915,7 @@ sub index
 	}
     }
 
-    return $grob
+    return $glob
 	? @g_ret
 	: wantarray ? () : NOMATCHPOS;
 }
@@ -1060,7 +1061,7 @@ If the revision (previously "tracking version") number of UCA is given,
 behavior of that revision is emulated on collating.
 If omitted, the return value of C<UCA_Version()> is used.
 
-The following revisions are supported.  The default is 22.
+The following revisions are supported.  The default is 24.
 
      UCA       Unicode Standard         DUCET (@version)
    -------------------------------------------------------
@@ -1072,6 +1073,7 @@ The following revisions are supported.  The default is 22.
      18             5.1.0               5.1.0 (5.1.0)
      20             5.2.0               5.2.0 (5.2.0)
      22             6.0.0               6.0.0 (6.0.0)
+     24             6.1.0               6.1.0 (6.1.0)
 
 * Noncharacters (e.g. U+FFFF) are not ignored, and can be overridden
 since C<UCA_Version> 22.
@@ -1289,10 +1291,11 @@ order, but those in the CJK Unified Ideographs block are lesser than
 those in the CJK Unified Ideographs Extension A etc.
 
     In the CJK Unified Ideographs block:
-    U+4E00..U+9FA5 if UCA_Version is 8 to 11.
-    U+4E00..U+9FBB if UCA_Version is 14 to 16.
+    U+4E00..U+9FA5 if UCA_Version is 8, 9 or 11.
+    U+4E00..U+9FBB if UCA_Version is 14 or 16.
     U+4E00..U+9FC3 if UCA_Version is 18.
-    U+4E00..U+9FCB if UCA_Version is 20 or greater.
+    U+4E00..U+9FCB if UCA_Version is 20 or 22.
+    U+4E00..U+9FCC if UCA_Version is 24.
 
     In the CJK Unified Ideographs Extension blocks:
     Ext.A (U+3400..U+4DB5) and Ext.B (U+20000..U+2A6D6) in any UCA_Version.
@@ -1443,13 +1446,15 @@ rewriting lines on reading an unmodified table every time.
 UTS #35 (LDML).
 
 Contractions beginning with the specified characters are suppressed,
-even if those contractions are defined in C<table> or C<entry>.
+even if those contractions are defined in C<table>.
 
 An example for Russian and some languages using the Cyrillic script:
 
     suppress => [0x0400..0x0417, 0x041A..0x0437, 0x043A..0x045F],
 
 where 0x0400 stands for C<U+0400>, CYRILLIC CAPITAL LETTER IE WITH GRAVE.
+
+B<NOTE>: Contractions via C<entry> are not be suppressed.
 
 =item table
 
@@ -1534,7 +1539,7 @@ this parameter doesn't work validly.
 
 -- see 3.2.2 Variable Weighting, UTS #10.
 
-This key allows to variable weighting for variable collation elements,
+This key allows for variable weighting of variable collation elements,
 which are marked with an ASTERISK in the table
 (NOTE: Many punctuation marks and symbols are variable in F<allkeys.txt>).
 
@@ -1863,15 +1868,15 @@ B<Unicode::Normalize is required to try The Conformance Test.>
 =head1 AUTHOR, COPYRIGHT AND LICENSE
 
 The Unicode::Collate module for perl was written by SADAHIRO Tomoyuki,
-<SADAHIRO@cpan.org>. This module is Copyright(C) 2001-2011,
+<SADAHIRO@cpan.org>. This module is Copyright(C) 2001-2012,
 SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
 The file Unicode/Collate/allkeys.txt was copied verbatim
-from L<http://www.unicode.org/Public/UCA/6.0.0/allkeys.txt>.
-This file is Copyright (c) 1991-2010 Unicode, Inc. All rights reserved.
+from L<http://www.unicode.org/Public/UCA/6.1.0/allkeys.txt>.
+For this file, Copyright (c) 2001-2011 Unicode, Inc.
 Distributed under the Terms of Use in L<http://www.unicode.org/copyright.html>.
 
 =head1 SEE ALSO
