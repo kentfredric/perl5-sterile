@@ -900,11 +900,13 @@ C<syswrite> function.
 X<PRINT>
 
 This method will be triggered every time the tied handle is printed to
-with the C<print()> function.
-Beyond its self reference it also expects the list that was passed to
-the print function.
+with the C<print()> or C<say()> functions.  Beyond its self reference
+it also expects the list that was passed to the print function.
 
     sub PRINT { $r = shift; $$r++; print join($,,map(uc($_),@_)),$\ }
+
+C<say()> acts just like C<print()> except $\ will be localized to C<\n> so
+you need do nothing special to handle C<say()> in C<PRINT()>.
 
 =item PRINTF this, LIST
 X<PRINTF>
@@ -949,6 +951,19 @@ X<GETC>
 This method will be called when the C<getc> function is called.
 
     sub GETC { print "Don't GETC, Get Perl"; return "a"; }
+
+=item EOF this
+X<EOF>
+
+This method will be called when the C<eof> function is called.
+
+Starting with Perl 5.12, an additional integer parameter will be passed.  It
+will be zero if C<eof> is called without parameter; C<1> if C<eof> is given
+a filehandle as a parameter, e.g. C<eof(FH)>; and C<2> in the very special
+case that the tied filehandle is C<ARGV> and C<eof> is called with an empty
+parameter list, e.g. C<eof()>.
+
+    sub EOF { not length $stringbuf }
 
 =item CLOSE this
 X<CLOSE>
@@ -1166,7 +1181,7 @@ tie methods for slice operations.
 You cannot easily tie a multilevel data structure (such as a hash of
 hashes) to a dbm file.  The first problem is that all but GDBM and
 Berkeley DB have size limitations, but beyond that, you also have problems
-with how references are to be represented on disk.  One experimental
+with how references are to be represented on disk.  One
 module that does attempt to address this need is DBM::Deep.  Check your
 nearest CPAN site as described in L<perlmodlib> for source code.  Note
 that despite its name, DBM::Deep does not use dbm.  Another earlier attempt

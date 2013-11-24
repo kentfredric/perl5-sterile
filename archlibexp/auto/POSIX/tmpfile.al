@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 401 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/tmpfile.al)"
+#line 394 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/tmpfile.al)"
 sub tmpfile {
     redef "IO::File::new_tmpfile()";
 }

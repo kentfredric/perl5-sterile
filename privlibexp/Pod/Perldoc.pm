@@ -12,7 +12,7 @@ use File::Spec::Functions qw(catfile catdir splitdir);
 use vars qw($VERSION @Pagers $Bindir $Pod2man
   $Temp_Files_Created $Temp_File_Lifetime
 );
-$VERSION = '3.14_02';
+$VERSION = '3.15_01';
 #..........................................................................
 
 BEGIN {  # Make a DEBUG constant very first thing...
@@ -32,6 +32,7 @@ use Pod::Perldoc::GetOptsOO; # uses the DEBUG.
 
 sub TRUE  () {1}
 sub FALSE () {return}
+sub BE_LENIENT () {1}
 
 BEGIN {
  *IS_VMS     = $^O eq 'VMS'     ? \&TRUE : \&FALSE unless defined &IS_VMS;
@@ -62,7 +63,7 @@ $Pod2man = "pod2man" . ( $Config{'versiononly'} ? $Config{'version'} : '' );
 #
 # Option accessors...
 
-foreach my $subname (map "opt_$_", split '', q{mhlvriFfXqnTdUL}) {
+foreach my $subname (map "opt_$_", split '', q{mhlDriFfXqnTdULv}) {
   no strict 'refs';
   *$subname = do{ use strict 'refs';  sub () { shift->_elem($subname, @_) } };
 }
@@ -72,6 +73,7 @@ sub opt_f_with { shift->_elem('opt_f', @_) }
 sub opt_q_with { shift->_elem('opt_q', @_) }
 sub opt_d_with { shift->_elem('opt_d', @_) }
 sub opt_L_with { shift->_elem('opt_L', @_) }
+sub opt_v_with { shift->_elem('opt_v', @_) }
 
 sub opt_w_with { # Specify an option for the formatter subclass
   my($self, $value) = @_;
@@ -209,9 +211,9 @@ sub new {  # yeah, nothing fancy
 
 #..........................................................................
 
-sub aside {  # If we're in -v or DEBUG mode, say this.
+sub aside {  # If we're in -D or DEBUG mode, say this.
   my $self = shift;
-  if( DEBUG or $self->opt_v ) {
+  if( DEBUG or $self->opt_D ) {
     my $out = join( '',
       DEBUG ? do {
         my $callsub = (caller(1))[3];
@@ -240,6 +242,7 @@ sub usage {
 perldoc [options] PageName|ModuleName|ProgramName...
 perldoc [options] -f BuiltinFunction
 perldoc [options] -q FAQRegex
+perldoc [options] -v PerlVariable
 
 Options:
     -h   Display this help message
@@ -253,7 +256,7 @@ Options:
     -n   Specify replacement for nroff
     -l   Display the module's file name
     -F   Arguments are file names, not modules
-    -v   Verbosely describe what's going on
+    -D   Verbosely describe what's going on
     -T   Send output to STDOUT without any pager
     -d output_filename_to_send_to
     -o output_format_name
@@ -262,6 +265,8 @@ Options:
     -L translation_code   Choose doc translation (if any)
     -X   use index if present (looks for pod.idx at $Config{archlib})
     -q   Search the text of questions (not answers) in perlfaq[1-9]
+    -f   Search Perl built-in functions
+    -v   Search predefined Perl variables
 
 PageName|ModuleName...
          is the name of a piece of documentation that you want to look at. You
@@ -293,9 +298,10 @@ sub usage_brief {
   $me =~ s,.*[/\\],,; # get basename
   
   die <<"EOUSAGE";
-Usage: $me [-h] [-V] [-r] [-i] [-v] [-t] [-u] [-m] [-n nroffer_program] [-l] [-T] [-d output_filename] [-o output_format] [-M FormatterModuleNameToUse] [-w formatter_option:option_value] [-L translation_code] [-F] [-X] PageName|ModuleName|ProgramName
+Usage: $me [-h] [-V] [-r] [-i] [-D] [-t] [-u] [-m] [-n nroffer_program] [-l] [-T] [-d output_filename] [-o output_format] [-M FormatterModuleNameToUse] [-w formatter_option:option_value] [-L translation_code] [-F] [-X] PageName|ModuleName|ProgramName
        $me -f PerlFunc
        $me -q FAQKeywords
+       $me -A PerlVar
 
 The -h option prints more help.  Also try "perldoc perldoc" to get
 acquainted with the system.                        [Perldoc v$VERSION]
@@ -415,6 +421,7 @@ sub process {
     $self->{'pages'} = \@pages;
     if(    $self->opt_f) { @pages = ("perlfunc")               }
     elsif( $self->opt_q) { @pages = ("perlfaq1" .. "perlfaq9") }
+    elsif( $self->opt_v) { @pages = ("perlvar")                }
     else                 { @pages = @{$self->{'args'}};
                            # @pages = __FILE__
                            #  if @pages == 1 and $pages[0] eq 'perldoc';
@@ -487,7 +494,7 @@ sub find_good_formatter_class {
       DEBUG > 4 and print "Trying to eval 'require $c'...\n";
 
       local $^W = $^W;
-      if(DEBUG() or $self->opt_v) {
+      if(DEBUG() or $self->opt_D) {
         # feh, let 'em see it
       } else {
         $^W = 0;
@@ -651,8 +658,11 @@ sub options_processing {
     $self->opt_n("nroff") unless $self->opt_n;
     $self->add_formatter_option( '__nroffer' => $self->opt_n );
 
+    # Get language from PERLDOC_POD2 environment variable
+    $self->opt_L || ( $ENV{PERLDOC_POD2} eq '1' ? $self->_elem('opt_L',(split(/\_/, $ENV{LC_ALL} || $ENV{LC_LANG} || $ENV{LANG}))[0] ) : $self->_elem('opt_L', $ENV{PERLDOC_POD2}) );
+
     # Adjust for using translation packages
-    $self->add_translator($self->opt_L) if $self->opt_L;
+    $self->add_translator(split(/\s+/,$self->opt_L)) if $self->opt_L;
 
     return;
 }
@@ -740,6 +750,10 @@ sub grand_search_init {
         if (@files) {
             $self->aside( "Found as @files\n" );
         }
+        # add "perl" prefix, so "perldoc foo" may find perlfoo.pod
+	elsif (BE_LENIENT and !/\W/ and  @files = $self->searchfor(0, "perl$_", @searchdirs)) {
+            $self->aside( "Loosely found as @files\n" );
+        }
         else {
             # no match, try recursive search
             @searchdirs = grep(!/^\.\z/s,@INC);
@@ -776,10 +790,12 @@ sub maybe_generate_dynamic_pod {
     my @dynamic_pod;
     
     $self->search_perlfunc($found_things, \@dynamic_pod)  if  $self->opt_f;
+
+    $self->search_perlvar($found_things, \@dynamic_pod)   if  $self->opt_v;
     
     $self->search_perlfaqs($found_things, \@dynamic_pod)  if  $self->opt_q;
 
-    if( ! $self->opt_f and ! $self->opt_q ) {
+    if( ! $self->opt_f and ! $self->opt_q and ! $self->opt_v ) {
         DEBUG > 4 and print "That's a non-dynamic pod search.\n";
     } elsif ( @dynamic_pod ) {
         $self->aside("Hm, I found some Pod from that search!\n");
@@ -788,7 +804,7 @@ sub maybe_generate_dynamic_pod {
         push @{ $self->{'temp_file_list'} }, $buffer;
          # I.e., it MIGHT be deleted at the end.
         
-	my $in_list = $self->opt_f;
+	my $in_list = $self->opt_f || $self->opt_v;
 
         print $buffd "=over 8\n\n" if $in_list;
         print $buffd @dynamic_pod  or die "Can't print $buffer: $!";
@@ -824,17 +840,20 @@ sub add_formatter_option { # $self->add_formatter_option('key' => 'value');
 
 #.........................................................................
 
-sub pod_dirs { # @dirs = pod_dirs($translator);
-    my $tr = shift;
-    return $tr->pod_dirs if $tr->can('pod_dirs');
-    
-    my $mod = ref $tr || $tr;
-    $mod =~ s|::|/|g;
-    $mod .= '.pm';
+sub new_translator { # $tr = $self->new_translator($lang);
+    my $self = shift;
+    my $lang = shift;
 
-    my $dir = $INC{$mod};
-    $dir =~ s/\.pm\z//;
-    return $dir;
+    my $pack = 'POD2::' . uc($lang);
+    eval "require $pack";
+    if ( !$@ && $pack->can('new') ) {
+	return $pack->new();
+    }
+
+    eval { require POD2::Base };
+    return if $@;
+    
+    return POD2::Base->new({ lang => $lang });
 }
 
 #.........................................................................
@@ -842,16 +861,92 @@ sub pod_dirs { # @dirs = pod_dirs($translator);
 sub add_translator { # $self->add_translator($lang);
     my $self = shift;
     for my $lang (@_) {
-        my $pack = 'POD2::' . uc($lang);
-        eval "require $pack";
-        if ( $@ ) {
-            # XXX warn: non-installed translator package
+        my $tr = $self->new_translator($lang);
+        if ( defined $tr ) {
+            push @{ $self->{'translators'} }, $tr;
+            push @{ $self->{'extra_search_dirs'} }, $tr->pod_dirs;
+
+            $self->aside( "translator for '$lang' loaded\n" );
         } else {
-            push @{ $self->{'translators'} }, $pack;
-            push @{ $self->{'extra_search_dirs'} }, pod_dirs($pack);
-            # XXX DEBUG
+            # non-installed or bad translator package
+            warn "Perldoc cannot load translator package for '$lang': ignored\n";
         }
+
     }
+    return;
+}
+
+#..........................................................................
+
+sub search_perlvar {
+    my($self, $found_things, $pod) = @_;
+
+    my $opt = $self->opt_v;
+
+    if ( $opt !~ /^ (?: [\@\%\$]\S+ | [A-Z]\w* ) $/x ) {
+        die "'$opt' does not look like a Perl variable\n";
+    }
+
+    DEBUG > 2 and print "Search: @$found_things\n";
+    
+    my $perlvar = shift @$found_things;
+    open(PVAR, "<", $perlvar)               # "Funk is its own reward"
+        or die("Can't open $perlvar: $!");
+
+    if ( $opt =~ /^\$\d+$/ ) { # handle $1, $2, ..., $9
+      $opt = '$<I<digits>>';
+    }
+    my $search_re = quotemeta($opt);
+
+    DEBUG > 2 and
+     print "Going to perlvar-scan for $search_re in $perlvar\n";
+    
+    # Skip introduction
+    local $_;
+    while (<PVAR>) {
+        last if /^=over 8/;
+    }
+
+    # Look for our variable
+    my $found = 0;
+    my $inheader = 1;
+    my $inlist = 0;
+    while (<PVAR>) {  # "The Mothership Connection is here!"
+        last if /^=head2 Error Indicators/;
+        # \b at the end of $` and friends borks things!
+        if ( m/^=item\s+$search_re\s/ )  {
+            $found = 1;
+        }
+        elsif (/^=item/) {
+            last if $found && !$inheader && !$inlist;
+        }
+        elsif (!/^\s+$/) { # not a blank line
+            if ( $found ) {
+                $inheader = 0; # don't accept more =item (unless inlist)
+	    }
+            else {
+                @$pod = (); # reset
+                $inheader = 1; # start over
+                next;
+            }
+	}
+
+        if (/^=over/) {
+            ++$inlist;
+        }
+        elsif (/^=back/) {
+            last if $found && !$inheader && !$inlist;
+            --$inlist;
+        }
+        push @$pod, $_;
+#        ++$found if /^\w/;        # found descriptive text
+    }
+    @$pod = () unless $found;
+    if (!@$pod) {
+        die "No documentation for perl variable '$opt' found\n";
+    }
+    close PVAR                or die "Can't open $perlvar: $!";
+
     return;
 }
 
@@ -874,7 +969,9 @@ sub search_perlfunc {
      print "Going to perlfunc-scan for $search_re in $perlfunc\n";
 
     my $re = 'Alphabetical Listing of Perl Functions';
-    if ( $self->opt_L ) {
+
+    # Check available translator or backup to default (english)
+    if ( $self->opt_L && defined $self->{'translators'}->[0] ) {
         my $tr = $self->{'translators'}->[0];
         $re =  $tr->search_perlfunc_re if $tr->can('search_perlfunc_re');
     }
@@ -900,6 +997,7 @@ sub search_perlfunc {
             ++$inlist;
         }
         elsif (/^=back/) {
+            last if $found > 1 and not $inlist;
             --$inlist;
         }
         push @$pod, $_;
@@ -1018,7 +1116,7 @@ sub render_findings {
   # Now, finally, do the formatting!
   {
     local $^W = $^W;
-    if(DEBUG() or $self->opt_v) {
+    if(DEBUG() or $self->opt_D) {
       # feh, let 'em see it
     } else {
       $^W = 0;
@@ -1433,7 +1531,7 @@ sub containspod {
 
     if ( IS_Cygwin  and  -x $file  and  -f "$file.exe" )
     {
-        warn "Cygwin $file.exe search skipped\n"  if DEBUG or $self->opt_v;
+        warn "Cygwin $file.exe search skipped\n"  if DEBUG or $self->opt_D;
         return 0;
     }
 
@@ -1456,15 +1554,15 @@ sub maybe_diddle_INC {
   
   # Does this look like a module or extension directory?
   
-  if (-f "Makefile.PL") {
+  if (-f "Makefile.PL" || -f "Build.PL") {
 
     # Add "." and "lib" to @INC (if they exist)
     eval q{ use lib qw(. lib); 1; } or die;
 
     # don't add if superuser
-    if ($< && $> && -f "blib") {   # don't be looking too hard now!
+    if ($< && $> && -d "blib") {   # don't be looking too hard now!
       eval q{ use blib; 1 };
-      warn $@ if $@ && $self->opt_v;
+      warn $@ if $@ && $self->opt_D;
     }
   }
   
@@ -1737,7 +1835,45 @@ sub drop_privs_maybe {
 
 __END__
 
-# See "perldoc perldoc" for basic details.
+=head1 NAME
+
+Pod::Perldoc - Look up Perl documentation in Pod format.
+
+=head1 SYNOPSIS
+
+    use Pod::Perldoc ();
+
+    Pod::Perldoc->run();
+
+=head1 DESCRIPTION
+
+The guts of L<perldoc> utility.
+
+=head1 SEE ALSO
+
+L<perldoc>
+
+=head1 COPYRIGHT AND DISCLAIMERS
+
+Copyright (c) 2002-2007 Sean M. Burke.
+
+This library is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+This program is distributed in the hope that it will be useful, but
+without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose.
+
+=head1 AUTHOR
+
+Current maintainer: Adriano R. Ferreira <ferreira@cpan.org>
+
+Past contributions from:
+Sean M. Burke <sburke@cpan.org>
+
+=cut
+
+# 
 #
 # Perldoc -- look up a piece of documentation in .pod format that
 # is embedded in the perl installation tree.

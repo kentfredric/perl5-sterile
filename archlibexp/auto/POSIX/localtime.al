@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 628 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/localtime.al)"
+#line 621 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/localtime.al)"
 sub localtime {
     usage "localtime(time)" if @_ != 1;
     CORE::localtime($_[0]);

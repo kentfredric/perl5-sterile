@@ -4,11 +4,11 @@ use strict;
 use warnings;
 use bytes;
 
-use IO::Compress::Base::Common  2.008 qw(:Status);
-use Compress::Raw::Zlib  2.008 qw(Z_OK Z_DATA_ERROR Z_STREAM_END Z_FINISH MAX_WBITS);
+use IO::Compress::Base::Common  2.021 qw(:Status);
+use Compress::Raw::Zlib  2.021 qw(Z_OK Z_BUF_ERROR Z_STREAM_END Z_FINISH MAX_WBITS);
 
 our ($VERSION);
-$VERSION = '2.008';
+$VERSION = '2.021';
 
 
 
@@ -24,6 +24,7 @@ sub mkUncompObject
     if ($scan)
     {
         ($inflate, $status) = new Compress::Raw::Zlib::InflateScan
+                                    #LimitOutput  => 1,
                                     CRC32        => $crc32,
                                     ADLER32      => $adler32,
                                     WindowBits   => - MAX_WBITS ;
@@ -32,6 +33,7 @@ sub mkUncompObject
     {
         ($inflate, $status) = new Compress::Raw::Zlib::Inflate
                                     AppendOutput => 1,
+                                    LimitOutput  => 1,
                                     CRC32        => $crc32,
                                     ADLER32      => $adler32,
                                     WindowBits   => - MAX_WBITS ;
@@ -44,6 +46,7 @@ sub mkUncompObject
                   'CompSize'   => 0,
                   'UnCompSize' => 0,
                   'Error'      => '',
+                  'ConsumesInput' => 1,
                  } ;     
     
 }
@@ -60,19 +63,13 @@ sub uncompr
     my $status = $inf->inflate($from, $to, $eof);
     $self->{ErrorNo} = $status;
 
-    if ($status != Z_STREAM_END && $eof)
-    {
-        $self->{Error} = "unexpected end of file";
-        return STATUS_ERROR;
-    }
-
-    if ($status != Z_OK && $status != Z_STREAM_END )
+    if ($status != Z_OK && $status != Z_STREAM_END && $status != Z_BUF_ERROR)
     {
         $self->{Error} = "Inflation Error: $status";
         return STATUS_ERROR;
     }
-
-    
+            
+    return STATUS_OK        if $status == Z_BUF_ERROR ; # ???
     return STATUS_OK        if $status == Z_OK ;
     return STATUS_ENDSTREAM if $status == Z_STREAM_END ;
     return STATUS_ERROR ;

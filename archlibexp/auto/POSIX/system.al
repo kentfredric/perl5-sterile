@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 496 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/system.al)"
+#line 489 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/system.al)"
 sub system {
     usage "system(command)" if @_ != 1;
     CORE::system($_[0]);

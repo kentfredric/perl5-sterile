@@ -13,7 +13,7 @@ package CGI::Cookie;
 # wish, but if you redistribute a modified version, please attach a note
 # listing the modifications you have made.
 
-$CGI::Cookie::VERSION='1.28';
+$CGI::Cookie::VERSION='1.29';
 
 use CGI::Util qw(rearrange unescape escape);
 use CGI;
@@ -21,9 +21,14 @@ use overload '""' => \&as_string,
     'cmp' => \&compare,
     'fallback'=>1;
 
+my $PERLEX = 0;
+# Turn on special checking for ActiveState's PerlEx
+$PERLEX++ if defined($ENV{'GATEWAY_INTERFACE'}) && $ENV{'GATEWAY_INTERFACE'} =~ /^CGI-PerlEx/;
+
 # Turn on special checking for Doug MacEachern's modperl
+# PerlEx::DBI tries to fool DBI by setting MOD_PERL
 my $MOD_PERL = 0;
-if (exists $ENV{MOD_PERL}) {
+if (exists $ENV{MOD_PERL} && ! $PERLEX) {
   if (exists $ENV{MOD_PERL_API_VERSION} && $ENV{MOD_PERL_API_VERSION} == 2) {
       $MOD_PERL = 2;
       require Apache2::RequestUtil;
@@ -51,7 +56,7 @@ sub fetch {
    my %results;
    my($key,$value);
    
-   my(@pairs) = split("[;,] ?",$raw_cookie);
+   my @pairs = split("[;,] ?",$raw_cookie);
    foreach (@pairs) {
      s/\s*(.*?)\s*/$1/;
      if (/^([^=]+)=(.*)/) {
@@ -88,7 +93,7 @@ sub parse {
   my ($self,$raw_cookie) = @_;
   my %results;
 
-  my(@pairs) = split("; ?",$raw_cookie);
+  my @pairs = split("[;,] ?",$raw_cookie);
   foreach (@pairs) {
     s/\s*(.*?)\s*/$1/;
     my($key,$value) = split("=",$_,2);

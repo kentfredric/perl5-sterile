@@ -9,13 +9,13 @@ require Exporter;
 use Carp;
 use Symbol qw(gensym qualify);
 
-$VERSION	= 1.02;
+$VERSION	= 1.05;
 @ISA		= qw(Exporter);
 @EXPORT		= qw(open3);
 
 =head1 NAME
 
-IPC::Open3, open3 - open a process for reading, writing, and error handling
+IPC::Open3 - open a process for reading, writing, and error handling using open3()
 
 =head1 SYNOPSIS
 
@@ -23,8 +23,12 @@ IPC::Open3, open3 - open a process for reading, writing, and error handling
 		    'some cmd and args', 'optarg', ...);
 
     my($wtr, $rdr, $err);
+    use Symbol 'gensym'; $err = gensym;
     $pid = open3($wtr, $rdr, $err,
 		    'some cmd and args', 'optarg', ...);
+
+    waitpid( $pid, 0 );
+    my $child_exit_status = $? >> 8;
 
 =head1 DESCRIPTION
 
@@ -32,8 +36,9 @@ Extremely similar to open2(), open3() spawns the given $cmd and
 connects CHLD_OUT for reading from the child, CHLD_IN for writing to
 the child, and CHLD_ERR for errors.  If CHLD_ERR is false, or the
 same file descriptor as CHLD_OUT, then STDOUT and STDERR of the child
-are on the same filehandle.  The CHLD_IN will have autoflush turned
-on.
+are on the same filehandle (this means that an autovivified lexical
+cannot be used for the STDERR filehandle, see SYNOPSIS).  The CHLD_IN
+will have autoflush turned on.
 
 If CHLD_IN begins with C<< <& >>, then CHLD_IN will be closed in the
 parent, and the child will read from it directly.  If CHLD_OUT or
@@ -176,7 +181,7 @@ sub xfileno {
     return fileno $_[0];
 }
 
-my $do_spawn = $^O eq 'os2' || $^O eq 'MSWin32';
+use constant DO_SPAWN => $^O eq 'os2' || $^O eq 'MSWin32';
 
 sub _open3 {
     local $Me = shift;
@@ -220,7 +225,7 @@ sub _open3 {
     xpipe $dad_rdr, $kid_wtr if !$dup_rdr;
     xpipe $dad_err, $kid_err if !$dup_err && $dad_err ne $dad_rdr;
 
-    $kidpid = $do_spawn ? -1 : xfork;
+    $kidpid = DO_SPAWN ? -1 : xfork;
     if ($kidpid == 0) {		# Kid
 	# A tie in the parent should not be allowed to cause problems.
 	untie *STDIN;
@@ -267,7 +272,7 @@ sub _open3 {
 	    eval { require POSIX; POSIX::_exit(255); };
 	    exit 255;
 	};
-    } elsif ($do_spawn) {
+    } elsif (DO_SPAWN) {
 	# All the bookkeeping of coincidence between handles is
 	# handled in spawn_with_handles.
 

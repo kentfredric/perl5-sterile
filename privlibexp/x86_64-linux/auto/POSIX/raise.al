@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 239 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/raise.al)"
+#line 232 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/raise.al)"
 sub raise {
     usage "raise(sig)" if @_ != 1;
     CORE::kill $_[0], $$;	# Is this good enough?

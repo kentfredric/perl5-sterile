@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 264 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fgetc.al)"
+#line 257 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fgetc.al)"
 sub fgetc {
     redef "IO::Handle::getc()";
 }

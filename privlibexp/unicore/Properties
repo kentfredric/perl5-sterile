@@ -1,5 +1,5 @@
 ##
-## This file created by mktables
+## This file created by lib/unicore/mktables
 ## List of built-in \p{...}/\P{...} properties.
 ##
 ## '*' means name may be 'fuzzy'
@@ -24,10 +24,12 @@
 * \p{Buginese}                               Script 'Buginese'
 * \p{Buhid}                                  Script 'Buhid'
 * \p{CanadianAboriginal}                     Script 'Canadian_Aboriginal'
+* \p{Carian}                                 Script 'Carian'
 * \p{Cc}                                     Alias for \p{Cc} (General Category 'Cc')
   \p{Cc}                                     General Category 'Cc'
 * \p{Cf}                                     Alias for \p{Cf} (General Category 'Cf')
   \p{Cf}                                     General Category 'Cf'
+* \p{Cham}                                   Script 'Cham'
 * \p{Cherokee}                               Script 'Cherokee'
   \p{Cntrl}                                  [[:Cntrl:]]
 * \p{Cn}                                     Alias for \p{Cn} (General Category 'Cn' [not functional in Perl])
@@ -76,6 +78,7 @@
 * \p{InAlphabeticPresentationForms}          Block 'Alphabetic Presentation Forms'
 * \p{InAncientGreekMusicalNotation}          Block 'Ancient Greek Musical Notation'
 * \p{InAncientGreekNumbers}                  Block 'Ancient Greek Numbers'
+* \p{InAncientSymbols}                       Block 'Ancient Symbols'
 * \p{InArabicPresentationFormsA}             Block 'Arabic Presentation Forms-A'
 * \p{InArabicPresentationFormsB}             Block 'Arabic Presentation Forms-B'
 * \p{InArabicSupplement}                     Block 'Arabic Supplement'
@@ -93,6 +96,8 @@
 * \p{InBuginese}                             Block 'Buginese'
 * \p{InBuhid}                                Block 'Buhid'
 * \p{InByzantineMusicalSymbols}              Block 'Byzantine Musical Symbols'
+* \p{InCarian}                               Block 'Carian'
+* \p{InCham}                                 Block 'Cham'
 * \p{InCherokee}                             Block 'Cherokee'
 * \p{InCjkCompatibilityForms}                Block 'CJK Compatibility Forms'
 * \p{InCjkCompatibilityIdeographsSupplement} Block 'CJK Compatibility Ideographs Supplement'
@@ -115,11 +120,14 @@
 * \p{InCuneiform}                            Block 'Cuneiform'
 * \p{InCurrencySymbols}                      Block 'Currency Symbols'
 * \p{InCypriotSyllabary}                     Block 'Cypriot Syllabary'
+* \p{InCyrillicExtendedA}                    Block 'Cyrillic Extended-A'
+* \p{InCyrillicExtendedB}                    Block 'Cyrillic Extended-B'
 * \p{InCyrillicSupplement}                   Block 'Cyrillic Supplement'
 * \p{InCyrillic}                             Block 'Cyrillic'
 * \p{InDeseret}                              Block 'Deseret'
 * \p{InDevanagari}                           Block 'Devanagari'
 * \p{InDingbats}                             Block 'Dingbats'
+* \p{InDominoTiles}                          Block 'Domino Tiles'
 * \p{InEnclosedAlphanumerics}                Block 'Enclosed Alphanumerics'
 * \p{InEnclosedCjkLettersAndMonths}          Block 'Enclosed CJK Letters and Months'
 * \p{InEthiopicExtended}                     Block 'Ethiopic Extended'
@@ -151,6 +159,7 @@
 * \p{InKannada}                              Block 'Kannada'
 * \p{InKatakanaPhoneticExtensions}           Block 'Katakana Phonetic Extensions'
 * \p{InKatakana}                             Block 'Katakana'
+* \p{InKayahLi}                              Block 'Kayah Li'
 * \p{InKharoshthi}                           Block 'Kharoshthi'
 * \p{InKhmerSymbols}                         Block 'Khmer Symbols'
 * \p{InKhmer}                                Block 'Khmer'
@@ -161,11 +170,15 @@
 * \p{InLatinExtendedB}                       Block 'Latin Extended-B'
 * \p{InLatinExtendedC}                       Block 'Latin Extended-C'
 * \p{InLatinExtendedD}                       Block 'Latin Extended-D'
+* \p{InLepcha}                               Block 'Lepcha'
 * \p{InLetterlikeSymbols}                    Block 'Letterlike Symbols'
 * \p{InLimbu}                                Block 'Limbu'
 * \p{InLinearBIdeograms}                     Block 'Linear B Ideograms'
 * \p{InLinearBSyllabary}                     Block 'Linear B Syllabary'
 * \p{InLowSurrogates}                        Block 'Low Surrogates'
+* \p{InLycian}                               Block 'Lycian'
+* \p{InLydian}                               Block 'Lydian'
+* \p{InMahjongTiles}                         Block 'Mahjong Tiles'
 * \p{InMalayalam}                            Block 'Malayalam'
 * \p{InMathematicalAlphanumericSymbols}      Block 'Mathematical Alphanumeric Symbols'
 * \p{InMathematicalOperators}                Block 'Mathematical Operators'
@@ -182,22 +195,27 @@
 * \p{InNko}                                  Block 'NKo'
 * \p{InNumberForms}                          Block 'Number Forms'
 * \p{InOgham}                                Block 'Ogham'
+* \p{InOlChiki}                              Block 'Ol Chiki'
 * \p{InOldItalic}                            Block 'Old Italic'
 * \p{InOldPersian}                           Block 'Old Persian'
 * \p{InOpticalCharacterRecognition}          Block 'Optical Character Recognition'
 * \p{InOriya}                                Block 'Oriya'
 * \p{InOsmanya}                              Block 'Osmanya'
 * \p{InPhagsPa}                              Block 'Phags-pa'
+* \p{InPhaistosDisc}                         Block 'Phaistos Disc'
 * \p{InPhoenician}                           Block 'Phoenician'
 * \p{InPhoneticExtensionsSupplement}         Block 'Phonetic Extensions Supplement'
 * \p{InPhoneticExtensions}                   Block 'Phonetic Extensions'
 * \p{InPrivateUseArea}                       Block 'Private Use Area'
+* \p{InRejang}                               Block 'Rejang'
 * \p{InRunic}                                Block 'Runic'
+* \p{InSaurashtra}                           Block 'Saurashtra'
 * \p{InShavian}                              Block 'Shavian'
 * \p{InSinhala}                              Block 'Sinhala'
 * \p{InSmallFormVariants}                    Block 'Small Form Variants'
 * \p{InSpacingModifierLetters}               Block 'Spacing Modifier Letters'
 * \p{InSpecials}                             Block 'Specials'
+* \p{InSundanese}                            Block 'Sundanese'
 * \p{InSuperscriptsAndSubscripts}            Block 'Superscripts and Subscripts'
 * \p{InSupplementalArrowsA}                  Block 'Supplemental Arrows-A'
 * \p{InSupplementalArrowsB}                  Block 'Supplemental Arrows-B'
@@ -220,6 +238,7 @@
 * \p{InTifinagh}                             Block 'Tifinagh'
 * \p{InUgaritic}                             Block 'Ugaritic'
 * \p{InUnifiedCanadianAboriginalSyllabics}   Block 'Unified Canadian Aboriginal Syllabics'
+* \p{InVai}                                  Block 'Vai'
 * \p{InVariationSelectorsSupplement}         Block 'Variation Selectors Supplement'
 * \p{InVariationSelectors}                   Block 'Variation Selectors'
 * \p{InVerticalForms}                        Block 'Vertical Forms'
@@ -230,12 +249,14 @@
 * \p{JoinControl}                            Extended property 'Join_Control'
 * \p{Kannada}                                Script 'Kannada'
 * \p{Katakana}                               Script 'Katakana'
+* \p{KayahLi}                                Script 'Kayah_Li'
 * \p{Kharoshthi}                             Script 'Kharoshthi'
 * \p{Khmer}                                  Script 'Khmer'
 * \p{LC}                                     Alias for \p{LC} ([\p{Ll}\p{Lu}\p{Lt}])
   \p{LC}                                     [\p{Ll}\p{Lu}\p{Lt}]
 * \p{Lao}                                    Script 'Lao'
 * \p{Latin}                                  Script 'Latin'
+* \p{Lepcha}                                 Script 'Lepcha'
 * \p{Limbu}                                  Script 'Limbu'
 * \p{LinearB}                                Script 'Linear_B'
 * \p{Ll}                                     Alias for \p{Ll} (General Category 'Ll')
@@ -251,6 +272,8 @@
   \p{Lt}                                     General Category 'Lt'
 * \p{Lu}                                     Alias for \p{Lu} (General Category 'Lu')
   \p{Lu}                                     General Category 'Lu'
+* \p{Lycian}                                 Script 'Lycian'
+* \p{Lydian}                                 Script 'Lydian'
 * \p{L}                                      Alias for \p{L} (Major Category 'L')
   \p{L}                                      Major Category 'L'
 * \p{Malayalam}                              Script 'Malayalam'
@@ -277,6 +300,7 @@
 * \p{N}                                      Alias for \p{N} (Major Category 'N')
   \p{N}                                      Major Category 'N'
 * \p{Ogham}                                  Script 'Ogham'
+* \p{OlChiki}                                Script 'Ol_Chiki'
 * \p{OldItalic}                              Script 'Old_Italic'
 * \p{OldPersian}                             Script 'Old_Persian'
 * \p{Oriya}                                  Script 'Oriya'
@@ -295,6 +319,8 @@
   \p{Pc}                                     General Category 'Pc'
 * \p{Pd}                                     Alias for \p{Pd} (General Category 'Pd')
   \p{Pd}                                     General Category 'Pd'
+  \p{PerlSpace}                              
+  \p{PerlWord}                               
 * \p{Pe}                                     Alias for \p{Pe} (General Category 'Pe')
   \p{Pe}                                     General Category 'Pe'
 * \p{Pf}                                     Alias for \p{Pf} (General Category 'Pf')
@@ -303,6 +329,17 @@
 * \p{Phoenician}                             Script 'Phoenician'
 * \p{Pi}                                     Alias for \p{Pi} (General Category 'Pi')
   \p{Pi}                                     General Category 'Pi'
+  \p{PosixAlnum}                             
+  \p{PosixAlpha}                             
+  \p{PosixBlank}                             
+  \p{PosixCntrl}                             
+  \p{PosixDigit}                             
+  \p{PosixGraph}                             
+  \p{PosixLower}                             
+  \p{PosixPrint}                             
+  \p{PosixPunct}                             
+  \p{PosixSpace}                             
+  \p{PosixUpper}                             
 * \p{Po}                                     Alias for \p{Po} (General Category 'Po')
   \p{Po}                                     General Category 'Po'
   \p{Print}                                  [[:Print:]]
@@ -313,7 +350,9 @@
   \p{P}                                      Major Category 'P'
 * \p{QuotationMark}                          Extended property 'Quotation_Mark'
 * \p{Radical}                                Extended property 'Radical'
+* \p{Rejang}                                 Script 'Rejang'
 * \p{Runic}                                  Script 'Runic'
+* \p{Saurashtra}                             Script 'Saurashtra'
 * \p{Sc}                                     Alias for \p{Sc} (General Category 'Sc')
   \p{Sc}                                     General Category 'Sc'
 * \p{Shavian}                                Script 'Shavian'
@@ -328,6 +367,7 @@
   \p{SpacePerl}                              \s
   \p{Space}                                  [[:Space:]]
 * \p{Sterm}                                  Extended property 'STerm'
+* \p{Sundanese}                              Script 'Sundanese'
 * \p{SylotiNagri}                            Script 'Syloti_Nagri'
 * \p{Syriac}                                 Script 'Syriac'
 * \p{S}                                      Alias for \p{S} (Major Category 'S')
@@ -347,6 +387,7 @@
 * \p{UnifiedIdeograph}                       Extended property 'Unified_Ideograph'
 * \p{Uppercase}                              [\p{Lu}\p{OtherUppercase}]
   \p{Upper}                                  [[:Upper:]]
+* \p{Vai}                                    Script 'Vai'
 * \p{VariationSelector}                      Extended property 'Variation_Selector'
   \p{VertSpace}                              \v
 * \p{WhiteSpace}                             Extended property 'White_Space'

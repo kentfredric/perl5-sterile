@@ -18,7 +18,7 @@ my(@XSStack);	# Stack of conditionals and INCLUDEs
 my($XSS_work_idx, $cpp_next_tmp);
 
 use vars qw($VERSION);
-$VERSION = '2.18_02';
+$VERSION = '2.200403';
 
 use vars qw(%input_expr %output_expr $ProtoUsed @InitFileCode $FH $proto_re $Overload $errors $Fallback
 	    $cplusplus $hiertype $WantPrototypes $WantVersionChk $except $WantLineNumbers
@@ -76,7 +76,7 @@ sub process_file {
   $proto_re = "[" . quotemeta('\$%&*@;[]') . "]" ;
   $Overload = 0;
   $errors = 0;
-  $Fallback = 'PL_sv_undef';
+  $Fallback = '&PL_sv_undef';
 
   # Most of the 1500 lines below uses these globals.  We'll have to
   # clean this up sometime, probably.  For now, we just pull them out
@@ -210,7 +210,9 @@ sub process_file {
   $size = qr[,\s* (??{ $bal }) ]x; # Third arg (to setpvn)
 
   foreach my $key (keys %output_expr) {
-    BEGIN { $^H |= 0x00200000 }; # Equivalent to: use re 'eval', but hardcoded so we can compile re.xs
+    # We can still bootstrap compile 're', because in code re.pm is
+    # available to miniperl, and does not attempt to load the XS code.
+    use re 'eval';
 
     my ($t, $with_size, $arg, $sarg) =
       ($output_expr{$key} =~
@@ -305,9 +307,52 @@ EOM
     exit 0; # Not a fatal error for the caller process
   }
 
-    print <<"EOF";
+  print 'ExtUtils::ParseXS::CountLines'->end_marker, "\n" if $WantLineNumbers;
+
+  print <<"EOF";
 #ifndef PERL_UNUSED_VAR
 #  define PERL_UNUSED_VAR(var) if (0) var = var
+#endif
+
+EOF
+
+  print <<"EOF";
+#ifndef PERL_ARGS_ASSERT_CROAK_XS_USAGE
+#define PERL_ARGS_ASSERT_CROAK_XS_USAGE assert(cv); assert(params)
+
+/* prototype to pass -Wmissing-prototypes */
+STATIC void
+S_croak_xs_usage(pTHX_ const CV *const cv, const char *const params);
+
+STATIC void
+S_croak_xs_usage(pTHX_ const CV *const cv, const char *const params)
+{
+    const GV *const gv = CvGV(cv);
+
+    PERL_ARGS_ASSERT_CROAK_XS_USAGE;
+
+    if (gv) {
+        const char *const gvname = GvNAME(gv);
+        const HV *const stash = GvSTASH(gv);
+        const char *const hvname = stash ? HvNAME(stash) : NULL;
+
+        if (hvname)
+            Perl_croak(aTHX_ "Usage: %s::%s(%s)", hvname, gvname, params);
+        else
+            Perl_croak(aTHX_ "Usage: %s(%s)", gvname, params);
+    } else {
+        /* Pants. I don't think that it should be possible to get here. */
+        Perl_croak(aTHX_ "Usage: CODE(0x%"UVxf")(%s)", PTR2UV(cv), params);
+    }
+}
+#undef  PERL_ARGS_ASSERT_CROAK_XS_USAGE
+
+#ifdef PERL_IMPLICIT_CONTEXT
+#define croak_xs_usage(a,b)	S_croak_xs_usage(aTHX_ a,b)
+#else
+#define croak_xs_usage		S_croak_xs_usage
+#endif
+
 #endif
 
 EOF
@@ -512,7 +557,6 @@ EOF
       my $arg0 = ((defined($static) or $func_name eq 'new')
 		  ? "CLASS" : "THIS");
       unshift(@args, $arg0);
-      ($report_args = "$arg0, $report_args") =~ s/^\w+, $/$arg0/;
     }
     my $extra_args = 0;
     @args_num = ();
@@ -597,22 +641,17 @@ EOF
 #    *errbuf = '\0';
 EOF
 
-    if ($ALIAS)
-      { print Q(<<"EOF") if $cond }
+    if($cond) {
+    print Q(<<"EOF");
 #    if ($cond)
-#       Perl_croak(aTHX_ "Usage: %s(%s)", GvNAME(CvGV(cv)), "$report_args");
+#       croak_xs_usage(cv,  "$report_args");
 EOF
-    else
-      { print Q(<<"EOF") if $cond }
-#    if ($cond)
-#       Perl_croak(aTHX_ "Usage: %s(%s)", "$pname", "$report_args");
-EOF
-    
-     # cv doesn't seem to be used, in most cases unless we go in 
-     # the if of this else
-     print Q(<<"EOF");
+    } else {
+    # cv likely to be unused
+    print Q(<<"EOF");
 #    PERL_UNUSED_VAR(cv); /* -W */
 EOF
+    }
 
     #gcc -Wall: if an xsub has PPCODE is used
     #it is possible none of ST, XSRETURN or XSprePUSH macros are used
@@ -903,6 +942,7 @@ EOF
 #XS(XS_${Packid}_nil); /* prototype to pass -Wmissing-prototypes */
 #XS(XS_${Packid}_nil)
 #{
+#   dXSARGS;
 #   XSRETURN_EMPTY;
 #}
 #
@@ -937,10 +977,17 @@ EOF
 ##endif
 EOF
 
+  #Under 5.8.x and lower, newXS is declared in proto.h as expecting a non-const
+  #file name argument. If the wrong qualifier is used, it causes breakage with
+  #C++ compilers and warnings with recent gcc.
   #-Wall: if there is no $Full_func_name there are no xsubs in this .xs
   #so `file' is unused
   print Q(<<"EOF") if $Full_func_name;
-#    char* file = __FILE__;
+##if (PERL_REVISION == 5 && PERL_VERSION < 9)
+#    char file[] = __FILE__;
+##else
+#    const char* file = __FILE__;
+##endif
 EOF
 
   print Q("#\n");
@@ -987,12 +1034,12 @@ EOF
     print "\n    /* End of Initialisation Section */\n\n" ;
   }
 
-  if ($] >= 5.009) {
-    print <<'EOF';
-    if (PL_unitcheckav)
-         call_list(PL_scopestack_ix, PL_unitcheckav);
+  print Q(<<'EOF');
+##if (PERL_REVISION == 5 && PERL_VERSION >= 9)
+#  if (PL_unitcheckav)
+#       call_list(PL_scopestack_ix, PL_unitcheckav);
+##endif
 EOF
-  }
 
   print Q(<<"EOF");
 #    XSRETURN_YES;
@@ -1121,7 +1168,7 @@ sub INPUT_handler {
       print "\tSTRLEN\tSTRLEN_length_of_$2;\n";
       $lengthof{$2} = $name;
       # $islengthof{$name} = $1;
-      $deferred .= "\n\tXSauto_length_of_$2 = STRLEN_length_of_$2;";
+      $deferred .= "\n\tXSauto_length_of_$2 = STRLEN_length_of_$2;\n";
     }
 
     # check for optional initialisation code
@@ -1325,9 +1372,9 @@ sub FALLBACK_handler()
   
   TrimWhitespace($_) ;
   my %map = (
-	     TRUE => "PL_sv_yes", 1 => "PL_sv_yes",
-	     FALSE => "PL_sv_no", 0 => "PL_sv_no",
-	     UNDEF => "PL_sv_undef",
+	     TRUE => "&PL_sv_yes", 1 => "&PL_sv_yes",
+	     FALSE => "&PL_sv_no", 0 => "&PL_sv_no",
+	     UNDEF => "&PL_sv_undef",
 	    ) ;
   
   # check for valid FALLBACK value

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1010 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_getsig.al)"
+#line 1003 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_getsig.al)"
 sub _getsig {
     &_croak;
     my $rtsig = $_[0];

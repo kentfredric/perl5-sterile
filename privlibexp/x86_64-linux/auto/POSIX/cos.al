@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 173 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/cos.al)"
+#line 166 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/cos.al)"
 sub cos {
     usage "cos(x)" if @_ != 1;
     CORE::cos($_[0]);

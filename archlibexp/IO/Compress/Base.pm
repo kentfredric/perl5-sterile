@@ -6,7 +6,7 @@ require 5.004 ;
 use strict ;
 use warnings;
 
-use IO::Compress::Base::Common 2.008 ;
+use IO::Compress::Base::Common 2.021 ;
 
 use IO::File ;
 use Scalar::Util qw(blessed readonly);
@@ -20,7 +20,7 @@ use bytes;
 our (@ISA, $VERSION);
 @ISA    = qw(Exporter IO::File);
 
-$VERSION = '2.008';
+$VERSION = '2.021';
 
 #Can't locate object method "SWASHNEW" via package "utf8" (perhaps you forgot to load "utf8"?) at .../ext/Compress-Zlib/Gzip/blib/lib/Compress/Zlib/Common.pm line 16.
 
@@ -120,12 +120,14 @@ sub output
         &{ *$self->{FilterEnvelope} }();
     }
 
-    if ( defined *$self->{FH} ) {
-        defined *$self->{FH}->write( $data, length $data )
-          or return $self->saveErrorString(0, $!, $!); 
-    }
-    else {
-        ${ *$self->{Buffer} } .= $data ;
+    if (length $data) {
+        if ( defined *$self->{FH} ) {
+                defined *$self->{FH}->write( $data, length $data )
+                or return $self->saveErrorString(0, $!, $!); 
+        }
+        else {
+                ${ *$self->{Buffer} } .= $data ;
+        }
     }
 
     return 1;
@@ -215,8 +217,9 @@ sub _create
     }
 
     # If output is a file, check that it is writable
-    if ($outType eq 'filename' && -e $outValue && ! -w _)
-      { return $obj->saveErrorString(undef, "Output file '$outValue' is not writable" ) }
+    #no warnings;
+    #if ($outType eq 'filename' && -e $outValue && ! -w _)
+    #  { return $obj->saveErrorString(undef, "Output file '$outValue' is not writable" ) }
 
 
 
@@ -234,7 +237,7 @@ sub _create
     my $status ;
     if (! $merge)
     {
-        *$obj->{Compress} = $obj->mkComp($class, $got)
+        *$obj->{Compress} = $obj->mkComp($got)
             or return undef;
         
         *$obj->{UnCompSize} = new U64 ;
@@ -258,6 +261,7 @@ sub _create
                 }
             }
             elsif ($outType eq 'filename') {    
+                no warnings;
                 my $mode = '>' ;
                 $mode = '>>'
                     if $appendOutput;
@@ -297,8 +301,8 @@ sub ckOutputParam
     $self->croakError("$from: output parameter not a filename, filehandle or scalar ref")
         if ! $outType ;
 
-    $self->croakError("$from: output filename is undef or null string")
-        if $outType eq 'filename' && (! defined $_[0] || $_[0] eq '')  ;
+    #$self->croakError("$from: output filename is undef or null string")
+        #if $outType eq 'filename' && (! defined $_[0] || $_[0] eq '')  ;
 
     $self->croakError("$from: output buffer is read-only")
         if $outType eq 'buffer' && readonly(${ $_[0] });
@@ -321,7 +325,7 @@ sub _def
     my $haveOut = @_ ;
     my $output = shift ;
 
-    my $x = new Validator($class, *$obj->{Error}, $name, $input, $output)
+    my $x = new IO::Compress::Base::Validator($class, *$obj->{Error}, $name, $input, $output)
         or return undef ;
 
     push @_, $output if $haveOut && $x->{Hash};
@@ -482,14 +486,14 @@ sub _wr2
         my $status ;
         my $buff ;
         my $count = 0 ;
-        while (($status = read($fh, $buff, 16 * 1024)) > 0) {
+        while ($status = read($fh, $buff, 16 * 1024)) {
             $count += length $buff;
             defined $self->syswrite($buff, @_) 
                 or return undef ;
         }
 
         return $self->saveErrorString(undef, $!, $!) 
-            if $status < 0 ;
+            if ! defined $status ;
 
         if ( (!$isFilehandle || *$self->{AutoClose}) && $input ne '-')
         {    
@@ -545,6 +549,8 @@ sub UNTIE
 sub DESTROY
 {
     my $self = shift ;
+    local ($., $@, $!, $^E, $?);
+    
     $self->close() ;
 
     # TODO - memory leak with 5.8.0 - this isn't called until 
@@ -697,15 +703,13 @@ sub newStream
     $self->ckParams($got)
         or $self->croakError("newStream: $self->{Error}");
 
+    *$self->{Compress} = $self->mkComp($got)
+        or return 0;
+
     *$self->{Header} = $self->mkHeader($got) ;
     $self->output(*$self->{Header} )
         or return 0;
     
-    my $status = $self->reset() ;
-    return $self->saveErrorString(0, *$self->{Compress}{Error}, 
-                                  *$self->{Compress}{ErrorNo})
-        if $status == STATUS_ERROR;
-
     *$self->{UnCompSize}->reset();
     *$self->{CompSize}->reset();
 
@@ -939,9 +943,7 @@ __END__
 
 =head1 NAME
 
-
 IO::Compress::Base - Base Class for IO::Compress modules 
-
 
 =head1 SYNOPSIS
 
@@ -949,12 +951,8 @@ IO::Compress::Base - Base Class for IO::Compress modules
 
 =head1 DESCRIPTION
 
-
 This module is not intended for direct use in application code. Its sole
 purpose if to to be sub-classed by IO::Compress modules.
-
-
-
 
 =head1 SEE ALSO
 
@@ -966,15 +964,9 @@ L<File::GlobMapper|File::GlobMapper>, L<Archive::Zip|Archive::Zip>,
 L<Archive::Tar|Archive::Tar>,
 L<IO::Zlib|IO::Zlib>
 
-
-
-
-
 =head1 AUTHOR
 
 This module was written by Paul Marquess, F<pmqs@cpan.org>. 
-
-
 
 =head1 MODIFICATION HISTORY
 
@@ -982,9 +974,8 @@ See the Changes file.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005-2007 Paul Marquess. All rights reserved.
+Copyright (c) 2005-2009 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
-
 

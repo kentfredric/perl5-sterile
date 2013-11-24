@@ -16,7 +16,7 @@ package DynaLoader;
 # Tim.Bunce@ig.co.uk, August 1994
 
 BEGIN {
-    $VERSION = '1.08';
+    $VERSION = '1.10';
 }
 
 require AutoLoader;
@@ -40,10 +40,8 @@ $dl_debug = $ENV{PERL_DL_DEBUG} || 0 unless defined $dl_debug;
 
 sub dl_load_flags { 0x00 }
 
-# ($dl_dlext, $dlsrc)
-#         = @Config::Config{'dlext', 'dlsrc'};
-  ($dl_dlext, $dlsrc) = ('so', 'dl_dlopen.xs')
-;
+($dl_dlext, $dl_so, $dlsrc) = @Config::Config{qw(dlext so dlsrc)};
+
 
 $do_expand = 0;
 
@@ -148,7 +146,7 @@ sub bootstrap {
     my $modpname = join('/',@modparts);
 
     print STDERR "DynaLoader::bootstrap for $module ",
-		       "(auto/$modpname/$modfname.so)\n"
+		       "(auto/$modpname/$modfname.$dl_dlext)\n"
 	if $dl_debug;
 
     foreach (@INC) {
@@ -160,9 +158,8 @@ sub bootstrap {
 	next unless -d $dir; # skip over uninteresting directories
 	
 	# check for common cases to avoid autoload of dl_findfile
-	my $try =  "$dir/$modfname.so";
-	last if $file = (-f $try) && $try;
-	
+	my $try =  "$dir/$modfname.$dl_dlext";
+	last if $file = ($do_expand) ? dl_expandspec($try) : ((-f $try) && $try);
 	
 	# no luck here, save dir for possible later dl_findfile search
 	push @dirs, $dir;
@@ -280,13 +277,13 @@ sub dl_findfile {
         my(@names, $name);    # what filenames to look for
         if (m:-l: ) {          # convert -lname to appropriate library name
             s/-l//;
-            push(@names,"lib$_.so");
+            push(@names,"lib$_.$dl_so");
             push(@names,"lib$_.a");
         } else {                # Umm, a bare name. Try various alternatives:
             # these should be ordered with the most likely first
-            push(@names,"$_.so")    unless m/\.so$/o;
-            push(@names,"$_.so")     unless m/\.so$/o;
-            push(@names,"lib$_.so")  unless m:/:;
+            push(@names,"$_.$dl_dlext")    unless m/\.$dl_dlext$/o;
+            push(@names,"$_.$dl_so")     unless m/\.$dl_so$/o;
+            push(@names,"lib$_.$dl_so")  unless m:/:;
             push(@names,"$_.a")          if !m/\.a$/ and $dlsrc eq "dl_dld.xs";
             push(@names, $_);
         }

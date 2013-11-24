@@ -2,7 +2,7 @@ package Module::Build::PPMMaker;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.2808_01';
+$VERSION = '0.35';
 $VERSION = eval $VERSION;
 
 # This code is mostly borrowed from ExtUtils::MM_Unix 6.10_03, with a
@@ -113,6 +113,7 @@ EOF
   my $ppd_file = "$dist{name}.ppd";
   my $fh = IO::File->new(">$ppd_file")
     or die "Cannot write to $ppd_file: $!";
+  $fh->binmode(":utf8") if $fh->can("binmode");
   print $fh $ppd;
   close $fh;
 
@@ -130,8 +131,10 @@ sub _varchname {  # Copied from PPM.pm
   my ($self, $config) = @_;
   my $varchname = $config->{archname};
   # Append "-5.8" to architecture name for Perl 5.8 and later
-  if (defined($^V) && ord(substr($^V,1)) >= 8) {
-    $varchname .= sprintf("-%d.%d", ord($^V), ord(substr($^V,1)));
+  if ($] >= 5.008) {
+      my $vstring = sprintf "%vd", $^V;
+      $vstring =~ s/\.\d+$//;
+      $varchname .= "-$vstring";
   }
   return $varchname;
 }

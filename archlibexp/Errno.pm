@@ -12,7 +12,7 @@ use strict;
 "x86_64-linux-3.12.0-gentoo" or
 	die "Errno architecture (x86_64-linux-3.12.0-gentoo) does not match executable architecture ($Config{'archname'}-$Config{'osvers'})";
 
-$VERSION = "1.10";
+$VERSION = "1.11";
 $VERSION = eval $VERSION;
 @ISA = qw(Exporter);
 

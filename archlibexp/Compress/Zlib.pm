@@ -8,17 +8,17 @@ use Carp ;
 use IO::Handle ;
 use Scalar::Util qw(dualvar);
 
-use IO::Compress::Base::Common 2.008 ;
-use Compress::Raw::Zlib 2.008 ;
-use IO::Compress::Gzip 2.008 ;
-use IO::Uncompress::Gunzip 2.008 ;
+use IO::Compress::Base::Common 2.021 ;
+use Compress::Raw::Zlib 2.021 ;
+use IO::Compress::Gzip 2.021 ;
+use IO::Uncompress::Gunzip 2.021 ;
 
 use strict ;
 use warnings ;
 use bytes ;
 our ($VERSION, $XS_VERSION, @ISA, @EXPORT, $AUTOLOAD);
 
-$VERSION = '2.008';
+$VERSION = '2.021';
 $XS_VERSION = $VERSION; 
 $VERSION = eval $VERSION;
 
@@ -452,7 +452,7 @@ sub inflate
 
 package Compress::Zlib ;
 
-use IO::Compress::Gzip::Constants 2.008 ;
+use IO::Compress::Gzip::Constants 2.021 ;
 
 sub memGzip($)
 {
@@ -583,7 +583,7 @@ Compress::Zlib - Interface to zlib compression library
 
     ($d, $status) = deflateInit( [OPT] ) ;
     $status = $d->deflate($input, $output) ;
-    $status = $d->flush($output [, $flush_type]) ;
+    $status = $d->flush([$flush_type]) ;
     $d->deflateParams(OPTS) ;
     $d->deflateTune(OPTS) ;
     $d->dict_adler() ;
@@ -632,10 +632,7 @@ Compress::Zlib - Interface to zlib compression library
     $crc = adler32_combine($crc1, $crc2, $len2)l
     $crc = crc32_combine($adler1, $adler2, $len2)
 
-    ZLIB_VERSION
-    ZLIB_VERNUM
-
-
+    my $version = Compress::Raw::Zlib::zlib_version();
 
 =head1 DESCRIPTION
 
@@ -808,7 +805,6 @@ documentation for details.
 
 Returns 0 on success.
 
-
 =item B<$offset = $gz-E<gt>gztell() ;>
 
 Returns the uncompressed file offset.
@@ -892,7 +888,6 @@ I<zlib> errors. The I<gzcat> example below shows how the variable can
 be used safely.
 
 =back
-
 
 =head2 Examples
 
@@ -999,6 +994,11 @@ returns undef.
 The C<$buffer> parameter can either be a scalar or a scalar reference. The
 contents of the C<$buffer> parameter are destroyed after calling this function.
 
+If C<$buffer> consists of multiple concatenated gzip data streams only the
+first will be uncompressed. Use C<gunzip> with the C<MultiStream> option in
+the C<IO::Uncompress::Gunzip> module if you need to deal with concatenated
+data streams.
+
 See L<IO::Uncompress::Gunzip|IO::Uncompress::Gunzip> for an alternative way
 to carry out in-memory gzip uncompression.
 
@@ -1022,7 +1022,6 @@ The C<$level> parameter defines the compression level. Valid values are
 C<Z_BEST_COMPRESSION>, and C<Z_DEFAULT_COMPRESSION>.
 If C<$level> is not specified C<Z_DEFAULT_COMPRESSION> will be used.
 
-
 =item B<$dest = uncompress($source) ;>
 
 Uncompresses C<$source>. If successful it returns the uncompressed
@@ -1039,14 +1038,12 @@ See L<IO::Deflate|IO::Deflate> and L<IO::Inflate|IO::Inflate> included with
 this distribution for an alternative interface for reading/writing RFC 1950
 files/buffers.
 
-
 =head1 Deflate Interface
 
 This section defines an interface that allows in-memory compression using
 the I<deflate> interface provided by zlib.
 
 Here is a definition of the interface available:
-
 
 =head2 B<($d, $status) = deflateInit( [OPT] )>
 
@@ -1140,9 +1137,7 @@ options will take their default values.
     deflateInit( -Bufsize => 300, 
                  -Level => Z_BEST_SPEED  ) ;
 
-
 =head2 B<($out, $status) = $d-E<gt>deflate($buffer)>
-
 
 Deflates the contents of C<$buffer>. The buffer can either be a scalar
 or a scalar reference.  When finished, C<$buffer> will be
@@ -1159,8 +1154,8 @@ As with the I<deflate> function in I<zlib>, it is not necessarily the
 case that any output will be produced by this method. So don't rely on
 the fact that C<$out> is empty for an error test.
 
-
-=head2 B<($out, $status) = $d-E<gt>flush([flush_type])>
+=head2 B<($out, $status) = $d-E<gt>flush()>
+=head2 B<($out, $status) = $d-E<gt>flush($flush_type)>
 
 Typically used to finish the deflation. Any pending output will be
 returned via C<$out>.
@@ -1218,7 +1213,6 @@ Returns the total number of compressed bytes output from deflate.
 
 =head2 Example
 
-
 Here is a trivial example of using C<deflate>. It simply reads standard
 input, deflates it and writes it to standard output.
 
@@ -1256,7 +1250,6 @@ This section defines the interface available that allows in-memory
 uncompression using the I<deflate> interface provided by zlib.
 
 Here is a definition of the interface:
-
 
 =head2 B<($i, $status) = inflateInit()>
 
@@ -1349,7 +1342,6 @@ Any other return code means that a flush point was not found. If more
 data is available, C<inflateSync> can be called repeatedly with more
 compressed data until the flush point is found.
 
-
 =head2 B<$i-E<gt>dict_adler()>
 
 Returns the adler32 value for the dictionary.
@@ -1418,11 +1410,16 @@ CRC-related functions are available.
 
 These functions allow checksums to be merged.
 
+=head1 Misc
+
+=head2 my $version = Compress::Zlib::zlib_version();
+
+Returns the version of the zlib library.
+
 =head1 CONSTANTS
 
 All the I<zlib> constants are automatically imported when you make use
 of I<Compress::Zlib>.
-
 
 =head1 SEE ALSO
 
@@ -1433,7 +1430,6 @@ L<Compress::Zlib::FAQ|Compress::Zlib::FAQ>
 L<File::GlobMapper|File::GlobMapper>, L<Archive::Zip|Archive::Zip>,
 L<Archive::Tar|Archive::Tar>,
 L<IO::Zlib|IO::Zlib>
-
 
 For RFC 1950, 1951 and 1952 see 
 F<http://www.faqs.org/rfcs/rfc1950.html>,
@@ -1448,14 +1444,9 @@ F<http://www.zlib.org>.
 
 The primary site for gzip is F<http://www.gzip.org>.
 
-
-
-
 =head1 AUTHOR
 
 This module was written by Paul Marquess, F<pmqs@cpan.org>. 
-
-
 
 =head1 MODIFICATION HISTORY
 
@@ -1463,10 +1454,8 @@ See the Changes file.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 1995-2007 Paul Marquess. All rights reserved.
+Copyright (c) 1995-2009 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
-
-
 

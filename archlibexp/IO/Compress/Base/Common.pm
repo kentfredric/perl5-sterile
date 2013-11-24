@@ -11,7 +11,7 @@ use File::GlobMapper;
 require Exporter;
 our ($VERSION, @ISA, @EXPORT, %EXPORT_TAGS, $HAS_ENCODE);
 @ISA = qw(Exporter);
-$VERSION = '2.008';
+$VERSION = '2.021';
 
 @EXPORT = qw( isaFilehandle isaFilename whatIsInput whatIsOutput 
               isaFileGlobString cleanFileGlobString oneTarget
@@ -192,7 +192,7 @@ sub oneTarget
     return $_[0] =~ /^(code|handle|buffer|filename)$/;
 }
 
-sub Validator::new
+sub IO::Compress::Base::Validator::new
 {
     my $class = shift ;
 
@@ -320,7 +320,7 @@ sub Validator::new
     return $obj ;
 }
 
-sub Validator::saveErrorString
+sub IO::Compress::Base::Validator::saveErrorString
 {
     my $self   = shift ;
     ${ $self->{Error} } = shift ;
@@ -328,7 +328,7 @@ sub Validator::saveErrorString
     
 }
 
-sub Validator::croakError
+sub IO::Compress::Base::Validator::croakError
 {
     my $self   = shift ;
     $self->saveErrorString($_[0]);
@@ -337,7 +337,7 @@ sub Validator::croakError
 
 
 
-sub Validator::validateInputFilenames
+sub IO::Compress::Base::Validator::validateInputFilenames
 {
     my $self = shift ;
 
@@ -367,7 +367,7 @@ sub Validator::validateInputFilenames
     return 1 ;
 }
 
-sub Validator::validateInputArray
+sub IO::Compress::Base::Validator::validateInputArray
 {
     my $self = shift ;
 
@@ -398,7 +398,7 @@ sub Validator::validateInputArray
     return 1 ;
 }
 
-#sub Validator::validateHash
+#sub IO::Compress::Base::Validator::validateHash
 #{
 #    my $self = shift ;
 #    my $href = shift ;
@@ -485,7 +485,11 @@ sub ParseParameters
 
     my $sub = (caller($level + 1))[3] ;
     local $Carp::CarpLevel = 1 ;
-    my $p = new IO::Compress::Base::Parameters() ;
+    
+    return $_[1]
+        if @_ == 2 && defined $_[1] && UNIVERSAL::isa($_[1], "IO::Compress::Base::Parameters");
+    
+    my $p = new IO::Compress::Base::Parameters() ;            
     $p->parse(@_)
         or croak "$sub: $p->{Error}" ;
 
@@ -534,6 +538,7 @@ sub IO::Compress::Base::Parameters::parse
 
     my $got = $self->{Got} ;
     my $firstTime = keys %{ $got } == 0 ;
+    my $other;
 
     my (@Bad) ;
     my @entered = () ;
@@ -544,7 +549,8 @@ sub IO::Compress::Base::Parameters::parse
         @entered = () ;
     }
     elsif (@_ == 1) {
-        my $href = $_[0] ;    
+        my $href = $_[0] ;
+    
         return $self->setError("Expected even number of parameters, got 1")
             if ! defined $href or ! ref $href or ref $href ne "HASH" ;
  
@@ -559,8 +565,13 @@ sub IO::Compress::Base::Parameters::parse
             if $count % 2 != 0 ;
         
         for my $i (0.. $count / 2 - 1) {
-            push @entered, $_[2* $i] ;
-            push @entered, \$_[2* $i+1] ;
+            if ($_[2 * $i] eq '__xxx__') {
+                $other = $_[2 * $i + 1] ;
+            }
+            else {
+                push @entered, $_[2 * $i] ;
+                push @entered, \$_[2 * $i + 1] ;
+            }
         }
     }
 
@@ -588,6 +599,24 @@ sub IO::Compress::Base::Parameters::parse
     }
 
     my %parsed = ();
+    
+    if ($other) 
+    {
+        for my $key (keys %$default)  
+        {
+            my $canonkey = lc $key;
+            if ($other->parsed($canonkey))
+            {
+                my $value = $other->value($canonkey);
+#print "SET '$canonkey' to $value [$$value]\n";
+                ++ $parsed{$canonkey};
+                $got->{$canonkey}[OFF_PARSED]  = 1;
+                $got->{$canonkey}[OFF_DEFAULT] = $value;
+                $got->{$canonkey}[OFF_FIXED]   = $value;
+            }
+        }
+    }
+    
     for my $i (0.. @entered / 2 - 1) {
         my $key = $entered[2* $i] ;
         my $value = $entered[2* $i+1] ;
@@ -627,7 +656,7 @@ sub IO::Compress::Base::Parameters::parse
  
     if (@Bad) {
         my ($bad) = join(", ", @Bad) ;
-        return $self->setError("unknown key value(s) @Bad") ;
+        return $self->setError("unknown key value(s) $bad") ;
     }
 
     return 1;
@@ -787,6 +816,7 @@ sub IO::Compress::Base::Parameters::clone
 package U64;
 
 use constant MAX32 => 0xFFFFFFFF ;
+use constant HI_1 => MAX32 + 1 ;
 use constant LOW   => 0 ;
 use constant HIGH  => 1;
 
@@ -854,6 +884,14 @@ sub get32bit
     return $self->[LOW];
 }
 
+sub get64bit
+{
+    my $self = shift;
+    # Not using << here because the result will still be
+    # a 32-bit value on systems where int size is 32-bits
+    return $self->[HIGH] * HI_1 + $self->[LOW];
+}
+
 sub add
 {
     my $self = shift;
@@ -873,6 +911,7 @@ sub add
     else {
        $self->[LOW] += $value ;
     }
+
 }
 
 sub equal
@@ -882,6 +921,12 @@ sub equal
 
     return $self->[LOW]  == $other->[LOW] &&
            $self->[HIGH] == $other->[HIGH] ;
+}
+
+sub is64bit
+{
+    my $self = shift;
+    return $self->[HIGH] > 0 ;
 }
 
 sub getPacked_V64

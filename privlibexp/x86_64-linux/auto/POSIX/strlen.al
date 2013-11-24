@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 547 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strlen.al)"
+#line 540 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strlen.al)"
 sub strlen {
     unimpl "strlen() is C-specific, use length instead";
 }

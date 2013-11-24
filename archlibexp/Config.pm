@@ -1,6 +1,10 @@
 # This file was created by configpm when Perl was built. Any changes
 # made to this file will be lost the next time perl is built.
 
+# for a description of the variables, please have a look at the
+# Glossary file, as written in the Porting folder, or use the url:
+# http://perl5.git.perl.org/perl.git/blob/HEAD:/Porting/Glossary
+
 package Config;
 use strict;
 # use warnings; Pulls in Carp
@@ -40,11 +44,11 @@ sub import {
     return;
 }
 
-die "Perl lib version (5.10.0) doesn't match executable version ($])"
+die "Perl lib version (5.11.0) doesn't match executable version ($])"
     unless $^V;
 
-$^V eq 5.10.0
-    or die "Perl lib version (5.10.0) doesn't match executable version (" .
+$^V eq 5.11.0
+    or die "Perl lib version (5.11.0) doesn't match executable version (" .
 	sprintf("v%vd",$^V) . ")";
 
 
@@ -70,7 +74,7 @@ sub AUTOLOAD {
 
 # tie returns the object, so the value returned to require will be true.
 tie %Config, 'Config', {
-    archlibexp => '/home/kent/perl5/perlbrew/perls/5.10.0-pristine/lib/5.10.0/x86_64-linux',
+    archlibexp => '/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/5.11.0/x86_64-linux',
     archname => 'x86_64-linux',
     cc => 'cc',
     d_readlink => 'define',
@@ -78,18 +82,18 @@ tie %Config, 'Config', {
     dlsrc => 'dl_dlopen.xs',
     dont_use_nlink => undef,
     exe_ext => '',
-    inc_version_list => ' ',
+    inc_version_list => '',
     intsize => '4',
     ldlibpthname => 'LD_LIBRARY_PATH',
     libpth => '/lib/../lib64 /usr/lib/../lib64 /lib /usr/lib /lib64 /usr/lib64',
     osname => 'linux',
     osvers => '3.12.0-gentoo',
     path_sep => ':',
-    privlibexp => '/home/kent/perl5/perlbrew/perls/5.10.0-pristine/lib/5.10.0',
-    scriptdir => '/home/kent/perl5/perlbrew/perls/5.10.0-pristine/bin',
-    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.10.0-pristine/lib/site_perl/5.10.0/x86_64-linux',
-    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.10.0-pristine/lib/site_perl/5.10.0',
+    privlibexp => '/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/5.11.0',
+    scriptdir => '/home/kent/perl5/perlbrew/perls/5.11.0-pristine/bin',
+    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/site_perl/5.11.0/x86_64-linux',
+    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/site_perl/5.11.0',
     useithreads => undef,
     usevendorprefix => undef,
-    version => '5.10.0',
+    version => '5.11.0',
 };

@@ -9,7 +9,7 @@
 
 package Data::Dumper;
 
-$VERSION = '2.121_14';
+$VERSION = '2.125'; # Don't forget to set version and release date in POD!
 
 #$| = 1;
 
@@ -65,7 +65,7 @@ sub new {
 
   croak "Usage:  PACKAGE->new(ARRAYREF, [ARRAYREF])" 
     unless (defined($v) && (ref($v) eq 'ARRAY'));
-  $n = [] unless (defined($n) && (ref($v) eq 'ARRAY'));
+  $n = [] unless (defined($n) && (ref($n) eq 'ARRAY'));
 
   my($s) = { 
              level      => 0,           # current recursive depth
@@ -101,7 +101,7 @@ sub new {
   return bless($s, $c);
 }
 
-if ($] >= 5.006) {
+if ($] >= 5.008) {
   # Packed numeric addresses take less memory. Plus pack is faster than sprintf
   *init_refaddr_format = sub {};
 
@@ -231,11 +231,6 @@ sub Dumpperl {
       $name = "\$" . $s->{varname} . $i;
     }
 
-    # Ensure hash iterator is reset
-    if (ref($val) eq 'HASH') {
-        keys(%$val);
-    }
-
     my $valstr;
     {
       local($s->{apad}) = $s->{apad};
@@ -326,11 +321,11 @@ sub _dump {
 			    $val ];
       }
     }
-
-    if ($realpack and $realpack eq 'Regexp') {
-	$out = "$val";
-	$out =~ s,/,\\/,g;
-	return "qr/$out/";
+    my $no_bless = 0; 
+    my $is_regex = 0;
+    if ( $realpack and ($] >= 5.009005 ? re::is_regexp($val) : $realpack eq 'Regexp') ) {
+        $is_regex = 1;
+        $no_bless = $realpack eq 'Regexp';
     }
 
     # If purity is not set and maxdepth is set, then check depth: 
@@ -345,7 +340,7 @@ sub _dump {
     }
 
     # we have a blessed ref
-    if ($realpack) {
+    if ($realpack and !$no_bless) {
       $out = $s->{'bless'} . '( ';
       $blesspad = $s->{apad};
       $s->{apad} .= '       ' if ($s->{indent} >= 2);
@@ -354,7 +349,28 @@ sub _dump {
     $s->{level}++;
     $ipad = $s->{xpad} x $s->{level};
 
-    if ($realtype eq 'SCALAR' || $realtype eq 'REF') {
+    if ($is_regex) {
+        my $pat;
+        # This really sucks, re:regexp_pattern is in ext/re/re.xs and not in 
+        # universal.c, and even worse we cant just require that re to be loaded
+        # we *have* to use() it. 
+        # We should probably move it to universal.c for 5.10.1 and fix this.
+        # Currently we only use re::regexp_pattern when the re is blessed into another
+        # package. This has the disadvantage of meaning that a DD dump won't round trip
+        # as the pattern will be repeatedly wrapped with the same modifiers.
+        # This is an aesthetic issue so we will leave it for now, but we could use
+        # regexp_pattern() in list context to get the modifiers separately.
+        # But since this means loading the full debugging engine in process we wont
+        # bother unless its necessary for accuracy.
+        if (($realpack ne 'Regexp') && defined(*re::regexp_pattern{CODE})) {
+            $pat = re::regexp_pattern($val);
+        } else {
+            $pat = "$val";
+        }
+        $pat =~ s,/,\\/,g;
+        $out .= "qr/$pat/";
+    }
+    elsif ($realtype eq 'SCALAR' || $realtype eq 'REF') {
       if ($realpack) {
 	$out .= 'do{\\(my $o = ' . $s->_dump($$val, "\${$name}") . ')}';
       }
@@ -366,7 +382,7 @@ sub _dump {
 	$out .= '\\' . $s->_dump($$val, "*{$name}");
     }
     elsif ($realtype eq 'ARRAY') {
-      my($v, $pad, $mname);
+      my($pad, $mname);
       my($i) = 0;
       $out .= ($name =~ /^\@/) ? '(' : '[';
       $pad = $s->{sep} . $s->{pad} . $s->{apad};
@@ -375,7 +391,7 @@ sub _dump {
 	($name =~ /^\\?[\%\@\*\$][^{].*[]}]$/) ? ($mname = $name) :
 	  ($mname = $name . '->');
       $mname .= '->' if $mname =~ /^\*.+\{[A-Z]+\}$/;
-      for $v (@$val) {
+      for my $v (@$val) {
 	$sname = $mname . '[' . $i . ']';
 	$out .= $pad . $ipad . '#' . $i if $s->{indent} >= 3;
 	$out .= $pad . $ipad . $s->_dump($v, $sname);
@@ -408,6 +424,10 @@ sub _dump {
 	  $keys = [ sort keys %$val ];
 	}
       }
+
+      # Ensure hash iterator is reset
+      keys(%$val);
+
       while (($k, $v) = ! $sortkeys ? (each %$val) :
 	     @$keys ? ($key = shift(@$keys), $val->{$key}) :
 	     () ) 
@@ -444,7 +464,7 @@ sub _dump {
       croak "Can\'t handle $realtype type.";
     }
     
-    if ($realpack) { # we have a blessed ref
+    if ($realpack and !$no_bless) { # we have a blessed ref
       $out .= ', ' . _quote($realpack) . ' )';
       $out .= '->' . $s->{toaster} . '()'  if $s->{toaster} ne '';
       $s->{apad} = $blesspad;
@@ -734,7 +754,7 @@ Data::Dumper - stringified perl data structures, suitable for both printing and 
 =head1 DESCRIPTION
 
 Given a list of scalars or reference variables, writes out their contents in
-perl syntax. The references can also be objects.  The contents of each
+perl syntax. The references can also be objects.  The content of each
 variable is output in a single Perl statement.  Handles self-referential
 structures correctly.
 
@@ -997,7 +1017,7 @@ Default is: C< =E<gt> >.
 $Data::Dumper::Maxdepth  I<or>  $I<OBJ>->Maxdepth(I<[NEWVAL]>)
 
 Can be set to a positive integer that specifies the depth beyond which
-which we don't venture into a structure.  Has no effect when
+we don't venture into a structure.  Has no effect when
 C<Data::Dumper::Purity> is set.  (Useful in debugger when we often don't
 want to see more than enough).  Default is 0, which means there is 
 no maximum depth. 
@@ -1277,7 +1297,7 @@ modify it under the same terms as Perl itself.
 
 =head1 VERSION
 
-Version 2.121  (Aug 24 2003)
+Version 2.125  (Aug  8 2009)
 
 =head1 SEE ALSO
 

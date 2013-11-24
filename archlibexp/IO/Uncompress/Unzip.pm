@@ -8,18 +8,21 @@ use strict ;
 use warnings;
 use bytes;
 
-use IO::Uncompress::RawInflate  2.008 ;
-use IO::Compress::Base::Common  2.008 qw(:Status createSelfTiedObject);
-use IO::Uncompress::Adapter::Identity 2.008 ;
-use IO::Compress::Zlib::Extra 2.008 ;
-use IO::Compress::Zip::Constants 2.008 ;
+use IO::Uncompress::RawInflate  2.021 ;
+use IO::Compress::Base::Common  2.021 qw(:Status createSelfTiedObject);
+use IO::Uncompress::Adapter::Inflate  2.021 ;
+use IO::Uncompress::Adapter::Identity 2.021 ;
+use IO::Compress::Zlib::Extra 2.021 ;
+use IO::Compress::Zip::Constants 2.021 ;
 
-use Compress::Raw::Zlib  2.008 qw(crc32) ;
+use Compress::Raw::Zlib  2.021 qw(crc32) ;
 
 BEGIN
 {
     eval { require IO::Uncompress::Adapter::Bunzip2 ;
            import  IO::Uncompress::Adapter::Bunzip2 } ;
+   eval { require IO::Uncompress::Adapter::UnLzma ;
+           import  IO::Uncompress::Adapter::UnLzma } ;
 }
 
 
@@ -27,7 +30,7 @@ require Exporter ;
 
 our ($VERSION, @ISA, @EXPORT_OK, %EXPORT_TAGS, $UnzipError, %headerLookup);
 
-$VERSION = '2.008';
+$VERSION = '2.021';
 $UnzipError = '';
 
 @ISA    = qw(Exporter IO::Uncompress::RawInflate);
@@ -60,14 +63,17 @@ sub unzip
 
 sub getExtraParams
 {
-    use IO::Compress::Base::Common  2.008 qw(:Parse);
+    use IO::Compress::Base::Common  2.021 qw(:Parse);
 
     
     return (
 #            # Zip header fields
-            'Name'      => [1, 1, Parse_any,       undef],
+            'Name'    => [1, 1, Parse_any,       undef],
 
-#            'Streaming' => [1, 1, Parse_boolean,   1],
+#            'Stream' => [1, 1, Parse_boolean,   1],
+            # This means reading the central directory to get
+            # 1. the local header offsets
+            # 2. The compressed data length
         );    
 }
 
@@ -84,6 +90,20 @@ sub ckParams
     return 1;
 }
 
+sub mkUncomp
+{
+    my $self = shift ;
+    my $got = shift ;
+
+     my $magic = $self->ckMagic()
+        or return 0;
+
+    *$self->{Info} = $self->readHeader($magic)
+        or return undef ;
+
+    return 1;
+
+}
 
 sub ckMagic
 {
@@ -107,6 +127,30 @@ sub ckMagic
 }
 
 
+sub fastForward
+{
+    my $self = shift;
+    my $offset = shift;
+
+    # TODO - if Stream isn't enabled & reading from file, use seek
+
+    my $buffer = '';
+    my $c = 1024 * 16;
+
+    while ($offset > 0)
+    {
+        $c = length $offset
+            if length $offset < $c ;
+
+        $offset -= $c;
+
+        $self->smartReadExact(\$buffer, $c)
+            or return 0;
+    }
+
+    return 1;
+}
+
 
 sub readHeader
 {
@@ -124,6 +168,7 @@ sub readHeader
         }
 
         # skip the data
+        # TODO - when Stream is off, use seek
         my $buffer;
         if (*$self->{ZipData}{Streaming}) {
 
@@ -154,8 +199,8 @@ sub readHeader
                 or return $self->saveErrorString(undef, "Truncated file");
         }
         else {
-            my $c = $hdr->{CompressedLength}->get32bit();
-            $self->smartReadExact(\$buffer, $c)
+            my $c = $hdr->{CompressedLength}->get64bit();
+            $self->fastForward($c)
                 or return $self->saveErrorString(undef, "Truncated file");
             $buffer = '';
         }
@@ -201,6 +246,10 @@ sub chkTrailer
              *$self->{ZipData}{CompressedLen},
              *$self->{ZipData}{UnCompressedLen});
     }
+
+    *$self->{Info}{CRC32} = *$self->{ZipData}{CRC32} ;
+    *$self->{Info}{CompressedLength} = $cSize->get64bit();
+    *$self->{Info}{UncompressedLength} = $uSize->get64bit();
 
     if (*$self->{Strict}) {
         return $self->TrailerError("CRC mismatch")
@@ -366,14 +415,14 @@ sub skipCentralDirectory64Rec
     my $keep = $magic . $buffer ;
 
     my ($sizeLo, $sizeHi)  = unpack ("V V", $buffer);
+    my $size = $sizeHi * 0xFFFFFFFF + $sizeLo;
 
-    # TODO - take SizeHi into account
-    $self->smartReadExact(\$buffer, $sizeLo)
+    $self->fastForward($size)
         or return $self->TrailerError("Minimum header size is " . 
-                                     $sizeLo . " bytes") ;
+                                     $size . " bytes") ;
 
-    $keep .= $buffer ;
-    *$self->{HeaderPending} = $keep ;
+   #$keep .= $buffer ;
+   #*$self->{HeaderPending} = $keep ;
 
    #my $versionMadeBy      = unpack ("v",   substr($buffer,  0, 2));
    #my $extractVersion     = unpack ("v",   substr($buffer,  2, 2));
@@ -490,8 +539,8 @@ sub _readZipHeader($)
     my $compressedMethod   = unpack ("v", substr($buffer, 8-4,  2));
     my $lastModTime        = unpack ("V", substr($buffer, 10-4, 4));
     my $crc32              = unpack ("V", substr($buffer, 14-4, 4));
-    my $compressedLength   = new U64 unpack ("V", substr($buffer, 18-4, 4));
-    my $uncompressedLength = new U64 unpack ("V", substr($buffer, 22-4, 4));
+    my $compressedLength   = U64::newUnpack_V32 substr($buffer, 18-4, 4);
+    my $uncompressedLength = U64::newUnpack_V32 substr($buffer, 22-4, 4);
     my $filename_length    = unpack ("v", substr($buffer, 26-4, 2)); 
     my $extra_length       = unpack ("v", substr($buffer, 28-4, 2));
 
@@ -545,27 +594,27 @@ sub _readZipHeader($)
 
             my $buff = ${ $Extra{ZIP_EXTRA_ID_ZIP64()} };
 
-            # TODO - This code assumes that all the fields in the Zip64
+            # This code assumes that all the fields in the Zip64
             # extra field aren't necessarily present. The spec says that
             # they only exist if the equivalent local headers are -1.
-            # Need to check that info-zip fills out -1 in the local header
-            # correctly.
 
             if (! $streamingMode) {
                 my $offset = 0 ;
 
-                $uncompressedLength = U64::newUnpack_V64 substr($buff,  0, 8)
-                    if $uncompressedLength == 0xFFFF ;
+                if ($uncompressedLength->get32bit() == 0xFFFFFFFF ) {
+                    $uncompressedLength 
+                            = U64::newUnpack_V64 substr($buff, 0, 8);
 
-                $offset += 8 ;
+                    $offset += 8 ;
+                }
 
-                $compressedLength = U64::newUnpack_V64 substr($buff, $offset, 8)
-                    if $compressedLength == 0xFFFF ;
+                if ($compressedLength->get32bit() == 0xFFFFFFFF) {
 
-                $offset += 8 ;
+                    $compressedLength 
+                        = U64::newUnpack_V64 substr($buff, $offset, 8);
 
-                #my $cheaderOffset = U64::newUnpack_V64 substr($buff, 16, 8);
-                #my $diskNumber = unpack ("V", substr($buff, 24, 4));
+                    $offset += 8 ;
+                }
            }
         }
     }
@@ -578,26 +627,56 @@ sub _readZipHeader($)
         *$self->{ZipData}{CompressedLen} = $compressedLength;
         *$self->{ZipData}{UnCompressedLen} = $uncompressedLength;
         *$self->{CompressedInputLengthRemaining} =
-            *$self->{CompressedInputLength} = $compressedLength->get32bit();
+            *$self->{CompressedInputLength} = $compressedLength->get64bit();
     }
 
+    *$self->{ZipData}{CRC32} = crc32(undef);
     *$self->{ZipData}{Method} = $compressedMethod;
     if ($compressedMethod == ZIP_CM_DEFLATE)
     {
         *$self->{Type} = 'zip-deflate';
+        my $obj = IO::Uncompress::Adapter::Inflate::mkUncompObject(1,0,0);
+
+        *$self->{Uncomp} = $obj;
     }
     elsif ($compressedMethod == ZIP_CM_BZIP2)
     {
-    #if (! defined $IO::Uncompress::Adapter::Bunzip2::VERSION)
+        return $self->HeaderError("Unsupported Compression format $compressedMethod")
+            if ! defined $IO::Uncompress::Adapter::Bunzip2::VERSION ;
         
         *$self->{Type} = 'zip-bzip2';
         
-        my $obj = IO::Uncompress::Adapter::Bunzip2::mkUncompObject(
-                                                              );
+        my $obj = IO::Uncompress::Adapter::Bunzip2::mkUncompObject();
 
         *$self->{Uncomp} = $obj;
-        *$self->{ZipData}{CRC32} = crc32(undef);
+    }
+    elsif ($compressedMethod == ZIP_CM_LZMA)
+    {
+        return $self->HeaderError("Unsupported Compression format $compressedMethod")
+            if ! defined $IO::Uncompress::Adapter::UnLzma::VERSION ;
+        
+        *$self->{Type} = 'zip-lzma';
+        my $LzmaHeader;
+        $self->smartReadExact(\$LzmaHeader, 4)
+                or return $self->saveErrorString(undef, "Truncated file");
+        my ($verHi, $verLo)   = unpack ("CC", substr($LzmaHeader, 0, 2));
+        my $LzmaPropertiesSize   = unpack ("v", substr($LzmaHeader, 2, 2));
 
+
+        my $LzmaPropertyData;
+        $self->smartReadExact(\$LzmaPropertyData, $LzmaPropertiesSize)
+                or return $self->saveErrorString(undef, "Truncated file");
+        #my $LzmaInfo = unpack ("C", substr($LzmaPropertyData, 0, 1));    
+        #my $LzmaDictSize = unpack ("V", substr($LzmaPropertyData, 1, 4));    
+
+        # Create an LZMA_Alone header 
+        $self->pushBack($LzmaPropertyData . 
+                $uncompressedLength->getPacked_V64());
+
+        my $obj =
+        IO::Uncompress::Adapter::UnLzma::mkUncompObject();
+
+        *$self->{Uncomp} = $obj;
     }
     elsif ($compressedMethod == ZIP_CM_STORE)
     {
@@ -605,12 +684,9 @@ sub _readZipHeader($)
 
         *$self->{Type} = 'zip-stored';
         
-        my $obj = IO::Uncompress::Adapter::Identity::mkUncompObject(# $got->value('CRC32'),
-                                                             # $got->value('ADLER32'),
-                                                              );
+        my $obj = IO::Uncompress::Adapter::Identity::mkUncompObject();
 
         *$self->{Uncomp} = $obj;
-
     }
     else
     {
@@ -637,9 +713,11 @@ sub _readZipHeader($)
                                  ? "Deflated" 
                                  : $compressedMethod == ZIP_CM_BZIP2
                                      ? "Bzip2"
-                                     : $compressedMethod == ZIP_CM_STORE
-                                         ? "Stored"
-                                         : "Unknown" ,
+                                     : $compressedMethod == ZIP_CM_LZMA
+                                         ? "Lzma"
+                                         : $compressedMethod == ZIP_CM_STORE
+                                             ? "Stored"
+                                             : "Unknown" ,
 
 #        'TextFlag'      => $flag & GZIP_FLG_FTEXT ? 1 : 0,
 #        'HeaderCRCFlag' => $flag & GZIP_FLG_FHCRC ? 1 : 0,
@@ -664,21 +742,18 @@ sub filterUncompressed
 {
     my $self = shift ;
 
-    if (*$self->{ZipData}{Method} == 12) {
-        *$self->{ZipData}{CRC32} = crc32(${$_[0]}, *$self->{ZipData}{CRC32});
+    if (*$self->{ZipData}{Method} == ZIP_CM_DEFLATE) {
+        *$self->{ZipData}{CRC32} = *$self->{Uncomp}->crc32() ;
     }
     else {
-        *$self->{ZipData}{CRC32} = *$self->{Uncomp}->crc32() ;
+        *$self->{ZipData}{CRC32} = crc32(${$_[0]}, *$self->{ZipData}{CRC32});
     }
 }    
 
 
-# from Archive::Zip
+# from Archive::Zip & info-zip
 sub _dosToUnixTime
 {
-    #use Time::Local 'timelocal_nocheck';
-    use Time::Local 'timelocal';
-
 	my $dt = shift;
 
 	my $year = ( ( $dt >> 25 ) & 0x7f ) + 80;
@@ -689,11 +764,11 @@ sub _dosToUnixTime
 	my $min  = ( ( $dt >> 5 ) & 0x3f );
 	my $sec  = ( ( $dt << 1 ) & 0x3e );
 
-	# catch errors
-	my $time_t =
-	  eval { timelocal( $sec, $min, $hour, $mday, $mon, $year ); };
-	return 0 
-        if $@;
+
+    use POSIX 'mktime';
+
+    my $time_t = mktime( $sec, $min, $hour, $mday, $mon, $year, 0, 0, -1 );
+    return 0 if ! defined $time_t;
 	return $time_t;
 }
 
@@ -705,11 +780,7 @@ __END__
 
 =head1 NAME
 
-
-
 IO::Uncompress::Unzip - Read zip files/buffers
-
-
 
 =head1 SYNOPSIS
 
@@ -756,19 +827,12 @@ IO::Uncompress::Unzip - Read zip files/buffers
     eof($z)
     close($z)
 
-
 =head1 DESCRIPTION
-
-
 
 This module provides a Perl interface that allows the reading of
 zlib files/buffers.
 
 For writing zip files/buffers, see the companion module IO::Compress::Zip.
-
-
-
-
 
 =head1 Functional Interface
 
@@ -782,13 +846,9 @@ section.
     unzip $input => $output [,OPTS] 
         or die "unzip failed: $UnzipError\n";
 
-
-
 The functional interface needs Perl5.005 or better.
 
-
 =head2 unzip $input => $output [, OPTS]
-
 
 C<unzip> expects at least two parameters, C<$input> and C<$output>.
 
@@ -828,8 +888,6 @@ The input data will be read from each file in turn.
 The complete array will be walked to ensure that it only
 contains valid filenames before any data is uncompressed.
 
-
-
 =item An Input FileGlob string
 
 If C<$input> is a string that is delimited by the characters "<" and ">"
@@ -840,12 +898,9 @@ If the fileglob does not match any files ...
 
 See L<File::GlobMapper|File::GlobMapper> for more details.
 
-
 =back
 
 If the C<$input> parameter is any other type, C<undef> will be returned.
-
-
 
 =head3 The C<$output> parameter
 
@@ -866,13 +921,10 @@ If the C<$output> parameter is a filehandle, the uncompressed data
 will be written to it.
 The string '-' can be used as an alias for standard output.
 
-
 =item A scalar reference 
 
 If C<$output> is a scalar reference, the uncompressed data will be
 stored in C<$$output>.
-
-
 
 =item An Array Reference
 
@@ -892,19 +944,12 @@ string. Anything else is an error.
 
 If the C<$output> parameter is any other type, C<undef> will be returned.
 
-
-
 =head2 Notes
-
 
 When C<$input> maps to multiple compressed files/buffers and C<$output> is
 a single file/buffer, after uncompression C<$output> will contain a
 concatenation of all the uncompressed data from each of the input
 files/buffers.
-
-
-
-
 
 =head2 Optional Parameters
 
@@ -925,7 +970,6 @@ completed.
 
 This parameter defaults to 0.
 
-
 =item C<< BinModeOut => 0|1 >>
 
 When writing to a file or filehandle, set C<binmode> before writing to the
@@ -933,25 +977,16 @@ file.
 
 Defaults to 0.
 
-
-
-
-
 =item C<< Append => 0|1 >>
 
 TODO
 
 =item C<< MultiStream => 0|1 >>
 
-
 If the input file/buffer contains multiple compressed data streams, this
 option will uncompress the whole lot as a single data stream.
 
 Defaults to 0.
-
-
-
-
 
 =item C<< TrailingData => $scalar >>
 
@@ -972,23 +1007,16 @@ of the input file.
 
 Don't bother using C<trailingData> if the input is a filename.
 
-
-
 If you know the length of the compressed data stream before you start
 uncompressing, you can avoid having to use C<trailingData> by setting the
 C<InputLength> option.
 
-
-
 =back
-
-
-
 
 =head2 Examples
 
 To read the contents of the file C<file1.txt.zip> and write the
-compressed data to the file C<file1.txt>.
+uncompressed data to the file C<file1.txt>.
 
     use strict ;
     use warnings ;
@@ -998,7 +1026,6 @@ compressed data to the file C<file1.txt>.
     my $output = "file1.txt";
     unzip $input => $output
         or die "unzip failed: $UnzipError\n";
-
 
 To read from an existing Perl filehandle, C<$input>, and write the
 uncompressed data to a buffer, C<$buffer>.
@@ -1043,7 +1070,6 @@ and if you want to compress each file one at a time, this will do the trick
 
 The format of the constructor for IO::Uncompress::Unzip is shown below
 
-
     my $z = new IO::Uncompress::Unzip $input [OPTS]
         or die "IO::Uncompress::Unzip failed: $UnzipError\n";
 
@@ -1075,7 +1101,6 @@ If the C<$input> parameter is a filehandle, the compressed data will be
 read from it.
 The string '-' can be used as an alias for standard input.
 
-
 =item A scalar reference 
 
 If C<$input> is a scalar reference, the compressed data will be read from
@@ -1084,7 +1109,6 @@ C<$$output>.
 =back
 
 =head2 Constructor Options
-
 
 The option names defined below are case insensitive and can be optionally
 prefixed by a '-'.  So all of the following are valid
@@ -1109,15 +1133,12 @@ This parameter defaults to 0.
 
 =item C<< MultiStream => 0|1 >>
 
-
-
 Treats the complete zip file/buffer as a single compressed data
 stream. When reading in multi-stream mode each member of the zip
 file/buffer will be uncompressed in turn until the end of the file/buffer
 is encountered.
 
 This parameter defaults to 0.
-
 
 =item C<< Prime => $string >>
 
@@ -1160,8 +1181,6 @@ This option is mostly used when reading from a filehandle, in which case
 the file pointer will be left pointing to the first byte directly after the
 compressed data stream.
 
-
-
 This option defaults to off.
 
 =item C<< Append => 0|1 >>
@@ -1178,27 +1197,11 @@ Defaults to 0.
 
 =item C<< Strict => 0|1 >>
 
-
-
 This option controls whether the extra checks defined below are used when
 carrying out the decompression. When Strict is on, the extra tests are
 carried out, when Strict is off they are not.
 
 The default for this option is off.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 =back
 
@@ -1243,7 +1246,6 @@ or an IO error is encountered.
 Returns the number of uncompressed bytes written to C<$buffer>, zero if eof
 or a negative number on error.
 
-
 =head2 getline
 
 Usage is
@@ -1257,7 +1259,6 @@ This method fully supports the use of of the variable C<$/> (or
 C<$INPUT_RECORD_SEPARATOR> or C<$RS> when C<English> is in use) to
 determine what constitutes an end of line. Paragraph mode, record mode and
 file slurp mode are all supported. 
-
 
 =head2 getc
 
@@ -1273,8 +1274,6 @@ Usage is
 
     $char = $z->ungetc($string)
 
-
-
 =head2 inflateSync
 
 Usage is
@@ -1282,7 +1281,6 @@ Usage is
     $status = $z->inflateSync()
 
 TODO
-
 
 =head2 getHeaderInfo
 
@@ -1294,9 +1292,6 @@ Usage is
 This method returns either a hash reference (in scalar context) or a list
 or hash references (in array context) that contains information about each
 of the header fields in the compressed data stream(s).
-
-
-
 
 =head2 tell
 
@@ -1314,25 +1309,16 @@ Usage is
     $z->eof();
     eof($z);
 
-
-
 Returns true if the end of the compressed input stream has been reached.
-
-
 
 =head2 seek
 
     $z->seek($position, $whence);
     seek($z, $position, $whence);
 
-
-
-
 Provides a sub-set of the C<seek> functionality, with the restriction
 that it is only legal to seek forward in the input file/buffer.
 It is a fatal error to attempt to seek backward.
-
-
 
 The C<$whence> parameter takes one the usual values, namely SEEK_SET,
 SEEK_CUR or SEEK_END.
@@ -1375,8 +1361,6 @@ retrieve the autoflush setting.
     $z->input_line_number()
     $z->input_line_number(EXPR)
 
-
-
 Returns the current uncompressed line number. If C<EXPR> is present it has
 the effect of setting the line number. Note that setting the line number
 does not change the current position within the file/buffer being read.
@@ -1384,29 +1368,24 @@ does not change the current position within the file/buffer being read.
 The contents of C<$/> are used to to determine what constitutes a line
 terminator.
 
-
-
 =head2 fileno
 
     $z->fileno()
     fileno($z)
 
-If the C<$z> object is associated with a file or a filehandle, this method
-will return the underlying file descriptor.
+If the C<$z> object is associated with a file or a filehandle, C<fileno>
+will return the underlying file descriptor. Once the C<close> method is
+called C<fileno> will return C<undef>.
 
-If the C<$z> object is is associated with a buffer, this method will
-return undef.
+If the C<$z> object is is associated with a buffer, this method will return
+C<undef>.
 
 =head2 close
 
     $z->close() ;
     close $z ;
 
-
-
 Closes the output file/buffer. 
-
-
 
 For most versions of Perl this method will be automatically invoked if
 the IO::Uncompress::Unzip object is destroyed (either explicitly or by the
@@ -1425,9 +1404,6 @@ Returns true on success, otherwise 0.
 If the C<AutoClose> option has been enabled when the IO::Uncompress::Unzip
 object was created, and the object is associated with a file, the
 underlying file will also be closed.
-
-
-
 
 =head2 nextStream
 
@@ -1467,8 +1443,6 @@ of the input file.
 
 Don't bother using C<trailingData> if the input is a filename.
 
-
-
 If you know the length of the compressed data stream before you start
 uncompressing, you can avoid having to use C<trailingData> by setting the
 C<InputLength> option in the constructor.
@@ -1490,8 +1464,9 @@ Same as doing this
 
 =head1 EXAMPLES
 
+=head2 Working with Net::FTP
 
-
+See L<IO::Uncompress::Unzip::FAQ|IO::Uncompress::Unzip::FAQ/"Compressed files and Net::FTP">
 
 =head1 SEE ALSO
 
@@ -1502,7 +1477,6 @@ L<Compress::Zlib::FAQ|Compress::Zlib::FAQ>
 L<File::GlobMapper|File::GlobMapper>, L<Archive::Zip|Archive::Zip>,
 L<Archive::Tar|Archive::Tar>,
 L<IO::Zlib|IO::Zlib>
-
 
 For RFC 1950, 1951 and 1952 see 
 F<http://www.faqs.org/rfcs/rfc1950.html>,
@@ -1517,14 +1491,9 @@ F<http://www.zlib.org>.
 
 The primary site for gzip is F<http://www.gzip.org>.
 
-
-
-
 =head1 AUTHOR
 
 This module was written by Paul Marquess, F<pmqs@cpan.org>. 
-
-
 
 =head1 MODIFICATION HISTORY
 
@@ -1532,7 +1501,7 @@ See the Changes file.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005-2007 Paul Marquess. All rights reserved.
+Copyright (c) 2005-2009 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

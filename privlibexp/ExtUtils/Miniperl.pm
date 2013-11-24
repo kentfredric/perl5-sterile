@@ -24,7 +24,11 @@ $head= <<'EOF!HEAD';
  */
 
 /*
- * "The Road goes ever on and on, down from the door where it began."
+ *      The Road goes ever on and on
+ *          Down from the door where it began.
+ *
+ *     [Bilbo on p.35 of _The Lord of the Rings_, I/i: "A Long-Expected Party"]
+ *     [Frodo on p.73 of _The Lord of the Rings_, I/iii: "Three Is Company"]
  */
 
 /* This file contains the main() function for the perl interpreter.
@@ -49,11 +53,12 @@ $head= <<'EOF!HEAD';
 #include "EXTERN.h"
 #define PERL_IN_MINIPERLMAIN_C
 #include "perl.h"
+#include "XSUB.h"
 
 static void xs_init (pTHX);
 static PerlInterpreter *my_perl;
 
-#if defined (__MINT__) || defined (atarist)
+#if defined (atarist)
 /* The Atari operating system doesn't have a dynamic stack.  The
    stack size is determined from this value.  */
 long _stksize = 64 * 1024;
@@ -78,7 +83,7 @@ main(int argc, char **argv, char **env)
 #endif
 {
     dVAR;
-    int exitstatus;
+    int exitstatus, i;
 #ifdef PERL_GLOBAL_STRUCT
     struct perl_vars *plvarsp = init_global_struct();
 #  ifdef PERL_GLOBAL_STRUCT_PRIVATE
@@ -126,6 +131,13 @@ main(int argc, char **argv, char **env)
     exitstatus = perl_parse(my_perl, xs_init, argc, argv, (char **)NULL);
     if (!exitstatus)
         perl_run(my_perl);
+
+    /* Unregister our signal handler before destroying my_perl */
+    for (i = 0; PL_sig_name[i]; i++) {
+	if (rsignal_state(PL_sig_num[i]) == (Sighandler_t) PL_csighandlerp) {
+	    rsignal(PL_sig_num[i], (Sighandler_t) SIG_DFL);
+	}
+    }
 
     exitstatus = perl_destruct(my_perl);
 
@@ -191,11 +203,12 @@ sub writemain{
         print "EXTERN_C void boot_${cname} (pTHX_ CV* cv);\n";
     }
 
-    my ($tail1,$tail2) = ( $tail =~ /\A(.*\n)(\s*\}.*)\Z/s );
-    print $tail1;
+    my ($tail1,$tail2,$tail3) = ( $tail =~ /\A(.*{\s*\n)(.*\n)(\s*\}.*)\Z/s );
 
+    print $tail1;
     print "\tconst char file[] = __FILE__;\n";
     print "\tdXSUB_SYS;\n" if $] > 5.002;
+    print $tail2;
 
     foreach $_ (@exts){
 	my($pname) = canon('/', $_);
@@ -215,7 +228,7 @@ sub writemain{
 	}
 	print "\t}\n";
     }
-    print $tail2;
+    print $tail3;
 }
 
 sub canon{

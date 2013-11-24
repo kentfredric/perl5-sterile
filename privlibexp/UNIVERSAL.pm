@@ -1,6 +1,6 @@
 package UNIVERSAL;
 
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 
 # UNIVERSAL should not contain any extra subs/methods beyond those
 # that it exists to define. The use of Exporter below is a historical
@@ -15,6 +15,11 @@ require Exporter;
 # anything unless called on UNIVERSAL.
 sub import {
     return unless $_[0] eq __PACKAGE__;
+    require warnings;
+    warnings::warnif(
+      'deprecated',
+      'UNIVERSAL->import is deprecated and will be removed in a future perl',
+    );
     goto &Exporter::import;
 }
 
@@ -68,7 +73,7 @@ is a package name
 
 =item C<$obj>
 
-is a blessed reference or a string containing a package name
+is a blessed reference or a package name
 
 =item C<CLASS>
 
@@ -117,8 +122,9 @@ invocant performs the operations, merely that it does.  (C<isa> of course
 mandates an inheritance relationship.  Other relationships include aggregation,
 delegation, and mocking.)
 
-By default, classes in Perl only perform the C<UNIVERSAL> role.  To mark that
-your own classes perform other roles, override C<DOES> appropriately.
+By default, classes in Perl only perform the C<UNIVERSAL> role, as well as the
+role of all classes in their inheritance.  In other words, by default C<DOES>
+responds identically to C<isa>.
 
 There is a relationship between roles and classes, as each class implies the
 existence of a role of the same name.  There is also a relationship between
@@ -165,12 +171,23 @@ method.
 
 =back
 
+=head1 WARNINGS
+
+B<NOTE:> C<can> directly uses Perl's internal code for method lookup, and
+C<isa> uses a very similar method and cache-ing strategy. This may cause
+strange effects if the Perl code dynamically changes @ISA in any package.
+
+You may add other methods to the UNIVERSAL class via Perl or XS code.
+You do not need to C<use UNIVERSAL> to make these methods
+available to your program (and you should not do so).
+
 =head1 EXPORTS
 
 None by default.
 
 You may request the import of three functions (C<isa>, C<can>, and C<VERSION>),
-however it is usually harmful to do so.  Please don't do this in new code.
+B<but this feature is deprecated and will be removed>.  Please don't do this in
+new code.
 
 For example, previous versions of this documentation suggested using C<isa> as
 a function to determine the type of a reference:

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 125 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/opendir.al)"
+#line 118 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/opendir.al)"
 sub opendir {
     usage "opendir(directory)" if @_ != 1;
     my $dirhandle;

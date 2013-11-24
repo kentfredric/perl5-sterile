@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 421 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/abs.al)"
+#line 414 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/abs.al)"
 sub abs {
     usage "abs(x)" if @_ != 1;
     CORE::abs($_[0]);

@@ -4,30 +4,17 @@ package re;
 use strict;
 use warnings;
 
-our $VERSION     = "0.08";
+our $VERSION     = "0.10";
 our @ISA         = qw(Exporter);
-our @EXPORT_OK   = qw(is_regexp regexp_pattern regmust 
-                      regname regnames regnames_count);
+our @EXPORT_OK   = ('regmust',
+                    qw(is_regexp regexp_pattern
+                       regname regnames regnames_count));
 our %EXPORT_OK = map { $_ => 1 } @EXPORT_OK;
-
-# *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
-#
-# If you modify these values see comment below!
 
 my %bitmask = (
     taint   => 0x00100000, # HINT_RE_TAINT
     eval    => 0x00200000, # HINT_RE_EVAL
 );
-
-# - File::Basename contains a literal for 'taint' as a fallback.  If
-# taint is changed here, File::Basename must be updated as well.
-#
-# - ExtUtils::ParseXS uses a hardcoded 
-# BEGIN { $^H |= 0x00200000 } 
-# in it to allow re.xs to be built. So if 'eval' is changed here then
-# ExtUtils::ParseXS must be changed as well.
-#
-# *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
 
 sub setcolor {
  eval {				# Ignore errors
@@ -68,42 +55,35 @@ my %flags = (
     OPTIMISEM       => 0x100000,
     STACK           => 0x280000,
     BUFFERS         => 0x400000,
+    GPOS            => 0x800000,
 );
 $flags{ALL} = -1 & ~($flags{OFFSETS}|$flags{OFFSETSDBG}|$flags{BUFFERS});
 $flags{All} = $flags{all} = $flags{DUMP} | $flags{EXECUTE};
-$flags{Extra} = $flags{EXECUTE} | $flags{COMPILE};
+$flags{Extra} = $flags{EXECUTE} | $flags{COMPILE} | $flags{GPOS};
 $flags{More} = $flags{MORE} = $flags{All} | $flags{TRIEC} | $flags{TRIEM} | $flags{STATE};
 $flags{State} = $flags{DUMP} | $flags{EXECUTE} | $flags{STATE};
 $flags{TRIE} = $flags{DUMP} | $flags{EXECUTE} | $flags{TRIEC};
 
-my $installed;
-my $installed_error;
-
-sub _do_install {
-    if ( ! defined($installed) ) {
-        require XSLoader;
-        $installed = eval { XSLoader::load('re', $VERSION) } || 0;
-        $installed_error = $@;
-    }
+if (defined &DynaLoader::boot_DynaLoader) {
+    require XSLoader;
+    XSLoader::load( __PACKAGE__, $VERSION);
 }
+# else we're miniperl
+# We need to work for miniperl, because the XS toolchain uses Text::Wrap, which
+# uses re 'taint'.
 
 sub _load_unload {
     my ($on)= @_;
     if ($on) {
-        _do_install();        
-        if ( ! $installed ) {
-            die "'re' not installed!? ($installed_error)";
-	} else {
-	    # We call install() every time, as if we didn't, we wouldn't
-	    # "see" any changes to the color environment var since
-	    # the last time it was called.
+	# We call install() every time, as if we didn't, we wouldn't
+	# "see" any changes to the color environment var since
+	# the last time it was called.
 
-	    # install() returns an integer, which if casted properly
-	    # in C resolves to a structure containing the regex
-	    # hooks. Setting it to a random integer will guarantee
-	    # segfaults.
-	    $^H{regcomp} = install();
-        }
+	# install() returns an integer, which if casted properly
+	# in C resolves to a structure containing the regex
+	# hooks. Setting it to a random integer will guarantee
+	# segfaults.
+	$^H{regcomp} = install();
     } else {
         delete $^H{regcomp};
     }
@@ -143,7 +123,6 @@ sub bits {
         } elsif (exists $bitmask{$s}) {
 	    $bits |= $bitmask{$s};
 	} elsif ($EXPORT_OK{$s}) {
-	    _do_install();
 	    require Exporter;
 	    re->export_to_level(2, 're', $s);
 	} else {

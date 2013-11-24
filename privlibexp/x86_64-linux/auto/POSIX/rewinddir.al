@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 138 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rewinddir.al)"
+#line 131 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/rewinddir.al)"
 sub rewinddir {
     usage "rewinddir(dirhandle)" if @_ != 1;
     CORE::rewinddir($_[0]);

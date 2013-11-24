@@ -5,7 +5,7 @@ use 5.008;
 use strict;
 use warnings;
 
-our $VERSION = '1.67';
+our $VERSION = '1.74';
 my $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -134,7 +134,7 @@ threads - Perl interpreter-based threads
 
 =head1 VERSION
 
-This document describes threads version 1.67
+This document describes threads version 1.74
 
 =head1 SYNOPSIS
 
@@ -221,28 +221,38 @@ This document describes threads version 1.67
 
 =head1 DESCRIPTION
 
-Perl 5.6 introduced something called interpreter threads.  Interpreter threads
-are different from I<5005threads> (the thread model of Perl 5.005) by creating
-a new Perl interpreter per thread, and not sharing any data or state between
-threads by default.
+Since Perl 5.8, thread programming has been available using a model called
+I<interpreter threads> which provides a new Perl interpreter for each
+thread, and, by default, results in no data or state information being shared
+between threads.
 
-Prior to Perl 5.8, this has only been available to people embedding Perl, and
-for emulating fork() on Windows.
+(Prior to Perl 5.8, I<5005threads> was available through the C<Thread.pm> API.
+This threading model has been deprecated, and was removed as of Perl 5.10.0.)
 
-The I<threads> API is loosely based on the old Thread.pm API. It is very
-important to note that variables are not shared between threads, all variables
-are by default thread local.  To use shared variables one must also use
-L<threads::shared>:
+As just mentioned, all variables are, by default, thread local.  To use shared
+variables, you need to also load L<threads::shared>:
 
     use threads;
     use threads::shared;
 
-It is also important to note that you must enable threads by doing C<use
-threads> as early as possible in the script itself, and that it is not
-possible to enable threading inside an C<eval "">, C<do>, C<require>, or
-C<use>.  In particular, if you are intending to share variables with
-L<threads::shared>, you must C<use threads> before you C<use threads::shared>.
-(C<threads> will emit a warning if you do it the other way around.)
+When loading L<threads::shared>, you must C<use threads> before you
+C<use threads::shared>.  (C<threads> will emit a warning if you do it the
+other way around.)
+
+It is strongly recommended that you enable threads via C<use threads> as early
+as possible in your script.
+
+If needed, scripts can be written so as to run on both threaded and
+non-threaded Perls:
+
+    my $can_use_threads = eval 'use threads; 1';
+    if ($can_use_threads) {
+        # Do processing using threads
+        ...
+    } else {
+        # Do it without using threads
+        ...
+    }
 
 =over
 
@@ -963,7 +973,24 @@ of the Perl interpreter.
 Returning objects from threads does not work.  Depending on the classes
 involved, you may be able to work around this by returning a serialized
 version of the object (e.g., using L<Data::Dumper> or L<Storable>), and then
-reconstituting it in the joining thread.
+reconstituting it in the joining thread.  If you're using Perl 5.10.0 or
+later, and if the class supports L<shared objects|threads::shared/"OBJECTS">,
+you can pass them via L<shared queues| Thread::Queue>.
+
+=item END blocks in threads
+
+It is possible to add L<END blocks|perlmod/"BEGIN, UNITCHECK, CHECK, INIT and
+END"> to threads by using L<require|perlfunc/"require VERSION"> or
+L<eval|perlfunc/"eval EXPR"> with the appropriate code.  These C<END> blocks
+will then be executed when the thread's interpreter is destroyed (i.e., either
+during a C<-E<gt>join()> call, or at program termination).
+
+However, calling any L<threads> methods in such an C<END> block will most
+likely I<fail> (e.g., the application may hang, or generate an error) due to
+mutexes that are needed to control functionality within the L<threads> module.
+
+For this reason, the use of C<END> blocks in threads is B<strongly>
+discouraged.
 
 =item Perl Bugs and the CPAN Version of L<threads>
 
@@ -978,6 +1005,10 @@ with threads may result in warning messages concerning leaked scalars or
 unreferenced scalars.  However, such warnings are harmless, and may safely be
 ignored.
 
+You can search for L<threads> related bug reports at
+L<http://rt.cpan.org/Public/>.  If needed submit any new bugs, problems,
+patches, etc. to: L<http://rt.cpan.org/Public/Dist/Display.html?Name=threads>
+
 =back
 
 =head1 REQUIREMENTS
@@ -990,7 +1021,7 @@ L<threads> Discussion Forum on CPAN:
 L<http://www.cpanforum.com/dist/threads>
 
 Annotated POD for L<threads>:
-L<http://annocpan.org/~JDHEDDEN/threads-1.67/threads.pm>
+L<http://annocpan.org/~JDHEDDEN/threads-1.74/threads.pm>
 
 Source repository:
 L<http://code.google.com/p/threads-shared/>
@@ -1010,9 +1041,11 @@ L<http://www.perlmonks.org/?node_id=532956>
 
 Artur Bergman E<lt>sky AT crucially DOT netE<gt>
 
-threads is released under the same license as Perl.
-
 CPAN version produced by Jerry D. Hedden <jdhedden AT cpan DOT org>
+
+=head1 LICENSE
+
+threads is released under the same license as Perl.
 
 =head1 ACKNOWLEDGEMENTS
 

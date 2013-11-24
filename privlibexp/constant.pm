@@ -4,7 +4,7 @@ use strict;
 use warnings::register;
 
 use vars qw($VERSION %declared);
-$VERSION = '1.13';
+$VERSION = '1.19';
 
 #=======================================================================
 
@@ -16,6 +16,20 @@ my %forced_into_main = map +($_, 1),
     qw{ STDIN STDOUT STDERR ARGV ARGVOUT ENV INC SIG };
 
 my %forbidden = (%keywords, %forced_into_main);
+
+my $str_end = $] >= 5.006 ? "\\z" : "\\Z";
+my $normal_constant_name = qr/^_?[^\W_0-9]\w*$str_end/;
+my $tolerable = qr/^[A-Za-z_]\w*$str_end/;
+my $boolean = qr/^[01]?$str_end/;
+
+BEGIN {
+    # We'd like to do use constant _CAN_PCS => $] > 5.009002
+    # but that's a bit tricky before we load the constant module :-)
+    # By doing this, we save 1 run time check for *every* call to import.
+    no strict 'refs';
+    my $const = $] > 5.009002;
+    *_CAN_PCS = sub () {$const};
+}
 
 #=======================================================================
 # import() - import symbols into user's namespace
@@ -31,10 +45,10 @@ sub import {
     my $constants;
     my $multiple  = ref $_[0];
     my $pkg = caller;
+    my $flush_mro;
     my $symtab;
-    my $str_end = $] >= 5.006 ? "\\z" : "\\Z";
 
-    if ($] > 5.009002) {
+    if (_CAN_PCS) {
 	no strict 'refs';
 	$symtab = \%{$pkg . '::'};
     };
@@ -56,7 +70,7 @@ sub import {
 	}
 
 	# Normal constant name
-	if ($name =~ /^_?[^\W_0-9]\w*$str_end/ and !$forbidden{$name}) {
+	if ($name =~ $normal_constant_name and !$forbidden{$name}) {
 	    # Everything is okay
 
 	# Name forced into main, but we're not in main. Fatal.
@@ -70,7 +84,7 @@ sub import {
 	    Carp::croak("Constant name '$name' begins with '__'");
 
 	# Maybe the name is tolerable
-	} elsif ($name =~ /^[A-Za-z_]\w*$str_end/) {
+	} elsif ($name =~ $tolerable) {
 	    # Then we'll warn only if you've asked for warnings
 	    if (warnings::enabled()) {
 		if ($keywords{$name}) {
@@ -83,7 +97,7 @@ sub import {
 
 	# Looks like a boolean
 	# use constant FRED == fred;
-	} elsif ($name =~ /^[01]?$str_end/) {
+	} elsif ($name =~ $boolean) {
             require Carp;
 	    if (@_) {
 		Carp::croak("Constant name '$name' is invalid");
@@ -103,14 +117,16 @@ sub import {
 	    $declared{$full_name}++;
 	    if ($multiple || @_ == 1) {
 		my $scalar = $multiple ? $constants->{$name} : $_[0];
-		if ($symtab && !exists $symtab->{$name}) {
+		# The constant serves to optimise this entire block out on
+		# 5.8 and earlier.
+		if (_CAN_PCS && $symtab && !exists $symtab->{$name}) {
 		    # No typeglob yet, so we can use a reference as space-
 		    # efficient proxy for a constant subroutine
 		    # The check in Perl_ck_rvconst knows that inlinable
 		    # constants from cv_const_sv are read only. So we have to:
 		    Internals::SvREADONLY($scalar, 1);
 		    $symtab->{$name} = \$scalar;
-		    mro::method_changed_in($pkg);
+		    ++$flush_mro;
 		} else {
 		    *$full_name = sub () { $scalar };
 		}
@@ -122,6 +138,8 @@ sub import {
 	    }
 	}
     }
+    # Flush the cache exactly once if we make any direct symbol table changes.
+    mro::method_changed_in($pkg) if _CAN_PCS && $flush_mro;
 }
 
 1;
@@ -168,7 +186,7 @@ read, more likely to be maintained (and maintained correctly), and
 far less likely to send a space probe to the wrong planet because
 nobody noticed the one equation in which you wrote C<3.14195>.
 
-When a constant is used in an expression, perl replaces it with its
+When a constant is used in an expression, Perl replaces it with its
 value at compile time, and may then optimize the expression further.
 In particular, any code in an C<if (CONSTANT)> block will be optimized
 away if the constant is false.
@@ -331,6 +349,20 @@ immediately to its left, you have to say C<< CONSTANT() => 'value' >>
 (or simply use a comma in place of the big arrow) instead of
 C<< CONSTANT => 'value' >>.
 
+=head1 SEE ALSO
+
+L<Readonly> - Facility for creating read-only scalars, arrays, hashes.
+
+L<Const> - Facility for creating read-only variables. Similar to C<Readonly>,
+but uses C<SvREADONLY> instead of C<tie>.
+
+L<Attribute::Constant> - Make read-only variables via attribute
+
+L<Scalar::Readonly> - Perl extension to the C<SvREADONLY> scalar flag
+
+L<Hash::Util> - A selection of general-utility hash subroutines (mostly
+to lock/unlock keys and values)
+
 =head1 BUGS
 
 Please report any bugs or feature requests via the perlbug(1) utility.
@@ -350,7 +382,7 @@ This program is maintained by the Perl 5 Porters.
 The CPAN distribution is maintained by SE<eacute>bastien Aperghis-Tramoni
 E<lt>F<sebastien@aperghis.net>E<gt>.
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT & LICENSE
 
 Copyright (C) 1997, 1999 Tom Phoenix
 

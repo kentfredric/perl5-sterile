@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 999 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_init.al)"
+#line 992 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_init.al)"
 sub _init {
     $_SIGRTMIN = &POSIX::SIGRTMIN;
     $_SIGRTMAX = &POSIX::SIGRTMAX;

@@ -119,10 +119,9 @@ Found in file pad.h
 =item PAD_CLONE_VARS
 X<PAD_CLONE_VARS>
 
-|CLONE_PARAMS* param
 Clone the state variables associated with running and compiling pads.
 
-	void	PAD_CLONE_VARS(PerlInterpreter *proto_perl \)
+	void	PAD_CLONE_VARS(PerlInterpreter *proto_perl, CLONE_PARAMS* param)
 
 =for hackers
 Found in file pad.h
@@ -335,8 +334,8 @@ Found in file pad.h
 
 =over 8
 
-=item is_gv_magical
-X<is_gv_magical>
+=item is_gv_magical_sv
+X<is_gv_magical_sv>
 
 Returns C<TRUE> if given the name of a magical GV.
 
@@ -350,17 +349,7 @@ Currently assumes that C<name> is NUL terminated (as well as len being valid).
 This assumption is met by all callers within the perl core, which all pass
 pointers returned by SvPV.
 
-	bool	is_gv_magical(const char *name, STRLEN len, U32 flags)
-
-=for hackers
-Found in file gv.c
-
-=item is_gv_magical_sv
-X<is_gv_magical_sv>
-
-Returns C<TRUE> if given the name of a magical GV. Calls is_gv_magical.
-
-	bool	is_gv_magical_sv(SV *name, U32 flags)
+	bool	is_gv_magical_sv(SV *const name_sv, U32 flags)
 
 =for hackers
 Found in file gv.c
@@ -422,7 +411,7 @@ perl on VMS). This code used to be inline, but now perl uses C<File::Glob>
 this glob starter is only used by miniperl during the build process.
 Moving it away shrinks pp_hot.c; shrinking pp_hot.c helps speed perl up.
 
-	PerlIO*	start_glob(SV* pattern, IO *io)
+	PerlIO*	start_glob(SV *tmpglob, IO *io)
 
 =for hackers
 Found in file doio.c
@@ -434,11 +423,34 @@ Found in file doio.c
 
 =over 8
 
-=item magic_sethint
-X<magic_sethint>
+=item magic_clearhint
+X<magic_clearhint>
 
 Triggered by a delete from %^H, records the key to
 C<PL_compiling.cop_hints_hash>.
+
+	int	magic_clearhint(SV* sv, MAGIC* mg)
+
+=for hackers
+Found in file mg.c
+
+=item magic_clearhints
+X<magic_clearhints>
+
+Triggered by clearing %^H, resets C<PL_compiling.cop_hints_hash>.
+
+	int	magic_clearhints(SV* sv, MAGIC* mg)
+
+=for hackers
+Found in file mg.c
+
+=item magic_sethint
+X<magic_sethint>
+
+Triggered by a store to %^H, records the key/value pair to
+C<PL_compiling.cop_hints_hash>.  It is assumed that hints aren't storing
+anything that would need a deep copy.  Maybe we should warn if we find a
+reference.
 
 	int	magic_sethint(SV* sv, MAGIC* mg)
 
@@ -448,11 +460,15 @@ Found in file mg.c
 =item mg_localize
 X<mg_localize>
 
-Copy some of the magic from an existing SV to new localized version of
-that SV. Container magic (eg %ENV, $1, tie) gets copied, value magic
-doesn't (eg taint, pos).
+Copy some of the magic from an existing SV to new localized version of that
+SV. Container magic (eg %ENV, $1, tie) gets copied, value magic doesn't (eg
+taint, pos).
 
-	void	mg_localize(SV* sv, SV* nsv)
+If setmagic is false then no set magic will be called on the new (empty) SV.
+This typically means that assignment will soon follow (e.g. 'local $x = $y'),
+and that will handle the magic.
+
+	void	mg_localize(SV* sv, SV* nsv, bool setmagic)
 
 =for hackers
 Found in file mg.c
@@ -463,25 +479,6 @@ Found in file mg.c
 =head1 MRO Functions
 
 =over 8
-
-=item mro_get_linear_isa_c3
-X<mro_get_linear_isa_c3>
-
-Returns the C3 linearization of @ISA
-the given stash.  The return value is a read-only AV*.
-C<level> should be 0 (it is used internally in this
-function's recursion).
-
-You are responsible for C<SvREFCNT_inc()> on the
-return value if you plan to store it anywhere
-semi-permanently (otherwise it might be deleted
-out from under you the next time the cache is
-invalidated).
-
-	AV*	mro_get_linear_isa_c3(HV* stash, I32 level)
-
-=for hackers
-Found in file mro.c
 
 =item mro_get_linear_isa_dfs
 X<mro_get_linear_isa_dfs>
@@ -497,7 +494,7 @@ semi-permanently (otherwise it might be deleted
 out from under you the next time the cache is
 invalidated).
 
-	AV*	mro_get_linear_isa_dfs(HV* stash, I32 level)
+	AV*	mro_get_linear_isa_dfs(HV* stash, U32 level)
 
 =for hackers
 Found in file mro.c
@@ -597,6 +594,8 @@ and set on scope exit. This allows the 'Variable $x is not available' warning
 to be generated in evals, such as 
 
     { my $x = 1; sub f { eval '$x'} } f();
+
+For state vars, SVf_PADSTALE is overloaded to mean 'not yet initialised'
 
 	AV *	CvPADLIST(CV *cv)
 
@@ -936,12 +935,12 @@ The GV which was last used for a filehandle input operation. (C<< <FH> >>)
 =for hackers
 Found in file intrpvar.h
 
-=item PL_ofs_sv
-X<PL_ofs_sv>
+=item PL_ofsgv
+X<PL_ofsgv>
 
-The output field separator - C<$,> in Perl space.
+The glob containing the output field separator - C<*,> in Perl space.
 
-	SV*	PL_ofs_sv
+	GV*	PL_ofsgv
 
 =for hackers
 Found in file intrpvar.h
@@ -997,7 +996,7 @@ X<sv_add_arena>
 Given a chunk of memory, link it to the head of the list of arenas,
 and split it into a list of free SVs.
 
-	void	sv_add_arena(char* ptr, U32 size, U32 flags)
+	void	sv_add_arena(char *const ptr, const U32 size, const U32 flags)
 
 =for hackers
 Found in file sv.c
@@ -1049,7 +1048,7 @@ Return an SV with the numeric value of the source SV, doing any necessary
 reference or overload conversion.  You must use the C<SvNUM(sv)> macro to
 access this function.
 
-	SV*	sv_2num(SV* sv)
+	SV*	sv_2num(SV *const sv)
 
 =for hackers
 Found in file sv.c
@@ -1078,7 +1077,7 @@ The name is returned as a mortal SV.
 Assumes that PL_op is the op that originally triggered the error, and that
 PL_comppad/PL_curpad points to the currently executing pad.
 
-	SV*	find_uninit_var(OP* obase, SV* uninit_sv, bool top)
+	SV*	find_uninit_var(const OP *const obase, const SV *const uninit_sv, bool top)
 
 =for hackers
 Found in file sv.c
@@ -1088,7 +1087,7 @@ X<report_uninit>
 
 Print appropriate "Use of uninitialized variable" warning
 
-	void	report_uninit(SV* uninit_sv)
+	void	report_uninit(const SV *uninit_sv)
 
 =for hackers
 Found in file sv.c

@@ -10,7 +10,7 @@ package CGI::Pretty;
 use strict;
 use CGI ();
 
-$CGI::Pretty::VERSION = '1.08';
+$CGI::Pretty::VERSION = '3.44';
 $CGI::DefaultClass = __PACKAGE__;
 $CGI::Pretty::AutoloadClass = 'CGI';
 @CGI::Pretty::ISA = qw( CGI );
@@ -105,7 +105,7 @@ sub _make_tag_func {
                       
   	              \$args[0] .= \$" if \$args[0] !~ /\$CGI::Pretty::LINEBREAK\$/ && 1;
 		  }
-                  chop \$args[0];
+                  chop \$args[0] unless \$" eq "";
 	      }
             }
             else {
@@ -127,8 +127,11 @@ sub _make_tag_func {
                     \$untag . \$CGI::Pretty::LINEBREAK
                 } \@args;
 	    }
-	    local \$" = "" if \$CGI::Pretty::LINEBREAK || \$CGI::Pretty::INDENT;
-	    return "\@result";
+            if (\$CGI::Pretty::LINEBREAK || \$CGI::Pretty::INDENT) {
+                return join ("", \@result);
+            } else {
+                return "\@result";
+            }
 	}#;
     }    
 
@@ -175,6 +178,35 @@ sub initialize_globals {
     1;
 }
 sub _reset_globals { initialize_globals(); }
+
+# ugly, but quick fix
+sub import {
+    my $self = shift;
+    no strict 'refs';
+    ${ "$self\::AutoloadClass" } = 'CGI';
+
+    # This causes modules to clash.
+    undef %CGI::EXPORT;
+    undef %CGI::EXPORT;
+
+    $self->_setup_symbols(@_);
+    my ($callpack, $callfile, $callline) = caller;
+
+    # To allow overriding, search through the packages
+    # Till we find one in which the correct subroutine is defined.
+    my @packages = ($self,@{"$self\:\:ISA"});
+    foreach my $sym (keys %CGI::EXPORT) {
+	my $pck;
+	my $def = ${"$self\:\:AutoloadClass"} || $CGI::DefaultClass;
+	foreach $pck (@packages) {
+	    if (defined(&{"$pck\:\:$sym"})) {
+		$def = $pck;
+		last;
+	    }
+	}
+	*{"${callpack}::$sym"} = \&{"$def\:\:$sym"};
+    }
+}
 
 1;
 

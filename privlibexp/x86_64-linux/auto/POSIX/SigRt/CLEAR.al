@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1048 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/CLEAR.al)"
+#line 1041 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/CLEAR.al)"
 sub CLEAR  { &_exist; delete @SIG{ &POSIX::SIGRTMIN .. &POSIX::SIGRTMAX } }
 # end of POSIX::SigRt::CLEAR
 1;
