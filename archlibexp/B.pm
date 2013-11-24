@@ -15,7 +15,7 @@ require Exporter;
 # walkoptree comes from B.xs
 
 BEGIN {
-    $B::VERSION = '1.34';
+    $B::VERSION = '1.35';
     @B::EXPORT_OK = ();
 
     # Our BOOT code needs $VERSION set, and will append to @EXPORT_OK.
@@ -405,6 +405,8 @@ underlying structures are freed.
 =item amagic_generation
 
 Returns the SV object corresponding to the C variable C<amagic_generation>.
+As of Perl 5.18, this is just an alias to C<PL_na>, so its value is
+meaningless.
 
 =item init_av
 
@@ -1211,7 +1213,7 @@ Only when perl was compiled with ithreads.
 
 =item stashpv
 
-=item stashflags
+=item stashlen
 
 =item file
 

@@ -1268,8 +1268,13 @@ test the type of the reference, if need be.
 
 =item Can't use string ("%s") as %s ref while "strict refs" in use
 
-(F) Only hard references are allowed by "strict refs".  Symbolic
-references are disallowed.  See L<perlref>.
+(F) You've told Perl to dereference a string, something which
+C<use strict> blocks to prevent it happening accidentally.  See
+L<perlref/"Symbolic references">.  This can be triggered by an C<@> or C<$>
+in a double-quoted string immediately before interpolating a variable,
+for example in C<"user @$twitter_id">, which says to treat the contents
+of C<$twitter_id> as an array reference; use a C<\> to have a literal C<@>
+symbol followed by the contents of C<$twitter_id>: C<"user \@$twitter_id">.
 
 =item Can't use subscript on %s
 
@@ -4923,6 +4928,17 @@ C<undef *foo>.
 (A) You've accidentally run your script through B<csh> instead of Perl.
 Check the #! line, or manually feed your script into Perl yourself.
 
+=item Unescaped left brace in regex is deprecated, passed through
+
+(D) You used a literal C<"{"> character in a regular expression pattern.
+You should change to use C<"\{"> instead, because a future version of
+Perl (tentatively v5.20) will consider this to be a syntax error.  If
+the pattern delimiters are also braces, any matching right brace
+(C<"}">) should also be escaped to avoid confusing the parser, for
+example,
+
+    qr{abc\{def\}ghi}
+
 =item unexec of %s into %s failed!
 
 (F) The unexec() routine failed for some reason.  See your local FSF
@@ -5451,17 +5467,6 @@ the question mark delimiter is now deprecated, so that the question mark
 will be available for use in new operators in the future.  Write C<m?\w?>
 instead, explicitly using the C<m> operator: the question mark delimiter
 still invokes match-once behaviour.
-
-=item Use of qw(...) as parentheses is deprecated
-
-(D deprecated) You have something like C<foreach $x qw(a b c) {...}>,
-using a C<qw(...)> list literal where a parenthesised expression is
-expected.  Historically the parser fooled itself into thinking that
-C<qw(...)> literals were always enclosed in parentheses, and as a result
-you could sometimes omit parentheses around them.  (You could never do
-the C<foreach qw(a b c) {...}> that you might have expected, though.)
-The parser no longer lies to itself in this way.  Wrap the list literal
-in parentheses, like C<foreach $x (qw(a b c)) {...}>.
 
 =item Use of reference "%s" as array index
 

@@ -4503,8 +4503,8 @@ Unicode::Collate::CJK::GB2312, Unicode::Collate::CJK::JISX0208,
 Unicode::Collate::CJK::Korean, Unicode::Collate::CJK::Pinyin,
 Unicode::Collate::CJK::Stroke, Unicode::Collate::Locale,
 Unicode::Normalize, Unicode::UCD, User::grent, User::pwent, VMS::DCLsym,
-VMS::Stdio, Version::Requirements, Win32API::File, Win32CORE, XS::APItest,
-XS::Typemap, XSLoader, version::Internals
+VMS::Stdio, Win32API::File, Win32CORE, XS::APItest, XS::Typemap, XSLoader,
+version::Internals
 
 =item Extension Modules
 
@@ -6671,9 +6671,10 @@ keyword_plugin_standard X<keyword_plugin_standard>, list X<list>, localize
 X<localize>, mad_free X<mad_free>, madlex X<madlex>, madparse X<madparse>,
 magic_clear_all_env X<magic_clear_all_env>, magic_clearenv
 X<magic_clearenv>, magic_clearisa X<magic_clearisa>, magic_clearpack
-X<magic_clearpack>, magic_clearsig X<magic_clearsig>, magic_existspack
-X<magic_existspack>, magic_freearylen_p X<magic_freearylen_p>,
-magic_freeovrld X<magic_freeovrld>, magic_get X<magic_get>, magic_getarylen
+X<magic_clearpack>, magic_clearsig X<magic_clearsig>, magic_copycallchecker
+X<magic_copycallchecker>, magic_existspack X<magic_existspack>,
+magic_freearylen_p X<magic_freearylen_p>, magic_freeovrld
+X<magic_freeovrld>, magic_get X<magic_get>, magic_getarylen
 X<magic_getarylen>, magic_getdefelem X<magic_getdefelem>, magic_getnkeys
 X<magic_getnkeys>, magic_getpack X<magic_getpack>, magic_getpos
 X<magic_getpos>, magic_getsig X<magic_getsig>, magic_getsubstr
@@ -6683,61 +6684,59 @@ X<magic_killbackrefs>, magic_len X<magic_len>, magic_nextpack
 X<magic_nextpack>, magic_regdata_cnt X<magic_regdata_cnt>,
 magic_regdatum_get X<magic_regdatum_get>, magic_regdatum_set
 X<magic_regdatum_set>, magic_scalarpack X<magic_scalarpack>, magic_set
-X<magic_set>, magic_set_all_env X<magic_set_all_env>, magic_setamagic
-X<magic_setamagic>, magic_setarylen X<magic_setarylen>, magic_setcollxfrm
-X<magic_setcollxfrm>, magic_setdbline X<magic_setdbline>, magic_setdefelem
-X<magic_setdefelem>, magic_setenv X<magic_setenv>, magic_setisa
-X<magic_setisa>, magic_setmglob X<magic_setmglob>, magic_setnkeys
-X<magic_setnkeys>, magic_setpack X<magic_setpack>, magic_setpos
-X<magic_setpos>, magic_setregexp X<magic_setregexp>, magic_setsig
-X<magic_setsig>, magic_setsubstr X<magic_setsubstr>, magic_settaint
-X<magic_settaint>, magic_setutf8 X<magic_setutf8>, magic_setuvar
-X<magic_setuvar>, magic_setvec X<magic_setvec>, magic_setvstring
-X<magic_setvstring>, magic_sizepack X<magic_sizepack>, magic_wipepack
-X<magic_wipepack>, malloc_good_size X<malloc_good_size>, malloced_size
-X<malloced_size>, mem_collxfrm X<mem_collxfrm>, mode_from_discipline
-X<mode_from_discipline>, more_bodies X<more_bodies>, mro_meta_dup
-X<mro_meta_dup>, mro_meta_init X<mro_meta_init>, munge_qwlist_to_paren_list
-X<munge_qwlist_to_paren_list>, my_attrs X<my_attrs>, my_betoh16
-X<my_betoh16>, my_betoh32 X<my_betoh32>, my_betoh64 X<my_betoh64>,
-my_betohi X<my_betohi>, my_betohl X<my_betohl>, my_betohs X<my_betohs>,
-my_clearenv X<my_clearenv>, my_htobe16 X<my_htobe16>, my_htobe32
-X<my_htobe32>, my_htobe64 X<my_htobe64>, my_htobei X<my_htobei>, my_htobel
-X<my_htobel>, my_htobes X<my_htobes>, my_htole16 X<my_htole16>, my_htole32
-X<my_htole32>, my_htole64 X<my_htole64>, my_htolei X<my_htolei>, my_htolel
-X<my_htolel>, my_htoles X<my_htoles>, my_letoh16 X<my_letoh16>, my_letoh32
-X<my_letoh32>, my_letoh64 X<my_letoh64>, my_letohi X<my_letohi>, my_letohl
-X<my_letohl>, my_letohs X<my_letohs>, my_lstat_flags X<my_lstat_flags>,
-my_stat_flags X<my_stat_flags>, my_swabn X<my_swabn>, my_unexec
-X<my_unexec>, newATTRSUB_flags X<newATTRSUB_flags>, newGP X<newGP>,
-newMADPROP X<newMADPROP>, newMADsv X<newMADsv>, newTOKEN X<newTOKEN>,
-newXS_len_flags X<newXS_len_flags>, new_warnings_bitfield
-X<new_warnings_bitfield>, nextargv X<nextargv>, oopsAV X<oopsAV>, oopsHV
-X<oopsHV>, op_clear X<op_clear>, op_const_sv X<op_const_sv>, op_getmad
-X<op_getmad>, op_getmad_weak X<op_getmad_weak>, op_integerize
-X<op_integerize>, op_lvalue_flags X<op_lvalue_flags>, op_refcnt_dec
-X<op_refcnt_dec>, op_refcnt_inc X<op_refcnt_inc>, op_std_init
-X<op_std_init>, op_xmldump X<op_xmldump>, package X<package>,
-package_version X<package_version>, parse_unicode_opts
-X<parse_unicode_opts>, parser_free X<parser_free>, peep X<peep>,
-pending_Slabs_to_ro X<pending_Slabs_to_ro>, pmop_xmldump X<pmop_xmldump>,
-pmruntime X<pmruntime>, populate_isa X<populate_isa>, prepend_madprops
-X<prepend_madprops>, qerror X<qerror>, reg_named_buff X<reg_named_buff>,
-reg_named_buff_iter X<reg_named_buff_iter>, reg_numbered_buff_fetch
-X<reg_numbered_buff_fetch>, reg_numbered_buff_length
-X<reg_numbered_buff_length>, reg_numbered_buff_store
-X<reg_numbered_buff_store>, reg_qr_package X<reg_qr_package>, reg_temp_copy
-X<reg_temp_copy>, regcurly X<regcurly>, regprop X<regprop>, report_evil_fh
-X<report_evil_fh>, report_redefined_cv X<report_redefined_cv>,
-report_wrongway_fh X<report_wrongway_fh>, rpeep X<rpeep>, rsignal_restore
-X<rsignal_restore>, rsignal_save X<rsignal_save>, rxres_save X<rxres_save>,
-same_dirent X<same_dirent>, sawparens X<sawparens>, scalar X<scalar>,
-scalarvoid X<scalarvoid>, set_regclass_bit X<set_regclass_bit>, sighandler
-X<sighandler>, softref2xv X<softref2xv>, sub_crush_depth
-X<sub_crush_depth>, sv_add_backref X<sv_add_backref>, sv_catxmlpv
-X<sv_catxmlpv>, sv_catxmlpvn X<sv_catxmlpvn>, sv_catxmlsv X<sv_catxmlsv>,
-sv_compile_2op_is_broken X<sv_compile_2op_is_broken>, sv_del_backref
-X<sv_del_backref>, sv_free2 X<sv_free2>, sv_kill_backrefs
+X<magic_set>, magic_set_all_env X<magic_set_all_env>, magic_setarylen
+X<magic_setarylen>, magic_setcollxfrm X<magic_setcollxfrm>, magic_setdbline
+X<magic_setdbline>, magic_setdefelem X<magic_setdefelem>, magic_setenv
+X<magic_setenv>, magic_setisa X<magic_setisa>, magic_setmglob
+X<magic_setmglob>, magic_setnkeys X<magic_setnkeys>, magic_setpack
+X<magic_setpack>, magic_setpos X<magic_setpos>, magic_setregexp
+X<magic_setregexp>, magic_setsig X<magic_setsig>, magic_setsubstr
+X<magic_setsubstr>, magic_settaint X<magic_settaint>, magic_setutf8
+X<magic_setutf8>, magic_setuvar X<magic_setuvar>, magic_setvec
+X<magic_setvec>, magic_setvstring X<magic_setvstring>, magic_sizepack
+X<magic_sizepack>, magic_wipepack X<magic_wipepack>, malloc_good_size
+X<malloc_good_size>, malloced_size X<malloced_size>, mem_collxfrm
+X<mem_collxfrm>, mode_from_discipline X<mode_from_discipline>, more_bodies
+X<more_bodies>, mro_meta_dup X<mro_meta_dup>, mro_meta_init
+X<mro_meta_init>, my_attrs X<my_attrs>, my_betoh16 X<my_betoh16>,
+my_betoh32 X<my_betoh32>, my_betoh64 X<my_betoh64>, my_betohi X<my_betohi>,
+my_betohl X<my_betohl>, my_betohs X<my_betohs>, my_clearenv X<my_clearenv>,
+my_htobe16 X<my_htobe16>, my_htobe32 X<my_htobe32>, my_htobe64
+X<my_htobe64>, my_htobei X<my_htobei>, my_htobel X<my_htobel>, my_htobes
+X<my_htobes>, my_htole16 X<my_htole16>, my_htole32 X<my_htole32>,
+my_htole64 X<my_htole64>, my_htolei X<my_htolei>, my_htolel X<my_htolel>,
+my_htoles X<my_htoles>, my_letoh16 X<my_letoh16>, my_letoh32 X<my_letoh32>,
+my_letoh64 X<my_letoh64>, my_letohi X<my_letohi>, my_letohl X<my_letohl>,
+my_letohs X<my_letohs>, my_lstat_flags X<my_lstat_flags>, my_stat_flags
+X<my_stat_flags>, my_swabn X<my_swabn>, my_unexec X<my_unexec>,
+newATTRSUB_flags X<newATTRSUB_flags>, newGP X<newGP>, newMADPROP
+X<newMADPROP>, newMADsv X<newMADsv>, newTOKEN X<newTOKEN>, newXS_len_flags
+X<newXS_len_flags>, new_warnings_bitfield X<new_warnings_bitfield>,
+nextargv X<nextargv>, oopsAV X<oopsAV>, oopsHV X<oopsHV>, op_clear
+X<op_clear>, op_const_sv X<op_const_sv>, op_getmad X<op_getmad>,
+op_getmad_weak X<op_getmad_weak>, op_integerize X<op_integerize>,
+op_lvalue_flags X<op_lvalue_flags>, op_refcnt_dec X<op_refcnt_dec>,
+op_refcnt_inc X<op_refcnt_inc>, op_std_init X<op_std_init>, op_xmldump
+X<op_xmldump>, package X<package>, package_version X<package_version>,
+parse_unicode_opts X<parse_unicode_opts>, parser_free X<parser_free>, peep
+X<peep>, pending_Slabs_to_ro X<pending_Slabs_to_ro>, pmop_xmldump
+X<pmop_xmldump>, pmruntime X<pmruntime>, populate_isa X<populate_isa>,
+prepend_madprops X<prepend_madprops>, qerror X<qerror>, reg_named_buff
+X<reg_named_buff>, reg_named_buff_iter X<reg_named_buff_iter>,
+reg_numbered_buff_fetch X<reg_numbered_buff_fetch>,
+reg_numbered_buff_length X<reg_numbered_buff_length>,
+reg_numbered_buff_store X<reg_numbered_buff_store>, reg_qr_package
+X<reg_qr_package>, reg_temp_copy X<reg_temp_copy>, regcurly X<regcurly>,
+regprop X<regprop>, report_evil_fh X<report_evil_fh>, report_redefined_cv
+X<report_redefined_cv>, report_wrongway_fh X<report_wrongway_fh>, rpeep
+X<rpeep>, rsignal_restore X<rsignal_restore>, rsignal_save X<rsignal_save>,
+rxres_save X<rxres_save>, same_dirent X<same_dirent>, sawparens
+X<sawparens>, scalar X<scalar>, scalarvoid X<scalarvoid>, set_regclass_bit
+X<set_regclass_bit>, sighandler X<sighandler>, softref2xv X<softref2xv>,
+sub_crush_depth X<sub_crush_depth>, sv_add_backref X<sv_add_backref>,
+sv_catxmlpv X<sv_catxmlpv>, sv_catxmlpvn X<sv_catxmlpvn>, sv_catxmlsv
+X<sv_catxmlsv>, sv_compile_2op_is_broken X<sv_compile_2op_is_broken>,
+sv_del_backref X<sv_del_backref>, sv_free2 X<sv_free2>, sv_kill_backrefs
 X<sv_kill_backrefs>, sv_sethek X<sv_sethek>, sv_setsv_cow X<sv_setsv_cow>,
 sv_unglob X<sv_unglob>, sv_xmlpeek X<sv_xmlpeek>, tied_method
 X<tied_method>, token_free X<token_free>, token_getmad X<token_getmad>,
@@ -6941,7 +6940,7 @@ test_harness, test-notty test_notty
 
 -v, -torture, -re=PATTERN, -re LIST OF PATTERNS, PERL_CORE=1,
 PERL_DESTRUCT_LEVEL=2, PERL, PERL_SKIP_TTY_TEST, PERL_TEST_Net_Ping,
-PERL_TEST_NOVREXX, PERL_TEST_NUMCONVERTS
+PERL_TEST_NOVREXX, PERL_TEST_NUMCONVERTS, PERL_TEST_MEMORY
 
 =back
 
@@ -7422,51 +7421,20 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.16.0
+=head2 perldelta - what is new for perl v5.17.0
 
 =over 4
 
 =item DESCRIPTION
 
-=item Notice
-
-=item Core Enhancements
+=item Incompatible Changes
 
 =over 4
 
-=item C<use I<VERSION>>
+=item qw(...) can no longer be used as parentheses
 
-=item C<__SUB__>
-
-=item New and Improved Built-ins
-
-=item Unicode Support
-
-=item XS Changes
-
-=item Changes to Special Variables
-
-=item Debugger Changes
-
-=item The C<CORE> Namespace
-
-=item Other Changes
-
-=back
-
-=item Security
-
-=over 4
-
-=item Use C<is_utf8_char_buf()> and not C<is_utf8_char()>
-
-=item Malformed UTF-8 input could cause attempts to read beyond the end of
-the buffer
-
-=item C<File::Glob::bsd_glob()> memory error with GLOB_ALTDIRFUNC
-(CVE-2011-2728).
-
-=item Privileges are now set correctly when assigning to C<$(>
+=item C<\s> in regular expressions now matches a Vertical Tab
+(experimental)
 
 =back
 
@@ -7474,64 +7442,7 @@ the buffer
 
 =over 4
 
-=item Don't read the Unicode data base files in F<lib/unicore>
-
-=item XS functions C<is_utf8_char()>, C<utf8_to_uvchr()> and
-C<utf8_to_uvuni()>
-
-=back
-
-=item Future Deprecations
-
-=over 4
-
-=item Core Modules
-
-=item Platforms with no supporting programmers:
-
-=item Other Future Deprecations
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item Special blocks called in void context
-
-=item The C<overloading> pragma and regexp objects
-
-=item Two XS typemap Entries removed
-
-=item Unicode 6.1 has incompatibilities with Unicode 6.0
-
-=item Borland compiler
-
-=item Certain deprecated Unicode properties are no longer supported by
-default
-
-=item Dereferencing IO thingies as typeglobs
-
-=item User-defined case-changing operations
-
-=item XSUBs are now 'static'
-
-=item Weakening read-only references
-
-=item Tying scalars that hold typeglobs
-
-=item IPC::Open3 no longer provides C<xfork()>, C<xclose_on_exec()>
-and C<xpipe_anon()>
-
-=item C<$$> no longer caches PID
-
-=item C<$$> and C<getppid()> no longer emulate POSIX semantics under
-LinuxThreads
-
-=item C<< $< >>, C<< $> >>, C<$(> and C<$)> are no longer cached
-
-=item Which Non-ASCII characters get quoted by C<quotemeta> and C<\Q> has
-changed
+=item Unescaped braces in regexps
 
 =back
 
@@ -7540,12 +7451,6 @@ changed
 =item Modules and Pragmata
 
 =over 4
-
-=item Deprecated Modules
-
-L<Version::Requirements>
-
-=item New Modules and Pragmata
 
 =item Updated Modules and Pragmata
 
@@ -7557,11 +7462,7 @@ L<Version::Requirements>
 
 =over 4
 
-=item New Documentation
-
 =item Changes to Existing Documentation
-
-=item Removed Documentation
 
 =back
 
@@ -7571,15 +7472,9 @@ L<Version::Requirements>
 
 =item New Diagnostics
 
-=item Removed Errors
-
-=item Changes to Existing Diagnostics
-
 =back
 
-=item Utility Changes
-
-=item Configuration and Compilation
+=item Testing
 
 =item Platform Support
 
@@ -7587,69 +7482,13 @@ L<Version::Requirements>
 
 =item Platform-Specific Notes
 
+clang++, C++, VMS
+
 =back
 
 =item Internal Changes
 
 =item Selected Bug Fixes
-
-=over 4
-
-=item Array and hash
-
-=item C API fixes
-
-=item Compile-time hints
-
-=item Copy-on-write scalars
-
-=item The debugger
-
-=item Dereferencing operators
-
-=item Filehandle, last-accessed
-
-=item Filetests and C<stat>
-
-=item Formats
-
-=item C<given> and C<when>
-
-=item The C<glob> operator
-
-=item Lvalue subroutines
-
-=item Overloading
-
-=item Prototypes of built-in keywords
-
-=item Regular expressions
-
-=item Smartmatching
-
-=item The C<sort> operator
-
-=item The C<substr> operator
-
-=item Support for embedded nulls
-
-=item Threading bugs
-
-=item Tied variables
-
-=item Version objects and vstrings
-
-=item Warnings, redefinition
-
-=item Warnings, "Uninitialized"
-
-=item Weak references
-
-=item Other notable fixes
-
-=back
-
-=item Known Problems
 
 =item Acknowledgements
 
@@ -7659,51 +7498,20 @@ L<Version::Requirements>
 
 =back
 
-=head2 perl5160delta, perldelta - what is new for perl v5.16.0
+=head2 perl5170delta, perldelta - what is new for perl v5.17.0
 
 =over 4
 
 =item DESCRIPTION
 
-=item Notice
-
-=item Core Enhancements
+=item Incompatible Changes
 
 =over 4
 
-=item C<use I<VERSION>>
+=item qw(...) can no longer be used as parentheses
 
-=item C<__SUB__>
-
-=item New and Improved Built-ins
-
-=item Unicode Support
-
-=item XS Changes
-
-=item Changes to Special Variables
-
-=item Debugger Changes
-
-=item The C<CORE> Namespace
-
-=item Other Changes
-
-=back
-
-=item Security
-
-=over 4
-
-=item Use C<is_utf8_char_buf()> and not C<is_utf8_char()>
-
-=item Malformed UTF-8 input could cause attempts to read beyond the end of
-the buffer
-
-=item C<File::Glob::bsd_glob()> memory error with GLOB_ALTDIRFUNC
-(CVE-2011-2728).
-
-=item Privileges are now set correctly when assigning to C<$(>
+=item C<\s> in regular expressions now matches a Vertical Tab
+(experimental)
 
 =back
 
@@ -7711,64 +7519,7 @@ the buffer
 
 =over 4
 
-=item Don't read the Unicode data base files in F<lib/unicore>
-
-=item XS functions C<is_utf8_char()>, C<utf8_to_uvchr()> and
-C<utf8_to_uvuni()>
-
-=back
-
-=item Future Deprecations
-
-=over 4
-
-=item Core Modules
-
-=item Platforms with no supporting programmers:
-
-=item Other Future Deprecations
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item Special blocks called in void context
-
-=item The C<overloading> pragma and regexp objects
-
-=item Two XS typemap Entries removed
-
-=item Unicode 6.1 has incompatibilities with Unicode 6.0
-
-=item Borland compiler
-
-=item Certain deprecated Unicode properties are no longer supported by
-default
-
-=item Dereferencing IO thingies as typeglobs
-
-=item User-defined case-changing operations
-
-=item XSUBs are now 'static'
-
-=item Weakening read-only references
-
-=item Tying scalars that hold typeglobs
-
-=item IPC::Open3 no longer provides C<xfork()>, C<xclose_on_exec()>
-and C<xpipe_anon()>
-
-=item C<$$> no longer caches PID
-
-=item C<$$> and C<getppid()> no longer emulate POSIX semantics under
-LinuxThreads
-
-=item C<< $< >>, C<< $> >>, C<$(> and C<$)> are no longer cached
-
-=item Which Non-ASCII characters get quoted by C<quotemeta> and C<\Q> has
-changed
+=item Unescaped braces in regexps
 
 =back
 
@@ -7777,12 +7528,6 @@ changed
 =item Modules and Pragmata
 
 =over 4
-
-=item Deprecated Modules
-
-L<Version::Requirements>
-
-=item New Modules and Pragmata
 
 =item Updated Modules and Pragmata
 
@@ -7794,11 +7539,7 @@ L<Version::Requirements>
 
 =over 4
 
-=item New Documentation
-
 =item Changes to Existing Documentation
-
-=item Removed Documentation
 
 =back
 
@@ -7808,15 +7549,9 @@ L<Version::Requirements>
 
 =item New Diagnostics
 
-=item Removed Errors
-
-=item Changes to Existing Diagnostics
-
 =back
 
-=item Utility Changes
-
-=item Configuration and Compilation
+=item Testing
 
 =item Platform Support
 
@@ -7824,69 +7559,13 @@ L<Version::Requirements>
 
 =item Platform-Specific Notes
 
+clang++, C++, VMS
+
 =back
 
 =item Internal Changes
 
 =item Selected Bug Fixes
-
-=over 4
-
-=item Array and hash
-
-=item C API fixes
-
-=item Compile-time hints
-
-=item Copy-on-write scalars
-
-=item The debugger
-
-=item Dereferencing operators
-
-=item Filehandle, last-accessed
-
-=item Filetests and C<stat>
-
-=item Formats
-
-=item C<given> and C<when>
-
-=item The C<glob> operator
-
-=item Lvalue subroutines
-
-=item Overloading
-
-=item Prototypes of built-in keywords
-
-=item Regular expressions
-
-=item Smartmatching
-
-=item The C<sort> operator
-
-=item The C<substr> operator
-
-=item Support for embedded nulls
-
-=item Threading bugs
-
-=item Tied variables
-
-=item Version objects and vstrings
-
-=item Warnings, redefinition
-
-=item Warnings, "Uninitialized"
-
-=item Weak references
-
-=item Other notable fixes
-
-=back
-
-=item Known Problems
 
 =item Acknowledgements
 
@@ -7896,7 +7575,7 @@ L<Version::Requirements>
 
 =back
 
-=head2 perl5160delta, perldelta - what is new for perl v5.16.0
+=head2 perl5160delta - what is new for perl v5.16.0
 
 =over 4
 
@@ -15612,7 +15291,7 @@ redoop, nextop, lastop
 
 =item B::COP Methods
 
-label, stash, stashpv, stashflags, file, cop_seq, arybase, line, warnings,
+label, stash, stashpv, stashlen, file, cop_seq, arybase, line, warnings,
 io, hints, hints_hash
 
 =back
@@ -24457,7 +24136,9 @@ B<lock_hash>, B<unlock_hash>
 
 B<lock_hash_recurse>, B<unlock_hash_recurse>
 
-B<hash_unlocked>
+B<hashref_locked>, B<hash_locked>
+
+B<hashref_unlocked>, B<hash_unlocked>
 
 B<legal_keys>, B<hidden_keys>, B<all_keys>, B<hash_seed>
 
@@ -37329,59 +37010,6 @@ functions
 =item HISTORY
 
 March 18th, 2000
-
-=back
-
-=head2 Version::Requirements - a set of version requirements for a CPAN
-dist
-
-=over 4
-
-=item VERSION
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item METHODS
-
-=over 4
-
-=item new
-
-=item add_minimum
-
-=item add_maximum
-
-=item add_exclusion
-
-=item exact_version
-
-=item add_requirements
-
-=item accepts_module
-
-=item clear_requirement
-
-=item required_modules
-
-=item clone
-
-=item is_simple
-
-=item is_finalized
-
-=item finalize
-
-=item as_string_hash
-
-=item from_string_hash
-
-=back
-
-=item AUTHOR
-
-=item COPYRIGHT AND LICENSE
 
 =back
 

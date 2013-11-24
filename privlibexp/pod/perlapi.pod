@@ -10633,7 +10633,7 @@ case of "utf8ness failure") or the location C<s>+C<len> (in the case of
 See also L</is_utf8_string_loclen>() and L</is_utf8_string>().
 
 	bool	is_utf8_string_loc(const U8 *s, STRLEN len,
-		                   const U8 **p)
+		                   const U8 **ep)
 
 =for hackers
 Found in file utf8.c

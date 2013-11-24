@@ -1209,7 +1209,7 @@ stable.
  T \p{Canonical_Combining_Class: 130} \p{Canonical_Combining_Class=
                              CCC130} (6)
  T \p{Canonical_Combining_Class: 132} \p{Canonical_Combining_Class=
-                             CCC133} (1)
+                             CCC132} (1)
  T \p{Canonical_Combining_Class: 200} \p{Canonical_Combining_Class=
                              Attached_Below_Left} (0)
  T \p{Canonical_Combining_Class: 202} \p{Canonical_Combining_Class=
@@ -1284,7 +1284,7 @@ stable.
    \p{Canonical_Combining_Class: CCC129} (Short: \p{Ccc=CCC129}) (1)
    \p{Canonical_Combining_Class: CCC13} (Short: \p{Ccc=CCC13}) (1)
    \p{Canonical_Combining_Class: CCC130} (Short: \p{Ccc=CCC130}) (6)
-   \p{Canonical_Combining_Class: CCC133} (Short: \p{Ccc=CCC133}) (1)
+   \p{Canonical_Combining_Class: CCC132} (Short: \p{Ccc=CCC132}) (1)
    \p{Canonical_Combining_Class: CCC14} (Short: \p{Ccc=CCC14}) (1)
    \p{Canonical_Combining_Class: CCC15} (Short: \p{Ccc=CCC15}) (1)
    \p{Canonical_Combining_Class: CCC16} (Short: \p{Ccc=CCC16}) (1)
@@ -2816,7 +2816,8 @@ stable.
    \p{Pe}                  \p{Close_Punctuation} (=
                              \p{General_Category=Close_Punctuation})
                              (71)
-   \p{PerlSpace}           \s, restricted to ASCII = [ \f\n\r\t] (5)
+   \p{PerlSpace}           \s, restricted to ASCII = [ \f\n\r\t] plus
+                             vertical tab (6)
    \p{PerlWord}            \w, restricted to ASCII = [A-Za-z0-9_] (63)
    \p{Pf}                  \p{Final_Punctuation} (=
                              \p{General_Category=Final_Punctuation})
@@ -3474,7 +3475,7 @@ stable.
    \p{Space: *}            \p{White_Space: *}
    \p{Space_Separator}     \p{General_Category=Space_Separator}
                              (Short: \p{Zs}) (18)
-   \p{SpacePerl}           \p{XPerlSpace} (25)
+   \p{SpacePerl}           \p{XPerlSpace} (26)
    \p{Spacing_Mark}        \p{General_Category=Spacing_Mark} (Short:
                              \p{Mc}) (353)
  X \p{Spacing_Modifier_Letters} \p{Block=Spacing_Modifier_Letters}
@@ -3725,7 +3726,7 @@ stable.
    \p{Xpeo}                \p{Old_Persian} (= \p{Script=Old_Persian})
                              (NOT \p{Block=Old_Persian}) (50)
    \p{XPerlSpace}          \s, including beyond ASCII (Short:
-                             \p{SpacePerl}) (25)
+                             \p{SpacePerl}) (26)
    \p{XPosixAlnum}         \p{Alnum} (102_619)
    \p{XPosixAlpha}         \p{Alpha} (= \p{Alphabetic=Y}) (102_159)
    \p{XPosixBlank}         \p{Blank} (19)
@@ -3979,7 +3980,7 @@ through \p{} and \P{}>, like B<D> or B<S>.
    Pattern_White_Space     (Short: Pat_WS)
    Perl_Decimal_Digit      (Perl extension)
    PerlSpace               (Perl extension).  \s, restricted to ASCII
-                           = [ \f\n\r\t]
+                           = [ \f\n\r\t] plus vertical tab
    PerlWord                (Perl extension).  \w, restricted to ASCII
                            = [A-Za-z0-9_]
    PosixAlnum              (Perl extension).  [A-Za-z0-9]

@@ -1712,6 +1712,9 @@ X<magic_clearpack>
 =item magic_clearsig
 X<magic_clearsig>
 
+=item magic_copycallchecker
+X<magic_copycallchecker>
+
 =item magic_existspack
 X<magic_existspack>
 
@@ -1780,9 +1783,6 @@ X<magic_set>
 
 =item magic_set_all_env
 X<magic_set_all_env>
-
-=item magic_setamagic
-X<magic_setamagic>
 
 =item magic_setarylen
 X<magic_setarylen>
@@ -1864,9 +1864,6 @@ X<mro_meta_dup>
 
 =item mro_meta_init
 X<mro_meta_init>
-
-=item munge_qwlist_to_paren_list
-X<munge_qwlist_to_paren_list>
 
 =item my_attrs
 X<my_attrs>

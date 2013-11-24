@@ -10,7 +10,7 @@ BEGIN { *warnif = \&warnings::warnif }
 
 our(@EXPORT, @EXPORT_OK, %EXPORT_TAGS);
 
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 my @fields;
 BEGIN { 
@@ -37,10 +37,14 @@ BEGIN {
         my $val = eval { &{"Fcntl::S_I\U$_"} };
         *{"_$_"} = defined $val ? sub { $_[0] & $val ? 1 : "" } : sub { "" };
     }
-    for (qw(SOCK CHR BLK REG DIR FIFO LNK)) {
+    for (qw(SOCK CHR BLK REG DIR LNK)) {
         *{"S_IS$_"} = defined eval { &{"Fcntl::S_IF$_"} }
             ? \&{"Fcntl::S_IS$_"} : sub { "" };
     }
+    # FIFO flag and macro don't quite follow the S_IF/S_IS pattern above
+    # RT #111638
+    *{"S_ISFIFO"} = defined &Fcntl::S_IFIFO
+      ? \&Fcntl::S_ISFIFO : sub { "" };
 }
 
 # from doio.c
@@ -148,7 +152,7 @@ use overload
     -X => sub {
         my ($s, $op) = @_;
 
-        if (index "rwxRWX", $op) {
+        if (index("rwxRWX", $op) >= 0) {
             (caller 0)[8] & HINT_FILETEST_ACCESS
                 and warnif("File::stat ignores use filetest 'access'");
 

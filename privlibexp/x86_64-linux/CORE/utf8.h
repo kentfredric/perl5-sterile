@@ -20,8 +20,9 @@
 /* For to_utf8_fold_flags, q.v. */
 #define FOLD_FLAGS_LOCALE 0x1
 #define FOLD_FLAGS_FULL   0x2
+#define FOLD_FLAGS_NOMIX_ASCII 0x4
 
-#define to_uni_fold(c, p, lenp) _to_uni_fold_flags(c, p, lenp, 1)
+#define to_uni_fold(c, p, lenp) _to_uni_fold_flags(c, p, lenp, FOLD_FLAGS_FULL)
 #define to_utf8_fold(c, p, lenp) _to_utf8_fold_flags(c, p, lenp, \
 	             FOLD_FLAGS_FULL, NULL)
 #define to_utf8_lower(a,b,c) _to_utf8_lower_flags(a,b,c,0, NULL)
@@ -61,16 +62,25 @@ START_EXTERN_C
 
 #ifdef DOINIT
 EXTCONST unsigned char PL_utf8skip[] = {
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* bogus */
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* bogus */
-2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, /* scripts */
-3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,	 /* cjk etc. */
-7,13, /* Perl extended (not official UTF-8).  Up to 72bit allowed (64-bit +
-	 reserved). */
+/* 0x00 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x10 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x20 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x30 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x40 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x50 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x60 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x70 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* ascii */
+/* 0x80 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* bogus: continuation byte */
+/* 0x90 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* bogus: continuation byte */
+/* 0xA0 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* bogus: continuation byte */
+/* 0xB0 */ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* bogus: continuation byte */
+/* 0xC0 */ 2,2,				    /* overlong */
+/* 0xC2 */ 2,2,2,2,2,2,2,2,2,2,2,2,2,2,     /* U+0080 to U+03FF */
+/* 0xD0 */ 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, /* U+0400 to U+07FF */
+/* 0xE0 */ 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3, /* U+0800 to U+FFFF */
+/* 0xF0 */ 4,4,4,4,4,4,4,4,5,5,5,5,6,6,	    /* above BMP to 2**31 - 1 */
+/* 0xFE */ 7,13, /* Perl extended (never was official UTF-8).  Up to 72bit
+		    allowed (64-bit + reserved). */
 };
 #else
 EXTCONST unsigned char PL_utf8skip[];
@@ -111,6 +121,10 @@ END_EXTERN_C
   U+10000..U+3FFFF	F0      * 90..BF    80..BF    80..BF
   U+40000..U+FFFFF	F1..F3    80..BF    80..BF    80..BF
  U+100000..U+10FFFF	F4        80..8F    80..BF    80..BF
+    Below are non-Unicode code points
+ U+110000..U+13FFFF	F4        90..BF    80..BF    80..BF
+ U+110000..U+1FFFFF	F5..F7    80..BF    80..BF    80..BF
+ U+200000:              F8..    * 88..BF    80..BF    80..BF    80..BF
 
 Note the gaps before several of the byte entries above marked by '*'.  These are
 caused by legal UTF-8 avoiding non-shortest encodings: it is technically
@@ -123,12 +137,12 @@ explicitly forbidden, and the shortest possible encoding should always be used
 /*
  Another way to look at it, as bits:
 
- Code Points                    1st Byte   2nd Byte  3rd Byte  4th Byte
+                  Code Points      1st Byte   2nd Byte   3rd Byte   4th Byte
 
-                    0aaaaaaa     0aaaaaaa
-            00000bbbbbaaaaaa     110bbbbb  10aaaaaa
-            ccccbbbbbbaaaaaa     1110cccc  10bbbbbb  10aaaaaa
-  00000dddccccccbbbbbbaaaaaa     11110ddd  10cccccc  10bbbbbb  10aaaaaa
+                        0aaa aaaa  0aaa aaaa
+              0000 0bbb bbaa aaaa  110b bbbb  10aa aaaa
+              cccc bbbb bbaa aaaa  1110 cccc  10bb bbbb  10aa aaaa
+ 00 000d ddcc cccc bbbb bbaa aaaa  1111 0ddd  10cc cccc  10bb bbbb  10aa aaaa
 
 As you can see, the continuation bytes all begin with C<10>, and the
 leading bits of the start byte tell how many bytes there are in the
@@ -147,10 +161,15 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
 #define UTF8_IS_DOWNGRADEABLE_START(c)	(((U8)c & 0xfe) == 0xc2)
 
 #define UTF_START_MARK(len) (((len) >  7) ? 0xFF : (0xFE << (7-(len))))
+
+/* Masks out the initial one bits in a start byte, leaving the real data ones.
+ * Doesn't work on an invariant byte */
 #define UTF_START_MASK(len) (((len) >= 7) ? 0x00 : (0x1F >> ((len)-2)))
 
 #define UTF_CONTINUATION_MARK		0x80
 #define UTF_ACCUMULATION_SHIFT		6
+
+/* 2**UTF_ACCUMULATION_SHIFT - 1 */
 #define UTF_CONTINUATION_MASK		((U8)0x3f)
 
 /* This sets the UTF_CONTINUATION_MASK in the upper bits of a word.  If a value
@@ -326,10 +345,21 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
  * U+E000:   \xEE\x80\x80	\xF1\xB8\xA0\xA0    next after surrogates
  */
 #ifdef EBCDIC /* Both versions assume well-formed UTF8 */
-#   define UTF8_IS_SURROGATE(s)  (*(s) == UTF_TO_NATIVE(0xF1)                   \
-    && ((*((s) +1) == UTF_TO_NATIVE(0xB6)) || *((s) + 1) == UTF_TO_NATIVE(0xB7)))
+#   define UTF8_IS_SURROGATE(s)  (*(s) == UTF_TO_NATIVE(0xF1)                 \
+                                 && ((*((s) +1) == UTF_TO_NATIVE(0xB6))       \
+				     || *((s) + 1) == UTF_TO_NATIVE(0xB7)))
+    /* <send> points to one beyond the end of the string that starts at <s> */
+#   define UTF8_IS_REPLACEMENT(s, send) (*(s) == UTF_TO_NATIVE(0xEF)          \
+	                                 && (send - s) >= 4                   \
+	                                 && *((s) + 1) == UTF_TO_NATIVE(0xBF) \
+	                                 && *((s) + 2) == UTF_TO_NATIVE(0xBF) \
+	                                 && *((s) + 3) == UTF_TO_NATIVE(0xBD)
 #else
 #   define UTF8_IS_SURROGATE(s) (*(s) == 0xED && *((s) + 1) >= 0xA0)
+#   define UTF8_IS_REPLACEMENT(s, send) (*(s) == 0xEF          \
+                                         && (send - s) >= 3    \
+	                                 && *((s) + 1) == 0xBF \
+	                                 && *((s) + 2) == 0xBD)
 #endif
 
 /*		  ASCII		     EBCDIC I8
@@ -476,6 +506,8 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
 #define SHARP_S_SKIP 2
 
 #ifndef EBCDIC
+/* If you want to exclude surrogates, and beyond legal Unicode, see the blame
+ * log for earlier versions which gave details for these */
 #   define IS_UTF8_CHAR_1(p)	\
 	((p)[0] <= 0x7F)
 #   define IS_UTF8_CHAR_2(p)	\
@@ -486,18 +518,7 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
 	 (p)[1] >= 0xA0 && (p)[1] <= 0xBF && \
 	 (p)[2] >= 0x80 && (p)[2] <= 0xBF)
 #   define IS_UTF8_CHAR_3b(p)	\
-	((p)[0] >= 0xE1 && (p)[0] <= 0xEC && \
-	 (p)[1] >= 0x80 && (p)[1] <= 0xBF && \
-	 (p)[2] >= 0x80 && (p)[2] <= 0xBF)
-#   define IS_UTF8_CHAR_3c(p)	\
-	((p)[0] == 0xED && \
-	 (p)[1] >= 0x80 && (p)[1] <= 0xBF && \
-	 (p)[2] >= 0x80 && (p)[2] <= 0xBF)
-    /* In IS_UTF8_CHAR_3c(p) one could use
-     * (p)[1] >= 0x80 && (p)[1] <= 0x9F
-     * if one wanted to exclude surrogates. */
-#   define IS_UTF8_CHAR_3d(p)	\
-	((p)[0] >= 0xEE && (p)[0] <= 0xEF && \
+	((p)[0] >= 0xE1 && (p)[0] <= 0xEF && \
 	 (p)[1] >= 0x80 && (p)[1] <= 0xBF && \
 	 (p)[2] >= 0x80 && (p)[2] <= 0xBF)
 #   define IS_UTF8_CHAR_4a(p)	\
@@ -505,34 +526,23 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
 	 (p)[1] >= 0x90 && (p)[1] <= 0xBF && \
 	 (p)[2] >= 0x80 && (p)[2] <= 0xBF && \
 	 (p)[3] >= 0x80 && (p)[3] <= 0xBF)
-#   define IS_UTF8_CHAR_4b(p)	\
-	((p)[0] >= 0xF1 && (p)[0] <= 0xF3 && \
-	 (p)[1] >= 0x80 && (p)[1] <= 0xBF && \
-	 (p)[2] >= 0x80 && (p)[2] <= 0xBF && \
-	 (p)[3] >= 0x80 && (p)[3] <= 0xBF)
-/* In IS_UTF8_CHAR_4c(p) one could use
- * (p)[0] == 0xF4
- * if one wanted to stop at the Unicode limit U+10FFFF.
- * The 0xF7 allows us to go to 0x1fffff (0x200000 would
+/* The 0xF7 allows us to go to 0x1fffff (0x200000 would
  * require five bytes).  Not doing any further code points
  * since that is not needed (and that would not be strict
  * UTF-8, anyway).  The "slow path" in Perl_is_utf8_char()
  * will take care of the "extended UTF-8". */
-#   define IS_UTF8_CHAR_4c(p)	\
-	((p)[0] >= 0xF4 && (p)[0] <= 0xF7 && \
+#   define IS_UTF8_CHAR_4b(p)	\
+	((p)[0] >= 0xF1 && (p)[0] <= 0xF7 && \
 	 (p)[1] >= 0x80 && (p)[1] <= 0xBF && \
 	 (p)[2] >= 0x80 && (p)[2] <= 0xBF && \
 	 (p)[3] >= 0x80 && (p)[3] <= 0xBF)
 
 #   define IS_UTF8_CHAR_3(p)	\
 	(IS_UTF8_CHAR_3a(p) || \
-	 IS_UTF8_CHAR_3b(p) || \
-	 IS_UTF8_CHAR_3c(p) || \
-	 IS_UTF8_CHAR_3d(p))
+	 IS_UTF8_CHAR_3b(p))
 #   define IS_UTF8_CHAR_4(p)	\
 	(IS_UTF8_CHAR_4a(p) || \
-	 IS_UTF8_CHAR_4b(p) || \
-	 IS_UTF8_CHAR_4c(p))
+	 IS_UTF8_CHAR_4b(p))
 
 /* IS_UTF8_CHAR(p) is strictly speaking wrong (not UTF-8) because it
  * (1) allows UTF-8 encoded UTF-16 surrogates

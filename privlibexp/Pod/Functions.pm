@@ -54,7 +54,7 @@ L<perlfunc/"Perl Functions by Category"> section.
 
 =cut
 
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 require Exporter;
 
@@ -344,7 +344,7 @@ utime	File	set a file's last access and modify times
 values	HASH	ARRAY	return a list of the values in a hash
 vec	Binary	test or set particular bits in a string
 wait	Process	wait for any child process to die
-waitpid	Process	wait for  a particular child process to die
+waitpid	Process	wait for a particular child process to die
 wantarray	Flow	get void vs scalar vs list context of current subroutine call
 warn	I/O	print debugging info
 write	I/O	print a picture record

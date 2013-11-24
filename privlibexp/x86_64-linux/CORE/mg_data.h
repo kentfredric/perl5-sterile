@@ -71,8 +71,7 @@
     0,
     /* arylen_p '@' to move arylen out of XPVAV */
     magic_vtable_max | PERL_MAGIC_VALUE_MAGIC,
-    /* overload 'A' %OVERLOAD hash */
-    want_vtbl_amagic,
+    0,
     /* bm 'B' Boyer-Moore (fast string search) */
     want_vtbl_regexp | PERL_MAGIC_READONLY_ACCEPTABLE | PERL_MAGIC_VALUE_MAGIC,
     0,
@@ -112,12 +111,11 @@
     0,
     0,
     /* checkcall ']' inlining/mutation of call to this CV */
-    magic_vtable_max | PERL_MAGIC_VALUE_MAGIC,
+    want_vtbl_checkcall | PERL_MAGIC_VALUE_MAGIC,
     0,
     0,
     0,
-    /* overload_elem 'a' %OVERLOAD hash element */
-    want_vtbl_amagicelem,
+    0,
     0,
     /* overload_table 'c' Holds overload table (AMT) on stash */
     want_vtbl_ovrld,

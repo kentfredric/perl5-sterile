@@ -29,7 +29,7 @@ PERL_CALLCONV bool	Perl__is_utf8__perl_idstart(pTHX_ const U8 *p)
 #define PERL_ARGS_ASSERT__IS_UTF8__PERL_IDSTART	\
 	assert(p)
 
-PERL_CALLCONV UV	Perl__to_uni_fold_flags(pTHX_ UV c, U8 *p, STRLEN *lenp, const bool flags)
+PERL_CALLCONV UV	Perl__to_uni_fold_flags(pTHX_ UV c, U8 *p, STRLEN *lenp, const U8 flags)
 			__attribute__nonnull__(pTHX_2)
 			__attribute__nonnull__(pTHX_3);
 #define PERL_ARGS_ASSERT__TO_UNI_FOLD_FLAGS	\
@@ -893,7 +893,7 @@ PERL_CALLCONV I32	Perl_do_trans(pTHX_ SV* sv)
 #define PERL_ARGS_ASSERT_DO_TRANS	\
 	assert(sv)
 
-PERL_CALLCONV UV	Perl_do_vecget(pTHX_ SV* sv, I32 offset, I32 size)
+PERL_CALLCONV UV	Perl_do_vecget(pTHX_ SV* sv, SSize_t offset, int size)
 			__attribute__nonnull__(pTHX_1);
 #define PERL_ARGS_ASSERT_DO_VECGET	\
 	assert(sv)
@@ -1913,7 +1913,7 @@ PERL_CALLCONV bool	Perl_is_utf8_string(const U8 *s, STRLEN len)
 #define PERL_ARGS_ASSERT_IS_UTF8_STRING	\
 	assert(s)
 
-/* PERL_CALLCONV bool	Perl_is_utf8_string_loc(const U8 *s, STRLEN len, const U8 **p)
+/* PERL_CALLCONV bool	Perl_is_utf8_string_loc(const U8 *s, STRLEN len, const U8 **ep)
 			__attribute__nonnull__(1); */
 #define PERL_ARGS_ASSERT_IS_UTF8_STRING_LOC	\
 	assert(s)
@@ -2059,6 +2059,13 @@ PERL_CALLCONV int	Perl_magic_clearsig(pTHX_ SV* sv, MAGIC* mg)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT_MAGIC_CLEARSIG	\
 	assert(sv); assert(mg)
+
+PERL_CALLCONV int	Perl_magic_copycallchecker(pTHX_ SV* sv, MAGIC *mg, SV *nsv, const char *name, I32 namlen)
+			__attribute__nonnull__(pTHX_1)
+			__attribute__nonnull__(pTHX_2)
+			__attribute__nonnull__(pTHX_3);
+#define PERL_ARGS_ASSERT_MAGIC_COPYCALLCHECKER	\
+	assert(sv); assert(mg); assert(nsv)
 
 PERL_CALLCONV void	Perl_magic_dump(pTHX_ const MAGIC *mg);
 PERL_CALLCONV int	Perl_magic_existspack(pTHX_ SV* sv, const MAGIC* mg)
@@ -2206,12 +2213,6 @@ PERL_CALLCONV int	Perl_magic_set_all_env(pTHX_ SV* sv, MAGIC* mg)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT_MAGIC_SET_ALL_ENV	\
-	assert(sv); assert(mg)
-
-PERL_CALLCONV int	Perl_magic_setamagic(pTHX_ SV* sv, MAGIC* mg)
-			__attribute__nonnull__(pTHX_1)
-			__attribute__nonnull__(pTHX_2);
-#define PERL_ARGS_ASSERT_MAGIC_SETAMAGIC	\
 	assert(sv); assert(mg)
 
 PERL_CALLCONV int	Perl_magic_setarylen(pTHX_ SV* sv, MAGIC* mg)
@@ -2473,11 +2474,6 @@ PERL_CALLCONV SV*	Perl_mro_set_private_data(pTHX_ struct mro_meta *const smeta, 
 			__attribute__nonnull__(pTHX_3);
 #define PERL_ARGS_ASSERT_MRO_SET_PRIVATE_DATA	\
 	assert(smeta); assert(which); assert(data)
-
-PERL_CALLCONV void	Perl_munge_qwlist_to_paren_list(pTHX_ OP* qwlist)
-			__attribute__nonnull__(pTHX_1);
-#define PERL_ARGS_ASSERT_MUNGE_QWLIST_TO_PAREN_LIST	\
-	assert(qwlist)
 
 PERL_CALLCONV NV	Perl_my_atof(pTHX_ const char *s)
 			__attribute__nonnull__(pTHX_1);
@@ -3157,6 +3153,14 @@ PERL_CALLCONV Malloc_t	Perl_realloc(Malloc_t where, MEM_SIZE nbytes)
 			__attribute__malloc__
 			__attribute__warn_unused_result__;
 
+PERL_CALLCONV void	Perl_reentrant_free(pTHX);
+PERL_CALLCONV void	Perl_reentrant_init(pTHX);
+PERL_CALLCONV void*	Perl_reentrant_retry(const char *f, ...)
+			__attribute__nonnull__(1);
+#define PERL_ARGS_ASSERT_REENTRANT_RETRY	\
+	assert(f)
+
+PERL_CALLCONV void	Perl_reentrant_size(pTHX);
 /* PERL_CALLCONV OP*	Perl_ref(pTHX_ OP* o, I32 type); */
 PERL_CALLCONV HV *	Perl_refcounted_he_chain_2hv(pTHX_ const struct refcounted_he *c, U32 flags);
 PERL_CALLCONV SV *	Perl_refcounted_he_fetch_pv(pTHX_ const struct refcounted_he *chain, const char *key, U32 hash, U32 flags)
@@ -5543,11 +5547,6 @@ STATIC void	S_gv_magicalize_isa(pTHX_ GV *gv)
 #define PERL_ARGS_ASSERT_GV_MAGICALIZE_ISA	\
 	assert(gv)
 
-STATIC void	S_gv_magicalize_overload(pTHX_ GV *gv)
-			__attribute__nonnull__(pTHX_1);
-#define PERL_ARGS_ASSERT_GV_MAGICALIZE_OVERLOAD	\
-	assert(gv)
-
 STATIC HV*	S_require_tie_mod(pTHX_ GV *gv, const char *varpv, SV* namesv, const char *methpv, const U32 flags)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2)
@@ -7679,16 +7678,6 @@ PERL_CALLCONV SSize_t	Perl_PerlIO_write(pTHX_ PerlIO *f, const void *vbuf, Size_
 #define PERL_ARGS_ASSERT_PERLIO_WRITE	\
 	assert(vbuf)
 
-#endif
-#if defined(USE_REENTRANT_API)
-PERL_CALLCONV void	Perl_reentrant_free(pTHX);
-PERL_CALLCONV void	Perl_reentrant_init(pTHX);
-PERL_CALLCONV void*	Perl_reentrant_retry(const char *f, ...)
-			__attribute__nonnull__(1);
-#define PERL_ARGS_ASSERT_REENTRANT_RETRY	\
-	assert(f)
-
-PERL_CALLCONV void	Perl_reentrant_size(pTHX);
 #endif
 #if defined(WIN32) || defined(__SYMBIAN32__) || defined(VMS)
 PERL_CALLCONV int	Perl_do_aspawn(pTHX_ SV* really, SV** mark, SV** sp)

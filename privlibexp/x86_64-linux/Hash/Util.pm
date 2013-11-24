@@ -17,19 +17,21 @@ our @EXPORT_OK  = qw(
                      lock_keys unlock_keys
                      lock_value unlock_value
                      lock_hash unlock_hash
-                     lock_keys_plus hash_locked
+                     lock_keys_plus
+                     hash_locked hash_unlocked
+                     hashref_locked hashref_unlocked
                      hidden_keys legal_keys
 
                      lock_ref_keys unlock_ref_keys
                      lock_ref_value unlock_ref_value
                      lock_hashref unlock_hashref
-                     lock_ref_keys_plus hashref_locked
+                     lock_ref_keys_plus
                      hidden_ref_keys legal_ref_keys
 
                      hash_seed hv_store
-
+                     lock_hash_recurse unlock_hash_recurse
                     );
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 require XSLoader;
 XSLoader::load();
 
@@ -53,12 +55,25 @@ Hash::Util - A selection of general-utility hash subroutines
   # Restricted hashes
 
   use Hash::Util qw(
-                     hash_seed all_keys
+                     fieldhash fieldhashes
+
+                     all_keys
                      lock_keys unlock_keys
                      lock_value unlock_value
                      lock_hash unlock_hash
-                     lock_keys_plus hash_locked
+                     lock_keys_plus
+                     hash_locked hash_unlocked
+                     hashref_locked hashref_unlocked
                      hidden_keys legal_keys
+
+                     lock_ref_keys unlock_ref_keys
+                     lock_ref_value unlock_ref_value
+                     lock_hashref unlock_hashref
+                     lock_ref_keys_plus
+                     hidden_ref_keys legal_ref_keys
+
+                     hash_seed hv_store
+                     lock_hash_recurse unlock_hash_recurse
                    );
 
   %hash = (foo => 42, bar => 23);
@@ -129,8 +144,8 @@ the hash before you call lock_keys() so this shouldn't be a problem.
 
 Removes the restriction on the %hash's keyset.
 
-B<Note> that if any of the values of the hash have been locked they will not be unlocked
-after this sub executes.
+B<Note> that if any of the values of the hash have been locked they will not
+be unlocked after this sub executes.
 
 Both routines return a reference to the hash operated on.
 
@@ -301,9 +316,9 @@ lock_hash() locks an entire hash and any hashes it references recursively,
 making all keys and values read-only. No value can be changed, no keys can
 be added or deleted.
 
-B<Only> recurses into hashes that are referenced by another hash. Thus a
-Hash of Hashes (HoH) will all be restricted, but a Hash of Arrays of Hashes
-(HoAoH) will only have the top hash restricted.
+This method B<only> recurses into hashes that are referenced by another hash.
+Thus a Hash of Hashes (HoH) will all be restricted, but a Hash of Arrays of
+Hashes (HoAoH) will only have the top hash restricted.
 
     unlock_hash_recurse(%hash);
 
@@ -346,9 +361,29 @@ sub unlock_hashref_recurse {
 sub   lock_hash_recurse (\%) {   lock_hashref_recurse(@_) }
 sub unlock_hash_recurse (\%) { unlock_hashref_recurse(@_) }
 
+=item B<hashref_locked>
+
+=item B<hash_locked>
+
+  hashref_locked(\%hash) and print "Hash is locked!\n";
+  hash_locked(%hash) and print "Hash is locked!\n";
+
+Returns true if the hash and its keys are locked.
+
+=cut
+
+sub hashref_locked {
+    my $hash=shift;
+    Internals::SvREADONLY(%$hash);
+}
+
+sub hash_locked(\%) { hashref_locked(@_) }
+
+=item B<hashref_unlocked>
 
 =item B<hash_unlocked>
 
+  hashref_unlocked(\%hash) and print "Hash is unlocked!\n";
   hash_unlocked(%hash) and print "Hash is unlocked!\n";
 
 Returns true if the hash and its keys are unlocked.
@@ -357,7 +392,7 @@ Returns true if the hash and its keys are unlocked.
 
 sub hashref_unlocked {
     my $hash=shift;
-    return Internals::SvREADONLY($hash)
+    !Internals::SvREADONLY(%$hash);
 }
 
 sub hash_unlocked(\%) { hashref_unlocked(@_) }
