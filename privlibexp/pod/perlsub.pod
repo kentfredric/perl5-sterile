@@ -1338,6 +1338,16 @@ C<func()> now gets passed in a C<1>; that is, the number of elements
 in C<@foo>.  And the C<split> gets called in scalar context so it
 starts scribbling on your C<@_> parameter list.  Ouch!
 
+If a sub has both a PROTO and a BLOCK, the prototype is not applied
+until after the BLOCK is completely defined.  This means that a recursive
+function with a prototype has to be predeclared for the prototype to take
+effect, like so:
+
+	sub foo($$);
+	sub foo($$) {
+		foo 1, 2;
+	}
+
 This is all very powerful, of course, and should be used only in moderation
 to make the world a better place.
 
@@ -1385,7 +1395,7 @@ the constant folding doesn't reduce them to a single constant:
 
 If you redefine a subroutine that was eligible for inlining, you'll get
 a warning by default.  (You can use this warning to tell whether or not a
-particular subroutine is considered constant.)  The warning is
+particular subroutine is considered inlinable.)  The warning is
 considered severe enough not to be affected by the B<-w>
 switch (or its absence) because previously compiled
 invocations of the function will still be using the old value of the

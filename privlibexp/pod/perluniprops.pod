@@ -2895,12 +2895,12 @@ stable.
                              NAK, SYN, ETB, CAN, EOM, SUB, ESC, FS,
                              GS, RS, US, and DEL (33)
    \p{PosixDigit}          [0-9] (10)
-   \p{PosixGraph}          [-!"#$%&'()*+,./:;<>?@[\\]^_`{|}~0-9A-Za-
+   \p{PosixGraph}          [-!"#$%&'()*+,./:;<=>?@[\\]^_`{|}~0-9A-Za-
                              z] (94)
    \p{PosixLower}          [a-z] (/i= PosixAlpha) (26)
-   \p{PosixPrint}          [- 0-9A-Za-
-                             z!"#$%&'()*+,./:;<>?@[\\]^_`{|}~] (95)
-   \p{PosixPunct}          [-!"#$%&'()*+,./:;<>?@[\\]^_`{|}~] (32)
+   \p{PosixPrint}          [- 0-9A-Za-z!"#$%&'()*+,./:;<=
+                             >?@[\\]^_`{|}~] (95)
+   \p{PosixPunct}          [-!"#$%&'()*+,./:;<=>?@[\\]^_`{|}~] (32)
    \p{PosixSpace}          \t, \n, \cK, \f, \r, and ' '.  (\cK is
                              vertical tab) (6)
    \p{PosixUpper}          [A-Z] (/i= PosixAlpha) (26)
@@ -4029,13 +4029,13 @@ through \p{} and \P{}>, like B<D> or B<S>.
                            DLE, DC1, DC2, DC3, DC4, NAK, SYN, ETB,
                            CAN, EOM, SUB, ESC, FS, GS, RS, US, and DEL
    PosixDigit              (Perl extension).  [0-9]
-   PosixGraph              (Perl extension).  [-
-                           !"#$%&'()*+,./:;<>?@[\\]^_`{|}~0-9A-Za-z]
+   PosixGraph              (Perl extension).  [-!"#$%&'()*+,./:;<=
+                           >?@[\\]^_`{|}~0-9A-Za-z]
    PosixLower              (Perl extension).  [a-z]
    PosixPrint              (Perl extension).  [- 0-9A-Za-
-                           z!"#$%&'()*+,./:;<>?@[\\]^_`{|}~]
-   PosixPunct              (Perl extension).  [-
-                           !"#$%&'()*+,./:;<>?@[\\]^_`{|}~]
+                           z!"#$%&'()*+,./:;<=>?@[\\]^_`{|}~]
+   PosixPunct              (Perl extension).  [-!"#$%&'()*+,./:;<=
+                           >?@[\\]^_`{|}~]
    PosixSpace              (Perl extension).  \t, \n, \cK, \f, \r,
                            and ' '.  (\cK is vertical tab)
    PosixUpper              (Perl extension).  [A-Z]

@@ -1521,29 +1521,13 @@ Create persistent distribution configuration modules
 
 Perl Package Manager file creation
 
-=item Module::Build::Platform::Amiga
-
-Builder class for Amiga platforms
-
 =item Module::Build::Platform::Default
 
 Stub class for unknown platforms
 
-=item Module::Build::Platform::EBCDIC
-
-Builder class for EBCDIC platforms
-
-=item Module::Build::Platform::MPEiX
-
-Builder class for MPEiX platforms
-
 =item Module::Build::Platform::MacOS
 
 Builder class for MacOS platforms
-
-=item Module::Build::Platform::RiscOS
-
-Builder class for RiscOS platforms
 
 =item Module::Build::Platform::Unix
 

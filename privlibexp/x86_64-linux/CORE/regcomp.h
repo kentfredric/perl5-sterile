@@ -282,6 +282,8 @@ struct regnode_charclass_class {
 #define REG_MAGIC 0234
 
 #define SIZE_ONLY (RExC_emit == &RExC_emit_dummy)
+#define PASS1 SIZE_ONLY
+#define PASS2 (! SIZE_ONLY)
 
 /* If the bitmap doesn't fully represent what this ANYOF node can match, the
  * ARG is set to this special value (since 0, 1, ... are legal, but will never
@@ -465,9 +467,6 @@ struct regnode_charclass_class {
 #define ANYOF_CLASS_TEST_ANY_SET(p)                               \
         ((ANYOF_FLAGS(p) & ANYOF_CLASS)                           \
 	 && (((struct regnode_charclass_class*)(p))->classflags))
-/*#define ANYOF_CLASS_ADD_SKIP	(ANYOF_CLASS_SKIP - ANYOF_SKIP)
- * */
-
 
 /*
  * Utility definitions.

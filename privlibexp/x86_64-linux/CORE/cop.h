@@ -444,8 +444,8 @@ struct cop {
 #  else
 #    define CopFILEAVx(c)	(GvAV(CopFILEGV(c)))
 # endif
-#  define CopFILE(c)		(CopFILEGV(c) && GvSV(CopFILEGV(c)) \
-				    ? SvPVX(GvSV(CopFILEGV(c))) : NULL)
+#  define CopFILE(c)		(CopFILEGV(c) \
+				    ? GvNAME(CopFILEGV(c))+2 : NULL)
 #  define CopSTASH(c)		((c)->cop_stash)
 #  define CopSTASH_set(c,hv)	((c)->cop_stash = (hv))
 #  define CopFILE_free(c)	(SvREFCNT_dec(CopFILEGV(c)),(CopFILEGV(c) = NULL))

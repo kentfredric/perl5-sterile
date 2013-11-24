@@ -12,7 +12,7 @@ use warnings;
 
 # mro.pm versions < 1.00 reserved for MRO::Compat
 #  for partial back-compat to 5.[68].x
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 sub import {
     mro::set_mro(scalar(caller), $_[1]) if $_[1];
@@ -205,7 +205,7 @@ return C<0>.  If a package stash is completely
 deleted (not a normal occurrence, but it can happen
 if someone does something like C<undef %PkgName::>),
 the number will be reset to either C<0> or C<1>,
-depending on how completely package was wiped out.
+depending on how completely the package was wiped out.
 
 =head2 next::method
 

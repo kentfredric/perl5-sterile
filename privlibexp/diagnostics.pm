@@ -186,7 +186,7 @@ use 5.009001;
 use Carp;
 $Carp::Internal{__PACKAGE__.""}++;
 
-our $VERSION = '1.31';
+our $VERSION = '1.32';
 our $DEBUG;
 our $VERBOSE;
 our $PRETTY;
@@ -321,7 +321,7 @@ my %msg;
     while (<POD_DIAG>) {
 
 	sub _split_pod_link {
-	    $_[0] =~ '(?:([^|]*)\|)?([^/]*)(?:/("?)(.*)\3)?';
+	    $_[0] =~ m'(?:([^|]*)\|)?([^/]*)(?:/("?)(.*)\3)?'s;
 	    ($1,$2,$4);
 	}
 

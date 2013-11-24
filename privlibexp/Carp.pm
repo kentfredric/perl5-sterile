@@ -24,13 +24,14 @@ BEGIN {
     }
 }
 
-our $VERSION = '1.30';
+our $VERSION = '1.31';
 
 our $MaxEvalLen = 0;
 our $Verbose    = 0;
 our $CarpLevel  = 0;
 our $MaxArgLen  = 64;    # How much of each argument to print. 0 = all.
 our $MaxArgNums = 8;     # How many arguments to print. 0 = all.
+our $RefArgFormatter = undef; # allow caller to format reference arguments
 
 require Exporter;
 our @ISA       = ('Exporter');
@@ -185,10 +186,37 @@ sub caller_info {
 }
 
 # Transform an argument to a function into a string.
+our $in_recurse;
 sub format_arg {
     my $arg = shift;
+
     if ( ref($arg) ) {
-        $arg = defined($overload::VERSION) ? overload::StrVal($arg) : "$arg";
+         # legitimate, let's not leak it.
+        if (!$in_recurse &&
+	    do {
+                local $@;
+	        local $in_recurse = 1;
+		local $SIG{__DIE__} = sub{};
+                eval {$arg->can('CARP_TRACE') }
+            })
+        {
+            $arg = $arg->CARP_TRACE();
+        }
+        elsif (!$in_recurse &&
+	       defined($RefArgFormatter) &&
+	       do {
+                local $@;
+	        local $in_recurse = 1;
+		local $SIG{__DIE__} = sub{};
+                eval {$arg = $RefArgFormatter->($arg); 1}
+                })
+        {
+            1;
+        }
+        else
+        {
+            $arg = defined(&overload::StrVal) ? overload::StrVal($arg) : "$arg";
+        }
     }
     if ( defined($arg) ) {
         $arg =~ s/'/\\'/g;
@@ -565,6 +593,41 @@ environment variable.
 Alternately, you can set the global variable C<$Carp::Verbose> to true.
 See the C<GLOBAL VARIABLES> section below.
 
+=head2 Stack Trace formatting
+
+At each stack level, the subroutine's name is displayed along with
+its parameters.  For simple scalars, this is sufficient.  For complex
+data types, such as objects and other references, this can simply
+display C<'HASH(0x1ab36d8)'>.
+
+Carp gives two ways to control this.
+
+=over 4
+
+=item 1.
+
+For objects, a method, C<CARP_TRACE>, will be called, if it exists.  If
+this method doesn't exist, or it recurses into C<Carp>, or it otherwise
+throws an exception, this is skipped, and Carp moves on to the next option,
+otherwise checking stops and the string returned is used.  It is recommended
+that the object's type is part of the string to make debugging easier.
+
+=item 2.
+
+For any type of reference, C<$Carp::RefArgFormatter> is checked (see below).
+This variable is expected to be a code reference, and the current parameter
+is passed in.  If this function doesn't exist (the variable is undef), or
+it recurses into C<Carp>, or it otherwise throws an exception, this is
+skipped, and Carp moves on to the next option, otherwise checking stops
+and the string returned is used.
+
+=item 3
+
+Otherwise, if neither C<CARP_TRACE> nor C<$Carp::RefArgFormatter> is
+available, stringify the value ignoring any overloading.
+
+=back
+
 =head1 GLOBAL VARIABLES
 
 =head2 $Carp::MaxEvalLen
@@ -596,6 +659,17 @@ just like C<cluck()> and C<confess()>.  This is how C<use Carp 'verbose'>
 is implemented internally.
 
 Defaults to C<0>.
+
+=head2 $Carp::RefArgFormatter
+
+This variable sets a general argument formatter to display references.
+Plain scalars and objects that implement C<CARP_TRACE> will not go through
+this formatter.  Calling C<Carp> from within this function is not supported.
+
+local $Carp::RefArgFormatter = sub {
+    require Data::Dumper;
+    Data::Dumper::Dump($_[0]); # not necessarily safe
+};
 
 =head2 @CARP_NOT
 

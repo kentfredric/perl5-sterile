@@ -84,6 +84,7 @@
 #ifndef PERL_IMPLICIT_CONTEXT
 #define croak			Perl_croak
 #endif
+#define croak_memory_wrap	S_croak_memory_wrap
 #define croak_no_modify		Perl_croak_no_modify
 #define croak_sv(a)		Perl_croak_sv(aTHX_ a)
 #define croak_xs_usage		Perl_croak_xs_usage
@@ -607,6 +608,7 @@
 #define sv_nv(a)		Perl_sv_nv(aTHX_ a)
 #define sv_peek(a)		Perl_sv_peek(aTHX_ a)
 #define sv_pos_b2u(a,b)		Perl_sv_pos_b2u(aTHX_ a,b)
+#define sv_pos_b2u_flags(a,b,c)	Perl_sv_pos_b2u_flags(aTHX_ a,b,c)
 #define sv_pos_u2b(a,b,c)	Perl_sv_pos_u2b(aTHX_ a,b,c)
 #define sv_pos_u2b_flags(a,b,c,d)	Perl_sv_pos_u2b_flags(aTHX_ a,b,c,d)
 #define sv_pvbyten(a,b)		Perl_sv_pvbyten(aTHX_ a,b)
@@ -880,6 +882,7 @@
 #define dump_trie_interim_table(a,b,c,d,e)	S_dump_trie_interim_table(aTHX_ a,b,c,d,e)
 #define dumpuntil(a,b,c,d,e,f,g,h)	S_dumpuntil(aTHX_ a,b,c,d,e,f,g,h)
 #define put_byte(a,b)		S_put_byte(aTHX_ a,b)
+#define put_latin1_charclass_innards(a,b)	S_put_latin1_charclass_innards(aTHX_ a,b)
 #define regdump_extflags(a,b)	S_regdump_extflags(aTHX_ a,b)
 #define regdump_intflags(a,b)	S_regdump_intflags(aTHX_ a,b)
 #define regtail_study(a,b,c,d)	S_regtail_study(aTHX_ a,b,c,d)
@@ -946,6 +949,9 @@
 #define regwhite		S_regwhite
 #define scan_commit(a,b,c,d)	S_scan_commit(aTHX_ a,b,c,d)
 #define study_chunk(a,b,c,d,e,f,g,h,i,j,k)	S_study_chunk(aTHX_ a,b,c,d,e,f,g,h,i,j,k)
+#  endif
+#  if defined(PERL_IN_REGCOMP_C) || defined (PERL_IN_DUMP_C)
+#define _invlist_dump(a,b,c,d)	Perl__invlist_dump(aTHX_ a,b,c,d)
 #  endif
 #  if defined(PERL_IN_REGCOMP_C) || defined(PERL_IN_REGEXEC_C) || defined(PERL_IN_UTF8_C)
 #define _get_swash_invlist(a)	Perl__get_swash_invlist(aTHX_ a)
@@ -1067,6 +1073,7 @@
 #define croak_popstack		Perl_croak_popstack
 #define cv_ckproto_len_flags(a,b,c,d,e)	Perl_cv_ckproto_len_flags(aTHX_ a,b,c,d,e)
 #define cv_clone_into(a,b)	Perl_cv_clone_into(aTHX_ a,b)
+#define cv_const_sv_or_av(a)	Perl_cv_const_sv_or_av(aTHX_ a)
 #define cv_forget_slab(a)	Perl_cv_forget_slab(aTHX_ a)
 #define cvgv_set(a,b)		Perl_cvgv_set(aTHX_ a,b)
 #define cvstash_set(a,b)	Perl_cvstash_set(aTHX_ a,b)
@@ -1180,7 +1187,7 @@
 #define nextargv(a)		Perl_nextargv(aTHX_ a)
 #define oopsAV(a)		Perl_oopsAV(aTHX_ a)
 #define oopsHV(a)		Perl_oopsHV(aTHX_ a)
-#define op_const_sv(a,b)	Perl_op_const_sv(aTHX_ a,b)
+#define op_const_sv(a)		Perl_op_const_sv(aTHX_ a)
 #define op_unscope(a)		Perl_op_unscope(aTHX_ a)
 #define package_version(a)	Perl_package_version(aTHX_ a)
 #define pad_block_start(a)	Perl_pad_block_start(aTHX_ a)
@@ -1392,6 +1399,9 @@
 #define stdize_locale(a)	S_stdize_locale(aTHX_ a)
 #    endif
 #  endif
+#  if defined(PERL_IN_MALLOC_C)
+#define adjust_size_and_find_bucket	S_adjust_size_and_find_bucket
+#  endif
 #  if defined(PERL_IN_MG_C)
 #define magic_methcall1(a,b,c,d,e,f)	S_magic_methcall1(aTHX_ a,b,c,d,e,f)
 #define magic_methpack(a,b,c)	S_magic_methpack(aTHX_ a,b,c)
@@ -1565,9 +1575,11 @@
 #define glob_assign_ref(a,b)	S_glob_assign_ref(aTHX_ a,b)
 #define more_sv()		S_more_sv(aTHX)
 #define not_a_number(a)		S_not_a_number(aTHX_ a)
+#define not_incrementable(a)	S_not_incrementable(aTHX_ a)
 #define ptr_table_find		S_ptr_table_find
 #define sv_2iuv_common(a)	S_sv_2iuv_common(aTHX_ a)
 #define sv_add_arena(a,b,c)	S_sv_add_arena(aTHX_ a,b,c)
+#define sv_display(a,b,c)	S_sv_display(aTHX_ a,b,c)
 #define sv_pos_b2u_midway(a,b,c,d)	S_sv_pos_b2u_midway(aTHX_ a,b,c,d)
 #define sv_pos_u2b_cached(a,b,c,d,e,f,g)	S_sv_pos_u2b_cached(aTHX_ a,b,c,d,e,f,g)
 #define sv_pos_u2b_forwards	S_sv_pos_u2b_forwards

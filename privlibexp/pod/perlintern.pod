@@ -1485,9 +1485,6 @@ it.
 
 =over
 
-=item Perl_croak_memory_wrap
-X<Perl_croak_memory_wrap>
-
 =item Slab_Alloc
 X<Slab_Alloc>
 
@@ -1517,6 +1514,9 @@ X<_invlist_contains_cp>
 
 =item _invlist_contents
 X<_invlist_contents>
+
+=item _invlist_dump
+X<_invlist_dump>
 
 =item _invlist_intersection
 X<_invlist_intersection>
@@ -1779,6 +1779,9 @@ X<cv_ckproto_len_flags>
 =item cv_clone_into
 X<cv_clone_into>
 
+=item cv_const_sv_or_av
+X<cv_const_sv_or_av>
+
 =item cvgv_set
 X<cvgv_set>
 
@@ -1949,6 +1952,9 @@ X<hv_backreferences_p>
 
 =item hv_kill_backrefs
 X<hv_kill_backrefs>
+
+=item hv_placeholders_p
+X<hv_placeholders_p>
 
 =item hv_undef_flags
 X<hv_undef_flags>

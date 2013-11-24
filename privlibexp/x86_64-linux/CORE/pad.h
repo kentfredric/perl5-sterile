@@ -285,12 +285,14 @@ Restore the old pad saved into the local variable opad by PAD_SAVE_LOCAL()
 
 #define PadnamelistARRAY(pnl)	AvARRAY(pnl)
 #define PadnamelistMAX(pnl)	AvFILLp(pnl)
+#define PadnamelistMAXNAMED(pnl) \
+	((XPVAV*) SvANY(pnl))->xmg_u.xmg_hash_index
 
 #define PadARRAY(pad)		AvARRAY(pad)
 #define PadMAX(pad)		AvFILLp(pad)
 
 #define PadnamePV(pn)		(SvPOKp(pn) ? SvPVX(pn) : NULL)
-#define PadnameLEN(pn)		SvCUR(pn)
+#define PadnameLEN(pn)		((pn) == &PL_sv_undef ? 0 : SvCUR(pn))
 #define PadnameUTF8(pn)		!!SvUTF8(pn)
 #define PadnameSV(pn)		pn
 #define PadnameIsOUR(pn)	!!SvPAD_OUR(pn)

@@ -155,7 +155,7 @@ typedef struct re_scream_pos_data_s
 typedef struct regexp_engine {
     REGEXP* (*comp) (pTHX_ SV * const pattern, U32 flags);
     I32     (*exec) (pTHX_ REGEXP * const rx, char* stringarg, char* strend,
-                     char* strbeg, I32 minend, SV* screamer,
+                     char* strbeg, I32 minend, SV* sv,
                      void* data, U32 flags);
     char*   (*intuit) (pTHX_
                         REGEXP * const rx,
@@ -501,6 +501,9 @@ get_regex_charset_name(const U32 flags, STRLEN* const lenp)
 #define RX_LASTPAREN(prog)	(ReANY(prog)->lastparen)
 #define RX_LASTCLOSEPAREN(prog)	(ReANY(prog)->lastcloseparen)
 #define RX_SAVED_COPY(prog)	(ReANY(prog)->saved_copy)
+/* last match was zero-length */
+#define RX_ZERO_LEN(prog) \
+        (RX_OFFS(prog)[0].start + RX_GOFS(prog) == (UV)RX_OFFS(prog)[0].end)
 
 #endif /* PLUGGABLE_RE_EXTENSION */
 
@@ -534,16 +537,24 @@ get_regex_charset_name(const U32 flags, STRLEN* const lenp)
 /* Whether the pattern stored at RX_WRAPPED is in UTF-8  */
 #define RX_UTF8(prog)			SvUTF8(prog)
 
-#define REXEC_COPY_STR	0x01		/* Need to copy the string. */
-#define REXEC_CHECKED	0x02		/* check_substr already checked. */
-#define REXEC_SCREAM	0x04		/* use scream table. */
-#define REXEC_IGNOREPOS	0x08		/* \G matches at start. */
-#define REXEC_NOT_FIRST	0x10		/* This is another iteration of //g. */
-                                    /* under REXEC_COPY_STR, it's ok for the
-                                     * engine (modulo PL_sawamperand etc)
-                                     * to skip copying ... */
-#define REXEC_COPY_SKIP_PRE  0x20   /* ...the $` part of the string, or */
-#define REXEC_COPY_SKIP_POST 0x40   /* ...the $' part of the string */
+
+/* bits in flags arg of Perl_regexec_flags() */
+
+#define REXEC_COPY_STR  0x01    /* Need to copy the string for captures. */
+#define REXEC_CHECKED   0x02    /* re_intuit_start() already called. */
+#define REXEC_SCREAM    0x04    /* currently unused. */
+#define REXEC_IGNOREPOS 0x08    /* use stringarg, not pos(), for \G match */
+#define REXEC_NOT_FIRST 0x10    /* This is another iteration of //g:
+                                   no need to copy string again */
+
+                                     /* under REXEC_COPY_STR, it's ok for the
+                                        engine (modulo PL_sawamperand etc)
+                                        to skip copying: ... */
+#define REXEC_COPY_SKIP_PRE  0x20    /* ...the $` part of the string, or */
+#define REXEC_COPY_SKIP_POST 0x40    /* ...the $' part of the string */
+#define REXEC_FAIL_ON_UNDERFLOW 0x80 /* fail the match if $& would start before
+                                        the start pos (so s/.\G// would fail
+                                        on second iteration */
 
 #if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
 #  define ReREFCNT_inc(re)						\
