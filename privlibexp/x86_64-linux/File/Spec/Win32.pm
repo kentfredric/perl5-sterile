@@ -5,7 +5,7 @@ use strict;
 use vars qw(@ISA $VERSION);
 require File::Spec::Unix;
 
-$VERSION = '3.41';
+$VERSION = '3.42';
 $VERSION =~ tr/_//;
 
 @ISA = qw(File::Spec::Unix);
@@ -189,9 +189,9 @@ sub canonpath {
 
 =item splitpath
 
-    ($volume,$directories,$file) = File::Spec->splitpath( $path );
-    ($volume,$directories,$file) = File::Spec->splitpath( $path,
-                                                          $no_file );
+   ($volume,$directories,$file) = File::Spec->splitpath( $path );
+   ($volume,$directories,$file) = File::Spec->splitpath( $path,
+                                                         $no_file );
 
 Splits a path into volume, directory, and filename portions. Assumes that 
 the last file is a path unless the path ends in '\\', '\\.', '\\..'

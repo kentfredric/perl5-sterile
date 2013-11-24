@@ -1,6 +1,6 @@
 package English;
 
-our $VERSION = '1.06';
+our $VERSION = '1.07';
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -12,8 +12,9 @@ English - use nice English (or awk) names for ugly punctuation variables
 =head1 SYNOPSIS
 
     use English;
-    use English qw( -no_match_vars ) ;  # Avoids regex performance penalty
-                                        # in perl 5.16 and earlier
+    use English qw( -no_match_vars ) ;  # Avoids regex performance
+                                        # penalty in perl 5.16 and
+                                        # earlier
     ...
     if ($ERRNO =~ /denied/) { ... }
 

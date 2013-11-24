@@ -323,9 +323,9 @@ Found in file av.c
 =item av_shift
 X<av_shift>
 
-Shifts an SV off the beginning of the
-array.  Returns C<&PL_sv_undef> if the 
-array is empty.
+Removes one SV from the start of the array, reducing its size by one and
+returning the SV (transferring control of one reference count) to the
+caller.  Returns C<&PL_sv_undef> if the array is empty.
 
 Perl equivalent: C<shift(@myarray);>
 
@@ -8148,6 +8148,7 @@ The types are:
     SVt_PVIV
     SVt_PVNV
     SVt_PVMG
+    SVt_INVLIST
     SVt_REGEXP
     SVt_PVGV
     SVt_PVLV
@@ -8175,7 +8176,8 @@ typeglob has been assigned.  Assigning to it again will stop it from being
 a typeglob.  SVt_PVLV represents a scalar that delegates to another scalar
 behind the scenes.  It is used, e.g., for the return value of C<substr> and
 for tied hash and array elements.  It can hold any scalar value, including
-a typeglob. SVt_REGEXP is for regular expressions.
+a typeglob. SVt_REGEXP is for regular expressions.  SVt_INVLIST is for Perl
+core internal use only.
 
 SVt_PVMG represents a "normal" scalar (not a typeglob, regular expression,
 or delegate).  Since most scalars do not need all the internal fields of a
@@ -8187,6 +8189,14 @@ compatibility.)  SVt_NV can hold any of those or a double.  SVt_PV can only
 hold undef or a string.  SVt_PVIV is a superset of SVt_PV and SVt_IV.
 SVt_PVNV is similar.  SVt_PVMG can hold anything SVt_PVNV can hold, but it
 can, but does not have to, be blessed or magical.
+
+=for hackers
+Found in file sv.h
+
+=item SVt_INVLIST
+X<SVt_INVLIST>
+
+Type flag for scalars.  See L</svtype>.
 
 =for hackers
 Found in file sv.h
@@ -8917,7 +8927,7 @@ C<SvPVx> for a version which guarantees to evaluate sv only once.
 
 Note that there is no guarantee that the return value of C<SvPV()> is
 equal to C<SvPVX(sv)>, or that C<SvPVX(sv)> contains valid data, or that
-successive calls to C<SvPV(sv)) will return the same pointer value each
+successive calls to C<SvPV(sv)> will return the same pointer value each
 time. This is due to the way that things like overloading and
 Copy-On-Write are handled.  In these cases, the return value may point to
 a temporary buffer or similar.  If you absolutely need the SvPVX field to

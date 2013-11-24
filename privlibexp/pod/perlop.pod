@@ -5,6 +5,22 @@ perlop - Perl operators and precedence
 
 =head1 DESCRIPTION
 
+In Perl, the operator determines what operation is performed,
+independent of the type of the operands. For example C<$a + $b>
+is always a numeric addition, and if C<$a> or C<$b> do not contain
+numbers, an attempt is made to convert them to numbers first.
+
+This is in contrast to many other dynamic languages, where the
+operation is determined by the type of the first argument. It also
+means that Perl has two versions of some operators, one for numeric
+and one for string comparison. For example C<$a == $b> compares
+two numbers for equality, and C<$a eq $b> compares two strings.
+
+There are a few exceptions though: C<x> can be either string
+repetition or list repetition, depending on the type of the left
+operand, and C<&>, C<|> and C<^> can be either string or numeric bit
+operations.
+
 =head2 Operator Precedence and Associativity
 X<operator, precedence> X<precedence> X<associativity>
 
@@ -1705,8 +1721,8 @@ you can use any pair of non-whitespace (ASCII) characters
 as delimiters.  This is particularly useful for matching path names
 that contain "/", to avoid LTS (leaning toothpick syndrome).  If "?" is
 the delimiter, then a match-only-once rule applies,
-described in C<m?PATTERN?> below.
-If "'" is the delimiter, no interpolation is performed on the PATTERN.
+described in C<m?PATTERN?> below. If "'" (single quote) is the delimiter,
+no interpolation is performed on the PATTERN.
 When using a character valid in an identifier, whitespace is required
 after the C<m>.
 

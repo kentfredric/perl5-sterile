@@ -39,9 +39,8 @@ values that can be loaded: an integer value (IV), an unsigned integer
 value (UV), a double (NV), a string (PV), and another scalar (SV).
 ("PV" stands for "Pointer Value".  You might think that it is misnamed
 because it is described as pointing only to strings.  However, it is
-possible to have it point to other things.  For example, inversion
-lists, used in regular expression data structures, are scalars, each
-consisting of an array of UVs which are accessed through PVs.  But,
+possible to have it point to other things  For example, it could point
+to an array of UVs.  But,
 using it for non-strings requires care, as the underlying assumption of
 much of the internals is that PVs are just for strings.  Often, for
 example, a trailing NUL is tacked on automatically.  The non-string use
@@ -261,9 +260,10 @@ somewhere inside the PV, and it discards everything before the
 pointer. The efficiency comes by means of a little hack: instead of
 actually removing the characters, C<sv_chop> sets the flag C<OOK>
 (offset OK) to signal to other functions that the offset hack is in
-effect, and it puts the number of bytes chopped off into the IV field
-of the SV. It then moves the PV pointer (called C<SvPVX>) forward that
-many bytes, and adjusts C<SvCUR> and C<SvLEN>.
+effect, and it moves the PV pointer (called C<SvPVX>) forward
+by the number of bytes chopped off, and adjusts C<SvCUR> and C<SvLEN>
+accordingly.  (A portion of the space between the old and new PV
+pointers is used to store the count of chopped bytes.)
 
 Hence, at this point, the start of the buffer that we allocated lives
 at C<SvPVX(sv) - SvIV(sv)> in memory and the PV pointer is pointing
@@ -2668,7 +2668,7 @@ lightly.
 All bytes in a multi-byte UTF-8 character will have the high bit set,
 so you can test if you need to do something special with this
 character like this (the UTF8_IS_INVARIANT() is a macro that tests
-whether the byte can be encoded as a single byte even in UTF-8):
+whether the byte is encoded as a single byte even in UTF-8):
 
     U8 *utf;
     U8 *utf_end; /* 1 beyond buffer pointed to by utf */

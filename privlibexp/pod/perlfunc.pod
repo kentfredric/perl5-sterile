@@ -197,16 +197,16 @@ C<__FILE__>, C<goto>, C<last>, C<__LINE__>, C<next>, C<__PACKAGE__>,
 C<redo>, C<return>, C<sub>, C<__SUB__>, C<wantarray>
 
 C<break> is available only if you enable the experimental C<"switch">
-feature or use the C<CORE::> prefix. The C<"switch"> feature also enables
+feature or use the C<CORE::> prefix.  The C<"switch"> feature also enables
 the C<default>, C<given> and C<when> statements, which are documented in
-L<perlsyn/"Switch Statements">. The C<"switch"> feature is enabled
+L<perlsyn/"Switch Statements">.  The C<"switch"> feature is enabled
 automatically with a C<use v5.10> (or higher) declaration in the current
-scope. In Perl v5.14 and earlier, C<continue> required the C<"switch">
+scope.  In Perl v5.14 and earlier, C<continue> required the C<"switch">
 feature, like the other keywords.
 
 C<evalbytes> is only available with the C<"evalbytes"> feature (see
 L<feature>) or if prefixed with C<CORE::>.  C<__SUB__> is only available
-with the C<"current_sub"> feature or if prefixed with C<CORE::>. Both
+with the C<"current_sub"> feature or if prefixed with C<CORE::>.  Both
 the C<"evalbytes"> and C<"current_sub"> features are enabled automatically
 with a C<use v5.16> (or higher) declaration in the current scope.
 
@@ -733,10 +733,12 @@ X<caller> X<call stack> X<stack> X<stack trace>
 
 =for Pod::Functions get context of the current subroutine call
 
-Returns the context of the current subroutine call.  In scalar context,
-returns the caller's package name if there I<is> a caller (that is, if
+Returns the context of the current pure perl subroutine call.  In scalar
+context, returns the caller's package name if there I<is> a caller (that is, if
 we're in a subroutine or C<eval> or C<require>) and the undefined value
-otherwise.  In list context, returns
+otherwise.  caller never returns XS subs and they are skipped.  The next pure
+perl sub will appear instead of the XS sub in caller's return values. In list
+context, caller returns
 
     # 0         1          2
     ($package, $filename, $line) = caller;
@@ -1653,13 +1655,13 @@ this a syntax error.  When called in scalar context, returns only the key
 
 Hash entries are returned in an apparently random order.  The actual random
 order is specific to a given hash; the exact same series of operations
-on two hashes may result in a different order for each hash. Any insertion
+on two hashes may result in a different order for each hash.  Any insertion
 into the hash may change the order, as will any deletion, with the exception
 that the most recent key returned by C<each> or C<keys> may be deleted
-without changing the order. So long as a given hash is unmodified you may
+without changing the order.  So long as a given hash is unmodified you may
 rely on C<keys>, C<values> and C<each> to repeatedly return the same order
-as each other. See L<perlsec/"Algorithmic Complexity Attacks"> for
-details on why hash order is randomized. Aside from the guarantees
+as each other.  See L<perlsec/"Algorithmic Complexity Attacks"> for
+details on why hash order is randomized.  Aside from the guarantees
 provided here the exact details of Perl's hash algorithm and the hash
 traversal order are subject to change in any release of Perl.
 
@@ -2200,7 +2202,7 @@ characters, these are not provided by the Perl core; However, the CPAN module
 C<Unicode::Casing> may be used to provide an implementation.
 
 This keyword is available only when the C<"fc"> feature is enabled,
-or when prefixed with C<CORE::>; See L<feature>. Alternately,
+or when prefixed with C<CORE::>; See L<feature>.  Alternately,
 include a C<use v5.16> or later to the current scope.
 
 =item fcntl FILEHANDLE,FUNCTION,SCALAR
@@ -2272,9 +2274,11 @@ same underlying descriptor:
     if (fileno(THIS) != -1 && fileno(THIS) == fileno(THAT)) {
         print "THIS and THAT are dups\n";
     } elsif (fileno(THIS) != -1 && fileno(THAT) != -1) {
-        print "THIS and THAT have different underlying file descriptors\n";
+        print "THIS and THAT have different " .
+            "underlying file descriptors\n";
     } else {
-        print "At least one of THIS and THAT does not have a real file descriptor\n";
+        print "At least one of THIS and THAT does " .
+            "not have a real file descriptor\n";
     }
 
 =item flock FILEHANDLE,OPERATION
@@ -2540,7 +2544,7 @@ Returns the process id of the parent process.
 Note for Linux users: Between v5.8.1 and v5.16.0 Perl would work
 around non-POSIX thread semantics the minority of Linux systems (and
 Debian GNU/kFreeBSD systems) that used LinuxThreads, this emulation
-has since been removed. See the documentation for L<$$|perlvar/$$> for
+has since been removed.  See the documentation for L<$$|perlvar/$$> for
 details.
 
 Portability issues: L<perlport/getppid>.
@@ -3138,13 +3142,13 @@ array argument.  In scalar context, returns the number of keys or indices.
 
 Hash entries are returned in an apparently random order.  The actual random
 order is specific to a given hash; the exact same series of operations
-on two hashes may result in a different order for each hash. Any insertion
+on two hashes may result in a different order for each hash.  Any insertion
 into the hash may change the order, as will any deletion, with the exception
 that the most recent key returned by C<each> or C<keys> may be deleted
-without changing the order. So long as a given hash is unmodified you may
+without changing the order.  So long as a given hash is unmodified you may
 rely on C<keys>, C<values> and C<each> to repeatedly return the same order
-as each other. See L<perlsec/"Algorithmic Complexity Attacks"> for
-details on why hash order is randomized. Aside from the guarantees
+as each other.  See L<perlsec/"Algorithmic Complexity Attacks"> for
+details on why hash order is randomized.  Aside from the guarantees
 provided here the exact details of Perl's hash algorithm and the hash
 traversal order are subject to change in any release of Perl.
 
@@ -3230,15 +3234,16 @@ same signal.  The string form of SIGNAL is recommended for portability because
 the same signal may have different numbers in different operating systems.
 
 A list of signal names supported by the current platform can be found in
-C<$Config{sig_name}>, which is provided by the C<Config> module. See L<Config>
+C<$Config{sig_name}>, which is provided by the C<Config> module.  See L<Config>
 for more details.
 
 A negative signal name is the same as a negative signal number, killing process
 groups instead of processes.  For example, C<kill '-KILL', $pgrp> and
-C<kill -9, $pgrp> will send C<SIGKILL> to the entire process group specified. That
+C<kill -9, $pgrp> will send C<SIGKILL> to
+the entire process group specified.  That
 means you usually want to use positive not negative signals.
 
-If SIGNAL is either the number 0 or the string C<ZERO> (or C<SIGZZERO>),
+If SIGNAL is either the number 0 or the string C<ZERO> (or C<SIGZERO>),
 no signal is sent to
 the process, but C<kill> checks whether it's I<possible> to send a signal to it
 (that means, to be brief, that the process is owned by the same user, or we are
@@ -3756,19 +3761,19 @@ and C<IPC::SysV::Msg> documentation.
 
 Portability issues: L<perlport/msgsnd>.
 
-=item my EXPR
+=item my VARLIST
 X<my>
 
-=item my TYPE EXPR
+=item my TYPE VARLIST
 
-=item my EXPR : ATTRS
+=item my VARLIST : ATTRS
 
-=item my TYPE EXPR : ATTRS
+=item my TYPE VARLIST : ATTRS
 
 =for Pod::Functions declare and assign a local variable (lexical scoping)
 
 A C<my> declares the listed variables to be local (lexically) to the
-enclosing block, file, or C<eval>.  If more than one value is listed,
+enclosing block, file, or C<eval>.  If more than one variable is listed,
 the list must be placed in parentheses.
 
 The exact semantics and interface of TYPE and ATTRS are still
@@ -3777,6 +3782,11 @@ and attributes are handled using the C<attributes> pragma, or starting
 from Perl 5.8.0 also via the C<Attribute::Handlers> module.  See
 L<perlsub/"Private Variables via my()"> for details, and L<fields>,
 L<attributes>, and L<Attribute::Handlers>.
+
+Note that with a parenthesised list, C<undef> can be used as a dummy
+placeholder, for example to skip assignment of initial values:
+
+    my ( undef, $min, $hour ) = localtime;
 
 =item next LABEL
 X<next> X<continue>
@@ -3899,12 +3909,6 @@ FILEHANDLE is an expression, its value is the real filehandle.  (This is
 considered a symbolic reference, so C<use strict "refs"> should I<not> be
 in effect.)
 
-If EXPR is omitted, the global (package) scalar variable of the same
-name as the FILEHANDLE contains the filename.  (Note that lexical 
-variables--those declared with C<my> or C<state>--will not work for this
-purpose; so if you're using C<my> or C<state>, specify EXPR in your
-call to open.)
-
 If three (or more) arguments are specified, the open mode (including
 optional encoding) in the second argument are distinct from the filename in
 the third.  If MODE is C<< < >> or nothing, the file is opened for input.
@@ -3987,6 +3991,33 @@ where you want to format a suitable error message (but there are
 modules that can help with that problem)) always check
 the return value from opening a file.  
 
+The filehandle will be closed when its reference count reaches zero.
+If it is a lexically scoped variable declared with C<my>, that usually
+means the end of the enclosing scope.  However, this automatic close
+does not check for errors, so it is better to explicitly close
+filehandles, especially those used for writing:
+
+    close($handle)
+       || warn "close failed: $!";
+
+An older style is to use a bareword as the filehandle, as
+
+    open(FH, "<", "input.txt")
+       or die "cannot open < input.txt: $!";
+
+Then you can use C<FH> as the filehandle, in C<< close FH >> and C<<
+<FH> >> and so on.  Note that it's a global variable, so this form is
+not recommended in new code.
+
+As a shortcut a one-argument call takes the filename from the global
+scalar variable of the same name as the filehandle:
+
+    $ARTICLE = 100;
+    open(ARTICLE) or die "Can't find article $ARTICLE: $!\n";
+
+Here C<$ARTICLE> must be a global (package) scalar variable - not one
+declared with C<my> or C<state>.
+
 As a special case the three-argument form with a read/write mode and the third
 argument being C<undef>:
 
@@ -4010,10 +4041,6 @@ To (re)open C<STDOUT> or C<STDERR> as an in-memory file, close it first:
 	or die "Can't open STDOUT: $!";
 
 General examples:
-
-    $ARTICLE = 100;
-    open(ARTICLE) or die "Can't find article $ARTICLE: $!\n";
-    while (<ARTICLE>) {...
 
     open(LOG, ">>/usr/spool/news/twitlog");  # (log is reserved)
     # if the open fails, output is discarded
@@ -4259,34 +4286,6 @@ interpretation.  For example:
     seek(HANDLE, 0, 0);
     print "File contains: ", <HANDLE>;
 
-Using the constructor from the C<IO::Handle> package (or one of its
-subclasses, such as C<IO::File> or C<IO::Socket>), you can generate anonymous
-filehandles that have the scope of the variables used to hold them, then
-automatically (but silently) close once their reference counts become
-zero, typically at scope exit:
-
-    use IO::File;
-    #...
-    sub read_myfile_munged {
-        my $ALL = shift;
-	# or just leave it undef to autoviv
-        my $handle = IO::File->new;
-        open($handle, "<", "myfile") or die "myfile: $!";
-        $first = <$handle>
-            or return ();     # Automatically closed here.
-        mung($first) or die "mung failed";  # Or here.
-        return (first, <$handle>) if $ALL;  # Or here.
-        return $first;                      # Or here.
-    }
-
-B<WARNING:> The previous example has a bug because the automatic
-close that happens when the refcount on C<handle> reaches zero does not
-properly detect and report failures.  I<Always> close the handle
-yourself and inspect the return value.
-
-    close($handle) 
-	|| warn "close failed: $!";
-
 See L</seek> for some details about mixing reading and writing.
 
 Portability issues: L<perlport/open>.
@@ -4320,14 +4319,14 @@ If EXPR is an empty string, returns 0.  If EXPR is omitted, uses C<$_>.
 For the reverse, see L</chr>.
 See L<perlunicode> for more about Unicode.
 
-=item our EXPR
+=item our VARLIST
 X<our> X<global>
 
-=item our TYPE EXPR
+=item our TYPE VARLIST
 
-=item our EXPR : ATTRS
+=item our VARLIST : ATTRS
 
-=item our TYPE EXPR : ATTRS
+=item our TYPE VARLIST : ATTRS
 
 =for Pod::Functions +5.6.0 declare and assign a package variable (lexical scoping)
 
@@ -4344,7 +4343,7 @@ the lexical scope of the C<our> declaration.  In this way, C<our> differs from
 C<use vars>, which allows use of an unqualified name I<only> within the
 affected package, but across scopes.
 
-If more than one value is listed, the list must be placed
+If more than one variable is listed, the list must be placed
 in parentheses.
 
     our $foo;
@@ -4392,6 +4391,11 @@ and attributes are handled using the C<attributes> pragma, or, starting
 from Perl 5.8.0, also via the C<Attribute::Handlers> module.  See
 L<perlsub/"Private Variables via my()"> for details, and L<fields>,
 L<attributes>, and L<Attribute::Handlers>.
+
+Note that with a parenthesised list, C<undef> can be used as a dummy
+placeholder, for example to skip assignment of initial values:
+
+    our ( undef, $min, $hour ) = localtime;
 
 =item pack TEMPLATE,LIST
 X<pack>
@@ -4507,7 +4511,7 @@ including all its subgroups.
 =begin comment
 
 Larry recalls that the hex and bit string formats (H, h, B, b) were added to
-pack for processing data from NASA's Magellan probe. Magellan was in an
+pack for processing data from NASA's Magellan probe.  Magellan was in an
 elliptical orbit, using the antenna for the radar mapping when close to
 Venus and for communicating data back to Earth for the rest of the orbit.
 There were two transmission units, but one of these failed, and then the
@@ -5765,13 +5769,24 @@ Otherwise, C<require> demands that a library file be included if it
 hasn't already been included.  The file is included via the do-FILE
 mechanism, which is essentially just a variety of C<eval> with the
 caveat that lexical variables in the invoking script will be invisible
-to the included code.  Has semantics similar to the following subroutine:
+to the included code.  If it were implemented in pure Perl, it
+would have semantics similar to the following:
+
+    use Carp 'croak';
+    use version;
 
     sub require {
        my ($filename) = @_;
+       if ( my $version = eval { version->parse($filename) } ) {
+           if ( $version > $^V ) {
+               my $vn = $version->normal;
+               croak "Perl $vn required--this is only $^V, stopped";
+           }
+           return 1;
+       }
        if (exists $INC{$filename}) {
            return 1 if $INC{$filename};
-           die "Compilation failed in require";
+           croak "Compilation failed in require";
        }
        my ($realfilename,$result);
        ITER: {
@@ -5779,19 +5794,25 @@ to the included code.  Has semantics similar to the following subroutine:
                $realfilename = "$prefix/$filename";
                if (-f $realfilename) {
                    $INC{$filename} = $realfilename;
-                   $result = do $realfilename;
+                   my $caller = caller;
+                   my $do_as_caller = eval qq{
+                       package $caller;
+                       sub { do \$_[0] }
+                   };
+                   $result = $do_as_caller->($realfilename);
                    last ITER;
                }
            }
-           die "Can't find $filename in \@INC";
+           croak "Can't locate $filename in \@INC";
        }
        if ($@) {
            $INC{$filename} = undef;
-           die $@;
+           croak $@;
        } elsif (!$result) {
            delete $INC{$filename};
-           die "$filename did not return true value";
+           croak "$filename did not return true value";
        } else {
+           $! = 0;
            return $result;
        }
     }
@@ -5844,16 +5865,21 @@ Subroutine references are the simplest case.  When the inclusion system
 walks through @INC and encounters a subroutine, this subroutine gets
 called with two parameters, the first a reference to itself, and the
 second the name of the file to be included (e.g., "F<Foo/Bar.pm>").  The
-subroutine should return either nothing or else a list of up to three 
+subroutine should return either nothing or else a list of up to four 
 values in the following order:
 
 =over
 
 =item 1
 
-A filehandle, from which the file will be read.  
+A reference to a scalar, containing any initial source code to prepend to
+the file or generator output.
 
 =item 2
+
+A filehandle, from which the file will be read.  
+
+=item 3
 
 A reference to a subroutine.  If there is no filehandle (previous item),
 then this subroutine is expected to generate one line of source code per
@@ -5863,7 +5889,7 @@ called to act as a simple source filter, with the line as read in C<$_>.
 Again, return 1 for each valid line, and 0 after all lines have been
 returned.
 
-=item 3
+=item 4
 
 Optional state for the subroutine.  The state is passed in as C<$_[1]>.  A
 reference to the subroutine itself is passed in as C<$_[0]>.
@@ -6876,7 +6902,7 @@ instead treated as if it were C</\s+/>; in particular, this means that
 I<any> contiguous whitespace (not just a single space character) is used as
 a separator.  However, this special treatment can be avoided by specifying
 the pattern S<C</ />> instead of the string S<C<" ">>, thereby allowing
-only a single space character to be a separator. In earlier Perl's this
+only a single space character to be a separator.  In earlier Perls this
 special case was restricted to the use of a plain S<C<" ">> as the
 pattern argument to split, in Perl 5.18.0 and later this special case is
 triggered by any expression which evaluates as the simple string S<C<" ">>.
@@ -7536,14 +7562,14 @@ instead of the target file behind the link, use the C<lstat> function.
 
 Portability issues: L<perlport/stat>.
 
-=item state EXPR
+=item state VARLIST
 X<state>
 
-=item state TYPE EXPR
+=item state TYPE VARLIST
 
-=item state EXPR : ATTRS
+=item state VARLIST : ATTRS
 
-=item state TYPE EXPR : ATTRS
+=item state TYPE VARLIST : ATTRS
 
 =for Pod::Functions +state declare and assign a persistent lexical variable
 
@@ -7552,6 +7578,11 @@ However, those variables will never be reinitialized, contrary to
 lexical variables that are reinitialized each time their enclosing block
 is entered.
 See L<perlsub/"Persistent Private Variables"> for details.
+
+If more than one variable is listed, the list must be placed in
+parentheses.  With a parenthesised list, C<undef> can be used as a
+dummy placeholder.  However, since initialization of state variables in
+list context is currently not possible this would serve no purpose.
 
 C<state> variables are enabled only when the C<use feature "state"> pragma 
 is in effect, unless the keyword is written as C<CORE::state>.
@@ -8658,13 +8689,13 @@ produce a syntax error.  In scalar context, returns the number of values.
 
 Hash entries are returned in an apparently random order.  The actual random
 order is specific to a given hash; the exact same series of operations
-on two hashes may result in a different order for each hash. Any insertion
+on two hashes may result in a different order for each hash.  Any insertion
 into the hash may change the order, as will any deletion, with the exception
 that the most recent key returned by C<each> or C<keys> may be deleted
-without changing the order. So long as a given hash is unmodified you may
+without changing the order.  So long as a given hash is unmodified you may
 rely on C<keys>, C<values> and C<each> to repeatedly return the same order
-as each other. See L<perlsec/"Algorithmic Complexity Attacks"> for
-details on why hash order is randomized. Aside from the guarantees
+as each other.  See L<perlsec/"Algorithmic Complexity Attacks"> for
+details on why hash order is randomized.  Aside from the guarantees
 provided here the exact details of Perl's hash algorithm and the hash
 traversal order are subject to change in any release of Perl.
 

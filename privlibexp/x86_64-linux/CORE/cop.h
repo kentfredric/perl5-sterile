@@ -581,7 +581,9 @@ struct block_format {
  * decremented by LEAVESUB, the other by LEAVE. */
 
 #define PUSHSUB_BASE(cx)						\
-	ENTRY_PROBE(GvENAME(CvGV(cv)),		       			\
+	ENTRY_PROBE(CvNAMED(cv)						\
+			? HEK_KEY(CvNAME_HEK(cv))			\
+			: GvENAME(CvGV(cv)),	       			\
 		CopFILE((const COP *)CvSTART(cv)),			\
 		CopLINE((const COP *)CvSTART(cv)),			\
 		CopSTASHPV((const COP *)CvSTART(cv)));			\
@@ -646,7 +648,9 @@ struct block_format {
 
 #define POPSUB(cx,sv)							\
     STMT_START {							\
-	RETURN_PROBE(GvENAME(CvGV((const CV*)cx->blk_sub.cv)),		\
+	RETURN_PROBE(CvNAMED(cx->blk_sub.cv)				\
+			? HEK_KEY(CvNAME_HEK(cx->blk_sub.cv))		\
+			: GvENAME(CvGV(cx->blk_sub.cv)),		\
 		CopFILE((COP*)CvSTART((const CV*)cx->blk_sub.cv)),	\
 		CopLINE((COP*)CvSTART((const CV*)cx->blk_sub.cv)),	\
 		CopSTASHPV((COP*)CvSTART((const CV*)cx->blk_sub.cv)));	\
@@ -1054,6 +1058,7 @@ L<perlcall>.
 #define G_WRITING_TO_STDERR 1024 /* Perl_write_to_stderr() is calling
 				    Perl_magic_methcall().  */
 #define G_RE_REPARSING 0x800     /* compiling a run-time /(?{..})/ */
+#define G_METHOD_NAMED 4096	/* calling named method, eg without :: or ' */
 
 /* flag bits for PL_in_eval */
 #define EVAL_NULL	0	/* not in an eval */

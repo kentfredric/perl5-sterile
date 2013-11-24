@@ -691,6 +691,8 @@ struct op *Perl_op asm(stringify(OP_IN_REGISTER));
 
 #if !defined(NO_LOCALE) && defined(HAS_SETLOCALE)
 #   define USE_LOCALE
+#   define HAS_SKIP_LOCALE_INIT /* Solely for XS code to test for this
+                                   capability */
 #   if !defined(NO_LOCALE_COLLATE) && defined(LC_COLLATE) \
        && defined(HAS_STRXFRM)
 #	define USE_LOCALE_COLLATE
@@ -700,6 +702,12 @@ struct op *Perl_op asm(stringify(OP_IN_REGISTER));
 #   endif
 #   if !defined(NO_LOCALE_NUMERIC) && defined(LC_NUMERIC)
 #	define USE_LOCALE_NUMERIC
+#   endif
+#   if !defined(NO_LOCALE_MESSAGES) && defined(LC_MESSAGES)
+#	define USE_LOCALE_MESSAGES
+#   endif
+#   if !defined(NO_LOCALE_MONETARY) && defined(LC_MONETARY)
+#	define USE_LOCALE_MONETARY
 #   endif
 #endif /* !NO_LOCALE && HAS_SETLOCALE */
 
@@ -1227,16 +1235,16 @@ EXTERN_C char *crypt(const char *, const char *);
 #endif
 
 #ifdef HAS_STRERROR
-#ifndef DONT_DECLARE_STD
+#   ifndef DONT_DECLARE_STD
 #       ifdef VMS
 	char *strerror (int,...);
 #       else
 	char *strerror (int);
 #       endif
-#endif
-#       ifndef Strerror
-#           define Strerror strerror
-#       endif
+#    endif
+#    ifndef Strerror
+#       define Strerror strerror
+#    endif
 #else
 #    ifdef HAS_SYS_ERRLIST
 	extern int sys_nerr;
@@ -2278,6 +2286,7 @@ typedef struct xpvuv XPVUV;
 typedef struct xpvnv XPVNV;
 typedef struct xpvmg XPVMG;
 typedef struct xpvlv XPVLV;
+typedef struct xpvinvlist XINVLIST;
 typedef struct xpvav XPVAV;
 typedef struct xpvhv XPVHV;
 typedef struct xpvgv XPVGV;
@@ -3040,8 +3049,9 @@ typedef pthread_key_t	perl_key;
 
 /* Takes three arguments: is_utf8, length, str */
 #ifndef UTF8f
-#  define UTF8f "u%"UVuf"%4p"
+#  define UTF8f "d%"UVuf"%4p"
 #endif
+#define UTF8fARG(u,l,p) (int)cBOOL(u), (UV)(l), (void*)(p)
 
 #ifdef PERL_CORE
 /* not used; but needed for backward compatibility with XS code? - RMB */
@@ -5042,19 +5052,19 @@ EXTCONST U8 PL_magic_data[256];
 #endif
 
 #ifdef DOINIT
-		        /* NL BD IV NV PV PI PN MG RX GV LV AV HV CV FM IO */
+		        /* NL IV NV PV INV PI PN MG RX GV LV AV HV CV FM IO */
 EXTCONST bool
-PL_valid_types_IVX[]    = { 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0 };
+PL_valid_types_IVX[]    = { 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0 };
 EXTCONST bool
-PL_valid_types_NVX[]    = { 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0 };
+PL_valid_types_NVX[]    = { 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0 };
 EXTCONST bool
-PL_valid_types_PVX[]    = { 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1 };
+PL_valid_types_PVX[]    = { 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1 };
 EXTCONST bool
-PL_valid_types_RV[]     = { 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1 };
+PL_valid_types_RV[]     = { 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1 };
 EXTCONST bool
-PL_valid_types_IV_set[] = { 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1 };
+PL_valid_types_IV_set[] = { 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1 };
 EXTCONST bool
-PL_valid_types_NV_set[] = { 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
+PL_valid_types_NV_set[] = { 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
 
 #else
 

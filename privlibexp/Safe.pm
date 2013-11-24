@@ -3,7 +3,7 @@ package Safe;
 use 5.003_11;
 use Scalar::Util qw(reftype refaddr);
 
-$Safe::VERSION = "2.36";
+$Safe::VERSION = "2.37";
 
 # *** Don't declare any lexicals above this point ***
 #
@@ -528,7 +528,7 @@ outside the compartment) placed into the compartment. For example,
 
     $cpt = new Safe;
     sub wrapper {
-        # vet arguments and perform potentially unsafe operations
+      # vet arguments and perform potentially unsafe operations
     }
     $cpt->share('&wrapper');
 

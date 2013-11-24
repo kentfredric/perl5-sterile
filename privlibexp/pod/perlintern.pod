@@ -674,6 +674,39 @@ Found in file doio.c
 
 =back
 
+=head1 Lexer interface
+
+=over 8
+
+=item validate_proto
+X<validate_proto>
+
+
+NOTE: this function is experimental and may change or be
+removed without notice.
+
+
+This function performs syntax checking on a prototype, C<proto>.
+If C<warn> is true, any illegal characters or mismatched brackets
+will trigger illegalproto warnings, declaring that they were
+detected in the prototype for C<name>.
+
+The return value is C<true> if this is a valid prototype, and
+C<false> if it is not, regardless of whether C<warn> was C<true> or
+C<false>.
+
+Note that C<NULL> is a valid C<proto> and will always return C<true>.
+
+NOTE: the perl_ form of this function is deprecated.
+
+	bool	validate_proto(SV *name, SV *proto, bool warn)
+
+=for hackers
+Found in file toke.c
+
+
+=back
+
 =head1 Magical Functions
 
 =over 8
@@ -723,8 +756,8 @@ Returns the SV (if any) returned by the method, or NULL on failure.
 
 
 	SV*	magic_methcall(SV *sv, const MAGIC *mg,
-		               const char *meth, U32 flags,
-		               U32 argc, ...)
+		               SV *meth, U32 flags, U32 argc,
+		               ...)
 
 =for hackers
 Found in file mg.c
@@ -1473,9 +1506,6 @@ X<_add_range_to_invlist>
 =item _core_swash_init
 X<_core_swash_init>
 
-=item _get_invlist_len_addr
-X<_get_invlist_len_addr>
-
 =item _get_swash_invlist
 X<_get_swash_invlist>
 
@@ -1758,6 +1788,9 @@ X<cvstash_set>
 =item deb_stack_all
 X<deb_stack_all>
 
+=item defelem_target
+X<defelem_target>
+
 =item delete_eval_scope
 X<delete_eval_scope>
 
@@ -1887,14 +1920,11 @@ X<get_hash_seed>
 =item get_invlist_iter_addr
 X<get_invlist_iter_addr>
 
+=item get_invlist_offset_addr
+X<get_invlist_offset_addr>
+
 =item get_invlist_previous_index_addr
 X<get_invlist_previous_index_addr>
-
-=item get_invlist_version_id_addr
-X<get_invlist_version_id_addr>
-
-=item get_invlist_zero_addr
-X<get_invlist_zero_addr>
 
 =item get_no_modify
 X<get_no_modify>
@@ -2163,6 +2193,9 @@ X<malloced_size>
 =item mem_collxfrm
 X<mem_collxfrm>
 
+=item mg_find_mglob
+X<mg_find_mglob>
+
 =item mode_from_discipline
 X<mode_from_discipline>
 
@@ -2301,6 +2334,9 @@ X<populate_isa>
 =item prepend_madprops
 X<prepend_madprops>
 
+=item ptr_hash
+X<ptr_hash>
+
 =item qerror
 X<qerror>
 
@@ -2402,6 +2438,9 @@ X<sv_kill_backrefs>
 
 =item sv_len_utf8_nomg
 X<sv_len_utf8_nomg>
+
+=item sv_magicext_mglob
+X<sv_magicext_mglob>
 
 =item sv_mortalcopy_flags
 X<sv_mortalcopy_flags>

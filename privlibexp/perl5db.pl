@@ -523,7 +523,7 @@ BEGIN {
 # Debugger for Perl 5.00x; perl5db.pl patch level:
 use vars qw($VERSION $header);
 
-$VERSION = '1.40';
+$VERSION = '1.41';
 
 $header = "perl5db.pl version $VERSION";
 
@@ -1362,7 +1362,8 @@ the R command stuffed into the environment variables.
   PERLDB_RESTART   - flag only, contains no restart data itself.
   PERLDB_HIST      - command history, if it's available
   PERLDB_ON_LOAD   - breakpoints set by the rc file
-  PERLDB_POSTPONE  - subs that have been loaded/not executed, and have actions
+  PERLDB_POSTPONE  - subs that have been loaded/not executed,
+                     and have actions
   PERLDB_VISITED   - files that had breakpoints
   PERLDB_FILE_...  - breakpoints for a file
   PERLDB_OPT       - active options
@@ -4093,9 +4094,6 @@ sub _print_frame_message {
 }
 
 sub DB::sub {
-    # Do not use a regex in this subroutine -> results in corrupted memory
-    # See: [perl #66110]
-
     # lock ourselves under threads
     lock($DBGR);
 
@@ -4268,7 +4266,9 @@ sub lsub : lvalue {
     $stack[-1] = $single;
 
     # Turn off all flags except single-stepping.
-    $single &= 1;
+    # Use local so the single-step value is popped back off the
+    # stack for us.
+    local $single = $single & 1;
 
     # If we've gotten really deeply recursed, turn on the flag that will
     # make us stop with the 'deep recursion' message.
@@ -4276,9 +4276,6 @@ sub lsub : lvalue {
 
     # If frame messages are on ...
     _print_frame_message($al);
-
-    # Pop the single-step value back off the stack.
-    $single |= $stack[ $stack_depth-- ];
 
     # call the original lvalue sub.
     &$sub;

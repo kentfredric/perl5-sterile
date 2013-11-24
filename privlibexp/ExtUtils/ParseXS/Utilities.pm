@@ -6,18 +6,16 @@ use File::Spec;
 use lib qw( lib );
 use ExtUtils::ParseXS::Constants ();
 
-our $VERSION = '3.19';
+our $VERSION = '3.21';
 
 our (@ISA, @EXPORT_OK);
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(
   standard_typemap_locations
   trim_whitespace
-  tidy_type
   C_string
   valid_proto_string
   process_typemaps
-  make_targetable
   map_type
   standard_XS_defs
   assign_func_args
@@ -41,11 +39,9 @@ ExtUtils::ParseXS::Utilities - Subroutines used with ExtUtils::ParseXS
   use ExtUtils::ParseXS::Utilities qw(
     standard_typemap_locations
     trim_whitespace
-    tidy_type
     C_string
     valid_proto_string
     process_typemaps
-    make_targetable
     map_type
     standard_XS_defs
     assign_func_args
@@ -175,45 +171,6 @@ sub trim_whitespace {
   $_[0] =~ s/^\s+|\s+$//go;
 }
 
-=head2 C<tidy_type()>
-
-=over 4
-
-=item * Purpose
-
-Rationalize any asterisks (C<*>) by joining them into bunches, removing
-interior whitespace, then trimming leading and trailing whitespace.
-
-=item * Arguments
-
-    ($ret_type) = tidy_type($_);
-
-String to be cleaned up.
-
-=item * Return Value
-
-String cleaned up.
-
-=back
-
-=cut
-
-sub tidy_type {
-  local ($_) = @_;
-
-  # rationalise any '*' by joining them into bunches and removing whitespace
-  s#\s*(\*+)\s*#$1#g;
-  s#(\*+)# $1 #g;
-
-  # change multiple whitespace into a single space
-  s/\s+/ /g;
-
-  # trim leading & trailing whitespace
-  trim_whitespace($_);
-
-  $_;
-}
-
 =head2 C<C_string()>
 
 =over 4
@@ -321,76 +278,6 @@ sub process_typemaps {
   }
 
   return $typemap;
-}
-
-=head2 C<make_targetable()>
-
-=over 4
-
-=item * Purpose
-
-Populate C<%targetable>.  This constitutes a refinement of the output of
-C<process_typemaps()> with respect to its fourth output, C<$output_expr_ref>.
-
-=item * Arguments
-
-  %targetable = make_targetable($output_expr_ref);
-
-Single hash reference:  the fourth such ref returned by C<process_typemaps()>.
-
-=item * Return Value
-
-Hash.
-
-=back
-
-=cut
-
-sub make_targetable {
-  my $output_expr_ref = shift;
-
-  our $bal; # ()-balanced
-  $bal = qr[
-    (?:
-      (?>[^()]+)
-      |
-      \( (??{ $bal }) \)
-    )*
-  ]x;
-
-  # matches variations on (SV*)
-  my $sv_cast = qr[
-    (?:
-      \( \s* SV \s* \* \s* \) \s*
-    )?
-  ]x;
-
-  my $size = qr[ # Third arg (to setpvn)
-    , \s* (??{ $bal })
-  ]x;
-
-  my %targetable;
-  foreach my $key (keys %{ $output_expr_ref }) {
-    # We can still bootstrap compile 're', because in code re.pm is
-    # available to miniperl, and does not attempt to load the XS code.
-    use re 'eval';
-
-    my ($type, $with_size, $arg, $sarg) =
-      ($output_expr_ref->{$key} =~
-        m[^
-          \s+
-          sv_set([iunp])v(n)?    # Type, is_setpvn
-          \s*
-          \( \s*
-            $sv_cast \$arg \s* , \s*
-            ( (??{ $bal }) )    # Set from
-          ( (??{ $size }) )?    # Possible sizeof set-from
-          \) \s* ; \s* $
-        ]x
-    );
-    $targetable{$key} = [$type, $with_size, $arg, $sarg] if $type;
-  }
-  return %targetable;
 }
 
 =head2 C<map_type()>

@@ -682,6 +682,11 @@ Something like this will reproduce the error:
 (P) Perl got confused as to whether a hash was a plain hash or a
 symbol table hash when trying to update @ISA caches.
 
+=item Can't call mro_method_changed_in() on anonymous symbol table
+
+(F) An XS module tried to call C<mro_method_changed_in> on a hash that was
+not attached to the symbol table.
+
 =item Can't chdir to %s
 
 (F) You called C<perl -x/foo/bar>, but F</foo/bar> is not a directory
@@ -1278,6 +1283,8 @@ test the type of the reference, if need be.
 
 =item Can't use string ("%s") as %s ref while "strict refs" in use
 
+=item Can't use string ("%s"...) as %s ref while "strict refs" in use
+
 (F) You've told Perl to dereference a string, something which
 C<use strict> blocks to prevent it happening accidentally.  See
 L<perlref/"Symbolic references">.  This can be triggered by an C<@> or C<$>
@@ -1756,7 +1763,7 @@ define a C<$VERSION>.
 (F) You cannot put a repeat count of any kind right after the '/' code.
 See L<perlfunc/pack>.
 
-=item Don't know how to handle magic of type '%s'
+=item Don't know how to handle magic of type \%o
 
 (P) The internal handling of magical variables has been cursed.
 
@@ -2163,8 +2170,8 @@ has since been undefined.
 <-- HERE in m/%s/
 
 (F) Group names must follow the rules for perl identifiers, meaning
-they must start with a non-digit word character. A common cause of
-this error is using (?&0) instead of (?0). See L<perlre>.
+they must start with a non-digit word character.  A common cause of
+this error is using (?&0) instead of (?0).  See L<perlre>.
 
 =item ()-group starts with a count
 
@@ -2223,8 +2230,10 @@ offending digit.
 
 =item Illegal character after '_' in prototype for %s : %s
 
-(W illegalproto) An illegal character was found in a prototype declaration.
-Legal characters in prototypes are $, @, %, *, ;, [, ], &, \, and +.
+(W illegalproto) An illegal character was found in a prototype
+declaration.  The '_' in a prototype must be followed by a ';',
+indicating the rest of the parameters are optional, or one of '@'
+or '%', since those two will accept 0 or more final parameters.
 
 =item Illegal character \%o (carriage return)
 
@@ -2338,14 +2347,11 @@ documentation in L<mro> for more information.
 Unicode code points, and encoded in EBCDIC as UTF-EBCDIC.  The UTF-EBCDIC
 encoding is limited to code points no larger than 2147483647 (0x7FFFFFFF).
 
-=item Infinite recursion in regex; marked by <-- HERE in m/%s/
+=item Infinite recursion in regex
 
 (F) You used a pattern that references itself without consuming any input
 text.  You should check the pattern to ensure that recursive patterns
 either consume text or fail.
-
-The <-- HERE shows whereabouts in the regular expression the problem was
-discovered.
 
 =item Initialization of state variables in list context currently forbidden
 
@@ -2448,6 +2454,15 @@ to C<exec> should affect the current script or a subprocess (see
 L<perlvms/"exec LIST">).  Somehow, this count has become scrambled, so
 Perl is making a guess and treating this C<exec> as a request to
 terminate the Perl script and execute the specified command.
+
+=item internal %<num>p might conflict with future printf extensions
+
+(S internal) Perl's internal routine that handles C<printf> and C<sprintf>
+formatting follows a slightly different set of rules when called from
+C or XS code.  Specifically, formats consisting of digits followed
+by "p" (e.g., "%7p") are reserved for future use.  If you see this
+message, then an XS module tried to call that routine with one such
+reserved format.
 
 =item Internal urp in regex; marked by <-- HERE in m/%s/
 
@@ -2601,7 +2616,7 @@ an arbitrary reference was blessed into the "version" class.
 (D regexp, deprecated) The two-character sequence C<"(*"> in
 this context in a regular expression pattern should be an
 indivisible token, with nothing intervening between the C<"(">
-and the C<"*">, but you separated them. Due to an accident of
+and the C<"*">, but you separated them.  Due to an accident of
 implementation, this prohibition was not enforced, but we do
 plan to forbid it in a future Perl version.  This message
 serves as giving you fair warning of this pending change.
@@ -2699,7 +2714,7 @@ effective uids or gids failed.
 length/code combination tried to obtain more data.  This results in
 an undefined value for the length.  See L<perlfunc/pack>.
 
-=item length() used on %s
+=item length() used on %s (did you mean "scalar(%s)"?)
 
 (W syntax) You used length() on either an array or a hash when you
 probably wanted a count of the items.
@@ -2966,6 +2981,11 @@ they have a name with which they can be found.
 are always mentioned with the $ in Perl, unlike in the shells, where it
 can vary from one line to the next.
 
+=item Missing ']' in prototype for %s : %s
+
+(W illegalproto) A grouping was started with C<[> but never closed with
+C<]>.
+
 =item (Missing operator before %s?)
 
 (S syntax) This is an educated guess made in conjunction with the message
@@ -3060,6 +3080,14 @@ can happen if you are trying to open a pipe to a command that takes a
 list of arguments, but have forgotten to specify a piped open mode.
 See L<perlfunc/open> for details.
 
+=item mprotect for %p %u failed with %d
+
+=item mprotect RW for %p %u failed with %d
+
+(S) You compiled perl with B<-D>PERL_DEBUG_READONLY_OPS (see
+L<perlhacktips>), but an op tree could not be made read-only, or a
+read-only op tree could not be made mutable before freeing the ops.
+
 =item msg%s not implemented
 
 (F) You don't have System V message IPC on your system.
@@ -3098,13 +3126,15 @@ local() if you want to localize a package variable.
 
 (W once) Typographical errors often show up as unique variable names.
 If you had a good reason for having a unique name, then just mention it
-again somehow to suppress the message.  The C<our> declaration is
-provided for this purpose.
+again somehow to suppress the message.  The C<our> declaration is provided
+for this purpose.
 
 NOTE: This warning detects symbols that have been used only once so $c, @c,
 %c, *c, &c, sub c{}, c(), and c (the filehandle or format) are considered
 the same; if a program uses $c only once but also uses any of the others it
-will not trigger this warning.
+will not trigger this warning.  Symbols beginning with an underscore and
+symbols using special identifiers (q.v. L<perldata>) are exempt from this
+warning.
 
 =item Need exactly 3 octal digits in regex; marked by <-- HERE in m/%s/
 
@@ -3974,15 +4004,11 @@ knowledgeable people to determine what the type being checked against
 was.  If C<utf8> warnings are enabled, a further message is raised,
 giving details of the malformation.
 
-=item Pattern subroutine nesting without pos change exceeded limit in regex; 
-marked by <-- HERE in m/%s/
+=item Pattern subroutine nesting without pos change exceeded limit in regex
 
 (F) You used a pattern that uses too many nested subpattern calls without
 consuming any text.  Restructure the pattern so text is consumed before
 the nesting limit is exceeded.
-
-The <-- HERE shows whereabouts in the regular expression the problem was
-discovered.
 
 =item C<-p> destination: %s
 
@@ -3999,12 +4025,10 @@ that a method requires a package that has not been loaded.
 =item Perl folding rules are not up-to-date for 0x%X; please use the perlbug 
 utility to report; in regex; marked by <-- HERE in m/%s/
 
-(D regexp, deprecated) You used a regular expression with
-case-insensitive matching, and there is a bug in Perl in which the
-built-in regular expression folding rules are not accurate.  This
-may lead to incorrect results.  Please report this as a bug using the
-L<perlbug> utility.  (This message is marked deprecated, so that it by
-default will be turned-on.)
+(S regexp) You used a regular expression with case-insensitive matching,
+and there is a bug in Perl in which the built-in regular expression
+folding rules are not accurate.  This may lead to incorrect results.
+Please report this as a bug using the L<perlbug> utility.
 
 =item Perl_my_%s() not available
 
@@ -4022,7 +4046,7 @@ interpreted as a decimal, with every three digits after the
 decimal point representing a part of the version number.  So 5.10
 is equivalent to v5.100.
 
-=item Perl %s required--this is only version %s, stopped
+=item Perl %s required--this is only %s, stopped
 
 (F) The module in question uses features of a version of Perl more
 recent than the currently running version.  How long has it been since
@@ -4082,7 +4106,8 @@ are as follows.
   --------+---------------+-----------------------------------------
   0       | NO            | Disables key traversal randomization
   1       | RANDOM        | Enables full key traversal randomization
-  2       | DETERMINISTIC | Enables repeatable key traversal randomization
+  2       | DETERMINISTIC | Enables repeatable key traversal
+          |               | randomization
 
 Both numeric and string values are accepted, but note that string values are
 case sensitive.  The default for this setting is "RANDOM" or 1.
@@ -4489,7 +4514,7 @@ supposed to be there.
 (P) A "can't happen" error, because safemalloc() should have caught it
 earlier.
 
-=item Repeated format line will never terminate (~~ and @# incompatible)
+=item Repeated format line will never terminate (~~ and @#)
 
 (F) Your format contains the ~~ repeat-until-blank sequence and a
 numeric field that will never go blank so that the repetition never
@@ -4922,6 +4947,11 @@ assignment or as a subroutine argument for example).
 (P) Perl tried to force the upgrade of an SV to a type which was actually
 inferior to its current type.
 
+=item SWASHNEW didn't return an HV ref
+
+(P) Something went wrong internally when Perl was trying to look up
+Unicode characters.
+
 =item Switch (?(condition)... contains too many branches in regex; marked by 
 <-- HERE in m/%s/
 
@@ -5118,7 +5148,7 @@ target of the change to
 
 (F) Something has attempted to use an internal API call which
 depends on Perl being compiled with the default support for randomized hash
-key traversal, but this Perl has been compiled without it. You should
+key traversal, but this Perl has been compiled without it.  You should
 report this warning to the relevant upstream party, or recompile perl
 with default options.
 
@@ -5479,7 +5509,7 @@ discovered.  See L<perlre>.
 (F) You specified an unknown Unicode option.  See L<perlrun> documentation
 of the C<-C> switch for the list of known options.
 
-=item Unknown Unicode option value %x
+=item Unknown Unicode option value %d
 
 (F) You specified an unknown Unicode option.  See L<perlrun> documentation
 of the C<-C> switch for the list of known options.
@@ -5898,9 +5928,9 @@ used.  (This may change in the future.)
 
 =item Use of each() on hash after insertion without resetting hash iterator results in undefined behavior
 
-(S internal) The behavior of C<each()> after insertion is undefined; it may
-skip items, or visit items more than once. Consider using C<keys()> instead
-of C<each()>.
+(S internal) The behavior of C<each()> after insertion is undefined;
+it may skip items, or visit items more than once.  Consider using
+C<keys()> instead of C<each()>.
 
 =item Use of := for an empty attribute list is not allowed
 

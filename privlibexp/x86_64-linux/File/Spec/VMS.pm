@@ -4,7 +4,7 @@ use strict;
 use vars qw(@ISA $VERSION);
 require File::Spec::Unix;
 
-$VERSION = '3.41';
+$VERSION = '3.43';
 $VERSION =~ tr/_//;
 
 @ISA = qw(File::Spec::Unix);
@@ -336,14 +336,14 @@ sub file_name_is_absolute {
     $file = $ENV{$file} while $file =~ /^[\w\$\-]+\Z(?!\n)/s && $ENV{$file};
     return scalar($file =~ m!^/!s             ||
 		  $file =~ m![<\[][^.\-\]>]!  ||
-		  $file =~ /:[^<\[]/);
+		  $file =~ /^[A-Za-z0-9_\$\-\~]+(?<!\^):/);
 }
 
 =item splitpath (override)
 
-    ($volume,$directories,$file) = File::Spec->splitpath( $path );
-    ($volume,$directories,$file) = File::Spec->splitpath( $path,
-                                                          $no_file );
+   ($volume,$directories,$file) = File::Spec->splitpath( $path );
+   ($volume,$directories,$file) = File::Spec->splitpath( $path,
+                                                         $no_file );
 
 Passing a true value for C<$no_file> indicates that the path being
 split only contains directory components, even on systems where you

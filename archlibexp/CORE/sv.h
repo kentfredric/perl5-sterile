@@ -29,6 +29,7 @@ The types are:
     SVt_PVIV
     SVt_PVNV
     SVt_PVMG
+    SVt_INVLIST
     SVt_REGEXP
     SVt_PVGV
     SVt_PVLV
@@ -56,7 +57,8 @@ typeglob has been assigned.  Assigning to it again will stop it from being
 a typeglob.  SVt_PVLV represents a scalar that delegates to another scalar
 behind the scenes.  It is used, e.g., for the return value of C<substr> and
 for tied hash and array elements.  It can hold any scalar value, including
-a typeglob. SVt_REGEXP is for regular expressions.
+a typeglob. SVt_REGEXP is for regular expressions.  SVt_INVLIST is for Perl
+core internal use only.
 
 SVt_PVMG represents a "normal" scalar (not a typeglob, regular expression,
 or delegate).  Since most scalars do not need all the internal fields of a
@@ -90,6 +92,9 @@ Type flag for scalars.  See L</svtype>.
 =for apidoc AmU||SVt_PVMG
 Type flag for scalars.  See L</svtype>.
 
+=for apidoc AmU||SVt_INVLIST
+Type flag for scalars.  See L</svtype>.
+
 =for apidoc AmU||SVt_REGEXP
 Type flag for regular expressions.  See L</svtype>.
 
@@ -115,15 +120,22 @@ Type flag for formats.  See L</svtype>.
 Type flag for I/O objects.  See L</svtype>.
 
 =cut
+
+  These are ordered so that the simpler types have a lower value; SvUPGRADE
+  doesn't allow you to upgrade from a higher numbered type to a lower numbered
+  one; also there is code that assumes that anything that has as a PV component
+  has a type numbered >= SVt_PV.
 */
+
 
 typedef enum {
 	SVt_NULL,	/* 0 */
-	SVt_DUMMY,	/* 1 */
-	SVt_IV,		/* 2 */
-	SVt_NV,		/* 3 */
+	/* BIND was here, before INVLIST replaced it.  */
+	SVt_IV,		/* 1 */
+	SVt_NV,		/* 2 */
 	/* RV was here, before it was merged with IV.  */
-	SVt_PV,		/* 4 */
+	SVt_PV,		/* 3 */
+	SVt_INVLIST,	/* 4, implemented as a PV */
 	SVt_PVIV,	/* 5 */
 	SVt_PVNV,	/* 6 */
 	SVt_PVMG,	/* 7 */
@@ -140,13 +152,15 @@ typedef enum {
 } svtype;
 
 /* *** any alterations to the SV types above need to be reflected in
- * SVt_MASK and the various PL_valid_types_* tables */
+ * SVt_MASK and the various PL_valid_types_* tables.  As of this writing those
+ * tables are in perl.h.  There are also two affected names tables in dump.c,
+ * one in B.xs, and 'bodies_by_type[]' in sv.c */
 
 #define SVt_MASK 0xf	/* smallest bitmask that covers all types */
 
 #ifndef PERL_CORE
 /* Although Fast Boyer Moore tables are now being stored in PVGVs, for most
-   purposes eternal code wanting to consider PVBM probably needs to think of
+   purposes external code wanting to consider PVBM probably needs to think of
    PVMG instead.  */
 #  define SVt_PVBM	SVt_PVMG
 /* Anything wanting to create a reference from clean should ensure that it has
@@ -462,10 +476,7 @@ union _xnvu {
 	U32 xlow;
 	U32 xhigh;
     }	    xpad_cop_seq;	/* used by pad.c for cop_sequence */
-    struct {
-	I32 xbm_useful;
-	U8  xbm_rare;		/* rarest character in string */
-    }	    xbm_s;		/* fields from PVBM */
+    I32	    xbm_useful;
 };
 
 union _xivu {
@@ -521,6 +532,13 @@ struct xpvlv {
     char	xlv_type;	/* k=keys .=pos x=substr v=vec /=join/re
 				 * y=alem/helem/iter t=tie T=tied HE */
     char	xlv_flags;	/* 1 = negative offset  2 = negative len */
+};
+
+struct xpvinvlist {
+    _XPV_HEAD;
+    IV          prev_index;
+    STRLEN	iterator;
+    bool	is_offset;	/* */
 };
 
 /* This structure works in 3 ways - regular scalar, GV with GP, or fast
@@ -931,6 +949,7 @@ in gv.h: */
 #define HvAMAGIC_off(hv)	(SvFLAGS(hv) &=~ SVf_AMAGIC)
 
 
+/* "nog" means "doesn't have get magic" */
 #define SvPOK_nog(sv)		((SvFLAGS(sv) & (SVf_POK|SVs_GMG)) == SVf_POK)
 #define SvIOK_nog(sv)		((SvFLAGS(sv) & (SVf_IOK|SVs_GMG)) == SVf_IOK)
 #define SvUOK_nog(sv)		((SvFLAGS(sv) & (SVf_IOK|SVf_IVisUV|SVs_GMG)) == (SVf_IOK|SVf_IVisUV))
@@ -1360,30 +1379,21 @@ sv_force_normal does nothing.
 #endif
 
 #if defined (DEBUGGING) && defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
-#  define BmRARE(sv)							\
-	(*({ SV *const _bmrare = MUTABLE_SV(sv);			\
-		assert(SvTYPE(_bmrare) == SVt_PVMG);			\
-		assert(SvVALID(_bmrare));				\
-	    &(((XPVMG*) SvANY(_bmrare))->xnv_u.xbm_s.xbm_rare);		\
-	 }))
 #  define BmUSEFUL(sv)							\
 	(*({ SV *const _bmuseful = MUTABLE_SV(sv);			\
 	    assert(SvTYPE(_bmuseful) == SVt_PVMG);			\
 	    assert(SvVALID(_bmuseful));					\
-	    assert(!SvIOK(_bmuseful));					\
-	    &(((XPVMG*) SvANY(_bmuseful))->xnv_u.xbm_s.xbm_useful);	\
-	 }))
-#  define BmPREVIOUS(sv)						\
-    (*({ SV *const _bmprevious = MUTABLE_SV(sv);			\
-		assert(SvTYPE(_bmprevious) == SVt_PVMG);		\
-		assert(SvVALID(_bmprevious));				\
-	    &(((XPVMG*) SvANY(_bmprevious))->xiv_u.xivu_uv);		\
+	    assert(!SvNOK(_bmuseful));					\
+	    &(((XPVMG*) SvANY(_bmuseful))->xnv_u.xbm_useful);		\
 	 }))
 #else
-#  define BmRARE(sv)		((XPVMG*) SvANY(sv))->xnv_u.xbm_s.xbm_rare
-#  define BmUSEFUL(sv)		((XPVMG*) SvANY(sv))->xnv_u.xbm_s.xbm_useful
-#  define BmPREVIOUS(sv)	((XPVMG*) SvANY(sv))->xiv_u.xivu_uv
+#  define BmUSEFUL(sv)		((XPVMG*) SvANY(sv))->xnv_u.xbm_useful
 
+#endif
+
+#ifndef PERL_CORE
+# define BmRARE(sv)	0
+# define BmPREVIOUS(sv)	0
 #endif
 
 #define FmLINES(sv)	((XPVIV*)  SvANY(sv))->xiv_iv
@@ -1490,7 +1500,7 @@ C<SvPVx> for a version which guarantees to evaluate sv only once.
 
 Note that there is no guarantee that the return value of C<SvPV()> is
 equal to C<SvPVX(sv)>, or that C<SvPVX(sv)> contains valid data, or that
-successive calls to C<SvPV(sv)) will return the same pointer value each
+successive calls to C<SvPV(sv)> will return the same pointer value each
 time. This is due to the way that things like overloading and
 Copy-On-Write are handled.  In these cases, the return value may point to
 a temporary buffer or similar.  If you absolutely need the SvPVX field to
@@ -2218,6 +2228,54 @@ Evaluates I<sv> more than once.  Sets I<len> to 0 if C<SvOOK(sv)> is false.
 #endif
 
 #define newIO()	MUTABLE_IO(newSV_type(SVt_PVIO))
+
+#define SV_CONST(name) \
+	PL_sv_consts[SV_CONST_##name] \
+		? PL_sv_consts[SV_CONST_##name] \
+		: (PL_sv_consts[SV_CONST_##name] = newSVpv_share(#name, 0))
+
+#define SV_CONST_TIESCALAR 0
+#define SV_CONST_TIEARRAY 1
+#define SV_CONST_TIEHASH 2
+#define SV_CONST_TIEHANDLE 3
+
+#define SV_CONST_FETCH 4
+#define SV_CONST_FETCHSIZE 5
+#define SV_CONST_STORE 6
+#define SV_CONST_STORESIZE 7
+#define SV_CONST_EXISTS 8
+
+#define SV_CONST_PUSH 9
+#define SV_CONST_POP 10
+#define SV_CONST_SHIFT 11
+#define SV_CONST_UNSHIFT 12
+#define SV_CONST_SPLICE 13
+#define SV_CONST_EXTEND 14
+
+#define SV_CONST_FIRSTKEY 15
+#define SV_CONST_NEXTKEY 16
+#define SV_CONST_SCALAR 17
+
+#define SV_CONST_OPEN 18
+#define SV_CONST_WRITE 19
+#define SV_CONST_PRINT 20
+#define SV_CONST_PRINTF 21
+#define SV_CONST_READ 22
+#define SV_CONST_READLINE 23
+#define SV_CONST_GETC 24
+#define SV_CONST_SEEK 25
+#define SV_CONST_TELL 26
+#define SV_CONST_EOF 27
+#define SV_CONST_BINMODE 28
+#define SV_CONST_FILENO 29
+#define SV_CONST_CLOSE 30
+
+#define SV_CONST_DELETE 31
+#define SV_CONST_CLEAR 32
+#define SV_CONST_UNTIE 33
+#define SV_CONST_DESTROY 34
+
+#define SV_CONSTS_COUNT 35
 
 /*
  * Local variables:

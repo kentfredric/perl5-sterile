@@ -120,7 +120,13 @@ restrictions.
 If working under the effect of the C<use utf8;> pragma, the following
 rules apply:
 
-    / (?[ ( \p{Word} & \p{XID_Start} ) + [_] ]) \p{XID_Continue}* /x
+    / (?[ ( \p{Word} & \p{XID_Start} ) + [_] ])
+      (?[ ( \p{Word} & \p{XID_Continue} ) ]) *    /x
+
+That is, a "start" character followed by any number of "continue"
+characters.  Perl requires every character in an identifier to also
+match C<\w> (this prevents some problematic cases); and Perl
+additionally accepts identfier names beginning with an underscore.
 
 If not under C<use utf8>, the source is treated as ASCII + 128 extra
 controls, and identifiers should match
@@ -135,14 +141,9 @@ quote (C<'>).  Normal identifiers can start or end with a double colon, and
 can contain several parts delimited by double colons.
 Single quotes have similar rules, but with the exception that they are not
 legal at the end of an identifier: That is, C<$'foo> and C<$foo'bar> are
-legal, but C<$foo'bar'> are not.
+legal, but C<$foo'bar'> is not.
 
-
-Finally, if the identifier is preceded by a sigil --
-More so, normal identifiers can start or end with any number
-of double colons (::), and can contain several parts delimited
-by double colons.
-And additionally, if the identifier is preceded by a sigil --
+Additionally, if the identifier is preceded by a sigil --
 that is, if the identifier is part of a variable name -- it
 may optionally be enclosed in braces.
 
@@ -170,12 +171,13 @@ Put together, a grammar to match a basic identifier becomes
       (?<basic_identifier>
         # is use utf8 on?
           (?(?{ (caller(0))[8] & $utf8::hint_bits })
-              (?&Perl_XIDS) \p{XID_Continue}*
+              (?&Perl_XIDS) (?&Perl_XIDC)*
             | (?aa) (?!\d) \w+
           )
       )
       (?<sigil> [&*\$\@\%])
       (?<Perl_XIDS> (?[ ( \p{Word} & \p{XID_Start} ) + [_] ]) )
+      (?<Perl_XIDC> (?[ \p{Word} & \p{XID_Continue} ]) )
   )
  /x
 

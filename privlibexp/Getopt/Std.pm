@@ -13,7 +13,8 @@ getopt, getopts - Process single-character switches with switch clustering
     getopts('oif:');  # -o & -i are boolean flags, -f takes an argument
 		      # Sets $opt_* as a side effect.
     getopts('oif:', \%opts);  # options as above. Values in %opts
-    getopt('oDI');    # -o, -D & -I take arg.  Sets $opt_* as a side effect.
+    getopt('oDI');    # -o, -D & -I take arg.
+                      # Sets $opt_* as a side effect.
     getopt('oDI', \%opts);    # -o, -D & -I take arg.  Values in %opts
 
 =head1 DESCRIPTION
@@ -74,7 +75,7 @@ and version_mess() with the switches string as an argument.
 
 @ISA = qw(Exporter);
 @EXPORT = qw(getopt getopts);
-$VERSION = '1.08';
+$VERSION = '1.09';
 # uncomment the next line to disable 1.03-backward compatibility paranoia
 # $STANDARD_HELP_VERSION = 1;
 

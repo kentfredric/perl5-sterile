@@ -221,7 +221,8 @@ difference between each pair of tests.
 
 C<cmpthese> can also be passed the data structure that timethese() returns:
 
-    $results = timethese( -1, { a => "++\$i", b => "\$i *= 2" } ) ;
+    $results = timethese( -1,
+        { a => "++\$i", b => "\$i *= 2" } ) ;
     cmpthese( $results );
 
 in case you want to see both sets of results.
@@ -231,7 +232,8 @@ that is RESULTSHASHREF; otherwise that is COUNT.
 Returns a reference to an ARRAY of rows, each row is an ARRAY of cells from the
 above chart, including labels. This:
 
-    my $rows = cmpthese( -1, { a => '++$i', b => '$i *= 2' }, "none" );
+    my $rows = cmpthese( -1,
+        { a => '++$i', b => '$i *= 2' }, "none" );
 
 returns a data structure like:
 
@@ -289,6 +291,46 @@ available, the tag will be silently ignored).  This tag will cause the
 wallclock time to be measured in microseconds, instead of integer
 seconds.  Note though that the speed computations are still conducted
 in CPU time, not wallclock time.
+
+=head1 Benchmark Object
+
+Many of the functions in this module return a Benchmark object,
+or in the case of C<timethese()>, a reference to a hash, the values of
+which are Benchmark objects.  This is useful if you want to store or
+further process results from Benchmark functions.
+
+Internally the Benchmark object holds timing values,
+described in L</"NOTES"> below.
+The following methods can be used to access them:
+
+=over 4
+
+=item cpu_p
+
+Total CPU (User + System) of the main (parent) process.
+
+=item cpu_c
+
+Total CPU (User + System) of any children processes.
+
+=item cpu_a
+
+Total CPU of parent and any children processes.
+
+=item real
+
+Real elapsed time "wallclock seconds".
+
+=item iters
+
+Number of iterations run.
+
+=back
+
+The following illustrates use of the Benchmark object:
+
+    $result = timethis(100000, sub { ... });
+    print "total CPU = ", $result->cpu_a, "\n";
 
 =head1 NOTES
 
@@ -440,7 +482,7 @@ our(@ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS, $VERSION);
 	      clearcache clearallcache disablecache enablecache);
 %EXPORT_TAGS=( all => [ @EXPORT, @EXPORT_OK ] ) ;
 
-$VERSION = 1.16;
+$VERSION = 1.17;
 
 # --- ':hireswallclock' special handling
 

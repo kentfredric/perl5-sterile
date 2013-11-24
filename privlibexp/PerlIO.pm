@@ -35,9 +35,10 @@ PerlIO - On demand loader for PerlIO layers and root of PerlIO::* name space
 
 =head1 SYNOPSIS
 
-  open($fh,"<:crlf", "my.txt"); # support platform-native and CRLF text files
+  open($fh, "<:crlf", "my.txt"); # support platform-native and 
+                                 # CRLF text files
 
-  open($fh,"<","his.jpg");      # portably open a binary file for reading
+  open($fh, "<", "his.jpg"); # portably open a binary file for reading
   binmode($fh);
 
   Shell:
@@ -156,11 +157,10 @@ will construct a "binary" stream, but then enable UTF-8 translation.
 
 =item :pop
 
-A pseudo layer that removes the top-most layer. Gives perl code
-a way to manipulate the layer stack. Should be considered
-as experimental. Note that C<:pop> only works on real layers
-and will not undo the effects of pseudo layers like C<:utf8>.
-An example of a possible use might be:
+A pseudo layer that removes the top-most layer. Gives perl code a
+way to manipulate the layer stack.  Note that C<:pop> only works on
+real layers and will not undo the effects of pseudo layers like
+C<:utf8>.  An example of a possible use might be:
 
     open($fh,...)
     ...

@@ -1,18 +1,41 @@
-# This File keeps the contents of miniperlmain.c.
-#
-# It was generated automatically by minimod.PL from the contents
-# of miniperlmain.c. Don't edit this file!
-#
-#       ANY CHANGES MADE HERE WILL BE LOST! 
-#
-
-
+#!./perl -w
 package ExtUtils::Miniperl;
+use strict;
 require Exporter;
-@ISA = qw(Exporter);
-@EXPORT = qw(&writemain);
+use ExtUtils::Embed 1.31, qw(xsi_header xsi_protos xsi_body);
 
-$head= <<'EOF!HEAD';
+use vars qw($VERSION @ISA @EXPORT);
+
+@ISA = qw(Exporter);
+@EXPORT = qw(writemain);
+$VERSION = 1;
+
+# blead will run this with miniperl, hence we can't use autodie or File::Temp
+my $temp;
+
+END {
+    return if !defined $temp || !-e $temp;
+    unlink $temp or warn "Can't unlink '$temp': $!";
+}
+
+sub writemain{
+    my ($fh, $real);
+
+    if (ref $_[0] eq 'SCALAR') {
+        $real = ${+shift};
+        $temp = $real;
+        $temp =~ s/(?:.c)?\z/.new/;
+        open $fh, '>', $temp
+            or die "Can't open '$temp' for writing: $!";
+    } elsif (ref $_[0]) {
+        $fh = shift;
+    } else {
+        $fh = \*STDOUT;
+    }
+
+    my(@exts) = @_;
+
+    printf $fh <<'EOF!HEAD', xsi_header();
 /*    miniperlmain.c
  *
  *    Copyright (C) 1994, 1995, 1996, 1997, 1999, 2000, 2001, 2002, 2003,
@@ -49,12 +72,8 @@ $head= <<'EOF!HEAD';
 #endif
 #endif
 
-
-#include "EXTERN.h"
 #define PERL_IN_MINIPERLMAIN_C
-#include "perl.h"
-#include "XSUB.h"
-
+%s
 static void xs_init (pTHX);
 static PerlInterpreter *my_perl;
 
@@ -76,12 +95,11 @@ int
 main(int argc, char **argv, char **env)
 #endif
 {
-    dVAR;
     int exitstatus, i;
 #ifdef PERL_GLOBAL_STRUCT
-    struct perl_vars *plvarsp = init_global_struct();
+    struct perl_vars *my_vars = init_global_struct();
 #  ifdef PERL_GLOBAL_STRUCT_PRIVATE
-    my_vars = my_plvarsp = plvarsp;
+    my_plvarsp = my_vars;
 #  endif
 #endif /* PERL_GLOBAL_STRUCT */
 #ifndef NO_ENV_ARRAY_IN_MAIN
@@ -157,7 +175,13 @@ main(int argc, char **argv, char **env)
     PERL_SYS_TERM();
 
 #ifdef PERL_GLOBAL_STRUCT
-    free_global_struct(plvarsp);
+    free_global_struct(my_vars);
+#  ifdef PERL_GLOBAL_STRUCT_PRIVATE
+    my_plvarsp = NULL;
+    /* Remember, functions registered with atexit() can run after this point,
+       and may access "global" variables, and hence end up calling
+       Perl_GetVarsPrivate()  */
+#endif
 #endif /* PERL_GLOBAL_STRUCT */
 
     exit(exitstatus);
@@ -167,78 +191,18 @@ main(int argc, char **argv, char **env)
 /* Register any extra external extensions */
 
 EOF!HEAD
-$tail=<<'EOF!TAIL';
+
+    print $fh xsi_protos(@exts), <<'EOT', xsi_body(@exts), "}\n";
 
 static void
 xs_init(pTHX)
 {
-    PERL_UNUSED_CONTEXT;
-}
+EOT
 
-/*
- * Local variables:
- * c-indentation-style: bsd
- * c-basic-offset: 4
- * indent-tabs-mode: nil
- * End:
- *
- * ex: set ts=8 sts=4 sw=4 et:
- */
-EOF!TAIL
-
-sub writemain{
-    my(@exts) = @_;
-
-    my($pname);
-    my($dl) = canon('/','DynaLoader');
-    print $head;
-
-    foreach $_ (@exts){
-	my($pname) = canon('/', $_);
-	my($mname, $cname);
-	($mname = $pname) =~ s!/!::!g;
-	($cname = $pname) =~ s!/!__!g;
-        print "EXTERN_C void boot_${cname} (pTHX_ CV* cv);\n";
+    if ($real) {
+        close $fh or die "Can't close '$temp': $!";
+        rename $temp, $real or die "Can't rename '$temp' to '$real': $!";
     }
-
-    my ($tail1,$tail2,$tail3) = ( $tail =~ /\A(.*{\s*\n)(.*\n)(\s*\}.*)\Z/s );
-
-    print $tail1;
-    print "\tstatic const char file[] = __FILE__;\n";
-    print "\tdXSUB_SYS;\n" if $] > 5.002;
-    print $tail2;
-
-    foreach $_ (@exts){
-	my($pname) = canon('/', $_);
-	my($mname, $cname, $ccode);
-	($mname = $pname) =~ s!/!::!g;
-	($cname = $pname) =~ s!/!__!g;
-	print "\t{\n";
-	if ($pname eq $dl){
-	    # Must NOT install 'DynaLoader::boot_DynaLoader' as 'bootstrap'!
-	    # boot_DynaLoader is called directly in DynaLoader.pm
-	    $ccode = "\t/* DynaLoader is a special case */\n
-\tnewXS(\"${mname}::boot_${cname}\", boot_${cname}, file);\n";
-	    print $ccode unless $SEEN{$ccode}++;
-	} else {
-	    $ccode = "\tnewXS(\"${mname}::bootstrap\", boot_${cname}, file);\n";
-	    print $ccode unless $SEEN{$ccode}++;
-	}
-	print "\t}\n";
-    }
-    print $tail3;
-}
-
-sub canon{
-    my($as, @ext) = @_;
-	foreach(@ext){
-	    # might be X::Y or lib/auto/X/Y/Y.a
-		next if s!::!/!g;
-	    s:^(lib|ext)/(auto/)?::;
-	    s:/\w+\.\w+$::;
-	}
-	grep(s:/:$as:, @ext) if ($as ne '/');
-	@ext;
 }
 
 1;
@@ -246,28 +210,29 @@ __END__
 
 =head1 NAME
 
-ExtUtils::Miniperl, writemain - write the C code for perlmain.c
+ExtUtils::Miniperl - write the C code for perlmain.c
 
 =head1 SYNOPSIS
 
-C<use ExtUtils::Miniperl;>
-
-C<writemain(@directories);>
+    use ExtUtils::Miniperl;
+    writemain(@directories);
+    # or
+    writemain($fh, @directories);
+    # or
+    writemain(\$filename, @directories);
 
 =head1 DESCRIPTION
 
-This whole module is written when perl itself is built from a script
-called minimod.PL. In case you want to patch it, please patch
-minimod.PL in the perl distribution instead.
-
-writemain() takes an argument list of directories containing archive
+C<writemain()> takes an argument list of directories containing archive
 libraries that relate to perl modules and should be linked into a new
-perl binary. It writes to STDOUT a corresponding perlmain.c file that
+perl binary. It writes a corresponding F<perlmain.c> file that
 is a plain C file containing all the bootstrap code to make the
-modules associated with the libraries available from within perl.
+If the first argument to C<writemain()> is a reference to a scalar it is
+used as the filename to open for ouput. Any other reference is used as
+the filehandle to write to. Otherwise output defaults to C<STDOUT>.
 
 The typical usage is from within a Makefile generated by
-ExtUtils::MakeMaker. So under normal circumstances you won't have to
+L<ExtUtils::MakeMaker>. So under normal circumstances you won't have to
 deal with this module directly.
 
 =head1 SEE ALSO
@@ -276,3 +241,10 @@ L<ExtUtils::MakeMaker>
 
 =cut
 
+# Local variables:
+# c-indentation-style: bsd
+# c-basic-offset: 4
+# indent-tabs-mode: nil
+# End:
+#
+# ex: set ts=8 sts=4 sw=4 et:

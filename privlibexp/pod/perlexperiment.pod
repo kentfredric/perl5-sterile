@@ -16,29 +16,11 @@ their inception, versions, etc. There's a lot of speculation here.
 
 =over 8
 
-=item C<(?{code})> and C<(??{ code })>
-
-Introduced in Perl 5.6.0
-
-See also L<perlre>
-
-=item Lvalue subroutines
-
-Introduced in Perl 5.6.0
-
-See also L<perlsub>
-
 =item C<our> can now have an experimental optional attribute C<unique>
 
 Introduced in Perl 5.8.0
 
 Deprecated in Perl 5.10.0
-
-=item Linux abstract Unix domain sockets
-
-Introduced in Perl 5.9.2
-
-See also L<Socket>
 
 =item Smart match (C<~~>)
 
@@ -55,12 +37,6 @@ Introduced in Perl 5.10.0
 
 Using this feature triggers warnings in the category
 C<experimental::lexical_topic>.
-
-=item Backtracking control verbs
-
-C<(*ACCEPT)>
-
-Introduced in: Perl 5.10
 
 =item Pluggable keywords
 
@@ -94,21 +70,9 @@ C<experimental::regex_sets>.
 
 Introduced in Perl 5.18
 
-=item The <:pop> IO pseudolayer
-
-See also L<perlrun>
-
 =item The <:win32> IO pseudolayer
 
 See also L<perlrun>
-
-=item MLDBM
-
-See also L<perldsc>
-
-=item internal functions with M flag
-
-See also L<perlguts>
 
 =item lex_start API
 
@@ -210,10 +174,6 @@ See also: L<perlre/"Special Backtracking Control Verbs">
 
 See also L<perlintern>
 
-=item Experimental Support for Sun Studio Compilers for Linux OS
-
-See also L<perllinux>
-
 =back
 
 =head2 Accepted features
@@ -274,6 +234,45 @@ expression.
 Introduced in Perl 5.12
 
 Exact version of acceptance unclear, but no later than Perl 5.18.
+
+=item C<(?{code})> and C<(??{ code })>
+
+Introduced in Perl 5.6.0
+
+Accepted in Perl 5.20.0
+
+See also L<perlre>
+
+=item Linux abstract Unix domain sockets
+
+Introduced in Perl 5.9.2
+
+Accepted before Perl 5.20.0.  The Socket library is now primarily maintained
+on CPAN, rather than in the perl core.
+
+See also L<Socket>
+
+=item Lvalue subroutines
+
+Introduced in Perl 5.6.0
+
+Accepted in Perl 5.20.0
+
+See also L<perlsub>
+
+=item Backtracking control verbs
+
+C<(*ACCEPT)>
+
+Introduced in: Perl 5.10
+
+Accepted in Perl 5.20.0
+
+=item The <:pop> IO pseudolayer
+
+See also L<perlrun>
+
+Accepted in Perl 5.20.0
 
 =back
 

@@ -741,7 +741,7 @@ PERLVAR(I, debug_pad,	struct perl_debug_pad)	/* always needed because of the re 
 /* Hook for File::Glob */
 PERLVARI(I, globhook,	globhook_t, NULL)
 
-/* The last unconditional member of the interpreter structure when 5.19.1 was
+/* The last unconditional member of the interpreter structure when 5.19.2 was
    released. The offset of the end of this is baked into a global variable in 
    any shared perl library which will allow a sanity test in future perl
    releases.  */
@@ -773,6 +773,17 @@ PERLVARI(I, xmlfp,	PerlIO *, NULL)
 
 #ifdef DEBUG_LEAKING_SCALARS
 PERLVARI(I, sv_serial,	U32,	0)	/* SV serial number, used in sv.c */
+#endif
+
+PERLVARA(I, sv_consts, SV_CONSTS_COUNT, SV*)	/* constant SVs with precomputed hash value */
+
+#ifdef PERL_TRACE_OPS
+PERLVARA(I, op_exec_cnt, OP_max+2, UV)	/* Counts of executed OPs of the given type.
+                                           If PERL_TRACE_OPS is enabled, we'll dump
+                                           a summary count of all ops executed in the
+                                           program at perl_destruct time. For
+                                           profiling/debugging only. Works only if
+                                           DEBUGGING is enabled, too. */
 #endif
 
 /* If you are adding a U8 or U16, check to see if there are 'Space' comments
