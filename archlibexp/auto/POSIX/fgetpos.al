@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 313 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fgetpos.al)"
+#line 307 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fgetpos.al)"
 sub fgetpos {
     redef "IO::Seekable::getpos()";
 }

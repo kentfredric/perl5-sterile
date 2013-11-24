@@ -19,8 +19,6 @@ comp.infosystems.www.authoring.cgi
 The CGI specification is outlined in an informational RFC:
 http://www.ietf.org/rfc/rfc3875
 
-Other relevant documentation listed in: http://www.perl.org/CGI_MetaFAQ.html
-
 These Perl FAQs very selectively cover some CGI issues. However, Perl
 programmers are strongly advised to use the C<CGI.pm> module, to take care
 of the details for them.
@@ -38,37 +36,27 @@ job to create an accurate HTTP response based on it). So "\n" written in
 text mode is technically correct, and recommended. NPH scripts are more
 tricky: they must put out a complete and accurate set of HTTP
 transaction response headers; the HTTP specification calls for records
-to be terminated with carriage-return and line-feed, i.e ASCII \015\012
+to be terminated with carriage-return and line-feed; i.e., ASCII \015\012
 written in binary mode.
 
 Using C<CGI.pm> gives excellent platform independence, including EBCDIC
 systems. C<CGI.pm> selects an appropriate newline representation
 (C<$CGI::CRLF>) and sets binmode as appropriate.
 
-=head2 My CGI script runs from the command line but not the browser.  (500 Server Error)
+=head2 My CGI script runs from the command line but not the browser. (500 Server Error)
 
-Several things could be wrong.  You can go through the "Troubleshooting
-Perl CGI scripts" guide at
+(contributed by brian d foy)
 
-	http://www.perl.org/troubleshooting_CGI.html
+There are many things that might be wrong with your CGI program, and only
+some of them might be related to Perl. Try going through the troubleshooting
+guide on Perlmonks:
 
-If, after that, you can demonstrate that you've read the FAQs and that
-your problem isn't something simple that can be easily answered, you'll
-probably receive a courteous and useful reply to your question if you
-post it on comp.infosystems.www.authoring.cgi (if it's something to do
-with HTTP or the CGI protocols).  Questions that appear to be Perl
-questions but are really CGI ones that are posted to comp.lang.perl.misc
-are not so well received.
-
-The useful FAQs, related documents, and troubleshooting guides are
-listed in the CGI Meta FAQ:
-
-	http://www.perl.org/CGI_MetaFAQ.html
+	http://www.perlmonks.org/?node_id=380424
 
 =head2 How can I get better error messages from a CGI program?
 
 Use the C<CGI::Carp> module.  It replaces C<warn> and C<die>, plus the
-normal C<Carp> modules C<carp>, C<croak>, and C<confess> functions with
+normal C<Carp> module's C<carp>, C<croak>, and C<confess> functions with
 more verbose and safer versions.  It still sends them to the normal
 server error log.
 
@@ -108,13 +96,13 @@ attempts to do a little simple formatting of the resulting plain text.
 Many folks attempt a simple-minded regular expression approach, like
 C<< s/<.*?>//g >>, but that fails in many cases because the tags
 may continue over line breaks, they may contain quoted angle-brackets,
-or HTML comment may be present.  Plus, folks forget to convert
+or HTML comments may be present.  Plus, folks forget to convert
 entities--like C<&lt;> for example.
 
 Here's one "simple-minded" approach, that works for most files:
 
 	#!/usr/bin/perl -p0777
-	s/<(?:[^>'"]*|(['"]).*?\1)*>//gs
+	s/<(?:[^>'"]*|(['"]).*?\g1)*>//gs
 
 If you want a more complete solution, see the 3-stage striphtml
 program in
@@ -159,14 +147,14 @@ You can use C<URI::Find> to extract URLs from an arbitrary text document.
 Less complete solutions involving regular expressions can save
 you a lot of processing time if you know that the input is simple.  One
 solution from Tom Christiansen runs 100 times faster than most
-module based approaches but only extracts URLs from anchors where the first
+module-based approaches but only extracts URLs from anchors where the first
 attribute is HREF and there are no other attributes.
 
 	#!/usr/bin/perl -n00
 	# qxurl - tchrist@perl.com
 	print "$2\n" while m{
 		< \s*
-		  A \s+ HREF \s* = \s* (["']) (.*?) \1
+		  A \s+ HREF \s* = \s* (["']) (.*?) \g1
 		\s* >
 	}gsix;
 
@@ -273,7 +261,7 @@ either on the way in or the way out.
 If you have to encode a string yourself, remember that you should
 never try to encode an already-composed URI. You need to escape the
 components separately then put them together. To encode a string, you
-can use the the C<URI::Escape> module. The C<uri_escape> function
+can use the C<URI::Escape> module. The C<uri_escape> function
 returns the escaped string:
 
 	my $original = "Colon : Hash # Percent %";
@@ -351,9 +339,21 @@ a DBI compatible driver.  C<HTTPD::UserAdmin> supports files used by the
 
 =head2 How do I make sure users can't enter values into a form that cause my CGI script to do bad things?
 
-See the security references listed in the CGI Meta FAQ
+(contributed by brian d foy)
 
-	http://www.perl.org/CGI_MetaFAQ.html
+You can't prevent people from sending your script bad data. Even if
+you add some client-side checks, people may disable them or bypass
+them completely. For instance, someone might use a module such as
+C<LWP> to access your CGI program. If you want to prevent data that
+try to use SQL injection or other sorts of attacks (and you should
+want to), you have to not trust any data that enter your program.
+
+The L<perlsec> documentation has general advice about data security.
+If you are using the C<DBI> module, use placeholder to fill in data.
+If you are running external programs with C<system> or C<exec>, use
+the list forms. There are many other precautions that you should take,
+too many to list here, and most of them fall under the category of not
+using any data that you don't intend to use. Trust no one.
 
 =head2 How do I parse a mail header?
 
@@ -657,12 +657,23 @@ This can make tasks like fetching the newsgroup list as simple as
 
 =head2 How do I fetch/put an FTP file?
 
-C<LWP::Simple> (available from CPAN) can fetch but not put.  C<Net::FTP> (also
-available from CPAN) is more complex but can put as well as fetch.
+(contributed by brian d foy)
+
+The C<LWP> family of modules (available on CPAN as the libwww-perl distribution)
+can work with FTP just like it can with many other protocols. C<LWP::Simple>
+makes it quite easy to fetch a file:
+
+	use LWP::Simple;
+
+	my $data = get( 'ftp://some.ftp.site/some/file.txt' );
+
+If you want more direct or low-level control of the FTP process, you can use
+the C<Net::FTP> module (in the Standard Library since Perl 5.8). It's
+documentation has examples showing you just how to do that.
 
 =head2 How can I do RPC in Perl?
 
-(Contributed by brian d foy)
+(contributed by brian d foy)
 
 Use one of the RPC modules you can find on CPAN (
 http://search.cpan.org/search?query=RPC&mode=all ).

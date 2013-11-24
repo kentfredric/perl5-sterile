@@ -1,4 +1,4 @@
-# $Id: newgetopt.pl,v 1.18 2001/09/21 13:34:59 jv Exp $
+warn "Legacy library @{[(caller(0))[6]]} will be removed from the Perl core distribution in the next major release. Please install it from the CPAN distribution Perl4::CoreLibs. It is being used at @{[(caller)[1]]}, line @{[(caller)[2]]}.\n";
 
 # This library is no longer being maintained, and is included for backward
 # compatibility with Perl 4 programs which may require it.
@@ -18,7 +18,7 @@
     $PERMUTE = 1;
     $RETURN_IN_ORDER = 2;
 
-    # Handle POSIX compliancy.
+    # Handle POSIX compliance.
     if ( defined $ENV{"POSIXLY_CORRECT"} ) {
 	$autoabbrev = 0;	# no automatic abbrev of options (???)
 	$getopt_compat = 0;	# disallow '+' to start options

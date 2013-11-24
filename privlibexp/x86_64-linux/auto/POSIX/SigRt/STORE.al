@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1039 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/STORE.al)"
+#line 1034 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/STORE.al)"
 sub STORE  { my $rtsig = &_check; new($rtsig, $_[2], $SIGACTION_FLAGS) }
 # end of POSIX::SigRt::STORE
 1;

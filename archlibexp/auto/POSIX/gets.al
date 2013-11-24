@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 339 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/gets.al)"
+#line 333 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/gets.al)"
 sub gets {
     usage "gets()" if @_ != 0;
     scalar <STDIN>;

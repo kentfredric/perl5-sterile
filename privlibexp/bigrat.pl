@@ -1,3 +1,5 @@
+warn "Legacy library @{[(caller(0))[6]]} will be removed from the Perl core distribution in the next major release. Please install it from the CPAN distribution Perl4::CoreLibs. It is being used at @{[(caller)[1]]}, line @{[(caller)[2]]}.\n";
+
 package bigrat;
 require "bigint.pl";
 #
@@ -26,7 +28,7 @@ require "bigint.pl";
 # The string 'NaN' is used to represent the result when input arguments 
 #   that are not numbers, as well as the result of dividing by zero and
 #       the sqrt of a negative number.
-# Extreamly naive algorthims are used.
+# Extremely naive algorithms are used.
 #
 # Routines provided are:
 #
@@ -71,7 +73,7 @@ sub norm { #(bint, bint) return rat_num
 	    $num = &'bnorm($num);
 	    $dom = &'bnorm($dom);
 	}
-	substr($dom,$[,1) = '';
+	substr($dom,0,1) = '';
 	"$num/$dom";
     }
 }
@@ -86,42 +88,42 @@ sub main'rneg { #(rat_num) return rat_num
 # absolute value
 sub main'rabs { #(rat_num) return $rat_num
     local($_) = &'rnorm(@_);
-    substr($_,$[,1) = '+' unless $_ eq 'NaN';
+    substr($_,0,1) = '+' unless $_ eq 'NaN';
     $_;
 }
 
 # multipication
 sub main'rmul { #(rat_num, rat_num) return rat_num
-    local($xn,$xd) = split('/',&'rnorm($_[$[]));
-    local($yn,$yd) = split('/',&'rnorm($_[$[+1]));
+    local($xn,$xd) = split('/',&'rnorm($_[0]));
+    local($yn,$yd) = split('/',&'rnorm($_[1]));
     &norm(&'bmul($xn,$yn),&'bmul($xd,$yd));
 }
 
 # division
 sub main'rdiv { #(rat_num, rat_num) return rat_num
-    local($xn,$xd) = split('/',&'rnorm($_[$[]));
-    local($yn,$yd) = split('/',&'rnorm($_[$[+1]));
+    local($xn,$xd) = split('/',&'rnorm($_[0]));
+    local($yn,$yd) = split('/',&'rnorm($_[1]));
     &norm(&'bmul($xn,$yd),&'bmul($xd,$yn));
 }
 
 # addition
 sub main'radd { #(rat_num, rat_num) return rat_num
-    local($xn,$xd) = split('/',&'rnorm($_[$[]));
-    local($yn,$yd) = split('/',&'rnorm($_[$[+1]));
+    local($xn,$xd) = split('/',&'rnorm($_[0]));
+    local($yn,$yd) = split('/',&'rnorm($_[1]));
     &norm(&'badd(&'bmul($xn,$yd),&'bmul($yn,$xd)),&'bmul($xd,$yd));
 }
 
 # subtraction
 sub main'rsub { #(rat_num, rat_num) return rat_num
-    local($xn,$xd) = split('/',&'rnorm($_[$[]));
-    local($yn,$yd) = split('/',&'rnorm($_[$[+1]));
+    local($xn,$xd) = split('/',&'rnorm($_[0]));
+    local($yn,$yd) = split('/',&'rnorm($_[1]));
     &norm(&'bsub(&'bmul($xn,$yd),&'bmul($yn,$xd)),&'bmul($xd,$yd));
 }
 
 # comparison
 sub main'rcmp { #(rat_num, rat_num) return cond_code
-    local($xn,$xd) = split('/',&'rnorm($_[$[]));
-    local($yn,$yd) = split('/',&'rnorm($_[$[+1]));
+    local($xn,$xd) = split('/',&'rnorm($_[0]));
+    local($yn,$yd) = split('/',&'rnorm($_[1]));
     &bigint'cmp(&'bmul($xn,$yd),&'bmul($yn,$xd));
 }
 
@@ -139,7 +141,7 @@ sub main'rmod { #(rat_num) return (rat_num,rat_num)
 # square root by Newtons method.
 #   cycles specifies the number of iterations default: 5
 sub main'rsqrt { #(fnum_str[, cycles]) return fnum_str
-    local($x, $scale) = (&'rnorm($_[$[]), $_[$[+1]);
+    local($x, $scale) = (&'rnorm($_[0]), $_[1]);
     if ($x eq 'NaN') {
 	'NaN';
     } elsif ($x =~ /^-/) {

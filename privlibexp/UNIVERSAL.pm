@@ -1,6 +1,6 @@
 package UNIVERSAL;
 
-our $VERSION = '1.06';
+our $VERSION = '1.08';
 
 # UNIVERSAL should not contain any extra subs/methods beyond those
 # that it exists to define. The use of Exporter below is a historical
@@ -99,7 +99,7 @@ If you're not sure what you have (the C<VAL> case), wrap the method call in an
 C<eval> block to catch the exception if C<VAL> is undefined.
 
 If you want to be sure that you're calling C<isa> as a method, not a class,
-check the invocant with C<blessed> from L<Scalar::Util> first:
+check the invocand with C<blessed> from L<Scalar::Util> first:
 
   use Scalar::Util 'blessed';
 
@@ -119,7 +119,7 @@ itself.  For example, logging or serialization may be roles.
 C<DOES> and C<isa> are similar, in that if either is true, you know that the
 object or class on which you call the method can perform specific behavior.
 However, C<DOES> is different from C<isa> in that it does not care I<how> the
-invocant performs the operations, merely that it does.  (C<isa> of course
+invocand performs the operations, merely that it does.  (C<isa> of course
 mandates an inheritance relationship.  Other relationships include aggregation,
 delegation, and mocking.)
 
@@ -147,7 +147,7 @@ I<undef>.  This includes methods inherited or imported by C<$obj>, C<CLASS>, or
 C<VAL>.
 
 C<can> cannot know whether an object will be able to provide a method through
-AUTOLOAD (unless the object's class has overriden C<can> appropriately), so a
+AUTOLOAD (unless the object's class has overridden C<can> appropriately), so a
 return value of I<undef> does not necessarily mean the object will not be able
 to handle the method call. To get around this some module authors use a forward
 declaration (see L<perlsub>) for methods they will handle via AUTOLOAD. For
@@ -157,7 +157,7 @@ calling the coderef will cause an error.
 
 You may call C<can> as a class (static) method or an object method.
 
-Again, the same rule about having a valid invocant applies -- use an C<eval>
+Again, the same rule about having a valid invocand applies -- use an C<eval>
 block or C<blessed> if you need to be extra paranoid.
 
 =item C<VERSION ( [ REQUIRE ] )>

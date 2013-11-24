@@ -14,7 +14,7 @@ use vars qw($connect_to_internet_ok $Ua $Thesite $ThesiteURL $Themethod);
 use vars qw(
             $VERSION
 );
-$VERSION = "5.5004";
+$VERSION = "5.5005";
 
 #-> sub CPAN::FTP::ftp_statistics
 # if they want to rewrite, they need to pass in a filehandle
@@ -46,7 +46,11 @@ sub _ftp_statistics {
                 $CPAN::Frontend->myprint("Warning (usually harmless): $@\n");
                 return;
             } elsif (ref $@ eq "CPAN::Exception::yaml_process_error") {
-                $CPAN::Frontend->mydie($@);
+                my $time = time;
+                my $to = "$file.$time";
+                $CPAN::Frontend->myprint("Error reading '$file': $@\nStashing away as '$to' to prevent further interruptions. You may want to remove that file later.\n");
+                rename $file, $to or $CPAN::Frontend->mydie("Could not rename: $!");
+                return;
             }
         } else {
             $CPAN::Frontend->mydie($@);
@@ -572,13 +576,16 @@ sub hostdleasy { #called from hostdlxxx
                     $ThesiteURL = $ro_url;
                     return $ungz;
                 }
-                else {
+                elsif (-f $l && -r _) {
                     eval { CPAN::Tarzip->new($l)->gunzip($aslocal) };
-                    if ( -f $aslocal) {
+                    if ( -f $aslocal && -s _) {
                         $ThesiteURL = $ro_url;
                         return $aslocal;
                     }
-                    else {
+                    elsif (! -s $aslocal) {
+                        unlink $aslocal;
+                    }
+                    elsif (-f $l) {
                         $CPAN::Frontend->mywarn("Error decompressing '$l': $@\n")
                             if $@;
                         return;
@@ -645,8 +652,46 @@ sub hostdleasy { #called from hostdlxxx
                 # Net::FTP can still succeed where LWP fails. So we do not
                 # skip Net::FTP anymore when LWP is available.
             }
-        } else {
-            $CPAN::Frontend->mywarn("  LWP not available\n");
+        } elsif ($url =~ /^http:/ && $CPAN::META->has_usable('HTTP::Tiny')) {
+            require CPAN::HTTP::Client;
+            my $chc = CPAN::HTTP::Client->new(
+                proxy => $CPAN::Config->{http_proxy} || $ENV{http_proxy},
+                no_proxy => $CPAN::Config->{no_proxy} || $ENV{no_proxy},
+            );
+            for my $try ( $url, ( $url !~ /\.gz(?!\n)\Z/ ? "$url.gz" : () ) ) {
+                $CPAN::Frontend->myprint("Fetching with HTTP::Tiny:\n$try\n");
+                my $res = eval { $chc->mirror($try, $aslocal) };
+                if ( $res && $res->{success} ) {
+                    $ThesiteURL = $ro_url;
+                    my $now = time;
+                    utime $now, $now, $aslocal; # download time is more
+                                                # important than upload
+                                                # time
+                    return $aslocal;
+                }
+                elsif ( $res && $res->{status} ne '599') {
+                    $CPAN::Frontend->myprint(sprintf(
+                            "HTTP::Tiny failed with code[%s] message[%s]\n",
+                            $res->{status},
+                            $res->{reason},
+                        )
+                    );
+                }
+                elsif ( $res && $res->{status} eq '599') {
+                    $CPAN::Frontend->myprint(sprintf(
+                            "HTTP::Tiny failed with an internal error: %s\n",
+                            $res->{content},
+                        )
+                    );
+                }
+                else {
+                    my $err = $@ || 'Unknown error';
+                    $CPAN::Frontend->myprint(sprintf(
+                            "Error downloading with HTTP::Tiny: %s\n", $err
+                        )
+                    );
+                }
+            }
         }
         return if $CPAN::Signal;
         if ($url =~ m|^ftp://(.*?)/(.*)/(.*)|) {
@@ -845,7 +890,7 @@ sub _proxy_vars {
         }
         if ($want_proxy) {
             my($user, $pass) =
-                &CPAN::LWP::UserAgent::get_proxy_credentials();
+                CPAN::HTTP::Credentials->get_proxy_credentials();
             $ret = {
                     proxy_user => $user,
                     proxy_pass => $pass,

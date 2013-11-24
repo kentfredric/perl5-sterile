@@ -1,3 +1,5 @@
+warn "Legacy library @{[(caller(0))[6]]} will be removed from the Perl core distribution in the next major release. Please install it from the CPAN distribution Perl4::CoreLibs. It is being used at @{[(caller)[1]]}, line @{[(caller)[2]]}.\n";
+
 ;# $RCSfile: termcap.pl,v $$Revision: 4.1 $$Date: 92/08/07 18:24:16 $
 #
 # This library is no longer being maintained, and is included for backward
@@ -155,8 +157,8 @@ sub Tgoto {
 	}
 	elsif ($code eq '>') {
 	    ($code,$tmp,$string) = unpack("CCa99",$string);
-	    if ($tmp[$[] > $code) {
-		$tmp[$[] += $tmp;
+	    if ($tmp[0] > $code) {
+		$tmp[0] += $tmp;
 	    }
 	}
 	elsif ($code eq '2') {

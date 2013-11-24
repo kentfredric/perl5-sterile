@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 711 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getppid.al)"
+#line 705 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getppid.al)"
 sub getppid {
     usage "getppid()" if @_ != 0;
     CORE::getppid;

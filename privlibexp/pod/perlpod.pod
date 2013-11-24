@@ -474,7 +474,7 @@ C<EE<lt>verbarE<gt>> -- a literal | (I<ver>tical I<bar>)
 
 =item *
 
-C<EE<lt>solE<gt>> = a literal / (I<sol>idus)
+C<EE<lt>solE<gt>> -- a literal / (I<sol>idus)
 
 The above four are optional except in other formatting codes,
 notably C<LE<lt>...E<gt>>, and when preceded by a
@@ -557,9 +557,8 @@ using an C<E> code:
 This will produce: "C<$a E<lt>=E<gt> $b>"
 
 A more readable, and perhaps more "plain" way is to use an alternate
-set of delimiters that doesn't require a single ">" to be escaped.  With
-the Pod formatters that are standard starting with perl5.5.660 (circa 2000),
-doubled angle brackets ("<<" and ">>") may be used I<if and only if there is
+set of delimiters that doesn't require a single ">" to be escaped.
+Doubled angle brackets ("<<" and ">>") may be used I<if and only if there is
 whitespace right after the opening delimiter and whitespace right
 before the closing delimiter!>  For example, the following will
 do the trick:

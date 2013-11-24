@@ -5,7 +5,7 @@ perltodo - Perl TO-DO List
 =head1 DESCRIPTION
 
 This is a list of wishes for Perl. The most up to date version of this file
-is at http://perl5.git.perl.org/perl.git/blob_plain/HEAD:/pod/perltodo.pod
+is at L<http://perl5.git.perl.org/perl.git/blob_plain/HEAD:/pod/perltodo.pod>
 
 The tasks we think are smaller or easier are listed first. Anyone is welcome
 to work on any of these, but it's a good idea to first contact
@@ -15,9 +15,8 @@ prefer.
 
 Whilst patches to make the list shorter are most welcome, ideas to add to
 the list are also encouraged. Check the perl5-porters archives for past
-ideas, and any discussion about them. One set of archives may be found at:
-
-    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/
+ideas, and any discussion about them. One set of archives may be found at
+L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/>
 
 What can we offer you in return? Fame, fortune, and everlasting glory? Maybe
 not, but if your patch is incorporated, then we'll add your name to the
@@ -26,14 +25,10 @@ programming languages offer you 1 line of immortality?
 
 =head1 Tasks that only need Perl knowledge
 
-=head2 Improve Porting/cmpVERSION.pl to work from git tags
-
-See F<Porting/release_managers_guide.pod> for a bit more detail.
-
 =head2 Migrate t/ from custom TAP generation
 
 Many tests below F<t/> still generate TAP by "hand", rather than using library
-functions. As explained in L<perlhack/Writing a test>, tests in F<t/> are
+functions. As explained in L<perlhack/TESTING>, tests in F<t/> are
 written in a particular way to test that more complex constructions actually
 work before using them routinely. Hence they don't use C<Test::More>, but
 instead there is an intentionally simpler library, F<t/test.pl>. However,
@@ -42,24 +37,6 @@ any of these tests, one at a time, is a useful thing TODO.
 
 The subdirectories F<base>, F<cmd> and F<comp>, that contain the most
 basic tests, should be excluded from this task.
-
-=head2 Test that regen.pl was run
-
-There are various generated files shipped with the perl distribution, for
-things like header files generate from data. The generation scripts are
-written in perl, and all can be run by F<regen.pl>. However, because they're
-written in perl, we can't run them before we've built perl. We can't run them
-as part of the F<Makefile>, because changing files underneath F<make> confuses
-it completely, and we don't want to run them automatically anyway, as they
-change files shipped by the distribution, something we seek not do to.
-
-If someone changes the data, but forgets to re-run F<regen.pl> then the
-generated files are out of sync. It would be good to have a test in
-F<t/porting> that checks that the generated files are in sync, and fails
-otherwise, to alert someone before they make a poor commit. I suspect that this
-would require adapting the scripts run from F<regen.pl> to have dry-run
-options, and invoking them with these, or by refactoring them into a library
-that does the generation, which can be called by the scripts, and by the test.
 
 =head2 Automate perldelta generation
 
@@ -150,14 +127,6 @@ do so. Test it with older perl releases, and fix the problems you find.
 To make a minimal perl distribution, it's useful to look at
 F<t/lib/commonsense.t>.
 
-=head2 Move dual-life pod/*.PL into ext
-
-Nearly all the dual-life modules have been moved to F<ext>. However, we
-still  need to move F<pod/*.PL> into their respective directories
-in F<ext/>. They're referenced by (at least) C<plextract> in F<Makefile.SH>
-and C<utils> in F<win32/Makefile> and F<win32/makefile.ml>, and listed
-explicitly in F<win32/pod.mak>, F<vms/descrip_mms.template> and F<utils.lst>
-
 =head2 POSIX memory footprint
 
 Ilya observed that use POSIX; eats memory like there's no tomorrow, and at
@@ -201,7 +170,7 @@ The F<installman> script is slow. All it is doing text processing, which we're
 told is something Perl is good at. So it would be nice to know what it is doing
 that is taking so much CPU, and where possible address it.
 
-=head2 enable lexical enabling/disabling of inidvidual warnings
+=head2 enable lexical enabling/disabling of individual warnings
 
 Currently, warnings can only be enabled or disabled by category. There
 are times when it would be useful to quash a single warning, not a
@@ -261,7 +230,7 @@ to do this manually are roughly
 =item *
 
 do a normal C<Configure>, but include Devel::Cover as a module to install
-(see F<INSTALL> for how to do this)
+(see L<INSTALL> for how to do this)
 
 =item *
 
@@ -338,7 +307,8 @@ visibility just to symbols declared in that file. It would be good to extend
 F<makedef.pl> to support this format, and to provide a means within
 C<Configure> to enable it. This would allow Unix users to test that the
 export list is correct, and to build a perl that does not pollute the global
-namespace with private symbols.
+namespace with private symbols, and will fail in the same way as msvc or mingw 
+builds or when using PERL_DL_NONLAZY=1.
 
 =head2 Cross-compile support
 
@@ -466,7 +436,7 @@ The way @INC is laid out by default, one cannot upgrade core (dual-life)
 modules without overwriting files. This causes problems for binary
 package builders.  One possible proposal is laid out in this
 message:
-L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-04/msg02380.html>.
+L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-04/msg02380.html>
 
 =head2 -Duse32bit*
 
@@ -474,7 +444,7 @@ Natively 64-bit systems need neither -Duse64bitint nor -Duse64bitall.
 On these systems, it might be the default compilation mode, and there
 is currently no guarantee that passing no use64bitall option to the
 Configure process will build a 32bit perl. Implementing -Duse32bit*
-options would be nice for perl 5.12.
+options would be nice for perl 5.14.
 
 =head2 Profile Perl - am I hot or not?
 
@@ -554,7 +524,7 @@ bug is fixed in the VC8 and VC9 CRTs (but, of course, the directory may still
 not actually be writable if access is indeed denied by DACLs).
 
 For the chdir() issue, see ActiveState bug #74552:
-http://bugs.activestate.com/show_bug.cgi?id=74552
+L<http://bugs.activestate.com/show_bug.cgi?id=74552>
 
 Therefore, DACLs should be checked both for consistency across CRTs and for
 the correct answer.
@@ -777,7 +747,7 @@ of running Perl code inside the signal handler context. (With all the dangers
 of things like C<malloc> corruption that that currently offers us)
 
 For more information see the thread starting with this message:
-http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00305.html
+L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00305.html>
 
 =head2 autovivification
 
@@ -940,7 +910,7 @@ be C<*$> instead. (This is changed in F<opcode.pl>)
 
 Currently C<$foo ~~ $object> will die with the message "Smart matching a
 non-overloaded object breaks encapsulation". It would be nice to allow
-to bypass this by using explictly the syntax C<$foo ~~ %$object> or
+to bypass this by using explicitly the syntax C<$foo ~~ %$object> or
 C<$foo ~~ @$object>.
 
 =head2 error reporting of [$a ; $b]
@@ -958,7 +928,7 @@ C<;> is parsed where it is not legal as a statement terminator (ie inside
 C<{}> used as a hashref, C<[]> or C<()>) it issues an error something like
 I<';' isn't legal inside an expression - if you need multiple statements use a
 do {...} block>. See the thread starting at
-http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-09/msg00573.html
+L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-09/msg00573.html>
 
 =head2 lexicals used only once
 
@@ -977,10 +947,13 @@ years for this discrepancy.
 
 =head2 UTF-8 revamp
 
-The handling of Unicode is unclean in many places. For example, the regexp
-engine matches in Unicode semantics whenever the string or the pattern is
-flagged as UTF-8, but that should not be dependent on an internal storage
-detail of the string.
+The handling of Unicode is unclean in many places.  In the regex engine
+there are especially many problems.  The swash data structure could be
+replaced my something better.  Inversion lists and maps are likely
+candidates.  The whole Unicode database could be placed in-core for a
+huge speed-up.  Only minimal work was done on the optimizer when utf8
+was added, with the result that the synthetic start class often will
+fail to narrow down the possible choices when given non-Latin1 input.
 
 =head2 Properly Unicode safe tokeniser and pads.
 
@@ -1053,7 +1026,8 @@ arrays as alternations. With it, C</P/w> would be roughly equivalent to:
 
     do { local $"='|'; /\b(?:P)\b/ }
 
-See L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2007-01/msg00400.html>
+See
+L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2007-01/msg00400.html>
 for the discussion.
 
 =head2 optional optimizer
@@ -1131,7 +1105,8 @@ See also L</"Extend PerlIO and PerlIO::Scalar">.
 
 The peephole optimiser converts constants used for hash key lookups to shared
 hash key scalars. Under ithreads, something is undoing this work.
-See http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2007-09/msg00793.html
+See
+L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2007-09/msg00793.html>
 
 =head2 Store the current pad in the OP slab allocator
 
@@ -1160,7 +1135,8 @@ Note that the slab allocator allocates ops downwards in memory, so one would
 have to actually "allocate" the ops in reverse-execution order to get them
 contiguous in memory in execution order.
 
-See http://www.nntp.perl.org/group/perl.perl5.porters/2007/12/msg131975.html
+See
+L<http://www.nntp.perl.org/group/perl.perl5.porters/2007/12/msg131975.html>
 
 Note that running this copy, and then freeing all the old location ops would
 cause their slabs to be freed, which would eliminate possible memory wastage if
@@ -1243,10 +1219,16 @@ combines the code in pp_entersub, pp_leavesub.  This should probably
 be done 1st in XS, and using B::Generate to patch the new OP into the
 optrees.
 
+=head2 Add C<00dddd>
+
+It has been proposed that octal constants be specifiable through the syntax
+C<0oddddd>, parallel to the existing construct to specify hex constants
+C<0xddddd>
+
 =head1 Big projects
 
 Tasks that will get your name mentioned in the description of the "Highlights
-of 5.12"
+of 5.14"
 
 =head2 make ithreads more robust
 
@@ -1255,7 +1237,8 @@ Generally make ithreads more robust. See also L</iCOW>
 This task is incremental - even a little bit of work on it will help, and
 will be greatly appreciated.
 
-One bit would be to write the missing code in sv.c:Perl_dirp_dup.
+One bit would be to determine how to clone directory handles on systems
+without a C<fchdir> function (in sv.c:Perl_dirp_dup).
 
 Fix Perl_sv_dup, et al so that threads can return objects.
 
@@ -1268,11 +1251,6 @@ it would be a good thing.
 =head2 (?{...}) closures in regexps
 
 Fix (or rewrite) the implementation of the C</(?{...})/> closures.
-
-=head2 A re-entrant regexp engine
-
-This will allow the use of a regex from inside (?{ }), (??{ }) and
-(?(?{ })|) constructs.
 
 =head2 Add class set operations to regexp engine
 

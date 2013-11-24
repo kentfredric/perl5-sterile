@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 321 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/ftell.al)"
+#line 315 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/ftell.al)"
 sub ftell {
     redef "IO::Seekable::tell()";
 }

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 469 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/malloc.al)"
+#line 463 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/malloc.al)"
 sub malloc {
     unimpl "malloc() is C-specific, stopped";
 }

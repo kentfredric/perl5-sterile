@@ -2,31 +2,24 @@ package Math::BigInt::FastCalc;
 
 use 5.006;
 use strict;
-# use warnings;	# dont use warnings for older Perls
+use warnings;
 
-use DynaLoader;
-use Math::BigInt::Calc;
+use Math::BigInt::Calc 1.993;
 
-use vars qw/@ISA $VERSION $BASE $BASE_LEN/;
+use vars '$VERSION';
 
-@ISA = qw(DynaLoader);
-
-$VERSION = '0.19';
-
-bootstrap Math::BigInt::FastCalc $VERSION;
+$VERSION = '0.28';
 
 ##############################################################################
 # global constants, flags and accessory
 
-# announce that we are compatible with MBI v1.70 and up
-sub api_version () { 1; }
- 
-BEGIN
-  {
-  # use Calc to override the methods that we do not provide in XS
+# announce that we are compatible with MBI v1.83 and up
+sub api_version () { 2; }
 
-  for my $method (qw/
-    str
+# use Calc to override the methods that we do not provide in XS
+
+for my $method (qw/
+    str num
     add sub mul div
     rsft lsft
     mod modpow modinv
@@ -42,18 +35,9 @@ BEGIN
     no strict 'refs';
     *{'Math::BigInt::FastCalc::_' . $method} = \&{'Math::BigInt::Calc::_' . $method};
     }
-  my ($AND_BITS, $XOR_BITS, $OR_BITS, $BASE_LEN_SMALL, $MAX_VAL);
- 
-  # store BASE_LEN and BASE to later pass it to XS code 
-  ($BASE_LEN, $AND_BITS, $XOR_BITS, $OR_BITS, $BASE_LEN_SMALL, $MAX_VAL, $BASE) =
-    Math::BigInt::Calc::_base_len();
 
-  }
-
-sub import
-  {
-  _set_XS_BASE($BASE, $BASE_LEN);
-  }
+require XSLoader;
+XSLoader::load(__PACKAGE__, $VERSION, Math::BigInt::Calc::_base_len());
 
 ##############################################################################
 ##############################################################################
@@ -100,22 +84,25 @@ The following functions are now implemented in FastCalc.xs:
 	_is_odd		_is_even	_is_one		_is_zero
 	_is_two		_is_ten
 	_zero		_one		_two		_ten
-	_acmp		_len		_num
+	_acmp		_len
 	_inc		_dec
 	__strip_zeros	_copy
 
 =head1 LICENSE
- 
+
 This program is free software; you may redistribute it and/or modify it under
-the same terms as Perl itself. 
+the same terms as Perl itself.
 
 =head1 AUTHORS
 
 Original math code by Mark Biggar, rewritten by Tels L<http://bloodgate.com/>
 in late 2000.
-Seperated from BigInt and shaped API with the help of John Peacock.
+Separated from BigInt and shaped API with the help of John Peacock.
+
 Fixed, sped-up and enhanced by Tels http://bloodgate.com 2001-2003.
 Further streamlining (api_version 1 etc.) by Tels 2004-2007.
+
+Bug-fixing by Peter John Acklam E<lt>pjacklam@online.noE<gt> 2010-2011.
 
 =head1 SEE ALSO
 

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigRt;
 
-#line 1012 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_exist.al)"
+#line 1007 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigRt/_exist.al)"
 sub _exist {
     my $rtsig = _getsig($_[1]);
     my $ok    = $rtsig >= $_SIGRTMIN && $rtsig <= $_SIGRTMAX;

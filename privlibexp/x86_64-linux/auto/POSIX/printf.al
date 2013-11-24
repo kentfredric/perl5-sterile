@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 349 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/printf.al)"
+#line 343 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/printf.al)"
 sub printf {
     usage "printf(pattern, args...)" if @_ < 1;
     CORE::printf STDOUT @_;

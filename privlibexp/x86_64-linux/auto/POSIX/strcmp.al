@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 522 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strcmp.al)"
+#line 516 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strcmp.al)"
 sub strcmp {
     unimpl "strcmp() is C-specific, use eq instead";
 }

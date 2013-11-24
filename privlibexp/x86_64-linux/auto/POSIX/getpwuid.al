@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 206 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getpwuid.al)"
+#line 200 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getpwuid.al)"
 sub getpwuid {
     usage "getpwuid(uid)" if @_ != 1;
     CORE::getpwuid($_[0]);

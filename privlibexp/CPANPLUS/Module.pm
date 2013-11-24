@@ -447,7 +447,7 @@ L<Module::ThirdParty> for more details.
 
         my $core = $self->module_is_supplied_with_perl_core;
         ### ok, so it's found in the core, BUT it could be dual-lifed
-        if ($core) {
+        if (defined $core) {
             ### if the package is newer than installed, then it's dual-lifed
             return if $cb->_vcmp($self->version, $self->installed_version) > 0;
             
@@ -480,8 +480,13 @@ L<Module::ThirdParty> for more details.
         ### broken for perl 5.10: Module::CoreList's version key for the 
         ### hash has a different number of trailing zero than $] aka
         ### $PERL_VERSION.
-        my $core = $Module::CoreList::version{ 0+$ver }->{ $name };
 
+        my $core;
+
+        if ( exists $Module::CoreList::version{ 0+$ver }->{ $name } ) {
+          $core = $Module::CoreList::version{ 0+$ver }->{ $name };
+          $core = 0 unless $core;
+        }
         return $core;
     }
 
@@ -775,7 +780,7 @@ sub dist {
                           "available, but is not! -- aborting", $type));
                 return;
             } else {
-                msg(loc("Installer '%1' succesfully bootstrapped", $type));
+                msg(loc("Installer '%1' successfully bootstrapped", $type));
             }
             
         ### some other plugin you dont have. Abort
@@ -828,7 +833,7 @@ sub dist {
 =pod
 
 =head2 $bool = $mod->prepare( )
- 
+
 Convenience method around C<install()> that prepares a module 
 without actually building it. This is equivalent to invoking C<install>
 with C<target> set to C<prepare>
@@ -1001,6 +1006,7 @@ sub install {
         $self->extract( %$params ) or return;
     }
 
+    $args->{'prereq_format'} = $format if $format;
     $format ||= $self->status->installer_type;
 
     unless( $format ) {
@@ -1444,7 +1450,7 @@ sub uninstall {
     my $dirs    = $self->directory_tree( type => $type )    or return;
     my $sudo    = $conf->get_program('sudo');
 
-    ### just in case there's no file; M::B doensn't provide .packlists yet ###
+    ### just in case there's no file; M::B doesn't provide .packlists yet ###
     my $pack    = $self->packlist;
     $pack       = $pack->[0]->packlist_file() if $pack;
 

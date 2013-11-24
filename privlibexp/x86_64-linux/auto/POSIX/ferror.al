@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 305 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/ferror.al)"
+#line 299 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/ferror.al)"
 sub ferror {
     redef "IO::Handle::error()";
 }

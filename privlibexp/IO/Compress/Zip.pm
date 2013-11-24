@@ -4,26 +4,26 @@ use strict ;
 use warnings;
 use bytes;
 
-use IO::Compress::Base::Common  2.024 qw(:Status createSelfTiedObject);
-use IO::Compress::RawDeflate 2.024 ;
-use IO::Compress::Adapter::Deflate 2.024 ;
-use IO::Compress::Adapter::Identity 2.024 ;
-use IO::Compress::Zlib::Extra 2.024 ;
-use IO::Compress::Zip::Constants 2.024 ;
+use IO::Compress::Base::Common  2.033 qw(:Status createSelfTiedObject);
+use IO::Compress::RawDeflate 2.033 ;
+use IO::Compress::Adapter::Deflate 2.033 ;
+use IO::Compress::Adapter::Identity 2.033 ;
+use IO::Compress::Zlib::Extra 2.033 ;
+use IO::Compress::Zip::Constants 2.033 ;
 
 
-use Compress::Raw::Zlib  2.024 qw(crc32) ;
+use Compress::Raw::Zlib  2.033 qw(crc32) ;
 BEGIN
 {
     eval { require IO::Compress::Adapter::Bzip2 ; 
-           import  IO::Compress::Adapter::Bzip2 2.024 ; 
+           import  IO::Compress::Adapter::Bzip2 2.033 ; 
            require IO::Compress::Bzip2 ; 
-           import  IO::Compress::Bzip2 2.024 ; 
+           import  IO::Compress::Bzip2 2.033 ; 
          } ;
 #    eval { require IO::Compress::Adapter::Lzma ; 
 #           import  IO::Compress::Adapter::Lzma 2.020 ; 
 #           require IO::Compress::Lzma ; 
-#           import  IO::Compress::Lzma 2.024 ; 
+#           import  IO::Compress::Lzma 2.033 ; 
 #         } ;
 }
 
@@ -32,7 +32,7 @@ require Exporter ;
 
 our ($VERSION, @ISA, @EXPORT_OK, %EXPORT_TAGS, $ZipError);
 
-$VERSION = '2.024';
+$VERSION = '2.033';
 $ZipError = '';
 
 @ISA = qw(Exporter IO::Compress::RawDeflate);
@@ -156,7 +156,7 @@ sub mkHeader
     my $extFileAttr = 0 ;
     
     # This code assumes Unix.
-    $extFileAttr = 0666 << 16 
+    $extFileAttr = 0100644 << 16 
         if $osCode == ZIP_OS_CODE_UNIX ;
 
     if (*$self->{ZipData}{Zip64}) {
@@ -513,8 +513,8 @@ sub getExtraParams
 {
     my $self = shift ;
 
-    use IO::Compress::Base::Common  2.024 qw(:Parse);
-    use Compress::Raw::Zlib  2.024 qw(Z_DEFLATED Z_DEFAULT_COMPRESSION Z_DEFAULT_STRATEGY);
+    use IO::Compress::Base::Common  2.033 qw(:Parse);
+    use Compress::Raw::Zlib  2.033 qw(Z_DEFLATED Z_DEFAULT_COMPRESSION Z_DEFAULT_STRATEGY);
 
     my @Bzip2 = ();
     
@@ -538,7 +538,10 @@ sub getExtraParams
             'Time'      => [0, 1, Parse_any,       undef],
             'exTime'    => [0, 1, Parse_any,       undef],
             'exUnix2'   => [0, 1, Parse_any,       undef], 
-            'ExtAttr'   => [0, 1, Parse_any,       0],
+            'ExtAttr'   => [0, 1, Parse_any, 
+                    $Compress::Raw::Zlib::gzip_os_code == 3 
+                        ? 0100644 << 16 
+                        : 0],
             'OS_Code'   => [0, 1, Parse_unsigned,  $Compress::Raw::Zlib::gzip_os_code],
             
            'TextFlag'  => [0, 1, Parse_boolean,   0],
@@ -770,8 +773,6 @@ If C<$input> is a string that is delimited by the characters "<" and ">"
 C<zip> will assume that it is an I<input fileglob string>. The
 input is the list of files that match the fileglob.
 
-If the fileglob does not match any files ...
-
 See L<File::GlobMapper|File::GlobMapper> for more details.
 
 =back
@@ -822,6 +823,8 @@ output is the list of files that match the fileglob.
 
 When C<$output> is an fileglob string, C<$input> must also be a fileglob
 string. Anything else is an error.
+
+See L<File::GlobMapper|File::GlobMapper> for more details.
 
 =back
 
@@ -890,8 +893,8 @@ data to the output data stream.
 
 So when the output is a filehandle it will carry out a seek to the eof
 before writing any compressed data. If the output is a filename, it will be opened for
-appending. If the output is a buffer, all compressed data will be appened to
-the existing buffer.
+appending. If the output is a buffer, all compressed data will be
+appended to the existing buffer.
 
 Conversely when C<Append> is not specified, or it is present and is set to
 false, it will operate as follows.
@@ -932,28 +935,32 @@ compressed data to a buffer, C<$buffer>.
     zip $input => \$buffer 
         or die "zip failed: $ZipError\n";
 
-To compress all files in the directory "/my/home" that match "*.txt"
-and store the compressed data in the same directory
+To create a zip file, C<output.zip>, that contains the compressed contents
+of the files C<alpha.txt> and C<beta.txt>
 
     use strict ;
     use warnings ;
     use IO::Compress::Zip qw(zip $ZipError) ;
 
-    zip '</my/home/*.txt>' => '<*.zip>'
+    zip [ 'alpha.txt', 'beta.txt' ] => 'output.zip'
         or die "zip failed: $ZipError\n";
 
-and if you want to compress each file one at a time, this will do the trick
+Alternatively, rather than having to explicitly name each of the files that
+you want to compress, you could use a fileglob to select all the C<txt>
+files in the current directory, as follows
 
     use strict ;
     use warnings ;
     use IO::Compress::Zip qw(zip $ZipError) ;
 
-    for my $input ( glob "/my/home/*.txt" )
-    {
-        my $output = "$input.zip" ;
-        zip $input => $output 
-            or die "Error compressing '$input': $ZipError\n";
-    }
+    my @files = <*.txt>;
+    zip \@files => 'output.zip'
+        or die "zip failed: $ZipError\n";
+
+or more succinctly
+
+    zip [ <*.txt> ] => 'output.zip'
+        or die "zip failed: $ZipError\n";
 
 =head1 OO Interface
 
@@ -1051,15 +1058,21 @@ This parameter defaults to 0.
 
 =item C<< Name => $string >>
 
-Stores the contents of C<$string> in the zip filename header field. If
-C<Name> is not specified, no zip filename field will be created.
+Stores the contents of C<$string> in the zip filename header field. 
+
+If C<Name> is not specified and the C<$input> parameter is a filename that
+will be used for the zip filename header field.
+
+If C<Name> is not specified and the C<$input> parameter is not a filename,
+no zip filename field will be created.
 
 =item C<< Time => $number >>
 
 Sets the last modified time field in the zip header to $number.
 
 This field defaults to the time the C<IO::Compress::Zip> object was created
-if this option is not specified.
+if this option is not specified and the C<$input> parameter is not a
+filename.
 
 =item C<< ExtAttr => $attr >>
 
@@ -1068,10 +1081,10 @@ header of the zip file. This is a 4 byte field.
 
 If you are running a Unix derivative this value defaults to 
 
-    0666 << 16
+    0100644 << 16
 
 This should allow read/write access to any files that are extracted from
-the zip file/buffer.
+the zip file/buffer`.
 
 For all other systems it defaults to 0.
 
@@ -1605,7 +1618,7 @@ See the Changes file.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005-2010 Paul Marquess. All rights reserved.
+Copyright (c) 2005-2011 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 186 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/pow.al)"
+#line 180 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/pow.al)"
 sub pow {
     usage "pow(x,exponent)" if @_ != 2;
     $_[0] ** $_[1];

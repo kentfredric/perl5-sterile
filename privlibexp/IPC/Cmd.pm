@@ -14,9 +14,10 @@ BEGIN {
     use Exporter    ();
     use vars        qw[ @ISA $VERSION @EXPORT_OK $VERBOSE $DEBUG
                         $USE_IPC_RUN $USE_IPC_OPEN3 $CAN_USE_RUN_FORKED $WARN
+                        $INSTANCES
                     ];
 
-    $VERSION        = '0.54';
+    $VERSION        = '0.70';
     $VERBOSE        = 0;
     $DEBUG          = 0;
     $WARN           = 1;
@@ -32,6 +33,7 @@ BEGIN {
         require FileHandle; FileHandle->import();
         require Socket; Socket->import();
         require Time::HiRes; Time::HiRes->import();
+        require Win32 if IS_WIN32;
     };
     $CAN_USE_RUN_FORKED = $@ || !IS_VMS && !IS_WIN32;
 
@@ -74,7 +76,7 @@ IPC::Cmd - finding and running system commands made easy
 
 
     ### in list context ###
-    my( $success, $error_code, $full_buf, $stdout_buf, $stderr_buf ) =
+    my( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) =
             run( command => $cmd, verbose => 0 );
 
     if( $success ) {
@@ -94,8 +96,8 @@ IPC::Cmd - finding and running system commands made easy
 
 =head1 DESCRIPTION
 
-IPC::Cmd allows you to run commands, interactively if desired,
-platform independent but have them still work.
+IPC::Cmd allows you to run commands platform independently,
+interactively if desired, but have them still work.
 
 The C<can_run> function can tell you if a certain binary is installed
 and if so where, whereas the C<run> function can actually execute any
@@ -107,8 +109,8 @@ as adhere to your verbosity settings.
 =head2 $ipc_run_version = IPC::Cmd->can_use_ipc_run( [VERBOSE] )
 
 Utility function that tells you if C<IPC::Run> is available. 
-If the verbose flag is passed, it will print diagnostic messages
-if C<IPC::Run> can not be found or loaded.
+If the C<verbose> flag is passed, it will print diagnostic messages
+if L<IPC::Run> can not be found or loaded.
 
 =cut
 
@@ -117,7 +119,7 @@ sub can_use_ipc_run     {
     my $self    = shift;
     my $verbose = shift || 0;
     
-    ### ipc::run doesn't run on win98    
+    ### IPC::Run doesn't run on win98
     return if IS_WIN98;
 
     ### if we dont have ipc::run, we obviously can't use it.
@@ -143,11 +145,10 @@ sub can_use_ipc_open3   {
     my $self    = shift;
     my $verbose = shift || 0;
 
-    ### ipc::open3 is not working on VMS becasue of a lack of fork.
-    ### XXX todo, win32 also does not have fork, so need to do more research.
+    ### IPC::Open3 is not working on VMS because of a lack of fork.
     return if IS_VMS;
 
-    ### ipc::open3 works on every non-VMS platform platform, but it can't 
+    ### IPC::Open3 works on every non-VMS platform platform, but it can't 
     ### capture buffers on win32 :(
     return unless can_load(
         modules => { map {$_ => '0.0'} qw|IPC::Open3 IO::Select Symbol| },
@@ -181,16 +182,20 @@ providing C<run_forked> on the current platform.
 
 =head2 $path = can_run( PROGRAM );
 
-C<can_run> takes but a single argument: the name of a binary you wish
+C<can_run> takes only one argument: the name of a binary you wish
 to locate. C<can_run> works much like the unix binary C<which> or the bash
 command C<type>, which scans through your path, looking for the requested
-binary .
+binary.
 
 Unlike C<which> and C<type>, this function is platform independent and
 will also work on, for example, Win32.
 
-It will return the full path to the binary you asked for if it was
-found, or C<undef> if it was not.
+If called in a scalar context it will return the full path to the binary
+you asked for if it was found, or C<undef> if it was not.
+
+If called in a list context and the global variable C<$INSTANCES> is a true
+value, it will return a list of the full paths to instances
+of the binary where found in C<PATH>, or an empty list if it was not found.
 
 =cut
 
@@ -209,6 +214,8 @@ sub can_run {
     require File::Spec;
     require ExtUtils::MakeMaker;
 
+    my @possibles;
+
     if( File::Spec->file_name_is_absolute($command) ) {
         return MM->maybe_command($command);
 
@@ -216,11 +223,14 @@ sub can_run {
         for my $dir (
             (split /\Q$Config::Config{path_sep}\E/, $ENV{PATH}),
             File::Spec->curdir
-        ) {           
-            my $abs = File::Spec->catfile($dir, $command);
-            return $abs if $abs = MM->maybe_command($abs);
+        ) {
+            next if ! $dir || ! -d $dir;
+            my $abs = File::Spec->catfile( IS_WIN32 ? Win32::GetShortPathName( $dir ) : $dir, $command);
+            push @possibles, $abs if $abs = MM->maybe_command($abs);
         }
     }
+    return @possibles if wantarray and $INSTANCES;
+    return shift @possibles;
 }
 
 =head2 $ok | ($ok, $err, $full_buf, $stdout_buff, $stderr_buff) = run( command => COMMAND, [verbose => BOOL, buffer => \$SCALAR, timeout => DIGIT] );
@@ -235,15 +245,15 @@ This is the command to execute. It may be either a string or an array
 reference.
 This is a required argument.
 
-See L<CAVEATS> for remarks on how commands are parsed and their
+See L<"Caveats"> for remarks on how commands are parsed and their
 limitations.
 
 =item verbose
 
 This controls whether all output of a command should also be printed
 to STDOUT/STDERR or should only be trapped in buffers (NOTE: buffers
-require C<IPC::Run> to be installed or your system able to work with
-C<IPC::Open3>).
+require L<IPC::Run> to be installed, or your system able to work with
+L<IPC::Open3>).
 
 It will default to the global setting of C<$IPC::Cmd::VERBOSE>,
 which by default is 0.
@@ -258,14 +268,14 @@ If you require this distinction, run the C<run> command in list context
 and inspect the individual buffers.
 
 Of course, this requires that the underlying call supports buffers. See
-the note on buffers right above.
+the note on buffers above.
 
 =item timeout
 
 Sets the maximum time the command is allowed to run before aborting,
 using the built-in C<alarm()> call. If the timeout is triggered, the
 C<errorcode> in the return value will be set to an object of the 
-C<IPC::Cmd::TimeOut> class. See the C<errorcode> section below for
+C<IPC::Cmd::TimeOut> class. See the L<"error message"> section below for
 details.
 
 Defaults to C<0>, meaning no timeout is set.
@@ -285,7 +295,7 @@ not.
 
 =item error message
 
-If the first element of the return value (success) was 0, then some
+If the first element of the return value (C<success>) was 0, then some
 error occurred. This second element is the error message the command
 you requested exited with, if available. This is generally a pretty 
 printed value of C<$?> or C<$@>. See C<perldoc perlvar> for details on 
@@ -295,31 +305,26 @@ the string C<IPC::Cmd::TimeOut>, the timeout class.
 
 =item full_buffer
 
-This is an arrayreference containing all the output the command
+This is an array reference containing all the output the command
 generated.
-Note that buffers are only available if you have C<IPC::Run> installed,
-or if your system is able to work with C<IPC::Open3> -- See below).
-This element will be C<undef> if this is not the case.
+Note that buffers are only available if you have L<IPC::Run> installed,
+or if your system is able to work with L<IPC::Open3> -- see below).
+Otherwise, this element will be C<undef>.
 
 =item out_buffer
 
-This is an arrayreference containing all the output sent to STDOUT the
-command generated.
-Note that buffers are only available if you have C<IPC::Run> installed,
-or if your system is able to work with C<IPC::Open3> -- See below).
-This element will be C<undef> if this is not the case.
+This is an array reference containing all the output sent to STDOUT the
+command generated. The notes from L<"full_buffer"> apply.
 
 =item error_buffer
 
 This is an arrayreference containing all the output sent to STDERR the
-command generated.
-Note that buffers are only available if you have C<IPC::Run> installed,
-or if your system is able to work with C<IPC::Open3> -- See below).
-This element will be C<undef> if this is not the case.
+command generated. The notes from L<"full_buffer"> apply.
+
 
 =back
 
-See the C<HOW IT WORKS> Section below to see how C<IPC::Cmd> decides
+See the L<"HOW IT WORKS"> section below to see how C<IPC::Cmd> decides
 what modules or function calls to use when issuing a command.
 
 =cut
@@ -340,25 +345,89 @@ sub can_use_run_forked {
     return $CAN_USE_RUN_FORKED eq "1";
 }
 
+# incompatible with POSIX::SigAction
+#
+sub install_layered_signal {
+  my ($s, $handler_code) = @_;
+
+  my %available_signals = map {$_ => 1} keys %SIG;
+
+  die("install_layered_signal got nonexistent signal name [$s]")
+    unless defined($available_signals{$s});
+  die("install_layered_signal expects coderef")
+    if !ref($handler_code) || ref($handler_code) ne 'CODE';
+
+  my $previous_handler = $SIG{$s};
+
+  my $sig_handler = sub {
+    my ($called_sig_name, @sig_param) = @_;
+    
+    # $s is a closure referring to real signal name
+    # for which this handler is being installed.
+    # it is used to distinguish between
+    # real signal handlers and aliased signal handlers
+    my $signal_name = $s;
+
+    # $called_sig_name is a signal name which
+    # was passed to this signal handler;
+    # it doesn't equal $signal_name in case
+    # some signal handlers in %SIG point
+    # to other signal handler (CHLD and CLD,
+    # ABRT and IOT)
+    #
+    # initial signal handler for aliased signal
+    # calls some other signal handler which
+    # should not execute the same handler_code again
+    if ($called_sig_name eq $signal_name) {
+      $handler_code->($signal_name);
+    }
+
+    # run original signal handler if any (including aliased)
+    #
+    if (ref($previous_handler)) {
+      $previous_handler->($called_sig_name, @sig_param);
+    }
+  };
+
+  $SIG{$s} = $sig_handler;
+}
+
 # give process a chance sending TERM,
 # waiting for a while (2 seconds)
 # and killing it with KILL
 sub kill_gently {
-  my ($pid) = @_;
+  my ($pid, $opts) = @_;
   
-  kill(15, $pid);
+  $opts = {} unless $opts;
+  $opts->{'wait_time'} = 2 unless defined($opts->{'wait_time'});
+  $opts->{'first_kill_type'} = 'just_process' unless $opts->{'first_kill_type'};
+  $opts->{'final_kill_type'} = 'just_process' unless $opts->{'final_kill_type'};
   
-  my $wait_cycles = 0;
+  if ($opts->{'first_kill_type'} eq 'just_process') {
+    kill(15, $pid);
+  }
+  elsif ($opts->{'first_kill_type'} eq 'process_group') {
+    kill(-15, $pid);
+  }
+  
   my $child_finished = 0;
+  my $wait_start_time = time();
 
-  while (!$child_finished && $wait_cycles < 8) {
+  while (!$child_finished && $wait_start_time + $opts->{'wait_time'} > time()) {
     my $waitpid = waitpid($pid, WNOHANG);
     if ($waitpid eq -1) {
       $child_finished = 1;
     }
+    Time::HiRes::usleep(250000); # quarter of a second
+  }
 
-    $wait_cycles = $wait_cycles + 1;
-    Time::HiRes::usleep(250000); # half a second
+  if (!$child_finished) {
+    if ($opts->{'final_kill_type'} eq 'just_process') {
+      kill(9, $pid);
+    }
+    elsif ($opts->{'final_kill_type'} eq 'process_group') {
+      kill(-9, $pid);
+    }
   }
 }
 
@@ -394,7 +463,7 @@ sub open3_run {
     # from http://perldoc.perl.org/IPC/Open3.html,
     # absolutely needed to catch piped commands errors.
     #
-    local $SIG{'SIG_PIPE'} = sub { 1; };
+    local $SIG{'PIPE'} = sub { 1; };
     
     print $child_in $opts->{'child_stdin'};
   }
@@ -445,14 +514,31 @@ sub open3_run {
     # parent was killed otherwise we would have got
     # the same signal as parent and process it same way
     if (getppid() eq "1") {
-      kill_gently($pid);
-      exit;
+
+      # end my process group with all the children
+      # (i am the process group leader, so my pid
+      # equals to the process group id)
+      #
+      # same thing which is done
+      # with $opts->{'clean_up_children'}
+      # in run_forked
+      #
+      kill(-9, $$);
+
+      exit 1;
     }
 
     if ($got_sig_child) {
-      if (time() - $got_sig_child > 10) {
-        print STDERR "select->can_read did not return 0 for 10 seconds after SIG_CHLD, killing [$pid]\n";
-        kill (-9, $pid);
+      if (time() - $got_sig_child > 1) {
+        # select->can_read doesn't return 0 after SIG_CHLD
+        #
+        # "On POSIX-compliant platforms, SIGCHLD is the signal
+        # sent to a process when a child process terminates."
+        # http://en.wikipedia.org/wiki/SIGCHLD
+        #
+        # nevertheless kill KILL wouldn't break anything here
+        #
+        kill (9, $pid);
         $child_finished = 1;
       }
     }
@@ -485,17 +571,24 @@ sub open3_run {
     }
   }
 
-  waitpid($pid, 0);
+  my $waitpid_ret = waitpid($pid, 0);
+  my $real_exit = $?;
+  my $exit_value  = $real_exit >> 8;
 
-  # i've successfully reaped my child,
-  # let my parent know this
+  # since we've successfully reaped the child,
+  # let our parent know about this.
+  #
   if ($opts->{'parent_info'}) {
     my $ps = $opts->{'parent_info'};
+
+    # child was killed, inform parent
+    if ($real_exit & 127) {
+      print $ps "$pid killed with " . ($real_exit & 127) . "\n";
+    }
+
     print $ps "reaped $pid\n";
   }
 
-  my $real_exit = $?;
-  my $exit_value  = $real_exit >> 8;
   if ($opts->{'parent_stdout'} || $opts->{'parent_stderr'}) {
     return $exit_value;
   }
@@ -508,13 +601,13 @@ sub open3_run {
   }
 }
 
-=head2 $hashref = run_forked( command => COMMAND, { child_stdin => SCALAR, timeout => DIGIT, stdout_handler => CODEREF, stderr_handler => CODEREF} );
+=head2 $hashref = run_forked( COMMAND, { child_stdin => SCALAR, timeout => DIGIT, stdout_handler => CODEREF, stderr_handler => CODEREF} );
 
-C<run_forked> is used to execute some program,
+C<run_forked> is used to execute some program or a coderef,
 optionally feed it with some input, get its return code
-and output (both stdout and stderr into seperate buffers).
-In addition it allows to terminate the program
-which take too long to finish.
+and output (both stdout and stderr into separate buffers).
+In addition, it allows to terminate the program
+if it takes too long to finish.
 
 The important and distinguishing feature of run_forked
 is execution timeout which at first seems to be
@@ -536,28 +629,40 @@ feeds it with input, stores its exit code,
 stdout and stderr, terminates it in case
 it runs longer than specified.
 
-Invocation requires the command to be executed and optionally a hashref of options:
+Invocation requires the command to be executed or a coderef and optionally a hashref of options:
 
 =over
 
 =item C<timeout>
 
-Specify in seconds how long the command may run for before it is killed with with SIG_KILL (9) 
+Specify in seconds how long to run the command before it is killed with with SIG_KILL (9),
 which effectively terminates it and all of its children (direct or indirect).
 
 =item C<child_stdin>
 
-Specify some text that will be passed into C<STDIN> of the executed program.
+Specify some text that will be passed into the C<STDIN> of the executed program.
 
 =item C<stdout_handler>
 
-You may provide a coderef of a subroutine that will be called a portion of data is received on 
-stdout from the executing program.
+Coderef of a subroutine to call when a portion of data is received on 
+STDOUT from the executing program.
 
 =item C<stderr_handler>
 
-You may provide a coderef of a subroutine that will be called a portion of data is received on 
-stderr from the executing program.
+Coderef of a subroutine to call when a portion of data is received on 
+STDERR from the executing program.
+
+
+=item C<discard_output>
+
+Discards the buffering of the standard output and standard errors for return by run_forked(). 
+With this option you have to use the std*_handlers to read what the command outputs. 
+Useful for commands that send a lot of output.
+
+=item C<terminate_on_parent_sudden_death>
+
+Enable this option if you wish all spawned processes to be killed if the initially spawned
+process (the parent) is killed or dies without waiting for child processes.
 
 =back
 
@@ -575,18 +680,18 @@ The number of seconds the program ran for before being terminated, or 0 if no ti
 
 =item C<stdout>
 
-Holds the standard output of the executed command
-(or empty string if there were no stdout output; it's always defined!)
+Holds the standard output of the executed command (or empty string if 
+there was no STDOUT output or if C<discard_output> was used; it's always defined!)
 
 =item C<stderr>
 
-Holds the standard error of the executed command
-(or empty string if there were no stderr output; it's always defined!)
+Holds the standard error of the executed command (or empty string if 
+there was no STDERR output or if C<discard_output> was used; it's always defined!)
 
 =item C<merged>
 
 Holds the standard output and error of the executed command merged into one stream
-(or empty string if there were no output at all; it's always defined!)
+(or empty string if there was no output at all or if C<discard_output> was used; it's always defined!)
 
 =item C<err_msg>
 
@@ -614,6 +719,10 @@ sub run_forked {
 
     $opts = {} unless $opts;
     $opts->{'timeout'} = 0 unless $opts->{'timeout'};
+    $opts->{'terminate_wait_time'} = 2 unless defined($opts->{'terminate_wait_time'});
+
+    # turned on by default
+    $opts->{'clean_up_children'} = 1 unless defined($opts->{'clean_up_children'});
 
     # sockets to pass child stdout to parent
     my $child_stdout_socket;
@@ -651,7 +760,6 @@ sub run_forked {
       close($parent_stderr_socket);
       close($parent_info_socket);
 
-      my $child_timedout = 0;
       my $flags;
 
       # prepare sockets to read from child
@@ -673,22 +781,57 @@ sub run_forked {
 
   #    print "child $pid started\n";
 
+      my $child_timedout = 0;
       my $child_finished = 0;
       my $child_stdout = '';
       my $child_stderr = '';
       my $child_merged = '';
       my $child_exit_code = 0;
+      my $child_killed_by_signal = 0;
+      my $parent_died = 0;
 
       my $got_sig_child = 0;
+      my $got_sig_quit = 0;
+      my $orig_sig_child = $SIG{'CHLD'};
+
       $SIG{'CHLD'} = sub { $got_sig_child = time(); };
+
+      if ($opts->{'terminate_on_signal'}) {
+        install_layered_signal($opts->{'terminate_on_signal'}, sub { $got_sig_quit = time(); });
+      }
 
       my $child_child_pid;
 
       while (!$child_finished) {
+        my $now = time();
+
+        if ($opts->{'terminate_on_parent_sudden_death'}) {
+          $opts->{'runtime'}->{'last_parent_check'} = 0
+            unless defined($opts->{'runtime'}->{'last_parent_check'});
+
+          # check for parent once each five seconds
+          if ($now - $opts->{'runtime'}->{'last_parent_check'} > 5) {
+            if (getppid() eq "1") {
+              kill_gently ($pid, {
+                'first_kill_type' => 'process_group',
+                'final_kill_type' => 'process_group',
+                'wait_time' => $opts->{'terminate_wait_time'}
+                });
+              $parent_died = 1;
+            }
+
+            $opts->{'runtime'}->{'last_parent_check'} = $now;
+          }
+        }
+
         # user specified timeout
         if ($opts->{'timeout'}) {
-          if (time() - $start_time > $opts->{'timeout'}) {
-            kill (-9, $pid);
+          if ($now - $start_time > $opts->{'timeout'}) {
+            kill_gently ($pid, {
+              'first_kill_type' => 'process_group',
+              'final_kill_type' => 'process_group',
+              'wait_time' => $opts->{'terminate_wait_time'}
+              });
             $child_timedout = 1;
           }
         }
@@ -697,11 +840,20 @@ sub run_forked {
         # kill process after that and finish wait loop;
         # shouldn't ever happen -- remove this code?
         if ($got_sig_child) {
-          if (time() - $got_sig_child > 10) {
+          if ($now - $got_sig_child > 10) {
             print STDERR "waitpid did not return -1 for 10 seconds after SIG_CHLD, killing [$pid]\n";
             kill (-9, $pid);
             $child_finished = 1;
           }
+        }
+
+        if ($got_sig_quit) {
+          kill_gently ($pid, {
+            'first_kill_type' => 'process_group',
+            'final_kill_type' => 'process_group',
+            'wait_time' => $opts->{'terminate_wait_time'}
+            });
+          $child_finished = 1;
         }
 
         my $waitpid = waitpid($pid, WNOHANG);
@@ -726,20 +878,27 @@ sub run_forked {
             $child_child_pid = undef;
             $l = $2;
           }
+          if ($l =~ /^[\d]+ killed with ([0-9]+?)\n(.*?)/so) {
+            $child_killed_by_signal = $1;
+            $l = $2;
+          }
         }
 
         while (my $l = <$child_stdout_socket>) {
-          $child_stdout .= $l;
-          $child_merged .= $l;
+          if (!$opts->{'discard_output'}) {
+            $child_stdout .= $l;
+            $child_merged .= $l;
+          }
 
           if ($opts->{'stdout_handler'} && ref($opts->{'stdout_handler'}) eq 'CODE') {
             $opts->{'stdout_handler'}->($l);
           }
         }
         while (my $l = <$child_stderr_socket>) {
-          $child_stderr .= $l;
-          $child_merged .= $l;
-
+          if (!$opts->{'discard_output'}) {
+            $child_stderr .= $l;
+            $child_merged .= $l;
+          }
           if ($opts->{'stderr_handler'} && ref($opts->{'stderr_handler'}) eq 'CODE') {
             $opts->{'stderr_handler'}->($l);
           }
@@ -758,10 +917,27 @@ sub run_forked {
       #
       # defined $child_pid_pid means child's child
       # has not died but nobody is waiting for it,
-      # killing it brutaly.
+      # killing it brutally.
       #
       if ($child_child_pid) {
         kill_gently($child_child_pid);
+      }
+
+      # in case there are forks in child which
+      # do not forward or process signals (TERM) correctly
+      # kill whole child process group, effectively trying
+      # not to return with some children or their parts still running
+      #
+      # to be more accurate -- we need to be sure
+      # that this is process group created by our child
+      # (and not some other process group with the same pgid,
+      # created just after death of our child) -- fortunately
+      # this might happen only when process group ids
+      # are reused quickly (there are lots of processes
+      # spawning new process groups for example)
+      #
+      if ($opts->{'clean_up_children'}) {
+        kill(-9, $pid);
       }
 
   #    print "child $pid finished\n";
@@ -776,6 +952,9 @@ sub run_forked {
         'merged' => $child_merged,
         'timeout' => $child_timedout ? $opts->{'timeout'} : 0,
         'exit_code' => $child_exit_code,
+        'parent_died' => $parent_died,
+        'killed_by_signal' => $child_killed_by_signal,
+        'child_pgid' => $pid,
         };
 
       my $err_msg = '';
@@ -785,13 +964,26 @@ sub run_forked {
       if ($o->{'timeout'}) {
         $err_msg .= "ran more than [$o->{'timeout'}] seconds\n";
       }
+      if ($o->{'parent_died'}) {
+        $err_msg .= "parent died\n";
+      }
       if ($o->{'stdout'}) {
         $err_msg .= "stdout:\n" . $o->{'stdout'} . "\n";
       }
       if ($o->{'stderr'}) {
         $err_msg .= "stderr:\n" . $o->{'stderr'} . "\n";
       }
+      if ($o->{'killed_by_signal'}) {
+        $err_msg .= "killed by signal [" . $o->{'killed_by_signal'} . "]\n";
+      }
       $o->{'err_msg'} = $err_msg;
+
+      if ($orig_sig_child) {
+        $SIG{'CHLD'} = $orig_sig_child;
+      }
+      else {
+        delete($SIG{'CHLD'});
+      }
 
       return $o;
     }
@@ -806,20 +998,47 @@ sub run_forked {
 
       POSIX::setsid() || die("Error running setsid: " . $!);
 
+      if ($opts->{'child_BEGIN'} && ref($opts->{'child_BEGIN'}) eq 'CODE') {
+        $opts->{'child_BEGIN'}->();
+      }
+
       close($child_stdout_socket);
       close($child_stderr_socket);
       close($child_info_socket);
 
-      my $child_exit_code = open3_run($cmd, {
-        'parent_info' => $parent_info_socket,
-        'parent_stdout' => $parent_stdout_socket,
-        'parent_stderr' => $parent_stderr_socket,
-        'child_stdin' => $opts->{'child_stdin'},
-        });
+      my $child_exit_code;
+
+      # allow both external programs
+      # and internal perl calls
+      if (!ref($cmd)) {
+        $child_exit_code = open3_run($cmd, {
+          'parent_info' => $parent_info_socket,
+          'parent_stdout' => $parent_stdout_socket,
+          'parent_stderr' => $parent_stderr_socket,
+          'child_stdin' => $opts->{'child_stdin'},
+          });
+      }
+      elsif (ref($cmd) eq 'CODE') {
+        $child_exit_code = $cmd->({
+          'opts' => $opts,
+          'parent_info' => $parent_info_socket,
+          'parent_stdout' => $parent_stdout_socket,
+          'parent_stderr' => $parent_stderr_socket,
+          'child_stdin' => $opts->{'child_stdin'},
+          });
+      }
+      else {
+        print $parent_stderr_socket "Invalid command reference: " . ref($cmd) . "\n";
+        $child_exit_code = 1;
+      }
 
       close($parent_stdout_socket);
       close($parent_stderr_socket);
       close($parent_info_socket);
+
+      if ($opts->{'child_END'} && ref($opts->{'child_END'}) eq 'CODE') {
+        $opts->{'child_END'}->();
+      }
 
       exit $child_exit_code;
     }
@@ -1035,7 +1254,7 @@ sub _open3_run {
     $kidout->autoflush(1)   if UNIVERSAL::can($kidout,   'autoflush');
     $kiderror->autoflush(1) if UNIVERSAL::can($kiderror, 'autoflush');
 
-    ### add an epxlicit break statement
+    ### add an explicit break statement
     ### code courtesy of theorbtwo from #london.pm
     my $stdout_done = 0;
     my $stderr_done = 0;
@@ -1085,7 +1304,7 @@ sub _open3_run {
     }
 }
 
-### text::parsewords::shellwordss() uses unix semantics. that will break
+### Text::ParseWords::shellwords() uses unix semantics. that will break
 ### on win32
 {   my $parse_sub = IS_WIN32 
                         ? __PACKAGE__->can('_split_like_shell_win32')
@@ -1333,7 +1552,7 @@ sub _split_like_shell_win32 {
     } elsif ( $ch eq '"' ) {
       $quote_mode = !$quote_mode;
     } elsif ( $ch eq ' ' && !$quote_mode ) {
-      push( @argv, $arg ) if $arg;
+      push( @argv, $arg ) if defined( $arg ) && length( $arg );
       $arg = '';
       ++$i while substr( $_, $i + 1, 1 ) eq ' ';
     } else {
@@ -1370,7 +1589,7 @@ sub _split_like_shell_win32 {
                 Carp::carp(loc("No such FD: '%1'", $name)), next );
             
             ### MUST use the 2-arg version of open for dup'ing for 
-            ### 5.6.x compatibilty. 5.8.x can use 3-arg open
+            ### 5.6.x compatibility. 5.8.x can use 3-arg open
             ### see perldoc5.6.2 -f open for details            
             open $glob, $redir . fileno($fh) or (
                         Carp::carp(loc("Could not dup '$name': %1", $!)),
@@ -1404,7 +1623,7 @@ sub _split_like_shell_win32 {
                 Carp::carp(loc("No such FD: '%1'", $name)), next );
 
             ### MUST use the 2-arg version of open for dup'ing for 
-            ### 5.6.x compatibilty. 5.8.x can use 3-arg open
+            ### 5.6.x compatibility. 5.8.x can use 3-arg open
             ### see perldoc5.6.2 -f open for details
             open( $fh, $redir . fileno($glob) ) or (
                     Carp::carp(loc("Could not restore '$name': %1", $!)),
@@ -1473,7 +1692,7 @@ You can use it as follows:
   my $cmd = q[echo ] . QUOTE . q[foo bar] . QUOTE;
 
 This makes sure that C<foo bar> is treated as a string, rather than two
-seperate arguments to the C<echo> function.
+separate arguments to the C<echo> function.
 
 __END__
 
@@ -1486,28 +1705,28 @@ C<run> will try to execute your command using the following logic:
 =item *
 
 If you have C<IPC::Run> installed, and the variable C<$IPC::Cmd::USE_IPC_RUN>
-is set to true (See the C<GLOBAL VARIABLES> Section) use that to execute 
+is set to true (See the L<"Global Variables"> section) use that to execute 
 the command. You will have the full output available in buffers, interactive commands are sure to work  and you are guaranteed to have your verbosity
 settings honored cleanly.
 
 =item *
 
 Otherwise, if the variable C<$IPC::Cmd::USE_IPC_OPEN3> is set to true 
-(See the C<GLOBAL VARIABLES> Section), try to execute the command using
-C<IPC::Open3>. Buffers will be available on all platforms except C<Win32>,
+(See the L<"Global Variables"> section), try to execute the command using
+L<IPC::Open3>. Buffers will be available on all platforms except C<Win32>,
 interactive commands will still execute cleanly, and also your verbosity
 settings will be adhered to nicely;
 
 =item *
 
-Otherwise, if you have the verbose argument set to true, we fall back
-to a simple system() call. We cannot capture any buffers, but
+Otherwise, if you have the C<verbose> argument set to true, we fall back
+to a simple C<system()> call. We cannot capture any buffers, but
 interactive commands will still work.
 
 =item *
 
 Otherwise we will try and temporarily redirect STDERR and STDOUT, do a
-system() call with your command and then re-open STDERR and STDOUT.
+C<system()> call with your command and then re-open STDERR and STDOUT.
 This is the method of last resort and will still allow you to execute
 your commands cleanly. However, no buffers will be available.
 
@@ -1521,7 +1740,7 @@ global variables:
 =head2 $IPC::Cmd::VERBOSE
 
 This controls whether IPC::Cmd will print any output from the
-commands to the screen or not. The default is 0;
+commands to the screen or not. The default is 0.
 
 =head2 $IPC::Cmd::USE_IPC_RUN
 
@@ -1535,10 +1754,17 @@ when available and suitable. Defaults to true.
 
 =head2 $IPC::Cmd::WARN
 
-This variable controls whether run time warnings should be issued, like
+This variable controls whether run-time warnings should be issued, like
 the failure to load an C<IPC::*> module you explicitly requested.
 
 Defaults to true. Turn this off at your own risk.
+
+=head2 $IPC::Cmd::INSTANCES
+
+This variable controls whether C<can_run> will return all instances of
+the binary it finds in the C<PATH> when called in a list context.
+
+Defaults to false, set to true to enable the described behaviour.
 
 =head1 Caveats
 
@@ -1549,16 +1775,16 @@ Defaults to true. Turn this off at your own risk.
 When using C<IPC::Open3> or C<system>, if you provide a string as the
 C<command> argument, it is assumed to be appropriately escaped. You can
 use the C<QUOTE> constant to use as a portable quote character (see above).
-However, if you provide and C<Array Reference>, special rules apply:
+However, if you provide an array reference, special rules apply:
 
-If your command contains C<Special Characters> (< > | &), it will
+If your command contains B<special characters> (< > | &), it will
 be internally stringified before executing the command, to avoid that these
 special characters are escaped and passed as arguments instead of retaining
 their special meaning.
 
 However, if the command contained arguments that contained whitespace, 
 stringifying the command would loose the significance of the whitespace.
-Therefor, C<IPC::Cmd> will quote any arguments containing whitespace in your
+Therefore, C<IPC::Cmd> will quote any arguments containing whitespace in your
 command if the command is passed as an arrayref and contains special characters.
 
 =item Whitespace and IPC::Run
@@ -1570,7 +1796,7 @@ break if you have files or commands with whitespace in them.
 
 If you do not wish this to happen, you should provide an array
 reference, where all parts of your command are already separated out.
-Note however, if there's extra or spurious whitespace in these parts,
+Note however, if there are extra or spurious whitespaces in these parts,
 the parser or underlying code may not interpret it correctly, and
 cause an error.
 
@@ -1597,36 +1823,39 @@ Since this will lead to issues as described above.
 =item IO Redirect
 
 Currently it is too complicated to parse your command for IO
-Redirections. For capturing STDOUT or STDERR there is a work around
+redirections. For capturing STDOUT or STDERR there is a work around
 however, since you can just inspect your buffers for the contents.
 
 =item Interleaving STDOUT/STDERR
 
 Neither IPC::Run nor IPC::Open3 can interleave STDOUT and STDERR. For short
-bursts of output from a program, ie this sample:
+bursts of output from a program, e.g. this sample,
 
     for ( 1..4 ) {
         $_ % 2 ? print STDOUT $_ : print STDERR $_;
     }
 
 IPC::[Run|Open3] will first read all of STDOUT, then all of STDERR, meaning 
-the output looks like 1 line on each, namely '13' on STDOUT and '24' on STDERR.
+the output looks like '13' on STDOUT and '24' on STDERR, instead of
 
-It should have been 1, 2, 3, 4.
+    1
+    2
+    3
+    4
 
 This has been recorded in L<rt.cpan.org> as bug #37532: Unable to interleave
-STDOUT and STDERR
+STDOUT and STDERR.
 
 =back
 
 =head1 See Also
 
-C<IPC::Run>, C<IPC::Open3>
+L<IPC::Run>, L<IPC::Open3>
 
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to James Mastros and Martijn van der Streek for their
-help in getting IPC::Open3 to behave nicely.
+help in getting L<IPC::Open3> to behave nicely.
 
 Thanks to Petya Kohts for the C<run_forked> code.
 
@@ -1636,7 +1865,8 @@ Please report bugs or other issues to E<lt>bug-ipc-cmd@rt.cpan.orgE<gt>.
 
 =head1 AUTHOR
 
-This module by Jos Boumans E<lt>kane@cpan.orgE<gt>.
+Original author: Jos Boumans E<lt>kane@cpan.orgE<gt>.
+Current maintainer: Chris Williams E<lt>bingos@cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 265 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fileno.al)"
+#line 259 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fileno.al)"
 sub fileno {
     redef "IO::Handle::fileno()";
 }

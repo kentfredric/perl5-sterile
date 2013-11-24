@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 552 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strncpy.al)"
+#line 546 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/strncpy.al)"
 sub strncpy {
     unimpl "strncpy() is C-specific, use = instead";
 }

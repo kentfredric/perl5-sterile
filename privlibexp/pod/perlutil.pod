@@ -75,7 +75,7 @@ typeset PostScript or text file of the whole lot.
 
 =back
 
-=head2 Convertors
+=head2 Converters
 
 To help you convert legacy programs to Perl, we've included three
 conversion filters:
@@ -252,6 +252,11 @@ F<ptardiff> is a small utility that produces a diff between an extracted
 archive and an unextracted one. (Note that this utility requires the
 C<Text::Diff> module to function properly; this module isn't distributed
 with perl, but is available from the CPAN.)
+
+=item L<ptargrep>
+
+F<ptargrep> is a utility to apply pattern matching to the contents of files 
+in a tar archive.
 
 =item L<shasum>
 

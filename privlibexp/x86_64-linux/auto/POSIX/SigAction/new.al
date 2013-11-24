@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX::SigAction;
 
-#line 981 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigAction/new.al)"
+#line 976 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/SigAction/new.al)"
 package POSIX::SigAction;
 
 sub new { bless {HANDLER => $_[1], MASK => $_[2], FLAGS => $_[3] || 0, SAFE => 0}, $_[0] }

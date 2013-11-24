@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 485 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/srand.al)"
+#line 479 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/srand.al)"
 sub srand {
     unimpl "srand()";
 }

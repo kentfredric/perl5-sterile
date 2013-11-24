@@ -54,7 +54,7 @@ our(@ISA, @EXPORT, $VERSION, $Fileparse_fstype, $Fileparse_igncase);
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(fileparse fileparse_set_fstype basename dirname);
-$VERSION = "2.78";
+$VERSION = "2.82";
 
 fileparse_set_fstype($^O);
 
@@ -78,8 +78,8 @@ The remainder of the $path is the $filename.
      # On Unix returns ("baz", "/foo/bar/", "")
      fileparse("/foo/bar/baz");
 
-     # On Windows returns ("baz", "C:\foo\bar\", "")
-     fileparse("C:\foo\bar\baz");
+     # On Windows returns ("baz", 'C:\foo\bar\', "")
+     fileparse('C:\foo\bar\baz');
 
      # On Unix returns ("", "/foo/bar/baz/", "")
      fileparse("/foo/bar/baz/");
@@ -170,7 +170,7 @@ sub fileparse {
     }
   }
 
-  # Ensure taint is propgated from the path to its pieces.
+  # Ensure taint is propagated from the path to its pieces.
   $tail .= $taint;
   wantarray ? ($basename .= $taint, $dirpath .= $taint, $tail)
             : ($basename .= $taint);

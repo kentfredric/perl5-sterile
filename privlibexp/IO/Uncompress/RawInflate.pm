@@ -5,16 +5,16 @@ use strict ;
 use warnings;
 use bytes;
 
-use Compress::Raw::Zlib  2.024 ;
-use IO::Compress::Base::Common  2.024 qw(:Status createSelfTiedObject);
+use Compress::Raw::Zlib  2.033 ;
+use IO::Compress::Base::Common  2.033 qw(:Status createSelfTiedObject);
 
-use IO::Uncompress::Base  2.024 ;
-use IO::Uncompress::Adapter::Inflate  2.024 ;
+use IO::Uncompress::Base  2.033 ;
+use IO::Uncompress::Adapter::Inflate  2.033 ;
 
 require Exporter ;
 our ($VERSION, @ISA, @EXPORT_OK, %EXPORT_TAGS, %DEFLATE_CONSTANTS, $RawInflateError);
 
-$VERSION = '2.024';
+$VERSION = '2.033';
 $RawInflateError = '';
 
 @ISA    = qw( Exporter IO::Uncompress::Base );
@@ -461,8 +461,6 @@ If C<$input> is a string that is delimited by the characters "<" and ">"
 C<rawinflate> will assume that it is an I<input fileglob string>. The
 input is the list of files that match the fileglob.
 
-If the fileglob does not match any files ...
-
 See L<File::GlobMapper|File::GlobMapper> for more details.
 
 =back
@@ -506,6 +504,8 @@ output is the list of files that match the fileglob.
 
 When C<$output> is an fileglob string, C<$input> must also be a fileglob
 string. Anything else is an error.
+
+See L<File::GlobMapper|File::GlobMapper> for more details.
 
 =back
 
@@ -576,8 +576,8 @@ data to the output data stream.
 
 So when the output is a filehandle it will carry out a seek to the eof
 before writing any uncompressed data. If the output is a filename, it will be opened for
-appending. If the output is a buffer, all uncompressed data will be appened to
-the existing buffer.
+appending. If the output is a buffer, all uncompressed data will be
+appended to the existing buffer.
 
 Conversely when C<Append> is not specified, or it is present and is set to
 false, it will operate as follows.
@@ -764,7 +764,7 @@ the module will allow reading of it anyway.
 
 In addition, if the input file/buffer does contain compressed data and
 there is non-compressed data immediately following it, setting this option
-will make this module treat the whole file/bufffer as a single data stream.
+will make this module treat the whole file/buffer as a single data stream.
 
 This option defaults to 1.
 
@@ -1103,7 +1103,7 @@ See the Changes file.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005-2010 Paul Marquess. All rights reserved.
+Copyright (c) 2005-2011 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 334 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getchar.al)"
+#line 328 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getchar.al)"
 sub getchar {
     usage "getchar()" if @_ != 0;
     CORE::getc(STDIN);

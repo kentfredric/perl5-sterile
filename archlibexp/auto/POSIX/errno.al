@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 136 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/errno.al)"
+#line 130 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/errno.al)"
 sub errno {
     usage "errno()" if @_ != 0;
     $! + 0;

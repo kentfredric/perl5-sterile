@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 606 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/wait.al)"
+#line 600 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/wait.al)"
 sub wait {
     usage "wait()" if @_ != 0;
     CORE::wait();

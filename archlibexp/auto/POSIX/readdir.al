@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 126 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/readdir.al)"
+#line 120 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/readdir.al)"
 sub readdir {
     usage "readdir(dirhandle)" if @_ != 1;
     CORE::readdir($_[0]);

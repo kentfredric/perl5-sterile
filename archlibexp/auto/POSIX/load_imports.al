@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 759 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/load_imports.al)"
+#line 753 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/load_imports.al)"
 sub load_imports {
 %EXPORT_TAGS = (
 
@@ -77,7 +77,8 @@ sub load_imports {
 		SA_RESETHAND SA_RESTART SA_SIGINFO SIGABRT SIGALRM
 		SIGCHLD SIGCONT SIGFPE SIGHUP SIGILL SIGINT SIGKILL
 		SIGPIPE %SIGRT SIGRTMIN SIGRTMAX SIGQUIT SIGSEGV SIGSTOP
-		SIGTERM SIGTSTP SIGTTIN	SIGTTOU SIGUSR1 SIGUSR2
+		SIGTERM SIGTSTP SIGTTIN SIGTTOU SIGUSR1 SIGUSR2 SIGBUS
+		SIGPOLL SIGPROF SIGSYS SIGTRAP SIGURG SIGVTALRM SIGXCPU SIGXFSZ
 		SIG_BLOCK SIG_DFL SIG_ERR SIG_IGN SIG_SETMASK SIG_UNBLOCK
 		raise sigaction signal sigpending sigprocmask sigsuspend)],
 
@@ -160,7 +161,7 @@ sub load_imports {
   my %export;
   @export{map {@$_} values %EXPORT_TAGS} = ();
   # Doing the de-dup with a temporary hash has the advantage that the SVs in
-  # @EXPORT are actually shared hash key sacalars, which will save some memory.
+  # @EXPORT are actually shared hash key scalars, which will save some memory.
   push @EXPORT, keys %export;
 }
 

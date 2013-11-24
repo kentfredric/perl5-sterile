@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 309 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fflush.al)"
+#line 303 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fflush.al)"
 sub fflush {
     redef "IO::Handle::flush()";
 }

@@ -5,7 +5,7 @@ use strict;
 use CPANPLUS::Error;
 use CPANPLUS::Internals::Constants;
 
-use Cwd qw[chdir];
+use Cwd                         qw[chdir cwd];
 use File::Copy;
 use Params::Check               qw[check];
 use Module::Load::Conditional   qw[can_load];
@@ -238,7 +238,9 @@ sub _get_file_contents {
     return $contents;
 }
 
-=pod $cb->_move( from => $file|$dir, to => $target );
+=pod
+
+=head2 $cb->_move( from => $file|$dir, to => $target );
 
 Moves a file or directory to the target.
 
@@ -267,7 +269,9 @@ sub _move {
     }
 }
 
-=pod $cb->_copy( from => $file|$dir, to => $target );
+=pod
+
+=head2 $cb->_copy( from => $file|$dir, to => $target );
 
 Moves a file or directory to the target.
 

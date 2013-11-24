@@ -79,10 +79,10 @@ there, not the list construction version of the comma.  That means it
 was never a list to start with.
 
 In general, functions in Perl that serve as wrappers for system calls ("syscalls")
-of the same name (like chown(2), fork(2), closedir(2), etc.) all return
+of the same name (like chown(2), fork(2), closedir(2), etc.) return
 true when they succeed and C<undef> otherwise, as is usually mentioned
 in the descriptions below.  This is different from the C interfaces,
-which return C<-1> on failure.  Exceptions to this rule are C<wait>,
+which return C<-1> on failure.  Exceptions to this rule include C<wait>,
 C<waitpid>, and C<syscall>.  System calls also set the special C<$!>
 variable on failure.  Other functions do not, except accidentally.
 
@@ -125,7 +125,7 @@ C<sin>, C<sqrt>, C<srand>
 =item Functions for real @ARRAYs
 X<array>
 
-C<pop>, C<push>, C<shift>, C<splice>, C<unshift>
+C<each>, C<keys>, C<pop>, C<push>, C<shift>, C<splice>, C<unshift>, C<values>
 
 =item Functions for list data
 X<list>
@@ -146,7 +146,7 @@ C<readdir>, C<rewinddir>, C<say>, C<seek>, C<seekdir>, C<select>, C<syscall>,
 C<sysread>, C<sysseek>, C<syswrite>, C<tell>, C<telldir>, C<truncate>,
 C<warn>, C<write>
 
-=item Functions for fixed length data or records
+=item Functions for fixed-length data or records
 
 C<pack>, C<read>, C<syscall>, C<sysread>, C<syswrite>, C<unpack>, C<vec>
 
@@ -349,6 +349,20 @@ Example:
         #...
     }
 
+Note that C<-s/a/b/> does not do a negated substitution.  Saying
+C<-exp($foo)> still works as expected, however: only single letters
+following a minus are interpreted as file tests.
+
+These operators are exempt from the "looks like a function rule" described
+above. That is, an opening parenthesis after the operator does not affect
+how much of the following code constitutes the argument. Put the opening
+parentheses before the operator to separate it from code that follows (this
+applies only to operators with higher precedence than unary operators, of
+course):
+
+    -s($file) + 1024   # probably wrong; same as -s($file + 1024)
+    (-s $file) + 1024  # correct
+
 The interpretation of the file permission operators C<-r>, C<-R>,
 C<-w>, C<-W>, C<-x>, and C<-X> is by default based solely on the mode
 of the file and the uids and gids of the user.  There may be other
@@ -367,8 +381,8 @@ or temporarily set their effective uid to something else.
 
 If you are using ACLs, there is a pragma called C<filetest> that may
 produce more accurate results than the bare stat() mode bits.
-When under the C<use filetest 'access'> the above-mentioned filetests
-test whether the permission can (not) be granted using the
+When under C<use filetest 'access'> the above-mentioned filetests
+test whether the permission can(not) be granted using the
 access(2) family of system calls.  Also note that the C<-x> and C<-X> may
 under this pragma return true even if there are no execute permission
 bits set (nor any extra execute permission ACLs).  This strangeness is
@@ -377,10 +391,6 @@ the implementation of C<use filetest 'access'>, the C<_> special
 filehandle won't cache the results of the file tests when this pragma is
 in effect.  Read the documentation for the C<filetest> pragma for more
 information.
-
-Note that C<-s/a/b/> does not do a negated substitution.  Saying
-C<-exp($foo)> still works as expected, however: only single letters
-following a minus are interpreted as file tests.
 
 The C<-T> and C<-B> switches work as follows.  The first block or so of the
 file is examined for odd characters such as strange control codes or
@@ -393,7 +403,7 @@ file, or a file at EOF when testing a filehandle.  Because you have to
 read a file to do the C<-T> test, on most occasions you want to use a C<-f>
 against the file first, as in C<next unless -f $file && -T $file>.
 
-If any of the file tests (or either the C<stat> or C<lstat> operators) are given
+If any of the file tests (or either the C<stat> or C<lstat> operator) is given
 the special filehandle consisting of a solitary underline, then the stat
 structure of the previous file test (or stat operator) is used, saving
 a system call.  (This doesn't work with C<-t>, and you need to remember
@@ -524,16 +534,16 @@ otherwise it returns C<undef> and sets C<$!> (errno).
 
 On some systems (in general, DOS and Windows-based systems) binmode()
 is necessary when you're not working with a text file.  For the sake
-of portability it is a good idea to always use it when appropriate,
-and to never use it when it isn't appropriate.  Also, people can
+of portability it is a good idea always to use it when appropriate,
+and never to use it when it isn't appropriate.  Also, people can
 set their I/O to be by default UTF-8 encoded Unicode, not bytes.
 
 In other words: regardless of platform, use binmode() on binary data,
-like for example images.
+like images, for example.
 
 If LAYER is present it is a single string, but may contain multiple
 directives. The directives alter the behaviour of the filehandle.
-When LAYER is present using binmode on a text file makes sense.
+When LAYER is present, using binmode on a text file makes sense.
 
 If LAYER is omitted or specified as C<:raw> the filehandle is made
 suitable for passing binary data. This includes turning off possible CRLF
@@ -564,7 +574,7 @@ In general, binmode() should be called after open() but before any I/O
 is done on the filehandle.  Calling binmode() normally flushes any
 pending buffered output data (and perhaps pending input data) on the
 handle.  An exception to this is the C<:encoding> layer that
-changes the default character encoding of the handle, see L<open>.
+changes the default character encoding of the handle; see L</open>.
 The C<:encoding> layer sometimes needs to be called in
 mid-stream, and it doesn't flush the stream.  The C<:encoding>
 also implicitly pushes on top of itself the C<:utf8> layer because
@@ -591,8 +601,8 @@ you want for text files, but it can be disastrous for binary files.
 
 Another consequence of using binmode() (on some systems) is that
 special end-of-file markers will be seen as part of the data stream.
-For systems from the Microsoft family this means that if your binary
-data contains C<\cZ>, the I/O subsystem will regard it as the end of
+For systems from the Microsoft family this means that, if your binary
+data contain C<\cZ>, the I/O subsystem will regard it as the end of
 the file, unless you use binmode().
 
 binmode() is important not only for readline() and print() operations,
@@ -689,7 +699,7 @@ subroutine makes to C<@_> or its contents, not the original values at call
 time. C<@DB::args>, like C<@_>, does not hold explicit references to its
 elements, so under certain cases its elements may have become freed and
 reallocated for other variables or temporary values. Finally, a side effect
-of the current implementation means that the effects of C<shift @_> can
+of the current implementation is that the effects of C<shift @_> can
 I<normally> be undone (but not C<pop @_> or other splicing, and not if a
 reference to C<@_> has been taken, and subject to the caveat about reallocated
 elements), so C<@DB::args> is actually a hybrid of the current state and
@@ -714,7 +724,7 @@ neither is set, C<chdir> does nothing. It returns true on success,
 false otherwise. See the example under C<die>.
 
 On systems that support fchdir(2), you may pass a filehandle or
-directory handle as argument.  On systems that don't support fchdir(2),
+directory handle as the argument.  On systems that don't support fchdir(2),
 passing handles raises an exception.
 
 =item chmod LIST
@@ -764,7 +774,7 @@ remove the newline from the end of an input record when you're worried
 that the final record may be missing its newline.  When in paragraph
 mode (C<$/ = "">), it removes all trailing newlines from the string.
 When in slurp mode (C<$/ = undef>) or fixed-length record mode (C<$/> is
-a reference to an integer or the like, see L<perlvar>) chomp() won't
+a reference to an integer or the like; see L<perlvar>) chomp() won't
 remove anything.
 If VARIABLE is omitted, it chomps C<$_>.  Example:
 
@@ -910,6 +920,10 @@ on the pipe to exit--in case you wish to look at the output of the pipe
 afterwards--and implicitly puts the exit status value of that command into
 C<$?> and C<${^CHILD_ERROR_NATIVE}>.
 
+If there are multiple threads running, C<close> on a filehandle from a
+piped open returns true without waiting for the child process to terminate,
+if the filehandle is still open in another thread.
+
 Closing the read end of a pipe before the process writing to it at the
 other end is done writing results in the writer receiving a SIGPIPE.  If
 the other end can't handle that, be sure to read all the data before
@@ -987,7 +1001,7 @@ X<cos> X<cosine> X<acos> X<arccosine>
 =item cos
 
 Returns the cosine of EXPR (expressed in radians).  If EXPR is omitted,
-takes cosine of C<$_>.
+takes the cosine of C<$_>.
 
 For the inverse cosine operation, you may use the C<Math::Trig::acos()>
 function, or use this relation:
@@ -1002,7 +1016,7 @@ Creates a digest string exactly like the crypt(3) function in the C
 library (assuming that you actually have a version there that has not
 been extirpated as a potential munition).
 
-crypt() is a one-way hash function.  The PLAINTEXT and SALT is turned
+crypt() is a one-way hash function.  The PLAINTEXT and SALT are turned
 into a short string, called a digest, which is returned.  The same
 PLAINTEXT and SALT will always return the same string, but there is no
 (known) way to get the original PLAINTEXT from the hash.  Small
@@ -1017,7 +1031,7 @@ having to transmit or store the text itself.  An example is checking
 if a correct password is given.  The digest of the password is stored,
 not the password itself.  The user types in a password that is
 crypt()'d with the same salt as the stored digest.  If the two digests
-match the password is correct.
+match, the password is correct.
 
 When verifying an existing digest string you should use the digest as
 the salt (like C<crypt($plain, $digest) eq $digest>).  The SALT used
@@ -1068,7 +1082,7 @@ back.  Look at the L<Digest> module for more robust algorithms.
 
 If using crypt() on a Unicode string (which I<potentially> has
 characters with codepoints above 255), Perl tries to make sense
-of the situation by trying to downgrade (a copy of the string)
+of the situation by trying to downgrade (a copy of)
 the string back to an eight-bit byte string before calling crypt()
 (on that copy).  If that works, good.  If not, crypt() dies with
 C<Wide character in crypt>.
@@ -1150,7 +1164,7 @@ makes it spring into existence the first time that it is called; see
 L<perlsub>.
 
 Use of C<defined> on aggregates (hashes and arrays) is deprecated.  It
-used to report whether memory for that aggregate has ever been
+used to report whether memory for that aggregate had ever been
 allocated.  This behavior may disappear in future versions of Perl.
 You should instead use a simple test for size:
 
@@ -1263,13 +1277,11 @@ final operation is an element or slice of an aggregate:
 =item die LIST
 X<die> X<throw> X<exception> X<raise> X<$@> X<abort>
 
-Outside an C<eval>, prints the value of LIST to C<STDERR> and
-exits with the current value of C<$!> (errno).  If C<$!> is C<0>,
-exits with the value of C<<< ($? >> 8) >>> (backtick `command`
-status).  If C<<< ($? >> 8) >>> is C<0>, exits with C<255>.  Inside
-an C<eval(),> the error message is stuffed into C<$@> and the
-C<eval> is terminated with the undefined value.  This makes
-C<die> the way to raise an exception.
+C<die> raises an exception. Inside an C<eval> the error message is stuffed
+into C<$@> and the C<eval> is terminated with the undefined value.
+If the exception is outside of all enclosing C<eval>s, then the uncaught
+exception prints LIST to C<STDERR> and exits with a non-zero value. If you
+need to exit the process with a specific exit code, see L</exit>.
 
 Equivalent examples:
 
@@ -1295,8 +1307,6 @@ produce, respectively
     /etc/games is no good at canasta line 123.
     /etc/games is no good, stopped at canasta line 123.
 
-See also exit(), warn(), and the Carp module.
-
 If the output is empty and C<$@> already contains a value (typically from a
 previous eval) that value is reused after appending C<"\t...propagated">.
 This is useful for propagating exceptions:
@@ -1307,10 +1317,23 @@ This is useful for propagating exceptions:
 If the output is empty and C<$@> contains an object reference that has a
 C<PROPAGATE> method, that method will be called with additional file
 and line number parameters.  The return value replaces the value in
-C<$@>.  i.e., as if C<< $@ = eval { $@->PROPAGATE(__FILE__, __LINE__) }; >>
+C<$@>;  i.e., as if C<< $@ = eval { $@->PROPAGATE(__FILE__, __LINE__) }; >>
 were called.
 
 If C<$@> is empty then the string C<"Died"> is used.
+
+If an uncaught exception results in interpreter exit, the exit code is
+determined from the values of C<$!> and C<$?> with this pseudocode:
+
+    exit $! if $!;              # errno
+    exit $? >> 8 if $? >> 8;    # child exit status
+    exit 255;                   # last resort
+
+The intent is to squeeze as much possible information about the likely cause
+into the limited space of the system exit code. However, as C<$!> is the value
+of C's C<errno>, which can be set by any system call, this means that the value
+of the exit code used by C<die> can be non-predictable, so should not be relied
+upon, other than to be non-zero.
 
 You can also call C<die> with a reference argument, and if this is trapped
 within an C<eval>, C<$@> contains that reference.  This permits more
@@ -1342,7 +1365,7 @@ You can arrange for a callback to be run just before the C<die>
 does its deed, by setting the C<$SIG{__DIE__}> hook.  The associated
 handler is called with the error text and can change the error
 message, if it sees fit, by calling C<die> again.  See
-L<perlvar/$SIG{expr}> for details on setting C<%SIG> entries, and
+L<perlvar/%SIG> for details on setting C<%SIG> entries, and
 L<"eval BLOCK"> for some examples.  Although this feature was 
 to be run only right before your program was to exit, this is not
 currently so: the C<$SIG{__DIE__}> hook is currently called
@@ -1354,6 +1377,8 @@ nothing in such situations, put
 as the first line of the handler (see L<perlvar/$^S>).  Because
 this promotes strange action at a distance, this counterintuitive
 behavior may be fixed in a future release.
+
+See also exit(), warn(), and the Carp module.
 
 =item do BLOCK
 X<do> X<block>
@@ -1371,7 +1396,8 @@ See L<perlsyn> for alternative strategies.
 =item do SUBROUTINE(LIST)
 X<do>
 
-This form of subroutine call is deprecated.  See L<perlsub>.
+This form of subroutine call is deprecated.  SUBROUTINE can be a bareword,
+a scalar variable or a subroutine beginning with C<&>.
 
 =item do EXPR
 X<do>
@@ -1386,18 +1412,18 @@ is just like
     eval `cat stat.pl`;
 
 except that it's more efficient and concise, keeps track of the current
-filename for error messages, searches the @INC directories, and updates
-C<%INC> if the file is found.  See L<perlvar/Predefined Names> for these
-variables.  It also differs in that code evaluated with C<do FILENAME>
+filename for error messages, searches the C<@INC> directories, and updates
+C<%INC> if the file is found.  See L<perlvar/@INC> and L<perlvar/%INC> for
+these variables.  It also differs in that code evaluated with C<do FILENAME>
 cannot see lexicals in the enclosing scope; C<eval STRING> does.  It's the
 same, however, in that it does reparse the file every time you call it,
 so you probably don't want to do this inside a loop.
 
-If C<do> cannot read the file, it returns undef and sets C<$!> to the
-error.  If C<do> can read the file but cannot compile it, it
-returns undef and sets an error message in C<$@>.   If the file is
-successfully compiled, C<do> returns the value of the last expression
-evaluated.
+If C<do> can read the file but cannot compile it, it returns undef and sets
+an error message in C<$@>.  If C<do> cannot read the file, it returns undef
+and sets C<$!> to the error.  Always check C<$@> first, as compilation
+could fail in a way that also sets C<$!>.  If the file is successfully
+compiled, C<do> returns the value of the last expression evaluated.
 
 Inclusion of library modules is better done with the
 C<use> and C<require> operators, which also do automatic error checking
@@ -1447,6 +1473,8 @@ X<each> X<hash, iterator>
 =item each ARRAY
 X<array, iterator>
 
+=item each EXPR
+
 When called in list context, returns a 2-element list consisting of the key
 and value for the next element of a hash, or the index and value for the
 next element of an array, so that you can iterate over it.  When called in
@@ -1482,6 +1510,13 @@ but in a different order:
     while (($key,$value) = each %ENV) {
         print "$key=$value\n";
     }
+
+Starting with Perl 5.14, C<each> can take a scalar EXPR, which must hold
+reference to an unblessed hash or array.  The argument will be dereferenced
+automatically.  This aspect of C<each> is considered highly experimental.
+The exact behaviour may change in a future version of Perl.
+
+    while (($key,$value) = each $hashref) { ... }
 
 See also C<keys>, C<values> and C<sort>.
 
@@ -1574,8 +1609,11 @@ determined.
 
 If there is a syntax error or runtime error, or a C<die> statement is
 executed, C<eval> returns an undefined value in scalar context
-or an empty list in list context, and C<$@> is set to the
-error message.  If there was no error, C<$@> is guaranteed to be the empty
+or an empty list--or, for syntax errors, a list containing a single
+undefined value--in list context, and C<$@> is set to the error
+message.  The discrepancy in the return values in list context is
+considered a bug by some, and will probably be fixed in a future
+release.  If there was no error, C<$@> is guaranteed to be the empty
 string.  Beware that using C<eval> neither silences Perl from printing
 warnings to STDERR, nor does it stuff the text of warning messages into C<$@>.
 To do either of those, you have to use the C<$SIG{__WARN__}> facility, or
@@ -1584,7 +1622,7 @@ See L</warn>, L<perlvar>, L<warnings> and L<perllexwarn>.
 
 Note that, because C<eval> traps otherwise-fatal errors, it is useful for
 determining whether a particular feature (such as C<socket> or C<symlink>)
-is implemented.  It is also Perl's exception trapping mechanism, where
+is implemented.  It is also Perl's exception-trapping mechanism, where
 the die operator is used to raise exceptions.
 
 If you want to trap errors when loading an XS module, some problems with
@@ -1655,8 +1693,9 @@ normally you I<would> like to use double quotes, except that in this
 particular situation, you can just use symbolic references instead, as
 in case 6.
 
-The assignment to C<$@> occurs before restoration of localised variables,
-which means a temporary is required if you want to mask some but not all
+Before Perl 5.14, the assignment to C<$@> occurred before restoration 
+of localised variables, which means that for your code to run on older
+versions, a temporary is required if you want to mask some but not all
 errors:
 
     # alter $@ on nefarious repugnancy only
@@ -1665,7 +1704,7 @@ errors:
        {
           local $@; # protect existing $@
           eval { test_repugnancy() };
-          # $@ =~ /nefarious/ and die $@; # DOES NOT WORK
+          # $@ =~ /nefarious/ and die $@; # Perl 5.14 and higher only
           $@ =~ /nefarious/ and $e = $@;
        }
        die $e if defined $e
@@ -1844,7 +1883,8 @@ which can be trapped by an C<eval>.
 The exit() function does not always exit immediately.  It calls any
 defined C<END> routines first, but these C<END> routines may not
 themselves abort the exit.  Likewise any object destructors that need to
-be called are called before the real exit.  If this is a problem, you
+be called are called before the real exit.  C<END> routines and destructors
+can change the exit status by modifying C<$?>. If this is a problem, you
 can call C<POSIX:_exit($status)> to avoid END and destructor processing.
 See L<perlmod> for details.
 
@@ -1897,7 +1937,11 @@ on your own, though.
 X<fileno>
 
 Returns the file descriptor for a filehandle, or undefined if the
-filehandle is not open.  This is mainly useful for constructing
+filehandle is not open.  If there is no real file descriptor at the OS
+level, as can happen with filehandles connected to memory objects via
+C<open> with a reference for the third argument, -1 is returned.
+
+This is mainly useful for constructing
 bitmaps for C<select> and low-level POSIX tty-handling operations.
 If FILEHANDLE is an expression, the value is taken as an indirect
 filehandle, generally its name.
@@ -1909,24 +1953,20 @@ same underlying descriptor:
         print "THIS and THAT are dups\n";
     }
 
-(Filehandles connected to memory objects via new features of C<open> may
-return undefined even though they are open.)
-
-
 =item flock FILEHANDLE,OPERATION
 X<flock> X<lock> X<locking>
 
 Calls flock(2), or an emulation of it, on FILEHANDLE.  Returns true
 for success, false on failure.  Produces a fatal error if used on a
 machine that doesn't implement flock(2), fcntl(2) locking, or lockf(3).
-C<flock> is Perl's portable file locking interface, although it locks
+C<flock> is Perl's portable file-locking interface, although it locks
 entire files only, not records.
 
 Two potentially non-obvious but traditional C<flock> semantics are
 that it waits indefinitely until the lock is granted, and that its locks
-B<merely advisory>.  Such discretionary locks are more flexible, but offer
-fewer guarantees.  This means that programs that do not also use C<flock>
-may modify files locked with C<flock>.  See L<perlport>, 
+are B<merely advisory>.  Such discretionary locks are more flexible, but
+offer fewer guarantees.  This means that programs that do not also use
+C<flock> may modify files locked with C<flock>.  See L<perlport>, 
 your port's specific documentation, or your system-specific local manpages
 for details.  It's best to assume traditional behavior if you're writing
 portable programs.  (But if you're not, you should as always feel perfectly
@@ -2060,6 +2100,10 @@ Be careful if you put double quotes around the picture, because an C<@>
 character may be taken to mean the beginning of an array name.
 C<formline> always returns true.  See L<perlform> for other examples.
 
+If you are trying to use this instead of C<write> to capture the output,
+you may find it easier to open a filehandle to a scalar
+(C<< open $fh, ">", \$output >>) and write to that instead.
+
 =item getc FILEHANDLE
 X<getc> X<getchar> X<character> X<file, read>
 
@@ -2094,7 +2138,7 @@ is left as an exercise to the reader.
 
 The C<POSIX::getattr> function can do this more portably on
 systems purporting POSIX compliance.  See also the C<Term::ReadKey>
-module from your nearest CPAN site; details on CPAN can be found on
+module from your nearest CPAN site; details on CPAN can be found under
 L<perlmodlib/CPAN>.
 
 =item getlogin
@@ -2112,7 +2156,8 @@ secure as C<getpwuid>.
 =item getpeername SOCKET
 X<getpeername> X<peer>
 
-Returns the packed sockaddr address of other end of the SOCKET connection.
+Returns the packed sockaddr address of the other end of the SOCKET
+connection.
 
     use Socket;
     $hersockaddr    = getpeername(SOCK);
@@ -2126,8 +2171,8 @@ X<getpgrp> X<group>
 Returns the current process group for the specified PID.  Use
 a PID of C<0> to get the current process group for the
 current process.  Will raise an exception if used on a machine that
-doesn't implement getpgrp(2).  If PID is omitted, returns process
-group of current process.  Note that the POSIX version of C<getpgrp>
+doesn't implement getpgrp(2).  If PID is omitted, returns the process
+group of the current process.  Note that the POSIX version of C<getpgrp>
 does not accept a PID argument, so only C<PID==0> is truly portable.
 
 =item getppid
@@ -2235,7 +2280,7 @@ information pertaining to the user.  Beware, however, that in many
 system users are able to change this information and therefore it
 cannot be trusted and therefore the $gcos is tainted (see
 L<perlsec>).  The $passwd and $shell, user's encrypted password and
-login shell, are also tainted, because of the same reason.
+login shell, are also tainted, for the same reason.
 
 In scalar context, you get the name, unless the function was a
 lookup by name, in which case you get the other thing, whatever it is.
@@ -2268,10 +2313,10 @@ files are supported only if your vendor has implemented them in the
 intuitive fashion that calling the regular C library routines gets the
 shadow versions if you're running under privilege or if there exists
 the shadow(3) functions as found in System V (this includes Solaris
-and Linux.)  Those systems that implement a proprietary shadow password
+and Linux).  Those systems that implement a proprietary shadow password
 facility are unlikely to be supported.
 
-The $members value returned by I<getgr*()> is a space separated list of
+The $members value returned by I<getgr*()> is a space-separated list of
 the login names of the members of the group.
 
 For the I<gethost*()> functions, if the C<h_errno> variable is supported in
@@ -2316,7 +2361,7 @@ for each field.  For example:
    use User::pwent;
    $is_his = (stat($filename)->uid == pwent($whoever)->uid);
 
-Even though it looks like they're the same method calls (uid),
+Even though it looks as though they're the same method calls (uid),
 they aren't, because a C<File::stat> object is different from
 a C<User::pwent> object.
 
@@ -2348,7 +2393,7 @@ number of TCP, which you can get using C<getprotobyname>.
 
 The function returns a packed string representing the requested socket
 option, or C<undef> on error, with the reason for the error placed in
-C<$!>). Just what is in the packed string depends on LEVEL and OPTNAME;
+C<$!>. Just what is in the packed string depends on LEVEL and OPTNAME;
 consult getsockopt(2) for details.  A common case is that the option is an
 integer, in which case the result is a packed integer, which you can decode
 using C<unpack> with the C<i> (or C<I>) format.
@@ -2382,7 +2427,7 @@ more detail in L<perlop/"I/O Operators">.
 Note that C<glob> splits its arguments on whitespace and treats
 each segment as separate pattern.  As such, C<glob("*.c *.h")> 
 matches all files with a F<.c> or F<.h> extension.  The expression
-C<glob(".* *")> matchs all files in the current working directory.
+C<glob(".* *")> matches all files in the current working directory.
 
 If non-empty braces are the only wildcard characters used in the
 C<glob>, no filenames are matched, but potentially many strings
@@ -2403,8 +2448,8 @@ X<gmtime> X<UTC> X<Greenwich>
 Works just like L<localtime> but the returned values are
 localized for the standard Greenwich time zone.
 
-Note: when called in list context, $isdst, the last value
-returned by gmtime is always C<0>.  There is no
+Note: When called in list context, $isdst, the last value
+returned by gmtime, is always C<0>.  There is no
 Daylight Saving Time in GMT.
 
 See L<perlport/gmtime> for portability concerns.
@@ -2431,6 +2476,10 @@ dynamically.  This allows for computed C<goto>s per FORTRAN, but isn't
 necessarily recommended if you're optimizing for maintainability:
 
     goto ("FOO", "BAR", "GLARCH")[$i];
+
+As shown in this example, C<goto-EXPR> is exempt from the "looks like a
+function" rule. A pair of parentheses following it does not (necessarily)
+delimit its argument. C<goto("NE")."XT"> is equivalent to C<goto NEXT>.
 
 Use of C<goto-LABEL> or C<goto-EXPR> to jump into a construct is
 deprecated and will issue a warning.  Even then, it may not be used to
@@ -2596,6 +2645,8 @@ X<keys> X<key>
 
 =item keys ARRAY
 
+=item keys EXPR
+
 Returns a list consisting of all the keys of the named hash, or the indices
 of an array. (In scalar context, returns the number of keys or indices.)
 
@@ -2603,7 +2654,7 @@ The keys of a hash are returned in an apparently random order.  The actual
 random order is subject to change in future versions of Perl, but it
 is guaranteed to be the same order as either the C<values> or C<each>
 function produces (given that the hash has not been modified).  Since
-Perl 5.8.1 the ordering is different even between different runs of
+Perl 5.8.1 the ordering can be different even between different runs of
 Perl for security reasons (see L<perlsec/"Algorithmic Complexity
 Attacks">).
 
@@ -2650,6 +2701,14 @@ You can't shrink the number of buckets allocated for the hash using
 C<keys> in this way (but you needn't worry about doing this by accident,
 as trying has no effect). C<keys @array> in an lvalue context is a syntax
 error.
+
+Starting with Perl 5.14, C<keys> can take a scalar EXPR, which must contain
+a reference to an unblessed hash or array.  The argument will be
+dereferenced automatically.  This aspect of C<keys> is considered highly
+experimental.  The exact behaviour may change in a future version of Perl.
+
+    for (keys $hashref) { ... }
+    for (keys $obj->get_arrayref) { ... }
 
 See also C<each>, C<values> and C<sort>.
 
@@ -2712,11 +2771,61 @@ X<lc> X<lowercase>
 =item lc
 
 Returns a lowercased version of EXPR.  This is the internal function
-implementing the C<\L> escape in double-quoted strings.  Respects
-current LC_CTYPE locale if C<use locale> in force.  See L<perllocale>
-and L<perlunicode> for more details about locale and Unicode support.
+implementing the C<\L> escape in double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
+
+What gets returned depends on several factors:
+
+=over
+
+=item If C<use bytes> is in effect:
+
+=over
+
+=item On EBCDIC platforms
+
+The results are what the C language system call C<tolower()> returns.
+
+=item On ASCII platforms
+
+The results follow ASCII semantics.  Only characters C<A-Z> change, to C<a-z>
+respectively.
+
+=back
+
+=item Otherwise, If EXPR has the UTF8 flag set
+
+If the current package has a subroutine named C<ToLower>, it will be used to
+change the case
+(See L<perlunicode/"User-Defined Case Mappings (for serious hackers only)">.)
+Otherwise Unicode semantics are used for the case change.
+
+=item Otherwise, if C<use locale> is in effect
+
+Respects current LC_CTYPE locale.  See L<perllocale>.
+
+=item Otherwise, if C<use feature 'unicode_strings'> is in effect:
+
+Unicode semantics are used for the case change.  Any subroutine named
+C<ToLower> will be ignored.
+
+=item Otherwise:
+
+=over
+
+=item On EBCDIC platforms
+
+The results are what the C language system call C<tolower()> returns.
+
+=item On ASCII platforms
+
+ASCII semantics are used for the case change.  The lowercase of any character
+outside the ASCII range is the character itself.
+
+=back
+
+=back
 
 =item lcfirst EXPR
 X<lcfirst> X<lowercase>
@@ -2725,11 +2834,12 @@ X<lcfirst> X<lowercase>
 
 Returns the value of EXPR with the first character lowercased.  This
 is the internal function implementing the C<\l> escape in
-double-quoted strings.  Respects current LC_CTYPE locale if C<use
-locale> in force.  See L<perllocale> and L<perlunicode> for more
-details about locale and Unicode support.
+double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
+
+This function behaves the same way under various pragmata, such as in a locale,
+as L</lc> does.
 
 =item length EXPR
 X<length> X<size>
@@ -2737,7 +2847,8 @@ X<length> X<size>
 =item length
 
 Returns the length in I<characters> of the value of EXPR.  If EXPR is
-omitted, returns length of C<$_>.  If EXPR is undefined, returns C<undef>.
+omitted, returns the length of C<$_>.  If EXPR is undefined, returns
+C<undef>.
 
 This function cannot be used on an entire array or hash to find out how
 many elements these have.  For that, use C<scalar @array> and C<scalar keys
@@ -2829,13 +2940,13 @@ In scalar context, C<localtime()> returns the ctime(3) value:
 
     $now_string = localtime;  # e.g., "Thu Oct 13 04:54:34 1994"
 
-This scalar value is B<not> locale dependent but is a Perl builtin. For GMT
+This scalar value is B<not> locale-dependent but is a Perl builtin. For GMT
 instead of local time use the L</gmtime> builtin. See also the
-C<Time::Local> module (to convert the second, minutes, hours, ... back to
+C<Time::Local> module (to convert the seconds, minutes, hours, ... back to
 the integer value returned by time()), and the L<POSIX> module's strftime(3)
 and mktime(3) functions.
 
-To get somewhat similar but locale dependent date strings, set up your
+To get somewhat similar but locale-dependent date strings, set up your
 locale environment variables appropriately (please see L<perllocale>) and
 try for example:
 
@@ -2849,7 +2960,7 @@ and the month of the year, may not necessarily be three characters wide.
 
 See L<perlport/localtime> for portability concerns.
 
-The L<Time::gmtime> and L<Time::localtime> modules provides a convenient,
+The L<Time::gmtime> and L<Time::localtime> modules provide a convenient,
 by-name access mechanism to the gmtime() and localtime() functions,
 respectively.
 
@@ -2859,7 +2970,7 @@ L<DateTime> module on CPAN.
 =item lock THING
 X<lock>
 
-This function places an advisory lock on a shared variable, or referenced
+This function places an advisory lock on a shared variable or referenced
 object contained in I<THING> until the lock goes out of scope.
 
 lock() is a "weak keyword" : this means that if you've defined a function
@@ -2873,7 +2984,8 @@ X<log> X<logarithm> X<e> X<ln> X<base>
 =item log
 
 Returns the natural logarithm (base I<e>) of EXPR.  If EXPR is omitted,
-returns log of C<$_>.  To get the log of another base, use basic algebra:
+returns the log of C<$_>.  To get the
+log of another base, use basic algebra:
 The base-N log of a number is equal to the natural log of that number
 divided by the natural log of N.  For example:
 
@@ -2913,9 +3025,27 @@ total number of elements so generated.  Evaluates BLOCK or EXPR in
 list context, so each element of LIST may produce zero, one, or
 more elements in the returned value.
 
-    @chars = map(chr, @nums);
+    @chars = map(chr, @numbers);
 
-translates a list of numbers to the corresponding characters.  And
+translates a list of numbers to the corresponding characters.
+
+    my @squares = map { $_ * $_ } @numbers;
+
+translates a list of numbers to their squared values.
+
+    my @squares = map { $_ > 5 ? ($_ * $_) : () } @numbers;
+
+shows that number of returned elements can differ from the number of
+input elements. To omit an element, return an empty list ().
+This could also be achieved by writing
+
+    my @squares = map { $_ * $_ } grep { $_ > 5 } @numbers;
+
+which makes the intention more clear.
+
+Map always returns a list, which can be
+assigned to a hash such that the elements
+become key/value pairs. See L<perldata> for more details.
 
     %hash = map { get_a_key_for($_) => $_ } @array;
 
@@ -2974,7 +3104,7 @@ returns true, otherwise it returns false and sets C<$!> (errno).
 If omitted, MASK defaults to 0777. If omitted, FILENAME defaults
 to C<$_>.
 
-In general, it is better to create directories with permissive MASK,
+In general, it is better to create directories with a permissive MASK,
 and let the user modify that with their C<umask>, than it is to supply
 a restrictive MASK and give the user no way to be more permissive.
 The exceptions to this rule are when the file or directory should be
@@ -3000,14 +3130,16 @@ first to get the correct constant definitions.  If CMD is C<IPC_STAT>,
 then ARG must be a variable that will hold the returned C<msqid_ds>
 structure.  Returns like C<ioctl>: the undefined value for error,
 C<"0 but true"> for zero, or the actual return value otherwise.  See also
-L<perlipc/"SysV IPC">, C<IPC::SysV>, and C<IPC::Semaphore> documentation.
+L<perlipc/"SysV IPC"> and the documentation for C<IPC::SysV> and
+C<IPC::Semaphore>.
 
 =item msgget KEY,FLAGS
 X<msgget>
 
 Calls the System V IPC function msgget(2).  Returns the message queue
 id, or the undefined value if there is an error.  See also
-L<perlipc/"SysV IPC"> and C<IPC::SysV> and C<IPC::Msg> documentation.
+L<perlipc/"SysV IPC"> and the documentation for C<IPC::SysV> and
+C<IPC::Msg>.
 
 =item msgrcv ID,VAR,SIZE,TYPE,FLAGS
 X<msgrcv>
@@ -3018,8 +3150,8 @@ SIZE.  Note that when a message is received, the message type as a
 native long integer will be the first thing in VAR, followed by the
 actual message.  This packing may be opened with C<unpack("l! a*")>.
 Taints the variable.  Returns true if successful, or false if there is
-an error.  See also L<perlipc/"SysV IPC">, C<IPC::SysV>, and
-C<IPC::SysV::Msg> documentation.
+an error.  See also L<perlipc/"SysV IPC"> and the documentation for
+C<IPC::SysV> and C<IPC::SysV::Msg>.
 
 =item msgsnd ID,MSG,FLAGS
 X<msgsnd>
@@ -3029,7 +3161,7 @@ message queue ID.  MSG must begin with the native long integer message
 type, and be followed by the length of the actual message, and finally
 the message itself.  This kind of packing can be achieved with
 C<pack("l! a*", $type, $message)>.  Returns true if successful,
-or false if there is an error.  See also C<IPC::SysV>
+or false if there is an error.  See also the C<IPC::SysV>
 and C<IPC::SysV::Msg> documentation.
 
 =item my EXPR
@@ -3046,7 +3178,7 @@ enclosing block, file, or C<eval>.  If more than one value is listed,
 the list must be placed in parentheses.
 
 The exact semantics and interface of TYPE and ATTRS are still
-evolving.  TYPE is currently bound to the use of C<fields> pragma,
+evolving.  TYPE is currently bound to the use of the C<fields> pragma,
 and attributes are handled using the C<attributes> pragma, or starting
 from Perl 5.8.0 also via the C<Attribute::Handlers> module.  See
 L<perlsub/"Private Variables via my()"> for details, and L<fields>,
@@ -3169,7 +3301,7 @@ indicate that you want both read and write access to the file; thus
 C<< '+<' >> is almost always preferred for read/write updates--the 
 C<< '+>' >> mode would clobber the file first.  You can't usually use
 either read-write mode for updating textfiles, since they have
-variable length records.  See the B<-i> switch in L<perlrun> for a
+variable-length records.  See the B<-i> switch in L<perlrun> for a
 better approach.  The file is created with permissions of C<0666>
 modified by the process's C<umask> value.
 
@@ -3181,15 +3313,6 @@ filename should be concatenated (in that order), possibly separated by
 spaces.  You may omit the mode in these forms when that mode is
 C<< '<' >>.
 
-If the filename begins with C<'|'>, the filename is interpreted as a
-command to which output is to be piped, and if the filename ends with a
-C<'|'>, the filename is interpreted as a command that pipes output to
-us.  See L<perlipc/"Using open() for IPC">
-for more examples of this.  (You are not allowed to C<open> to a command
-that pipes both in I<and> out, but see L<IPC::Open2>, L<IPC::Open3>,
-and L<perlipc/"Bidirectional Communication with Another Process">
-for alternatives.)
-
 For three or more arguments if MODE is C<'|-'>, the filename is
 interpreted as a command to which output is to be piped, and if MODE
 is C<'-|'>, the filename is interpreted as a command that pipes
@@ -3198,7 +3321,8 @@ replace dash (C<'-'>) with the command.
 See L<perlipc/"Using open() for IPC"> for more examples of this.
 (You are not allowed to C<open> to a command that pipes both in I<and>
 out, but see L<IPC::Open2>, L<IPC::Open3>, and
-L<perlipc/"Bidirectional Communication"> for alternatives.)
+L<perlipc/"Bidirectional Communication with Another Process"> for
+alternatives.)
 
 In the form of pipe opens taking three or more arguments, if LIST is specified
 (extra arguments after the command name) then LIST becomes arguments
@@ -3386,11 +3510,11 @@ certain value, typically 255.  For Perls 5.8.0 and later, PerlIO is
 most often the default.
 
 You can see whether Perl has been compiled with PerlIO or not by
-running C<perl -V> and looking for C<useperlio=> line.  If C<useperlio>
-is C<define>, you have PerlIO, otherwise you don't.
+running C<perl -V> and looking for the C<useperlio=> line.  If C<useperlio>
+is C<define>, you have PerlIO; otherwise you don't.
 
 If you open a pipe on the command C<'-'>, i.e., either C<'|-'> or C<'-|'>
-with 2-arguments (or 1-argument) form of open(), then
+with the 2-argument (or 1-argument) form of open(), then
 there is an implicit fork done, and the return value of open is the pid
 of the child within the parent process, and C<0> within the child
 process.  (Use C<defined($pid)> to determine whether the open was successful.)
@@ -3402,7 +3526,7 @@ piped open when you want to exercise more control over just how the
 pipe command gets executed, such as when running setuid and
 you don't want to have to scan shell commands for metacharacters.
 
-The following triples are more or less equivalent:
+The following blocks are more or less equivalent:
 
     open(FOO, "|tr '[a-z]' '[A-Z]'");
     open(FOO, '|-', "tr '[a-z]' '[A-Z]'");
@@ -3414,7 +3538,7 @@ The following triples are more or less equivalent:
     open(FOO, '-|') || exec 'cat', '-n', $file;
     open(FOO, '-|', "cat", '-n', $file);
 
-The last example in each block shows the pipe as "list form", which is
+The last two examples in each block shows the pipe as "list form", which is
 not yet supported on all platforms.  A good rule of thumb is that if
 your platform has true C<fork()> (in other words, if your platform is
 Unix) you can use the list form.
@@ -3435,7 +3559,7 @@ Closing any piped filehandle causes the parent process to wait for the
 child to finish, and returns the status value in C<$?> and
 C<${^CHILD_ERROR_NATIVE}>.
 
-The filename passed to 2-argument (or 1-argument) form of open() will
+The filename passed to the 2-argument (or 1-argument) form of open() will
 have leading and trailing whitespace deleted, and the normal
 redirection characters honored.  This property, known as "magic open",
 can often be used to good effect.  A user could specify a filename of
@@ -3511,7 +3635,7 @@ scalar variable (or array or hash element), the variable is assigned a
 reference to a new anonymous dirhandle.
 DIRHANDLEs have their own namespace separate from FILEHANDLEs.
 
-See example at C<readdir>.
+See the example at C<readdir>.
 
 =item ord EXPR
 X<ord> X<encoding>
@@ -3519,8 +3643,8 @@ X<ord> X<encoding>
 =item ord
 
 Returns the numeric (the native 8-bit encoding, like ASCII or EBCDIC,
-or Unicode) value of the first character of EXPR.  If EXPR is omitted,
-uses C<$_>.
+or Unicode) value of the first character of EXPR.  If EXPR is an empty
+string, returns 0.  If EXPR is omitted, uses C<$_>.
 
 For the reverse, see L</chr>.
 See L<perlunicode> for more about Unicode.
@@ -3538,7 +3662,7 @@ C<our> associates a simple name with a package variable in the current
 package for use within the current scope.  When C<use strict 'vars'> is in
 effect, C<our> lets you use declared global variables without qualifying
 them with package names, within the lexical scope of the C<our> declaration.
-In this way C<our> differs from C<use vars>, which is package scoped.
+In this way C<our> differs from C<use vars>, which is package-scoped.
 
 Unlike C<my>, which both allocates storage for a variable and associates
 a simple name with that storage for use within the current scope, C<our>
@@ -3603,8 +3727,10 @@ Takes a LIST of values and converts it into a string using the rules
 given by the TEMPLATE.  The resulting string is the concatenation of
 the converted values.  Typically, each converted value looks
 like its machine-level representation.  For example, on 32-bit machines
-an integer may be represented by a sequence of 4 bytes, which will in 
-Perl be presented as a string that's 4 characters long.
+an integer may be represented by a sequence of 4 bytes, which  will in
+Perl be presented as a string that's 4 characters long. 
+
+See L<perlpacktut> for an introduction to this function.
 
 The TEMPLATE is a sequence of characters that give the order and type
 of values, as follows:
@@ -3817,7 +3943,7 @@ For each such format, pack() generates 4 bits of the result.
 With non-alphabetical characters, the result is based on the 4 least-significant
 bits of the input character, i.e., on C<ord($char)%16>.  In particular,
 characters C<"0"> and C<"1"> generate nybbles 0 and 1, as do bytes
-C<"\0"> and C<"\1">.  For characters C<"a".."f"> and C<"A".."F">, the result
+C<"\000"> and C<"\001">.  For characters C<"a".."f"> and C<"A".."F">, the result
 is compatible with the usual hexadecimal digits, so that C<"a"> and
 C<"A"> both generate the nybble C<0xa==10>.  Do not use any characters
 but these with this format.
@@ -3880,7 +4006,7 @@ the I<length-item> is the string length, not the number of strings.  With
 an explicit repeat count for pack, the packed string is adjusted to that
 length.  For example:
 
-    unpack("W/a", "\04Gurusamy")            gives ("Guru")
+    unpack("W/a", "\004Gurusamy")           gives ("Guru")
     unpack("a3/A A*", "007 Bond  J ")       gives (" Bond", "J")
     unpack("a3 x2 /A A*", "007: Bond, J.")  gives ("Bond, J", ".")
 
@@ -3991,7 +4117,7 @@ or little-endian byte-order.  These modifiers are especially useful
 given how C<n>, C<N>, C<v> and C<V> don't cover signed integers, 
 64-bit integers, or floating-point values.
 
-Here are some concerns to keep in mind when using endianness modifier:
+Here are some concerns to keep in mind when using an endianness modifier:
 
 =over
 
@@ -4110,7 +4236,7 @@ for complicated pattern matches.
 
 =item *
 
-If TEMPLATE requires more arguments that pack() is given, pack()
+If TEMPLATE requires more arguments than pack() is given, pack()
 assumes additional C<""> arguments.  If TEMPLATE requires fewer arguments
 than given, extra arguments are ignored.
 
@@ -4141,8 +4267,8 @@ Examples:
     #      $foo = pack("WWWW",193,194,195,196);
 
     $foo = pack("s2",1,2);
-    # "\1\0\2\0" on little-endian
-    # "\0\1\0\2" on big-endian
+    # "\001\000\002\000" on little-endian
+    # "\000\001\000\002" on big-endian
 
     $foo = pack("a4","abcd","x","y","z");
     # "abcd"
@@ -4191,10 +4317,19 @@ X<package> X<module> X<namespace> X<version>
 
 =item package NAMESPACE
 
-Declares the compilation unit as being in the given namespace.  The scope
-of the package declaration is from the declaration itself through the end
-of the enclosing block, file, or eval (the same as the C<my> operator).
-All further unqualified dynamic identifiers will be in this namespace.
+=item package NAMESPACE VERSION BLOCK
+X<package> X<module> X<namespace> X<version>
+
+=item package NAMESPACE BLOCK
+
+Declares the BLOCK, or the rest of the compilation unit, as being in
+the given namespace.  The scope of the package declaration is either the
+supplied code BLOCK or, in the absence of a BLOCK, from the declaration
+itself through the end of the enclosing block, file, or eval (the same
+as the C<my> operator).  All unqualified dynamic identifiers in this
+scope will be in the given namespace, except where overridden by another
+C<package> declaration.
+
 A package statement affects dynamic variables only, including those
 you've used C<local> on, but I<not> lexical variables, which are created
 with C<my> (or C<our> (or C<state>)).  Typically it would be the first 
@@ -4227,7 +4362,8 @@ unless you are very careful.  In addition, note that Perl's pipes use
 IO buffering, so you may need to set C<$|> to flush your WRITEHANDLE
 after each command, depending on the application.
 
-See L<IPC::Open2>, L<IPC::Open3>, and L<perlipc/"Bidirectional Communication">
+See L<IPC::Open2>, L<IPC::Open3>, and
+L<perlipc/"Bidirectional Communication with Another Process">
 for examples of such things.
 
 On systems that support a close-on-exec flag on files, that flag is set
@@ -4236,6 +4372,8 @@ the current value of $^F (by default 2 for C<STDERR>).  See L<perlvar/$^F>.
 
 =item pop ARRAY
 X<pop> X<stack>
+
+=item pop EXPR
 
 =item pop
 
@@ -4246,20 +4384,34 @@ Returns the undefined value if the array is empty, although this may also
 happen at other times.  If ARRAY is omitted, pops the C<@ARGV> array in the
 main program, but the C<@_> array in subroutines, just like C<shift>.
 
+Starting with Perl 5.14, C<pop> can take a scalar EXPR, which must hold a
+reference to an unblessed array.  The argument will be dereferenced
+automatically.  This aspect of C<pop> is considered highly experimental.
+The exact behaviour may change in a future version of Perl.
+
 =item pos SCALAR
 X<pos> X<match, position>
 
 =item pos
 
-Returns the offset of where the last C<m//g> search left off for the variable
-in question (C<$_> is used when the variable is not specified).  Note that
-0 is a valid match offset.  C<undef> indicates that the search position
-is reset (usually due to match failure, but can also be because no match has
-yet been run on the scalar). C<pos> directly accesses the location used
-by the regexp engine to store the offset, so assigning to C<pos> will change
-that offset, and so will also influence the C<\G> zero-width assertion in
-regular expressions. Because a failed C<m//gc> match doesn't reset the offset,
-the return from C<pos> won't change either in this case.  See L<perlre> and
+Returns the offset of where the last C<m//g> search left off for the
+variable in question (C<$_> is used when the variable is not
+specified). Note that 0 is a valid match offset. C<undef> indicates
+that the search position is reset (usually due to match failure, but
+can also be because no match has yet been run on the scalar).
+
+C<pos> directly accesses the location used by the regexp engine to
+store the offset, so assigning to C<pos> will change that offset, and
+so will also influence the C<\G> zero-width assertion in regular
+expressions. Both of these effects take place for the next match, so
+you can't affect the position with C<pos> during the current match,
+such as in C<(?{pos() = 5})> or C<s//pos() = 5/e>.
+
+Setting C<pos> also resets the I<matched with zero-length> flag, described
+under L<perlre/"Repeated Patterns Matching a Zero-length Substring">.
+
+Because a failed C<m//gc> match doesn't reset the offset, the return
+from C<pos> won't change either in this case.  See L<perlre> and
 L<perlop>.
 
 =item print FILEHANDLE LIST
@@ -4334,6 +4486,8 @@ describing the equivalent prototype is returned.
 =item push ARRAY,LIST
 X<push> X<stack>
 
+=item push EXPR,LIST
+
 Treats ARRAY as a stack, and pushes the values of LIST
 onto the end of ARRAY.  The length of ARRAY increases by the length of
 LIST.  Has the same effect as
@@ -4344,6 +4498,11 @@ LIST.  Has the same effect as
 
 but is more efficient.  Returns the number of elements in the array following
 the completed C<push>.
+
+Starting with Perl 5.14, C<push> can take a scalar EXPR, which must hold a
+reference to an unblessed array.  The argument will be dereferenced
+automatically.  This aspect of C<push> is considered highly experimental.
+The exact behaviour may change in a future version of Perl.
 
 =item q/STRING/
 
@@ -4373,6 +4532,37 @@ the C<\Q> escape in double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
 
+quotemeta (and C<\Q> ... C<\E>) are useful when interpolating strings into
+regular expressions, because by default an interpolated variable will be
+considered a mini-regular expression. For example:
+
+    my $sentence = 'The quick brown fox jumped over the lazy dog';
+    my $substring = 'quick.*?fox';
+    $sentence =~ s{$substring}{big bad wolf};
+
+Will cause C<$sentence> to become C<'The big bad wolf jumped over...'>.
+
+On the other hand:
+
+    my $sentence = 'The quick brown fox jumped over the lazy dog';
+    my $substring = 'quick.*?fox';
+    $sentence =~ s{\Q$substring\E}{big bad wolf};
+
+Or:
+
+    my $sentence = 'The quick brown fox jumped over the lazy dog';
+    my $substring = 'quick.*?fox';
+    my $quoted_substring = quotemeta($substring);
+    $sentence =~ s{$quoted_substring}{big bad wolf};
+
+Will both leave the sentence as is. Normally, when accepting string input from
+the user, quotemeta() or C<\Q> must be used.
+
+In Perl 5.14, all characters whose code points are above 127 are not
+quoted in UTF-8 encoded strings, but all are quoted in UTF-8 strings.
+It is planned to change this behavior in 5.16, but the exact rules
+haven't been determined yet.
+
 =item rand EXPR
 X<rand> X<random>
 
@@ -4395,6 +4585,13 @@ returns a random integer between C<0> and C<9>, inclusive.
 (Note: If your rand function consistently returns numbers that are too
 large or too small, then your version of Perl was probably compiled
 with the wrong number of RANDBITS.)
+
+B<C<rand()> is not cryptographically secure.  You should not rely
+on it in security-sensitive situations.>  As of this writing, a
+number of third-party CPAN modules offer random number generators
+intended by their authors to be cryptographically secure,
+including: L<Math::Random::Secure>, L<Math::Random::MT::Perl>, and
+L<Math::TrulyRandom>.
 
 =item read FILEHANDLE,SCALAR,LENGTH,OFFSET
 X<read> X<file, read>
@@ -4743,8 +4940,8 @@ first look for a similar filename with a "F<.pmc>" extension. If this file
 is found, it will be loaded in place of any file ending in a "F<.pm>"
 extension.
 
-You can also insert hooks into the import facility, by putting directly
-Perl code into the @INC array.  There are three forms of hooks: subroutine
+You can also insert hooks into the import facility, by putting Perl code
+directly into the @INC array.  There are three forms of hooks: subroutine
 references, array references and blessed objects.
 
 Subroutine references are the simplest case.  When the inclusion system
@@ -5214,6 +5411,8 @@ An example disabling Nagle's algorithm on a socket:
 =item shift ARRAY
 X<shift>
 
+=item shift EXPR
+
 =item shift
 
 Shifts the first value of the array off and returns it, shortening the
@@ -5223,6 +5422,11 @@ C<@_> array within the lexical scope of subroutines and formats, and the
 C<@ARGV> array outside a subroutine and also within the lexical scopes
 established by the C<eval STRING>, C<BEGIN {}>, C<INIT {}>, C<CHECK {}>,
 C<UNITCHECK {}> and C<END {}> constructs.
+
+Starting with Perl 5.14, C<shift> can take a scalar EXPR, which must hold a
+reference to an unblessed array.  The argument will be dereferenced
+automatically.  This aspect of C<shift> is considered highly experimental.
+The exact behaviour may change in a future version of Perl.
 
 See also C<unshift>, C<push>, and C<pop>.  C<shift> and C<unshift> do the
 same thing to the left end of an array that C<pop> and C<push> do to the
@@ -5555,14 +5759,14 @@ eliminate any C<NaN>s from the input list.
 
     @result = sort { $a <=> $b } grep { $_ == $_ } @input;
 
-=item splice ARRAY,OFFSET,LENGTH,LIST
+=item splice ARRAY or EXPR,OFFSET,LENGTH,LIST
 X<splice>
 
-=item splice ARRAY,OFFSET,LENGTH
+=item splice ARRAY or EXPR,OFFSET,LENGTH
 
-=item splice ARRAY,OFFSET
+=item splice ARRAY or EXPR,OFFSET
 
-=item splice ARRAY
+=item splice ARRAY or EXPR
 
 Removes the elements designated by OFFSET and LENGTH from an array, and
 replaces them with the elements of LIST, if any.  In list context,
@@ -5597,6 +5801,11 @@ Example, assuming array lengths are passed before arrays:
         return 1;
     }
     if (&aeq($len,@foo[1..$len],0+@bar,@bar)) { ... }
+
+Starting with Perl 5.14, C<splice> can take scalar EXPR, which must hold a
+reference to an unblessed array.  The argument will be dereferenced
+automatically.  This aspect of C<splice> is considered highly experimental.
+The exact behaviour may change in a future version of Perl.
 
 =item split /PATTERN/,EXPR,LIMIT
 X<split>
@@ -5962,15 +6171,30 @@ whatever the default integer size is on your platform (usually 32 or 64
 bits), but you can override this to use instead one of the standard C types,
 as supported by the compiler used to build Perl:
 
-   l           interpret integer as C type "long" or "unsigned long"
+   hh          interpret integer as C type "char" or "unsigned char"
+	       on Perl 5.14 or later
    h           interpret integer as C type "short" or "unsigned short"
-   q, L or ll  interpret integer as C type "long long", "unsigned long long".
-               or "quads" (typically 64-bit integers)
+   j	       intepret integer as C type "intmax_t" on Perl 5.14 
+	       or later, and only with a C99 compiler (unportable)
+   l           interpret integer as C type "long" or "unsigned long"
+   q, L, or ll interpret integer as C type "long long", "unsigned long long",
+               or "quad" (typically 64-bit integers)
+   t	       intepret integer as C type "ptrdiff_t" on Perl 5.14 or later
+   z	       intepret integer as C type "size_t" on Perl 5.14 or later
 
-The last will raise an exception if Perl does not understand "quads" in your
-installation. (This requires either that the platform natively support quads,
-or that Perl were specifically compiled to support quads.) You can find out
-whether your Perl supports quads via L<Config>:
+As of 5.14, none of these raises an exception if they are not supported on
+your platform.  However, if warnings are enabled, a warning of the
+C<printf> warning class is issued on an unsupported conversion flag.  
+Should you instead prefer an exception, do this:
+
+    use warnings FATAL => "printf";
+
+If you would like to know about a version dependency before you
+start running the program, put something like this at its top:
+
+    use 5.014;  # for hh/j/t/z/ printf modifiers
+
+You can find out whether your Perl supports quads via L<Config>:
 
     use Config;
     if ($Config{use64bitint} eq "define" || $Config{longsize} >= 8) {
@@ -6059,32 +6283,34 @@ X<srand> X<seed> X<randseed>
 
 =item srand
 
-Sets the random number seed for the C<rand> operator.
+Sets and returns the random number seed for the C<rand> operator.
 
 The point of the function is to "seed" the C<rand> function so that
 C<rand> can produce a different sequence each time you run your
-program.
+program.  When called with a parameter, C<srand> uses that for the seed;
+otherwise it (semi-)randomly chooses a seed.  In either case, starting with
+Perl 5.14, it returns the seed.
 
-If srand() is not called explicitly, it is called implicitly at the
-first use of the C<rand> operator.  However, this was not true of
-versions of Perl before 5.004, so if your script will run under older
-Perl versions, it should call C<srand>.
+If C<srand()> is not called explicitly, it is called implicitly without a
+parameter at the first use of the C<rand> operator.  However, this was not true
+of versions of Perl before 5.004, so if your script will run under older
+Perl versions, it should call C<srand>; otherwise most programs won't call
+C<srand()> at all.
 
-Most programs won't even call srand() at all, except those that
-need a cryptographically-strong starting point rather than the
-generally acceptable default, which is based on time of day,
-process ID, and memory allocation, or the F</dev/urandom> device
-if available.
+But there are a few situations in recent Perls where programs are likely to
+want to call C<srand>.  One is for generating predictable results generally for
+testing or debugging.  There, you use C<srand($seed)>, with the same C<$seed>
+each time.  Another other case is where you need a cryptographically-strong
+starting point rather than the generally acceptable default, which is based on
+time of day, process ID, and memory allocation, or the F</dev/urandom> device
+if available.  And still another case is that you may want to call C<srand()>
+after a C<fork()> to avoid child processes sharing the same seed value as the
+parent (and consequently each other).
 
-You can call srand($seed) with the same $seed to reproduce the
-I<same> sequence from rand(), but this is usually reserved for
-generating predictable results for testing or debugging.
-Otherwise, don't call srand() more than once in your program.
-
-Do B<not> call srand() (i.e., without an argument) more than once in
-a script.  The internal state of the random number generator should
+Do B<not> call C<srand()> (i.e., without an argument) more than once per
+process.  The internal state of the random number generator should
 contain more entropy than can be provided by any seed, so calling
-srand() again actually I<loses> randomness.
+C<srand()> again actually I<loses> randomness.
 
 Most implementations of C<srand> take an integer and will silently
 truncate decimal numbers.  This means C<srand(42)> will usually
@@ -6103,8 +6329,8 @@ example:
 
     srand (time ^ $$ ^ unpack "%L*", `ps axww | gzip -f`);
 
-If you're particularly concerned with this, see the C<Math::TrulyRandom>
-module in CPAN.
+If you're particularly concerned with this, search the CPAN for
+random number generator modules instead of rolling out your own.
 
 Frequently called programs (like CGI scripts) that simply use
 
@@ -6115,6 +6341,11 @@ for a seed can fall prey to the mathematical property that
     a^b == (a+1)^(b+1)
 
 one-third of the time.  So don't do that.
+
+A typical use of the returned seed is for a test program which has too many
+combinations to test comprehensively in the time available to it each run.  It
+can test a random subset each time, and should there be a failure, log the seed
+used for that run so that it can later be used to reproduce the exact results.
 
 =item stat FILEHANDLE
 X<stat> X<file, status> X<ctime>
@@ -6649,6 +6880,9 @@ When C<system>'s arguments are executed indirectly by the shell,
 results and return codes are subject to its quirks.
 See L<perlop/"`STRING`"> and L</exec> for details.
 
+Since C<system> does a C<fork> and C<wait> it may affect a C<SIGCHLD>
+handler. See L<perlipc> for details.
+
 =item syswrite FILEHANDLE,SCALAR,LENGTH,OFFSET
 X<syswrite>
 
@@ -6861,7 +7095,7 @@ The behavior is undefined if LENGTH is greater than the length of the
 file.
 
 The position in the file of FILEHANDLE is left unchanged.  You may want to
-call L<seek> before writing to the file.
+call L<seek|/"seek FILEHANDLE,POSITION,WHENCE"> before writing to the file.
 
 =item uc EXPR
 X<uc> X<uppercase> X<toupper>
@@ -6869,13 +7103,14 @@ X<uc> X<uppercase> X<toupper>
 =item uc
 
 Returns an uppercased version of EXPR.  This is the internal function
-implementing the C<\U> escape in double-quoted strings.  Respects
-current LC_CTYPE locale if C<use locale> in force.  See L<perllocale>
-and L<perlunicode> for more details about locale and Unicode support.
+implementing the C<\U> escape in double-quoted strings.
 It does not attempt to do titlecase mapping on initial letters.  See
-C<ucfirst> for that.
+L</ucfirst> for that.
 
 If EXPR is omitted, uses C<$_>.
+
+This function behaves the same way under various pragma, such as in a locale,
+as L</lc> does.
 
 =item ucfirst EXPR
 X<ucfirst> X<uppercase>
@@ -6884,11 +7119,12 @@ X<ucfirst> X<uppercase>
 
 Returns the value of EXPR with the first character in uppercase
 (titlecase in Unicode).  This is the internal function implementing
-the C<\u> escape in double-quoted strings.  Respects current LC_CTYPE
-locale if C<use locale> in force.  See L<perllocale> and L<perlunicode>
-for more details about locale and Unicode support.
+the C<\u> escape in double-quoted strings.
 
 If EXPR is omitted, uses C<$_>.
+
+This function behaves the same way under various pragma, such as in a locale,
+as L</lc> does.
 
 =item umask EXPR
 X<umask>
@@ -6994,6 +7230,7 @@ and expands it out into a list of values.
 (In scalar context, it returns merely the first value produced.)
 
 If EXPR is omitted, unpacks the C<$_> string.
+See L<perlpacktut> for an introduction to this function.
 
 The string is broken into chunks described by the TEMPLATE.  Each chunk
 is converted separately to a value.  Typically, either the string is a result
@@ -7054,6 +7291,8 @@ Has no effect if the variable is not tied.
 =item unshift ARRAY,LIST
 X<unshift>
 
+=item unshift EXPR,LIST
+
 Does the opposite of a C<shift>.  Or the opposite of a C<push>,
 depending on how you look at it.  Prepends list to the front of the
 array, and returns the new number of elements in the array.
@@ -7063,6 +7302,11 @@ array, and returns the new number of elements in the array.
 Note the LIST is prepended whole, not one element at a time, so the
 prepended elements stay in the same order.  Use C<reverse> to do the
 reverse.
+
+Starting with Perl 5.14, C<unshift> can take a scalar EXPR, which must hold
+a reference to an unblessed array.  The argument will be dereferenced
+automatically.  This aspect of C<unshift> is considered highly
+experimental.  The exact behaviour may change in a future version of Perl.
 
 =item use Module VERSION LIST
 X<use> X<module> X<import>
@@ -7177,6 +7421,11 @@ or no unimport method being found.
     no strict 'refs';
     no warnings;
 
+Care should be taken when using the C<no VERSION> form of C<no>.  It is
+I<only> meant to be used to assert that the running perl is of a earlier
+version than its argument and I<not> to undo the feature-enabling side effects
+of C<use VERSION>.
+
 See L<perlmodlib> for a list of standard modules and pragmas.  See L<perlrun>
 for the C<-M> and C<-m> command-line options to Perl that give C<use>
 functionality from the command-line.
@@ -7229,6 +7478,8 @@ X<values>
 
 =item values ARRAY
 
+=item values EXPR
+
 Returns a list consisting of all the values of the named hash, or the values
 of an array. (In a scalar context, returns the number of values.)
 
@@ -7248,12 +7499,19 @@ We recommend that you use void context C<keys @array> for this, but reasoned
 that it taking C<values @array> out would require more documentation than
 leaving it in.)
 
-
 Note that the values are not copied, which means modifying them will
 modify the contents of the hash:
 
     for (values %hash)      { s/foo/bar/g }   # modifies %hash values
     for (@hash{keys %hash}) { s/foo/bar/g }   # same
+
+Starting with Perl 5.14, C<values> can take a scalar EXPR, which must hold
+a reference to an unblessed hash or array.  The argument will be
+dereferenced automatically.  This aspect of C<values> is considered highly
+experimental.  The exact behaviour may change in a future version of Perl.
+
+    for (values $hashref) { ... }
+    for (values $obj->get_arrayref) { ... }
 
 See also C<keys>, C<each>, and C<sort>.
 
@@ -7504,6 +7762,9 @@ C<-1> if there are no child processes.  The status is returned in C<$?>
 and C<${^CHILD_ERROR_NATIVE}>.
 Note that a return value of C<-1> could mean that child processes are
 being automatically reaped, as described in L<perlipc>.
+
+If you use wait in your handler for $SIG{CHLD} it may accidentally for the
+child created by qx() or system(). See L<perlipc> for details.
 
 =item waitpid PID,FLAGS
 X<waitpid>

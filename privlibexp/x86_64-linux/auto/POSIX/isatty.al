@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 721 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/isatty.al)"
+#line 715 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/isatty.al)"
 sub isatty {
     usage "isatty(filehandle)" if @_ != 1;
     -t $_[0];

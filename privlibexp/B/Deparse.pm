@@ -11,34 +11,42 @@ package B::Deparse;
 use Carp;
 use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
 	 OPf_WANT OPf_WANT_VOID OPf_WANT_SCALAR OPf_WANT_LIST
-	 OPf_KIDS OPf_REF OPf_STACKED OPf_SPECIAL OPf_MOD OPpPAD_STATE
+	 OPf_KIDS OPf_REF OPf_STACKED OPf_SPECIAL OPf_MOD
 	 OPpLVAL_INTRO OPpOUR_INTRO OPpENTERSUB_AMPER OPpSLICE OPpCONST_BARE
 	 OPpTRANS_SQUASH OPpTRANS_DELETE OPpTRANS_COMPLEMENT OPpTARGET_MY
 	 OPpCONST_ARYBASE OPpEXISTS_SUB OPpSORT_NUMERIC OPpSORT_INTEGER
-	 OPpSORT_REVERSE OPpSORT_INPLACE OPpSORT_DESCEND OPpITER_REVERSED
-	 OPpREVERSE_INPLACE
+	 OPpSORT_REVERSE
 	 SVf_IOK SVf_NOK SVf_ROK SVf_POK SVpad_OUR SVf_FAKE SVs_RMG SVs_SMG
          CVf_METHOD CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED),
-	 ($] < 5.009 ? 'PMf_SKIPWHITE' : 'RXf_SKIPWHITE'),
-	 ($] < 5.011 ? 'CVf_LOCKED' : ());
-$VERSION = 0.96;
+	 ($] < 5.008004 ? () : 'OPpSORT_INPLACE'),
+	 ($] < 5.008006 ? () : qw(OPpSORT_DESCEND OPpITER_REVERSED)),
+	 ($] < 5.008009 ? () : qw(OPpCONST_NOVER OPpPAD_STATE)),
+	 ($] < 5.009 ? 'PMf_SKIPWHITE' : qw(RXf_SKIPWHITE)),
+	 ($] < 5.011 ? 'CVf_LOCKED' : 'OPpREVERSE_INPLACE'),
+	 ($] < 5.013 ? () : 'PMf_NONDESTRUCT');
+$VERSION = "1.03";
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
 
 BEGIN {
-    # Easiest way to keep this code portable between 5.12.x and 5.10.x looks to
-    # be to fake up a dummy CVf_LOCKED that will never actually be true.
-    *CVf_LOCKED = sub () {0} unless defined &CVf_LOCKED;
+    # Easiest way to keep this code portable between version looks to
+    # be to fake up a dummy constant that will never actually be true.
+    foreach (qw(OPpSORT_INPLACE OPpSORT_DESCEND OPpITER_REVERSED OPpCONST_NOVER
+		OPpPAD_STATE RXf_SKIPWHITE CVf_LOCKED OPpREVERSE_INPLACE
+		PMf_NONDESTRUCT)) {
+	no strict 'refs';
+	*{$_} = sub () {0} unless *{$_}{CODE};
+    }
 }
 
 # Changes between 0.50 and 0.51:
 # - fixed nulled leave with live enter in sort { }
 # - fixed reference constants (\"str")
 # - handle empty programs gracefully
-# - handle infinte loops (for (;;) {}, while (1) {})
+# - handle infinite loops (for (;;) {}, while (1) {})
 # - differentiate between `for my $x ...' and `my $x; for $x ...'
 # - various minor cleanups
 # - moved globals into an object
@@ -98,10 +106,10 @@ BEGIN {
 # - added support for Ilya's OPpTARGET_MY optimization
 # - elided arrows before `()' subscripts when possible
 # Changes between 0.59 and 0.60
-# - support for method attribues was added
+# - support for method attributes was added
 # - some warnings fixed
 # - separate recognition of constant subs
-# - rewrote continue block handling, now recoginizing for loops
+# - rewrote continue block handling, now recognizing for loops
 # - added more control of expanding control structures
 # Changes between 0.60 and 0.61 (mostly by Robin Houston)
 # - many bug-fixes
@@ -159,7 +167,7 @@ BEGIN {
 #    'use warnings; BEGIN {${^WARNING_BITS} eq "U"x12;} use warnings::register'
 # op/getpid 2 - can't assign to shared my() declaration (threads only)
 #    'my $x : shared = 5'
-# op/override 7 - parens on overriden require change v-string interpretation
+# op/override 7 - parens on overridden require change v-string interpretation
 #    'BEGIN{*CORE::GLOBAL::require=sub {}} require v5.6'
 #    c.f. 'BEGIN { *f = sub {0} }; f 2'
 # op/pat 774 - losing Unicode-ness of Latin1-only strings
@@ -958,14 +966,19 @@ sub is_for_loop {
     my $op = shift;
     # This OP might be almost anything, though it won't be a
     # nextstate. (It's the initialization, so in the canonical case it
-    # will be an sassign.) The sibling is a lineseq whose first child
-    # is a nextstate and whose second is a leaveloop.
+    # will be an sassign.) The sibling is (old style) a lineseq whose
+    # first child is a nextstate and whose second is a leaveloop, or
+    # (new style) an unstack whose sibling is a leaveloop.
     my $lseq = $op->sibling;
-    if (!is_state $op and !null($lseq) and $lseq->name eq "lineseq") {
+    return 0 unless !is_state($op) and !null($lseq);
+    if ($lseq->name eq "lineseq") {
 	if ($lseq->first && !null($lseq->first) && is_state($lseq->first)
 	    && (my $sib = $lseq->first->sibling)) {
 	    return (!null($sib) && $sib->name eq "leaveloop");
 	}
+    } elsif ($lseq->name eq "unstack" && ($lseq->flags & OPf_SPECIAL)) {
+	my $sib = $lseq->sibling;
+	return $sib && !null($sib) && $sib->name eq "leaveloop";
     }
     return 0;
 }
@@ -1041,9 +1054,11 @@ sub maybe_local {
 	and not $self->{'avoid_local'}{$$op}) {
 	my $our_local = ($op->private & OPpLVAL_INTRO) ? "local" : "our";
 	if( $our_local eq 'our' ) {
-	    # XXX This assertion fails code with non-ASCII identifiers,
-	    # like ./ext/Encode/t/jperl.t
-	    die "Unexpected our($text)\n" unless $text =~ /^\W(\w+::)*\w+\z/;
+	    if ( $text !~ /^\W(\w+::)*\w+\z/
+	     and !utf8::decode($text) || $text !~ /^\W(\w+::)*\w+\z/
+	    ) {
+		die "Unexpected our($text)\n";
+	    }
 	    $text =~ s/(\w+::)+//;
 	}
         if (want_scalar($op)) {
@@ -1213,7 +1228,8 @@ sub walk_lineseq {
 	    }
 	}
 	if (is_for_loop($kids[$i])) {
-	    $callback->($expr . $self->for_loop($kids[$i], 0), $i++);
+	    $callback->($expr . $self->for_loop($kids[$i], 0),
+		$i += $kids[$i]->sibling->name eq "unstack" ? 2 : 1);
 	    next;
 	}
 	$expr .= $self->deparse($kids[$i], (@kids != 1)/2);
@@ -1380,7 +1396,6 @@ sub pp_nextstate {
     $self->{'curcop'} = $op;
     my @text;
     push @text, $self->cop_subs($op);
-    push @text, $op->label . ": " if $op->label;
     my $stash = $op->stashpv;
     if ($stash ne $self->{'curstash'}) {
 	push @text, "package $stash;\n";
@@ -1413,9 +1428,10 @@ sub pp_nextstate {
 	$self->{'warnings'} = $warning_bits;
     }
 
-    if ($self->{'hints'} != $op->hints) {
-	push @text, declare_hints($self->{'hints'}, $op->hints);
-	$self->{'hints'} = $op->hints;
+    my $hints = $] < 5.008009 ? $op->private : $op->hints;
+    if ($self->{'hints'} != $hints) {
+	push @text, declare_hints($self->{'hints'}, $hints);
+	$self->{'hints'} = $hints;
     }
 
     # hack to check that the hint hash hasn't changed
@@ -1433,6 +1449,8 @@ sub pp_nextstate {
 	push @text, "\f#line " . $op->line .
 	  ' "' . $op->file, qq'"\n';
     }
+
+    push @text, $op->label . ": " if $op->label;
 
     return join("", @text);
 }
@@ -1788,7 +1806,7 @@ sub pp_require {
 	$name =~ s/\.pm//g;
 	return "$opname $name";
     } else {	
-	$self->unop($op, $cx, $opname);
+	$self->unop($op, $cx, $op->first->private & OPpCONST_NOVER ? "no" : $opname);
     }
 }
 
@@ -2674,7 +2692,8 @@ sub loop_common {
 	    $ary = $self->deparse($ary, 1);
 	}
 	if (null $var) {
-	    if ($enter->flags & OPf_SPECIAL) { # thread special var
+	    if (($enter->flags & OPf_SPECIAL) && ($] < 5.009)) {
+		# thread special var, under 5005threads
 		$var = $self->pp_threadsv($enter, 1);
 	    } else { # regular my() variable
 		$var = $self->pp_padsv($enter, 1);
@@ -2754,7 +2773,9 @@ sub for_loop {
     my $self = shift;
     my($op, $cx) = @_;
     my $init = $self->deparse($op, 1);
-    return $self->loop_common($op->sibling->first->sibling, $cx, $init);
+    my $s = $op->sibling;
+    my $ll = $s->name eq "unstack" ? $s->sibling : $s->first->sibling;
+    return $self->loop_common($ll, $cx, $init);
 }
 
 sub pp_leavetry {
@@ -2831,15 +2852,7 @@ sub pp_padsv {
 sub pp_padav { pp_padsv(@_) }
 sub pp_padhv { pp_padsv(@_) }
 
-my @threadsv_names;
-
-BEGIN {
-    @threadsv_names = ("_", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-		       "&", "`", "'", "+", "/", ".", ",", "\\", '"', ";",
-		       "^", "-", "%", "=", "|", "~", ":", "^A", "^E",
-		       "!", "@");
-}
-
+my @threadsv_names = B::threadsv_names;
 sub pp_threadsv {
     my $self = shift;
     my($op, $cx) = @_;
@@ -4074,18 +4087,25 @@ sub pp_trans {
     my $self = shift;
     my($op, $cx) = @_;
     my($from, $to);
-    if (class($op) eq "PVOP") {
-	($from, $to) = tr_decode_byte($op->pv, $op->private);
+    my $class = class($op);
+    my $priv_flags = $op->private;
+    if ($class eq "PVOP") {
+	($from, $to) = tr_decode_byte($op->pv, $priv_flags);
+    } elsif ($class eq "PADOP") {
+	($from, $to)
+	  = tr_decode_utf8($self->padval($op->padix)->RV, $priv_flags);
     } else { # class($op) eq "SVOP"
-	($from, $to) = tr_decode_utf8($op->sv->RV, $op->private);
+	($from, $to) = tr_decode_utf8($op->sv->RV, $priv_flags);
     }
     my $flags = "";
-    $flags .= "c" if $op->private & OPpTRANS_COMPLEMENT;
-    $flags .= "d" if $op->private & OPpTRANS_DELETE;
+    $flags .= "c" if $priv_flags & OPpTRANS_COMPLEMENT;
+    $flags .= "d" if $priv_flags & OPpTRANS_DELETE;
     $to = "" if $from eq $to and $flags eq "";
-    $flags .= "s" if $op->private & OPpTRANS_SQUASH;
+    $flags .= "s" if $priv_flags & OPpTRANS_SQUASH;
     return "tr" . double_delim($from, $to) . $flags;
 }
+
+sub pp_transr { &pp_trans . 'r' }
 
 sub re_dq_disambiguate {
     my ($first, $last) = @_;
@@ -4220,6 +4240,7 @@ sub matchop {
     }
     my $quote = 1;
     my $extended = ($op->pmflags & PMf_EXTENDED);
+    my $rhs_bound_to_defsv;
     if (null $kid) {
 	my $unbacked = re_unback($op->precomp);
 	if ($extended) {
@@ -4231,6 +4252,7 @@ sub matchop {
 	carp("found ".$kid->name." where regcomp expected");
     } else {
 	($re, $quote) = $self->regcomp($kid, 21, $extended);
+	$rhs_bound_to_defsv = 1 if $kid->first->first->flags & OPf_SPECIAL;
     }
     my $flags = "";
     $flags .= "c" if $op->pmflags & PMf_CONTINUE;
@@ -4249,7 +4271,13 @@ sub matchop {
     }
     $re = $re . $flags if $quote;
     if ($binop) {
-	return $self->maybe_parens("$var =~ $re", $cx, 20);
+	return
+	 $self->maybe_parens(
+	  $rhs_bound_to_defsv
+	   ? "$var =~ (\$_ =~ $re)"
+	   : "$var =~ $re",
+	  $cx, 20
+	 );
     } else {
 	return $re;
     }
@@ -4309,7 +4337,9 @@ my %substwords;
 map($substwords{join "", sort split //, $_} = $_, 'ego', 'egoism', 'em',
     'es', 'ex', 'exes', 'gee', 'go', 'goes', 'ie', 'ism', 'iso', 'me',
     'meese', 'meso', 'mig', 'mix', 'os', 'ox', 'oxime', 'see', 'seem',
-    'seg', 'sex', 'sig', 'six', 'smog', 'sog', 'some', 'xi');
+    'seg', 'sex', 'sig', 'six', 'smog', 'sog', 'some', 'xi',
+    'sir', 'rise', 'smore', 'more', 'seer', 'rome', 'gore', 'grim', 'grime',
+    'or', 'rose', 'rosie');
 
 sub pp_subst {
     my $self = shift;
@@ -4350,6 +4380,7 @@ sub pp_subst {
 	($re) = $self->regcomp($kid, 1, $extended);
     }
     $flags .= "e" if $op->pmflags & PMf_EVAL;
+    $flags .= "r" if $op->pmflags & PMf_NONDESTRUCT;
     $flags .= "g" if $op->pmflags & PMf_GLOBAL;
     $flags .= "i" if $op->pmflags & PMf_FOLD;
     $flags .= "m" if $op->pmflags & PMf_MULTILINE;
@@ -4854,7 +4885,7 @@ which is not, consequently, deparsed correctly.
 
 Lexical (my) variables declared in scopes external to a subroutine
 appear in code2ref output text as package variables. This is a tricky
-problem, as perl has no native facility for refering to a lexical variable
+problem, as perl has no native facility for referring to a lexical variable
 defined within a different scope, although L<PadWalker> is a good start.
 
 =item *

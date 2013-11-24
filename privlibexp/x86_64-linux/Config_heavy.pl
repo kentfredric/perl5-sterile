@@ -3,8 +3,25 @@
 
 package Config;
 use strict;
-# use warnings; Pulls in Carp
-# use vars pulls in Carp
+use warnings;
+use vars '%Config';
+
+sub bincompat_options {
+    return split ' ', (Internals::V())[0];
+}
+
+sub non_bincompat_options {
+    return split ' ', (Internals::V())[1];
+}
+
+sub compile_date {
+    return (Internals::V())[2]
+}
+
+sub local_patches {
+    my (undef, undef, undef, @patches) = Internals::V();
+    return @patches;
+}
 
 sub _V {
     my ($bincompat, $non_bincompat, $date, @patches) = Internals::V();
@@ -34,7 +51,7 @@ sub _V {
     print "  $date\n" if defined $date;
 
     my @env = map { "$_=\"$ENV{$_}\"" } sort grep {/^PERL/} keys %ENV;
-    push @env, "CYGWIN=\"$ENV{CYGWIN}\"" if $^O eq 'cygwin';
+    push @env, "CYGWIN=\"$ENV{CYGWIN}\"" if $^O eq 'cygwin' and $ENV{CYGWIN};
 
     if (@env) {
         print "  \%ENV:\n";
@@ -42,6 +59,16 @@ sub _V {
     }
     print "  \@INC:\n";
     print "    $_\n" foreach @INC;
+}
+
+sub header_files {
+    return qw(EXTERN.h INTERN.h XSUB.h av.h config.h cop.h cv.h
+              dosish.h embed.h embedvar.h form.h gv.h handy.h hv.h intrpvar.h
+              iperlsys.h keywords.h mg.h nostdio.h op.h opcode.h pad.h
+              parser.h patchlevel.h perl.h perlio.h perliol.h perlsdio.h
+              perlsfio.h perlvars.h perly.h pp.h pp_proto.h proto.h regcomp.h
+              regexp.h regnodes.h scope.h sv.h thread.h time64.h unixish.h
+              utf8.h util.h);
 }
 
 ##
@@ -53,7 +80,7 @@ sub _V {
 #
 ## Package name      : perl5
 ## Source directory  : .
-## Configuration time: Sun Nov 24 21:31:55 NZDT 2013
+## Configuration time: Sun Nov 24 21:41:28 NZDT 2013
 ## Configured by     : kent
 ## Target system     : linux katipo2 3.12.0-gentoo #54 smp wed nov 6 04:43:49 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
 #
@@ -124,15 +151,15 @@ Header=''
 Id='$Id'
 Locker=''
 Log='$Log'
-PATCHLEVEL='13'
+PATCHLEVEL='14'
 PERL_API_REVISION='5'
 PERL_API_SUBVERSION='0'
-PERL_API_VERSION='13'
+PERL_API_VERSION='14'
 PERL_CONFIG_SH='true'
 PERL_PATCHLEVEL=''
 PERL_REVISION='5'
 PERL_SUBVERSION='0'
-PERL_VERSION='13'
+PERL_VERSION='14'
 RCSfile='$RCSfile'
 Revision='$Revision'
 SUBVERSION='0'
@@ -148,11 +175,11 @@ ansi2knr=''
 aphostname='/bin/hostname'
 api_revision='5'
 api_subversion='0'
-api_version='13'
-api_versionstring='5.13.0'
+api_version='14'
+api_versionstring='5.14.0'
 ar='ar'
-archlib='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0/x86_64-linux'
-archlibexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0/x86_64-linux'
+archlib='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/5.14.0/x86_64-linux'
+archlibexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/5.14.0/x86_64-linux'
 archname64=''
 archname='x86_64-linux'
 archobjs=''
@@ -160,9 +187,9 @@ asctime_r_proto='0'
 awk='awk'
 baserev='5.0'
 bash=''
-bin='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+bin='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 bin_ELF='define'
-binexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+binexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 bison='bison'
 byacc='byacc'
 byteorder='12345678'
@@ -179,7 +206,7 @@ ccsymbols=''
 ccversion=''
 cf_by='kent'
 cf_email='kent@katipo2.lan'
-cf_time='Sun Nov 24 21:31:55 NZDT 2013'
+cf_time='Sun Nov 24 21:41:28 NZDT 2013'
 charbits='8'
 charsize='1'
 chgrp=''
@@ -190,11 +217,10 @@ comm='comm'
 compress=''
 config_arg0='Configure'
 config_arg1='-de'
-config_arg2='-Dprefix=/home/kent/perl5/perlbrew/perls/5.13.0-pristine'
-config_arg3='-Dusedevel'
-config_arg4='-Aeval:scriptdir=/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
-config_argc='4'
-config_args='-de -Dprefix=/home/kent/perl5/perlbrew/perls/5.13.0-pristine -Dusedevel -Aeval:scriptdir=/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+config_arg2='-Dprefix=/home/kent/perl5/perlbrew/perls/5.14.0-pristine'
+config_arg3='-Aeval:scriptdir=/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
+config_argc='3'
+config_args='-de -Dprefix=/home/kent/perl5/perlbrew/perls/5.14.0-pristine -Aeval:scriptdir=/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 contains='grep'
 cp='cp'
 cpio=''
@@ -569,8 +595,10 @@ d_sigaction='define'
 d_signbit='define'
 d_sigprocmask='define'
 d_sigsetjmp='define'
+d_sin6_scope_id='define'
 d_sitearch='define'
 d_snprintf='define'
+d_sockaddr_sa_len='undef'
 d_sockatmark='define'
 d_sockatmarkproto='define'
 d_socket='define'
@@ -586,6 +614,7 @@ d_sresuproto='undef'
 d_statblks='define'
 d_statfs_f_flags='define'
 d_statfs_s='define'
+d_static_inline='define'
 d_statvfs='define'
 d_stdio_cnt_lval='undef'
 d_stdio_ptr_lval='define'
@@ -674,7 +703,7 @@ doublesize='8'
 drand01='drand48()'
 drand48_r_proto='0'
 dtrace=''
-dynamic_ext='B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd DB_File Data/Dumper Devel/DProf Devel/PPPort Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Filter/Util/Call GDBM_File Hash/Util Hash/Util/FieldHash I18N/Langinfo IO IPC/SysV List/Util MIME/Base64 Math/BigInt/FastCalc NDBM_File Opcode POSIX PerlIO/encoding PerlIO/scalar PerlIO/via SDBM_File Socket Storable Sys/Hostname Sys/Syslog Text/Soundex Time/HiRes Time/Piece Unicode/Normalize XS/APItest XS/APItest/KeywordRPN XS/Typemap attributes mro re threads threads/shared'
+dynamic_ext='B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd DB_File Data/Dumper Devel/DProf Devel/PPPort Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Filter/Util/Call GDBM_File Hash/Util Hash/Util/FieldHash I18N/Langinfo IO IPC/SysV List/Util MIME/Base64 Math/BigInt/FastCalc NDBM_File Opcode POSIX PerlIO/encoding PerlIO/scalar PerlIO/via SDBM_File Socket Storable Sys/Hostname Sys/Syslog Text/Soundex Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Collate Unicode/Normalize XS/APItest XS/Typemap attributes mro re threads threads/shared'
 eagain='EAGAIN'
 ebcdic='undef'
 echo='echo'
@@ -689,7 +718,7 @@ endservent_r_proto='0'
 eunicefix=':'
 exe_ext=''
 expr='expr'
-extensions='B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd DB_File Data/Dumper Devel/DProf Devel/PPPort Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Filter/Util/Call GDBM_File Hash/Util Hash/Util/FieldHash I18N/Langinfo IO IPC/SysV List/Util MIME/Base64 Math/BigInt/FastCalc NDBM_File Opcode POSIX PerlIO/encoding PerlIO/scalar PerlIO/via SDBM_File Socket Storable Sys/Hostname Sys/Syslog Text/Soundex Time/HiRes Time/Piece Unicode/Normalize XS/APItest XS/APItest/KeywordRPN XS/Typemap attributes mro re threads threads/shared Archive/Extract Archive/Tar Attribute/Handlers AutoLoader B/Debug B/Deparse B/Lint CGI CPAN CPANPLUS CPANPLUS/Dist/Build Class/ISA Devel/SelfStubber Digest Errno ExtUtils/CBuilder ExtUtils/Command ExtUtils/Constant ExtUtils/Install ExtUtils/MakeMaker ExtUtils/Manifest ExtUtils/ParseXS File/Fetch File/Path File/Temp FileCache Filter/Simple Getopt/Long I18N/LangTags IO/Compress IO/Zlib IPC/Cmd IPC/Open2 IPC/Open3 Locale/Codes Locale/Maketext Locale/Maketext/Simple Log/Message Log/Message/Simple Math/BigInt Math/BigRat Math/Complex Memoize Module/Build Module/CoreList Module/Load Module/Load/Conditional Module/Loaded Module/Pluggable NEXT Net/Ping Object/Accessor Package/Constants Params/Check Parse/CPAN/Meta PerlIO/via/QuotedPrint Pod/Escapes Pod/LaTeX Pod/Parser Pod/Perldoc Pod/Plainer Pod/Simple Safe SelfLoader Shell Switch Term/ANSIColor Term/Cap Term/UI Test Test/Harness Test/Simple Text/Balanced Text/ParseWords Text/Tabs Thread/Queue Thread/Semaphore Tie/File Tie/Memoize Tie/RefHash Time/Local Unicode/Collate XSLoader autodie autouse base bignum constant encoding/warnings if lib libnet parent podlators'
+extensions='B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd DB_File Data/Dumper Devel/DProf Devel/PPPort Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Filter/Util/Call GDBM_File Hash/Util Hash/Util/FieldHash I18N/Langinfo IO IPC/SysV List/Util MIME/Base64 Math/BigInt/FastCalc NDBM_File Opcode POSIX PerlIO/encoding PerlIO/scalar PerlIO/via SDBM_File Socket Storable Sys/Hostname Sys/Syslog Text/Soundex Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Collate Unicode/Normalize XS/APItest XS/Typemap attributes mro re threads threads/shared Archive/Extract Archive/Tar Attribute/Handlers AutoLoader B/Debug B/Deparse B/Lint CGI CPAN CPAN/Meta CPAN/Meta/YAML CPANPLUS CPANPLUS/Dist/Build Devel/SelfStubber Digest Dumpvalue Env Errno ExtUtils/CBuilder ExtUtils/Command ExtUtils/Constant ExtUtils/Install ExtUtils/MakeMaker ExtUtils/Manifest ExtUtils/ParseXS File/CheckTree File/Fetch File/Path File/Temp FileCache Filter/Simple Getopt/Long HTTP/Tiny I18N/Collate I18N/LangTags IO/Compress IO/Zlib IPC/Cmd IPC/Open2 IPC/Open3 JSON/PP Locale/Codes Locale/Maketext Locale/Maketext/Simple Log/Message Log/Message/Simple Math/BigInt Math/BigRat Math/Complex Memoize Module/Build Module/CoreList Module/Load Module/Load/Conditional Module/Loaded Module/Metadata Module/Pluggable NEXT Net/Ping Object/Accessor Package/Constants Params/Check Parse/CPAN/Meta Perl/OSType PerlIO/via/QuotedPrint Pod/Escapes Pod/Html Pod/LaTeX Pod/Parser Pod/Perldoc Pod/Simple Safe SelfLoader Shell Term/ANSIColor Term/Cap Term/UI Test Test/Harness Test/Simple Text/Balanced Text/ParseWords Text/Tabs Thread/Queue Thread/Semaphore Tie/File Tie/Memoize Tie/RefHash Time/Local Version/Requirements XSLoader autodie autouse base bignum constant encoding/warnings if lib libnet parent podlators'
 extern_C='extern'
 extras=''
 fflushNULL='define'
@@ -843,29 +872,29 @@ i_varargs='undef'
 i_varhdr='stdarg.h'
 i_vfork='undef'
 ignore_versioned_solibs='y'
-inc_version_list=''
+inc_version_list=' '
 inc_version_list_init='0'
 incpath=''
 inews=''
-initialinstalllocation='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
-installarchlib='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0/x86_64-linux'
-installbin='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+initialinstalllocation='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
+installarchlib='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/5.14.0/x86_64-linux'
+installbin='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 installhtml1dir=''
 installhtml3dir=''
-installman1dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man1'
-installman3dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man3'
-installprefix='/home/kent/perl5/perlbrew/perls/5.13.0-pristine'
-installprefixexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine'
-installprivlib='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0'
-installscript='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
-installsitearch='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0/x86_64-linux'
-installsitebin='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+installman1dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man1'
+installman3dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man3'
+installprefix='/home/kent/perl5/perlbrew/perls/5.14.0-pristine'
+installprefixexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine'
+installprivlib='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/5.14.0'
+installscript='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
+installsitearch='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/site_perl/5.14.0/x86_64-linux'
+installsitebin='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 installsitehtml1dir=''
 installsitehtml3dir=''
-installsitelib='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0'
-installsiteman1dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man1'
-installsiteman3dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man3'
-installsitescript='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+installsitelib='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/site_perl/5.14.0'
+installsiteman1dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man1'
+installsiteman3dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man3'
+installsitescript='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 installstyle='lib'
 installusrbinperl='undef'
 installvendorarch=''
@@ -881,7 +910,7 @@ issymlink='test -h'
 ivdformat='"ld"'
 ivsize='8'
 ivtype='long'
-known_extensions='B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd DB_File Data/Dumper Devel/DProf Devel/PPPort Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Filter/Util/Call GDBM_File Hash/Util Hash/Util/FieldHash I18N/Langinfo IO IPC/SysV List/Util MIME/Base64 Math/BigInt/FastCalc NDBM_File ODBM_File Opcode POSIX PerlIO/encoding PerlIO/scalar PerlIO/via SDBM_File Socket Storable Sys/Hostname Sys/Syslog Text/Soundex Time/HiRes Time/Piece Unicode/Normalize VMS/DCLsym VMS/Stdio Win32 Win32API/File Win32CORE XS/APItest XS/APItest/KeywordRPN XS/Typemap attributes mro re threads threads/shared '
+known_extensions='B Compress/Raw/Bzip2 Compress/Raw/Zlib Cwd DB_File Data/Dumper Devel/DProf Devel/PPPort Devel/Peek Digest/MD5 Digest/SHA Encode Fcntl File/Glob Filter/Util/Call GDBM_File Hash/Util Hash/Util/FieldHash I18N/Langinfo IO IPC/SysV List/Util MIME/Base64 Math/BigInt/FastCalc NDBM_File ODBM_File Opcode POSIX PerlIO/encoding PerlIO/scalar PerlIO/via SDBM_File Socket Storable Sys/Hostname Sys/Syslog Text/Soundex Tie/Hash/NamedCapture Time/HiRes Time/Piece Unicode/Collate Unicode/Normalize VMS/DCLsym VMS/Stdio Win32 Win32API/File Win32CORE XS/APItest XS/Typemap attributes mro re threads threads/shared '
 ksh=''
 ld='cc'
 lddlflags='-shared -O2 -fstack-protector'
@@ -928,11 +957,11 @@ make_set_make='#'
 mallocobj=''
 mallocsrc=''
 malloctype='void *'
-man1dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man1'
-man1direxp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man1'
+man1dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man1'
+man1direxp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man1'
 man1ext='1'
-man3dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man3'
-man3direxp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man3'
+man3dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man3'
+man3direxp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man3'
 man3ext='3'
 mips_type=''
 mistrustnm=''
@@ -955,7 +984,7 @@ netdb_net_type='in_addr_t'
 nm='nm'
 nm_opt=''
 nm_so_opt='--dynamic'
-nonxs_ext='Archive/Extract Archive/Tar Attribute/Handlers AutoLoader B/Debug B/Deparse B/Lint CGI CPAN CPANPLUS CPANPLUS/Dist/Build Class/ISA Devel/SelfStubber Digest Errno ExtUtils/CBuilder ExtUtils/Command ExtUtils/Constant ExtUtils/Install ExtUtils/MakeMaker ExtUtils/Manifest ExtUtils/ParseXS File/Fetch File/Path File/Temp FileCache Filter/Simple Getopt/Long I18N/LangTags IO/Compress IO/Zlib IPC/Cmd IPC/Open2 IPC/Open3 Locale/Codes Locale/Maketext Locale/Maketext/Simple Log/Message Log/Message/Simple Math/BigInt Math/BigRat Math/Complex Memoize Module/Build Module/CoreList Module/Load Module/Load/Conditional Module/Loaded Module/Pluggable NEXT Net/Ping Object/Accessor Package/Constants Params/Check Parse/CPAN/Meta PerlIO/via/QuotedPrint Pod/Escapes Pod/LaTeX Pod/Parser Pod/Perldoc Pod/Plainer Pod/Simple Safe SelfLoader Shell Switch Term/ANSIColor Term/Cap Term/UI Test Test/Harness Test/Simple Text/Balanced Text/ParseWords Text/Tabs Thread/Queue Thread/Semaphore Tie/File Tie/Memoize Tie/RefHash Time/Local Unicode/Collate XSLoader autodie autouse base bignum constant encoding/warnings if lib libnet parent podlators'
+nonxs_ext='Archive/Extract Archive/Tar Attribute/Handlers AutoLoader B/Debug B/Deparse B/Lint CGI CPAN CPAN/Meta CPAN/Meta/YAML CPANPLUS CPANPLUS/Dist/Build Devel/SelfStubber Digest Dumpvalue Env Errno ExtUtils/CBuilder ExtUtils/Command ExtUtils/Constant ExtUtils/Install ExtUtils/MakeMaker ExtUtils/Manifest ExtUtils/ParseXS File/CheckTree File/Fetch File/Path File/Temp FileCache Filter/Simple Getopt/Long HTTP/Tiny I18N/Collate I18N/LangTags IO/Compress IO/Zlib IPC/Cmd IPC/Open2 IPC/Open3 JSON/PP Locale/Codes Locale/Maketext Locale/Maketext/Simple Log/Message Log/Message/Simple Math/BigInt Math/BigRat Math/Complex Memoize Module/Build Module/CoreList Module/Load Module/Load/Conditional Module/Loaded Module/Metadata Module/Pluggable NEXT Net/Ping Object/Accessor Package/Constants Params/Check Parse/CPAN/Meta Perl/OSType PerlIO/via/QuotedPrint Pod/Escapes Pod/Html Pod/LaTeX Pod/Parser Pod/Perldoc Pod/Simple Safe SelfLoader Shell Term/ANSIColor Term/Cap Term/UI Test Test/Harness Test/Simple Text/Balanced Text/ParseWords Text/Tabs Thread/Queue Thread/Semaphore Tie/File Tie/Memoize Tie/RefHash Time/Local Version/Requirements XSLoader autodie autouse base bignum constant encoding/warnings if lib libnet parent podlators'
 nroff='nroff'
 nvEUformat='"E"'
 nvFUformat='"F"'
@@ -978,24 +1007,25 @@ otherlibdirs=' '
 package='perl5'
 pager='/usr/bin/less -R'
 passcat='cat /etc/passwd'
-patchlevel='13'
+patchlevel='14'
 path_sep=':'
 perl5='/home/kent/perl5/perlbrew/perls/perl-5.19.6/bin/perl'
-perl=''
+perl='perl'
 perl_patchlevel=''
+perl_static_inline='static __inline__'
 perladmin='kent@katipo2.lan'
 perllibs='-lnsl -ldl -lm -lcrypt -lutil -lc'
-perlpath='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin/perl5.13.0'
+perlpath='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin/perl'
 pg='pg'
 phostname='hostname'
 pidtype='pid_t'
 plibpth='/lib/x86_64-pc-linux-gnu/4.7.3 /lib/../lib64 /usr/lib/x86_64-pc-linux-gnu/4.7.3 /usr/lib/../lib64 /lib /usr/lib'
 pmake=''
 pr=''
-prefix='/home/kent/perl5/perlbrew/perls/5.13.0-pristine'
-prefixexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine'
-privlib='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0'
-privlibexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/5.13.0'
+prefix='/home/kent/perl5/perlbrew/perls/5.14.0-pristine'
+prefixexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine'
+privlib='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/5.14.0'
+privlibexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/5.14.0'
 procselfexe='"/proc/self/exe"'
 prototype='define'
 ptrsize='8'
@@ -1033,8 +1063,8 @@ sPRIu64='"lu"'
 sPRIx64='"lx"'
 sSCNfldbl='"Lf"'
 sched_yield='sched_yield()'
-scriptdir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
-scriptdirexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+scriptdir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
+scriptdirexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 sed='sed'
 seedfunc='srand48'
 selectminbits='64'
@@ -1061,25 +1091,25 @@ sig_num='0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
 sig_num_init='0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 6, 17, 29, 31, 0'
 sig_size='69'
 signal_t='void'
-sitearch='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0/x86_64-linux'
-sitearchexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0/x86_64-linux'
-sitebin='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
-sitebinexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+sitearch='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/site_perl/5.14.0/x86_64-linux'
+sitearchexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/site_perl/5.14.0/x86_64-linux'
+sitebin='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
+sitebinexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 sitehtml1dir=''
 sitehtml1direxp=''
 sitehtml3dir=''
 sitehtml3direxp=''
-sitelib='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0'
-sitelib_stem='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl'
-sitelibexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/lib/site_perl/5.13.0'
-siteman1dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man1'
-siteman1direxp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man1'
-siteman3dir='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man3'
-siteman3direxp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/man/man3'
-siteprefix='/home/kent/perl5/perlbrew/perls/5.13.0-pristine'
-siteprefixexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine'
-sitescript='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
-sitescriptexp='/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin'
+sitelib='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/site_perl/5.14.0'
+sitelib_stem='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/site_perl'
+sitelibexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/lib/site_perl/5.14.0'
+siteman1dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man1'
+siteman1direxp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man1'
+siteman3dir='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man3'
+siteman3direxp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/man/man3'
+siteprefix='/home/kent/perl5/perlbrew/perls/5.14.0-pristine'
+siteprefixexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine'
+sitescript='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
+sitescriptexp='/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin'
 sizesize='8'
 sizetype='size_t'
 sleep=''
@@ -1095,7 +1125,7 @@ srand48_r_proto='0'
 srandom_r_proto='0'
 src='.'
 ssizetype='ssize_t'
-startperl='#!/home/kent/perl5/perlbrew/perls/5.13.0-pristine/bin/perl5.13.0'
+startperl='#!/home/kent/perl5/perlbrew/perls/5.14.0-pristine/bin/perl'
 startsh='#!/bin/sh'
 static_ext=' '
 stdchar='char'
@@ -1144,7 +1174,7 @@ use5005threads='undef'
 use64bitall='define'
 use64bitint='define'
 usecrosscompile='undef'
-usedevel='define'
+usedevel='undef'
 usedl='define'
 usedtrace='undef'
 usefaststdio='undef'
@@ -1196,9 +1226,9 @@ vendorprefix=''
 vendorprefixexp=''
 vendorscript=''
 vendorscriptexp=''
-version='5.13.0'
-version_patchlevel_string='version 13 subversion 0'
-versiononly='define'
+version='5.14.0'
+version_patchlevel_string='version 14 subversion 0'
+versiononly='undef'
 vi=''
 voidflags='15'
 xlibpth='/usr/lib/386 /lib/386'
@@ -1233,20 +1263,9 @@ eval {
 sub fetch_string {
     my($self, $key) = @_;
 
-    # We only have ' delimted.
-    my $start = index($Config_SH_expanded, "\n$key=\'");
-    # Start can never be -1 now, as we've rigged the long string we're
-    # searching with an initial dummy newline.
-    return undef if $start == -1;
-
-    $start += length($key) + 3;
-
-    my $value = substr($Config_SH_expanded, $start,
-                       index($Config_SH_expanded, "'\n", $start)
-		       - $start);
+    return undef unless $Config_SH_expanded =~ /\n$key=\'(.*?)\'\n/s;
     # So we can say "if $Config{'foo'}".
-    $value = undef if $value eq 'undef';
-    $self->{$key} = $value; # cache it
+    $self->{$key} = $1 eq 'undef' ? undef : $1;
 }
 
 my $prevpos = 0;
@@ -1271,9 +1290,7 @@ sub EXISTS {
 }
 
 sub STORE  { die "\%Config::Config is read-only\n" }
-*DELETE = \&STORE;
-*CLEAR  = \&STORE;
-
+*DELETE = *CLEAR = \*STORE; # Typeglob aliasing uses less space
 
 sub config_sh {
     substr $Config_SH_expanded, 1, $config_sh_len;

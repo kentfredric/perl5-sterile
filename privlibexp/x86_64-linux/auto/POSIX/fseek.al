@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 297 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fseek.al)"
+#line 291 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fseek.al)"
 sub fseek {
     redef "IO::Seekable::seek()";
 }

@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-perldelta - what is new for perl v5.13.0
+perl5130delta - what is new for perl v5.13.0
 
 =head1 DESCRIPTION
 
@@ -22,7 +22,7 @@ should give a few percent speed increase, and eliminates almost all of
 the speed penalty caused by the introduction of "safe signals" in
 5.8.0. Signals should still be dispatched within the same statement as
 they were previously - if this is not the case, or it is possible to
-create uninterruptable loops, this is a bug, and reports are encouraged
+create uninterruptible loops, this is a bug, and reports are encouraged
 of how to recreate such issues.
 
 =head2 Assignment to C<$0> sets the legacy process name with C<prctl()> on Linux
@@ -33,6 +33,12 @@ since version 4.000. Now system utilities that read the legacy process
 name such as ps, top and killall will recognize the name you set when
 assigning to C<$0>. The string you supply will be cut off at 16 bytes,
 this is a limitation imposed by Linux.
+
+=head2 Optimization of shift; and pop; calls without arguments
+
+Additional two OPs are not added anymore into op tree for shift and pop
+calls without argument (when it works on C<@_>). Makes C<shift;> 5%
+faster over C<shift @_;> on not threaded perl and 25% faster on threaded.
 
 =head1 Modules and Pragmata
 

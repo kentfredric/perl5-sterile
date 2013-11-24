@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 701 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getpgrp.al)"
+#line 695 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/getpgrp.al)"
 sub getpgrp {
     usage "getpgrp()" if @_ != 0;
     CORE::getpgrp;

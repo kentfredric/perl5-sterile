@@ -97,7 +97,7 @@ Force byte semantics rather than character semantics
 
 =item charnames
 
-Define character names for C<\N{named}> string literal escapes
+Access to Unicode character names and named character sequences; also define character names
 
 =item constant
 
@@ -347,7 +347,7 @@ CGI routines for writing to the HTTPD (or other) error log
 
 =item CGI::Cookie
 
-Interface to Netscape Cookies
+Interface to HTTP Cookies
 
 =item CGI::Fast
 
@@ -392,6 +392,38 @@ Utility for CPAN::Config file Initialization
 =item CPAN::Kwalify
 
 Interface between CPAN.pm and Kwalify.pm
+
+=item CPAN::Meta
+
+The distribution metadata for a CPAN dist
+
+=item CPAN::Meta::Converter
+
+Convert CPAN distribution metadata structures
+
+=item CPAN::Meta::Feature
+
+An optional feature provided by a CPAN distribution
+
+=item CPAN::Meta::History
+
+History of CPAN Meta Spec changes
+
+=item CPAN::Meta::Prereqs
+
+A set of distribution prerequisites by phase and type
+
+=item CPAN::Meta::Spec
+
+Specification for CPAN distribution metadata
+
+=item CPAN::Meta::Validator
+
+Validate CPAN distribution metadata structures
+
+=item CPAN::Meta::YAML
+
+Read and write a subset of YAML for CPAN Meta files
 
 =item CPAN::Nox
 
@@ -439,11 +471,7 @@ Documentation on how to write your own plugins
 
 =item Carp
 
-Warn of errors (from perspective of caller)
-
-=item Class::ISA
-
-Report the search path for a class's ISA tree
+Alternative warn and die for modules
 
 =item Class::Struct
 
@@ -515,7 +543,7 @@ Stringified perl data structures, suitable for both printing and C<eval>
 
 =item Devel::DProf
 
-A Perl code profiler
+A B<DEPRECATED> Perl code profiler
 
 =item Devel::InnerPackage
 
@@ -973,6 +1001,10 @@ Extended processing of command line options
 
 Process single-character switches with switch clustering
 
+=item HTTP::Tiny
+
+A small, simple, correct HTTP/1.1 client
+
 =item Hash::Util
 
 A selection of general-utility hash subroutines
@@ -1137,6 +1169,14 @@ SysV Shared Memory IPC object class
 
 System V IPC constants and system calls
 
+=item JSON::PP
+
+JSON::XS compatible pure-Perl module.
+
+=item JSON::PP::Boolean
+
+Dummy module providing JSON::PP::Boolean
+
 =item List::Util
 
 A selection of general-utility list subroutines
@@ -1145,25 +1185,61 @@ A selection of general-utility list subroutines
 
 Indicate if List::Util was compiled with a C compiler
 
+=item Locale::Codes
+
+A distribution of modules to handle locale codes
+
+=item Locale::Codes::Changes
+
+Details important changes after 2.07
+
+=item Locale::Codes::Country
+
+Country codes for the Locale::Country module
+
+=item Locale::Codes::Currency
+
+Currency codes for the Locale::Currency module
+
+=item Locale::Codes::Language
+
+Language codes for the Locale::Language module
+
+=item Locale::Codes::Script
+
+Script codes for the Locale::Script module
+
 =item Locale::Constants
 
 Constants for Locale codes
 
 =item Locale::Country
 
-ISO codes for country identification (ISO 3166)
+Standard codes for country identification
 
 =item Locale::Currency
 
-ISO three letter codes for currency identification (ISO 4217)
+Standard codes for currency identification
 
 =item Locale::Language
 
-ISO two letter codes for language identification (ISO 639)
+Standard codes for language identification
 
 =item Locale::Maketext
 
 Framework for localization
+
+=item Locale::Maketext::Cookbook
+
+Recipes for using Locale::Maketext
+
+=item Locale::Maketext::Guts
+
+Deprecated module to load Locale::Maketext utf8 code
+
+=item Locale::Maketext::GutsLoader
+
+Deprecated module to load Locale::Maketext utf8 code
 
 =item Locale::Maketext::Simple
 
@@ -1175,7 +1251,7 @@ Article about software localization
 
 =item Locale::Script
 
-ISO codes for script identification (ISO 15924)
+Standard codes for script identification
 
 =item Log::Message
 
@@ -1303,7 +1379,7 @@ Examples of Module::Build Usage
 
 =item Module::Build::ModuleInfo
 
-Gather package and POD information from a perl module file
+DEPRECATED
 
 =item Module::Build::Notes
 
@@ -1369,6 +1445,14 @@ Builder class for Mac OS X platform
 
 Builder class for OS/2 platform
 
+=item Module::Build::Version
+
+DEPRECATED
+
+=item Module::Build::YAML
+
+DEPRECATED
+
 =item Module::CoreList
 
 What modules shipped with versions of perl
@@ -1384,6 +1468,10 @@ Looking up module information / loading at runtime
 =item Module::Loaded
 
 Mark modules as loaded or unloaded
+
+=item Module::Metadata
+
+Gather package and POD information from perl module files
 
 =item Module::Pluggable
 
@@ -1491,7 +1579,11 @@ A generic input parsing/checking mechanism.
 
 =item Parse::CPAN::Meta
 
-Parse META.yml and other similar CPAN metadata files
+Parse META.yml and META.json CPAN metadata files
+
+=item Perl::OSType
+
+Map Perl operating system names to generic types
 
 =item PerlIO
 
@@ -1604,10 +1696,6 @@ Let Perldoc render Pod as XML
 =item Pod::PlainText
 
 Convert POD data to formatted ASCII text
-
-=item Pod::Plainer
-
-Perl extension for converting Pod to old-style Pod.
 
 =item Pod::Select
 
@@ -1753,10 +1841,6 @@ Load the C socket.h defines and structure manipulators
 
 Persistence for Perl data structures
 
-=item Switch
-
-A switch statement for Perl
-
 =item Symbol
 
 Manipulate Perl symbols and their names
@@ -1777,13 +1861,13 @@ Win32 support for Sys::Syslog
 
 Base class that provides common functionality to L<TAP::Parser>
 
+=item TAP::Formatter::Base
+
+Base class for harness output delegates
+
 =item TAP::Formatter::Color
 
 Run Perl test scripts with color
-
-=item TAP::Formatter::Console
-
-Harness output delegate for default console output
 
 =item TAP::Formatter::Console
 
@@ -1831,23 +1915,23 @@ A grammar for the Test Anything Protocol.
 
 =item TAP::Parser::Iterator
 
-Internal base class for TAP::Parser Iterators
+Base class for TAP source iterators
 
 =item TAP::Parser::Iterator::Array
 
-Internal TAP::Parser array Iterator
+Iterator for array-based TAP sources
 
 =item TAP::Parser::Iterator::Process
 
-Internal TAP::Parser Iterator
+Iterator for process-based TAP sources
 
 =item TAP::Parser::Iterator::Stream
 
-Internal TAP::Parser Iterator
+Iterator for filehandle-based TAP sources
 
 =item TAP::Parser::IteratorFactory
 
-Internal TAP::Parser Iterator
+Figures out which SourceHandler objects to use for a given Source
 
 =item TAP::Parser::Multiplexer
 
@@ -1907,11 +1991,31 @@ A no-op job.
 
 =item TAP::Parser::Source
 
-Stream output from some source
+A TAP source & meta data about it
 
-=item TAP::Parser::Source::Perl
+=item TAP::Parser::SourceHandler
 
-Stream Perl output
+Base class for different TAP source handlers
+
+=item TAP::Parser::SourceHandler::Executable
+
+Stream output from an executable TAP source
+
+=item TAP::Parser::SourceHandler::File
+
+Stream TAP from a text file.
+
+=item TAP::Parser::SourceHandler::Handle
+
+Stream TAP from an IO::Handle or a GLOB.
+
+=item TAP::Parser::SourceHandler::Perl
+
+Stream TAP from a Perl executable
+
+=item TAP::Parser::SourceHandler::RawTAP
+
+Stream output from raw TAP in a scalar/array ref.
 
 =item TAP::Parser::Utils
 
@@ -2093,6 +2197,34 @@ Base class for ALL classes (blessed references)
 
 Unicode Collation Algorithm
 
+=item Unicode::Collate::CJK::Big5
+
+Weighting CJK Unified Ideographs
+
+=item Unicode::Collate::CJK::GB2312
+
+Weighting CJK Unified Ideographs
+
+=item Unicode::Collate::CJK::JISX0208
+
+Weighting JIS KANJI for Unicode::Collate
+
+=item Unicode::Collate::CJK::Korean
+
+Weighting CJK Unified Ideographs
+
+=item Unicode::Collate::CJK::Pinyin
+
+Weighting CJK Unified Ideographs
+
+=item Unicode::Collate::CJK::Stroke
+
+Weighting CJK Unified Ideographs
+
+=item Unicode::Collate::Locale
+
+Linguistic tailoring for DUCET via Unicode::Collate
+
 =item Unicode::Normalize
 
 Unicode Normalization Forms
@@ -2117,6 +2249,10 @@ Perl extension to manipulate DCL symbols
 
 Standard I/O functions via VMS extensions
 
+=item Version::Requirements
+
+A set of version requirements for a CPAN dist
+
 =item Win32API::File
 
 Low-level access to Win32 system API calls for files/dirs.
@@ -2128,10 +2264,6 @@ Win32 CORE function stubs
 =item XS::APItest
 
 Test the perl C API
-
-=item XS::APItest::KeywordRPN
-
-Write arithmetic expressions in RPN
 
 =item XS::Typemap
 
@@ -3393,6 +3525,8 @@ old behavior if people rely on it.  Document incompatible changes.
 
 =back
 
+=back
+
 =head2 Guidelines for Converting Perl 4 Library Scripts into Modules
 
 =over 4
@@ -3488,8 +3622,6 @@ the application could invoked as:
      % perl -e 'use Module::Name; method(@ARGV)' ...
 or
      % perl -mModule::Name ...    (in perl5.002 or higher)
-
-=back
 
 =back
 

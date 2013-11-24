@@ -18,7 +18,7 @@ BEGIN {
                         $FIND_VERSION $ERROR $CHECK_INC_HASH];
     use Exporter;
     @ISA            = qw[Exporter];
-    $VERSION        = '0.34';
+    $VERSION        = '0.44';
     $VERBOSE        = 0;
     $DEPRECATED     = 0;
     $FIND_VERSION   = 1;
@@ -85,7 +85,7 @@ and so forth.
 
 =head1 Methods
 
-=head1 $href = check_install( module => NAME [, version => VERSION, verbose => BOOL ] );
+=head2 $href = check_install( module => NAME [, version => VERSION, verbose => BOOL ] );
 
 C<check_install> allows you to verify if a certain module is installed
 or not. You may call it with the following arguments:
@@ -204,6 +204,8 @@ sub check_install {
             if ( ref $dir ) {
                 ### @INC hook -- we invoke it and get the filehandle back
                 ### this is actually documented behaviour as of 5.8 ;)
+
+                my $existed_in_inc = $INC{$file_inc};
     
                 if (UNIVERSAL::isa($dir, 'CODE')) {
                     ($fh) = $dir->($dir, $file);
@@ -222,6 +224,8 @@ sub check_install {
                 }
     
                 $filename = $INC{$file_inc} || $file;
+
+                delete $INC{$file_inc} if not $existed_in_inc;
     
             } else {
                 $filename = File::Spec->catfile($dir, $file);
@@ -298,10 +302,18 @@ sub check_install {
         ### Update from JPeacock: apparently qv() and version->new
         ### are different things, and we *must* use version->new
         ### here, or things like #30056 might start happening
-        $href->{uptodate} = 
+
+        ### We have to wrap this in an eval as version-0.82 raises
+        ### exceptions and not warnings now *sigh*
+
+        eval {
+
+          $href->{uptodate} = 
             version->new( $args->{version} ) <= version->new( $href->{version} )
                 ? 1 
                 : 0;
+
+        };
     }
 
     if ( $DEPRECATED and version->new($]) >= version->new('5.011') ) {
@@ -322,13 +334,16 @@ sub _parse_version {
     my $str     = shift or return;
     my $verbose = shift or 0;
 
+    ### skip lines which doesn't contain VERSION
+    return unless $str =~ /VERSION/;
+
     ### skip commented out lines, they won't eval to anything.
     return if $str =~ /^\s*#/;
         
     ### the following regexp & eval statement comes from the 
     ### ExtUtils::MakeMaker source (EU::MM_Unix->parse_version) 
     ### Following #18892, which tells us the original
-    ### regex breaks under -T, we must modifiy it so
+    ### regex breaks under -T, we must modify it so
     ### it captures the entire expression, and eval /that/
     ### rather than $_, which is insecure.
     my $taint_safe_str = do { $str =~ /(^.*$)/sm; $1 };
@@ -596,7 +611,7 @@ The default is 1;
 This controls whether C<Module::Load::Conditional> checks your
 C<%INC> hash to see if a module is available. By default, only
 C<@INC> is scanned to see if a module is physically on your
-filesystem, or avialable via an C<@INC-hook>. Setting this variable
+filesystem, or available via an C<@INC-hook>. Setting this variable
 to C<true> will trust any entries in C<%INC> and return them for
 you.
 

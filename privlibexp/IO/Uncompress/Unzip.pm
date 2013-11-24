@@ -8,14 +8,14 @@ use strict ;
 use warnings;
 use bytes;
 
-use IO::Uncompress::RawInflate  2.024 ;
-use IO::Compress::Base::Common  2.024 qw(:Status createSelfTiedObject);
-use IO::Uncompress::Adapter::Inflate  2.024 ;
-use IO::Uncompress::Adapter::Identity 2.024 ;
-use IO::Compress::Zlib::Extra 2.024 ;
-use IO::Compress::Zip::Constants 2.024 ;
+use IO::Uncompress::RawInflate  2.033 ;
+use IO::Compress::Base::Common  2.033 qw(:Status createSelfTiedObject);
+use IO::Uncompress::Adapter::Inflate  2.033 ;
+use IO::Uncompress::Adapter::Identity 2.033 ;
+use IO::Compress::Zlib::Extra 2.033 ;
+use IO::Compress::Zip::Constants 2.033 ;
 
-use Compress::Raw::Zlib  2.024 qw(crc32) ;
+use Compress::Raw::Zlib  2.033 qw(crc32) ;
 
 BEGIN
 {
@@ -30,7 +30,7 @@ require Exporter ;
 
 our ($VERSION, @ISA, @EXPORT_OK, %EXPORT_TAGS, $UnzipError, %headerLookup);
 
-$VERSION = '2.024';
+$VERSION = '2.033';
 $UnzipError = '';
 
 @ISA    = qw(Exporter IO::Uncompress::RawInflate);
@@ -63,7 +63,7 @@ sub unzip
 
 sub getExtraParams
 {
-    use IO::Compress::Base::Common  2.024 qw(:Parse);
+    use IO::Compress::Base::Common  2.033 qw(:Parse);
 
     
     return (
@@ -894,8 +894,6 @@ If C<$input> is a string that is delimited by the characters "<" and ">"
 C<unzip> will assume that it is an I<input fileglob string>. The
 input is the list of files that match the fileglob.
 
-If the fileglob does not match any files ...
-
 See L<File::GlobMapper|File::GlobMapper> for more details.
 
 =back
@@ -939,6 +937,8 @@ output is the list of files that match the fileglob.
 
 When C<$output> is an fileglob string, C<$input> must also be a fileglob
 string. Anything else is an error.
+
+See L<File::GlobMapper|File::GlobMapper> for more details.
 
 =back
 
@@ -1009,8 +1009,8 @@ data to the output data stream.
 
 So when the output is a filehandle it will carry out a seek to the eof
 before writing any uncompressed data. If the output is a filename, it will be opened for
-appending. If the output is a buffer, all uncompressed data will be appened to
-the existing buffer.
+appending. If the output is a buffer, all uncompressed data will be
+appended to the existing buffer.
 
 Conversely when C<Append> is not specified, or it is present and is set to
 false, it will operate as follows.
@@ -1056,17 +1056,43 @@ C<InputLength> option.
 
 =head2 Examples
 
-To read the contents of the file C<file1.txt.zip> and write the
-uncompressed data to the file C<file1.txt>.
+Say you have a zip file, C<file1.zip>, that only contains a
+single member, you can read it and write the uncompressed data to the
+file C<file1.txt> like this.
 
     use strict ;
     use warnings ;
     use IO::Uncompress::Unzip qw(unzip $UnzipError) ;
 
-    my $input = "file1.txt.zip";
+    my $input = "file1.zip";
     my $output = "file1.txt";
     unzip $input => $output
         or die "unzip failed: $UnzipError\n";
+
+If you have a zip file that contains multiple members and want to read a
+specific member from the file, say C<"data1">, use the C<Name> option 
+
+    use strict ;
+    use warnings ;
+    use IO::Uncompress::Unzip qw(unzip $UnzipError) ;
+
+    my $input = "file1.zip";
+    my $output = "file1.txt";
+    unzip $input => $output, Name => "data1"
+        or die "unzip failed: $UnzipError\n";
+
+Alternatively, if you want to read the  C<"data1"> member into memory, use
+a scalar reference for the C<output> partameter.
+
+    use strict ;
+    use warnings ;
+    use IO::Uncompress::Unzip qw(unzip $UnzipError) ;
+
+    my $input = "file1.zip";
+    my $output ;
+    unzip $input => \$output, Name => "data1"
+        or die "unzip failed: $UnzipError\n";
+    # $output now contains the uncompressed data
 
 To read from an existing Perl filehandle, C<$input>, and write the
 uncompressed data to a buffer, C<$buffer>.
@@ -1076,34 +1102,11 @@ uncompressed data to a buffer, C<$buffer>.
     use IO::Uncompress::Unzip qw(unzip $UnzipError) ;
     use IO::File ;
 
-    my $input = new IO::File "<file1.txt.zip"
-        or die "Cannot open 'file1.txt.zip': $!\n" ;
+    my $input = new IO::File "<file1.zip"
+        or die "Cannot open 'file1.zip': $!\n" ;
     my $buffer ;
     unzip $input => \$buffer 
         or die "unzip failed: $UnzipError\n";
-
-To uncompress all files in the directory "/my/home" that match "*.txt.zip" and store the compressed data in the same directory
-
-    use strict ;
-    use warnings ;
-    use IO::Uncompress::Unzip qw(unzip $UnzipError) ;
-
-    unzip '</my/home/*.txt.zip>' => '</my/home/#1.txt>'
-        or die "unzip failed: $UnzipError\n";
-
-and if you want to compress each file one at a time, this will do the trick
-
-    use strict ;
-    use warnings ;
-    use IO::Uncompress::Unzip qw(unzip $UnzipError) ;
-
-    for my $input ( glob "/my/home/*.txt.zip" )
-    {
-        my $output = $input;
-        $output =~ s/.zip// ;
-        unzip $input => $output 
-            or die "Error compressing '$input': $UnzipError\n";
-    }
 
 =head1 OO Interface
 
@@ -1163,6 +1166,10 @@ OPTS is a combination of the following options:
 
 =over 5
 
+=item C<< Name => "membername" >>
+
+Open "membername" from the zip file for reading. 
+
 =item C<< AutoClose => 0|1 >>
 
 This option is only valid when the C<$input> parameter is a filehandle. If
@@ -1199,7 +1206,7 @@ the module will allow reading of it anyway.
 
 In addition, if the input file/buffer does contain compressed data and
 there is non-compressed data immediately following it, setting this option
-will make this module treat the whole file/bufffer as a single data stream.
+will make this module treat the whole file/buffer as a single data stream.
 
 This option defaults to 1.
 
@@ -1509,6 +1516,43 @@ Same as doing this
 
 See L<IO::Uncompress::Unzip::FAQ|IO::Uncompress::Unzip::FAQ/"Compressed files and Net::FTP">
 
+=head2 Walking through a zip file
+
+The code below can be used to traverse a zip file, one compressed data
+stream at a time.
+
+    use IO::Uncompress::Unzip qw($UnzipError);
+
+    my $zipfile = "somefile.zip";
+    my $u = new IO::Uncompress::Unzip $zipfile
+        or die "Cannot open $zipfile: $UnzipError";
+
+    my $status;
+    for ($status = 1; ! $u->eof(); $status = $u->nextStream())
+    {
+ 
+        my $name = $u->getHeaderInfo()->{Name};
+        warn "Processing member $name\n" ;
+
+        my $buff;
+        while (($status = $u->read($buff)) > 0) {
+            # Do something here
+        }
+
+        last if $status < 0;
+    }
+
+    die "Error processing $zipfile: $!\n"
+        if $status < 0 ;
+
+Each individual compressed data stream is read until the logical
+end-of-file is reached. Then C<nextStream> is called. This will skip to the
+start of the next compressed data stream and clear the end-of-file flag.
+
+It is also worth noting that C<nextStream> can be called at any time -- you
+don't have to wait until you have exhausted a compressed data stream before
+skipping to the next one.
+
 =head1 SEE ALSO
 
 L<Compress::Zlib>, L<IO::Compress::Gzip>, L<IO::Uncompress::Gunzip>, L<IO::Compress::Deflate>, L<IO::Uncompress::Inflate>, L<IO::Compress::RawDeflate>, L<IO::Uncompress::RawInflate>, L<IO::Compress::Bzip2>, L<IO::Uncompress::Bunzip2>, L<IO::Compress::Lzma>, L<IO::Uncompress::UnLzma>, L<IO::Compress::Xz>, L<IO::Uncompress::UnXz>, L<IO::Compress::Lzop>, L<IO::Uncompress::UnLzop>, L<IO::Compress::Lzf>, L<IO::Uncompress::UnLzf>, L<IO::Uncompress::AnyInflate>, L<IO::Uncompress::AnyUncompress>
@@ -1542,7 +1586,7 @@ See the Changes file.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005-2010 Paul Marquess. All rights reserved.
+Copyright (c) 2005-2011 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

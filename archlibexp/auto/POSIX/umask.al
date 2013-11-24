@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 601 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/umask.al)"
+#line 595 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/umask.al)"
 sub umask {
     usage "umask(mask)" if @_ != 1;
     CORE::umask($_[0]);

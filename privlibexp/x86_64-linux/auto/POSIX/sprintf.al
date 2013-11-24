@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 385 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/sprintf.al)"
+#line 379 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/sprintf.al)"
 sub sprintf {
     usage "sprintf(pattern,args)" if @_ == 0;
     CORE::sprintf(shift,@_);

@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 402 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/vfprintf.al)"
+#line 396 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/vfprintf.al)"
 sub vfprintf {
     unimpl "vfprintf() is C-specific";
 }

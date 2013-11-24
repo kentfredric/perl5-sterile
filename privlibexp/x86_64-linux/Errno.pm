@@ -1,10 +1,10 @@
+# -*- buffer-read-only: t -*-
 #
 # This file is auto-generated. ***ANY*** changes here will be lost
 #
 
 package Errno;
-our (@EXPORT_OK,%EXPORT_TAGS,@ISA,$VERSION,%errno,$AUTOLOAD);
-use Exporter ();
+require Exporter;
 use Config;
 use strict;
 
@@ -12,29 +12,173 @@ use strict;
 "x86_64-linux-3.12.0-gentoo" or
 	die "Errno architecture (x86_64-linux-3.12.0-gentoo) does not match executable architecture ($Config{'archname'}-$Config{'osvers'})";
 
-$VERSION = "1.11";
+our $VERSION = "1.13";
 $VERSION = eval $VERSION;
-@ISA = qw(Exporter);
+our @ISA = 'Exporter';
 
-@EXPORT_OK = qw(EBADR ENOMSG ENOTSUP ESTRPIPE EADDRINUSE EL3HLT EBADF
-	ENOTBLK ENAVAIL ECHRNG ENOTNAM ELNRNG ENOKEY EXDEV EBADE EBADSLT
-	ECONNREFUSED ENOSTR ENONET EOVERFLOW EISCONN EFBIG EKEYREVOKED
-	ECONNRESET EWOULDBLOCK ELIBMAX EREMOTEIO ERFKILL ENOPKG ELIBSCN
-	EDESTADDRREQ ENOTSOCK EIO EMEDIUMTYPE EINPROGRESS ERANGE EAFNOSUPPORT
-	EADDRNOTAVAIL EINTR EREMOTE EILSEQ ENOMEM EPIPE ENETUNREACH ENODATA
-	EUSERS EOPNOTSUPP EPROTO EISNAM ESPIPE EALREADY ENAMETOOLONG ENOEXEC
-	EISDIR EBADRQC EEXIST EDOTDOT ELIBBAD EOWNERDEAD ESRCH EFAULT EXFULL
-	EDEADLOCK EAGAIN ENOPROTOOPT ENETDOWN EPROTOTYPE EL2NSYNC ENETRESET
-	EUCLEAN EADV EROFS ESHUTDOWN EMULTIHOP EPROTONOSUPPORT ENFILE ENOLCK
-	ECONNABORTED ECANCELED EDEADLK ESRMNT ENOLINK ETIME ENOTDIR EINVAL
-	ENOTTY ENOANO ELOOP ENOENT EPFNOSUPPORT EBADMSG ENOMEDIUM EL2HLT EDOM
-	EBFONT EKEYEXPIRED EMSGSIZE ENOCSI EL3RST ENOSPC EIDRM ENOBUFS ENOSYS
-	EHOSTDOWN EBADFD ENOSR ENOTCONN ESTALE EDQUOT EKEYREJECTED EMFILE
-	ENOTRECOVERABLE EACCES EBUSY E2BIG EPERM ELIBEXEC ETOOMANYREFS ELIBACC
-	ENOTUNIQ ECOMM ERESTART ESOCKTNOSUPPORT EUNATCH ETIMEDOUT ENXIO ENODEV
-	ETXTBSY EHWPOISON EMLINK ECHILD EHOSTUNREACH EREMCHG ENOTEMPTY);
-	
-%EXPORT_TAGS = (
+my %err;
+
+BEGIN {
+    %err = (
+	EPERM => 1,
+	ENOENT => 2,
+	ESRCH => 3,
+	EINTR => 4,
+	EIO => 5,
+	ENXIO => 6,
+	E2BIG => 7,
+	ENOEXEC => 8,
+	EBADF => 9,
+	ECHILD => 10,
+	EWOULDBLOCK => 11,
+	EAGAIN => 11,
+	ENOMEM => 12,
+	EACCES => 13,
+	EFAULT => 14,
+	ENOTBLK => 15,
+	EBUSY => 16,
+	EEXIST => 17,
+	EXDEV => 18,
+	ENODEV => 19,
+	ENOTDIR => 20,
+	EISDIR => 21,
+	EINVAL => 22,
+	ENFILE => 23,
+	EMFILE => 24,
+	ENOTTY => 25,
+	ETXTBSY => 26,
+	EFBIG => 27,
+	ENOSPC => 28,
+	ESPIPE => 29,
+	EROFS => 30,
+	EMLINK => 31,
+	EPIPE => 32,
+	EDOM => 33,
+	ERANGE => 34,
+	EDEADLOCK => 35,
+	EDEADLK => 35,
+	ENAMETOOLONG => 36,
+	ENOLCK => 37,
+	ENOSYS => 38,
+	ENOTEMPTY => 39,
+	ELOOP => 40,
+	ENOMSG => 42,
+	EIDRM => 43,
+	ECHRNG => 44,
+	EL2NSYNC => 45,
+	EL3HLT => 46,
+	EL3RST => 47,
+	ELNRNG => 48,
+	EUNATCH => 49,
+	ENOCSI => 50,
+	EL2HLT => 51,
+	EBADE => 52,
+	EBADR => 53,
+	EXFULL => 54,
+	ENOANO => 55,
+	EBADRQC => 56,
+	EBADSLT => 57,
+	EBFONT => 59,
+	ENOSTR => 60,
+	ENODATA => 61,
+	ETIME => 62,
+	ENOSR => 63,
+	ENONET => 64,
+	ENOPKG => 65,
+	EREMOTE => 66,
+	ENOLINK => 67,
+	EADV => 68,
+	ESRMNT => 69,
+	ECOMM => 70,
+	EPROTO => 71,
+	EMULTIHOP => 72,
+	EDOTDOT => 73,
+	EBADMSG => 74,
+	EOVERFLOW => 75,
+	ENOTUNIQ => 76,
+	EBADFD => 77,
+	EREMCHG => 78,
+	ELIBACC => 79,
+	ELIBBAD => 80,
+	ELIBSCN => 81,
+	ELIBMAX => 82,
+	ELIBEXEC => 83,
+	EILSEQ => 84,
+	ERESTART => 85,
+	ESTRPIPE => 86,
+	EUSERS => 87,
+	ENOTSOCK => 88,
+	EDESTADDRREQ => 89,
+	EMSGSIZE => 90,
+	EPROTOTYPE => 91,
+	ENOPROTOOPT => 92,
+	EPROTONOSUPPORT => 93,
+	ESOCKTNOSUPPORT => 94,
+	ENOTSUP => 95,
+	EOPNOTSUPP => 95,
+	EPFNOSUPPORT => 96,
+	EAFNOSUPPORT => 97,
+	EADDRINUSE => 98,
+	EADDRNOTAVAIL => 99,
+	ENETDOWN => 100,
+	ENETUNREACH => 101,
+	ENETRESET => 102,
+	ECONNABORTED => 103,
+	ECONNRESET => 104,
+	ENOBUFS => 105,
+	EISCONN => 106,
+	ENOTCONN => 107,
+	ESHUTDOWN => 108,
+	ETOOMANYREFS => 109,
+	ETIMEDOUT => 110,
+	ECONNREFUSED => 111,
+	EHOSTDOWN => 112,
+	EHOSTUNREACH => 113,
+	EALREADY => 114,
+	EINPROGRESS => 115,
+	ESTALE => 116,
+	EUCLEAN => 117,
+	ENOTNAM => 118,
+	ENAVAIL => 119,
+	EISNAM => 120,
+	EREMOTEIO => 121,
+	EDQUOT => 122,
+	ENOMEDIUM => 123,
+	EMEDIUMTYPE => 124,
+	ECANCELED => 125,
+	ENOKEY => 126,
+	EKEYEXPIRED => 127,
+	EKEYREVOKED => 128,
+	EKEYREJECTED => 129,
+	EOWNERDEAD => 130,
+	ENOTRECOVERABLE => 131,
+	ERFKILL => 132,
+	EHWPOISON => 133,
+    );
+    # Generate proxy constant subroutines for all the values.
+    # Well, almost all the values. Unfortunately we can't assume that at this
+    # point that our symbol table is empty, as code such as if the parser has
+    # seen code such as C<exists &Errno::EINVAL>, it will have created the
+    # typeglob.
+    # Doing this before defining @EXPORT_OK etc means that even if a platform is
+    # crazy enough to define EXPORT_OK as an error constant, everything will
+    # still work, because the parser will upgrade the PCS to a real typeglob.
+    # We rely on the subroutine definitions below to update the internal caches.
+    # Don't use %each, as we don't want a copy of the value.
+    foreach my $name (keys %err) {
+        if ($Errno::{$name}) {
+            # We expect this to be reached fairly rarely, so take an approach
+            # which uses the least compile time effort in the common case:
+            eval "sub $name() { $err{$name} }; 1" or die $@;
+        } else {
+            $Errno::{$name} = \$err{$name};
+        }
+    }
+}
+
+our @EXPORT_OK = keys %err;
+
+our %EXPORT_TAGS = (
     POSIX => [qw(
 	E2BIG EACCES EADDRINUSE EADDRNOTAVAIL EAFNOSUPPORT EAGAIN EALREADY
 	EBADF EBUSY ECHILD ECONNABORTED ECONNREFUSED ECONNRESET EDEADLK
@@ -49,153 +193,13 @@ $VERSION = eval $VERSION;
     )]
 );
 
-sub EPERM () { 1 }
-sub ENOENT () { 2 }
-sub ESRCH () { 3 }
-sub EINTR () { 4 }
-sub EIO () { 5 }
-sub ENXIO () { 6 }
-sub E2BIG () { 7 }
-sub ENOEXEC () { 8 }
-sub EBADF () { 9 }
-sub ECHILD () { 10 }
-sub EWOULDBLOCK () { 11 }
-sub EAGAIN () { 11 }
-sub ENOMEM () { 12 }
-sub EACCES () { 13 }
-sub EFAULT () { 14 }
-sub ENOTBLK () { 15 }
-sub EBUSY () { 16 }
-sub EEXIST () { 17 }
-sub EXDEV () { 18 }
-sub ENODEV () { 19 }
-sub ENOTDIR () { 20 }
-sub EISDIR () { 21 }
-sub EINVAL () { 22 }
-sub ENFILE () { 23 }
-sub EMFILE () { 24 }
-sub ENOTTY () { 25 }
-sub ETXTBSY () { 26 }
-sub EFBIG () { 27 }
-sub ENOSPC () { 28 }
-sub ESPIPE () { 29 }
-sub EROFS () { 30 }
-sub EMLINK () { 31 }
-sub EPIPE () { 32 }
-sub EDOM () { 33 }
-sub ERANGE () { 34 }
-sub EDEADLOCK () { 35 }
-sub EDEADLK () { 35 }
-sub ENAMETOOLONG () { 36 }
-sub ENOLCK () { 37 }
-sub ENOSYS () { 38 }
-sub ENOTEMPTY () { 39 }
-sub ELOOP () { 40 }
-sub ENOMSG () { 42 }
-sub EIDRM () { 43 }
-sub ECHRNG () { 44 }
-sub EL2NSYNC () { 45 }
-sub EL3HLT () { 46 }
-sub EL3RST () { 47 }
-sub ELNRNG () { 48 }
-sub EUNATCH () { 49 }
-sub ENOCSI () { 50 }
-sub EL2HLT () { 51 }
-sub EBADE () { 52 }
-sub EBADR () { 53 }
-sub EXFULL () { 54 }
-sub ENOANO () { 55 }
-sub EBADRQC () { 56 }
-sub EBADSLT () { 57 }
-sub EBFONT () { 59 }
-sub ENOSTR () { 60 }
-sub ENODATA () { 61 }
-sub ETIME () { 62 }
-sub ENOSR () { 63 }
-sub ENONET () { 64 }
-sub ENOPKG () { 65 }
-sub EREMOTE () { 66 }
-sub ENOLINK () { 67 }
-sub EADV () { 68 }
-sub ESRMNT () { 69 }
-sub ECOMM () { 70 }
-sub EPROTO () { 71 }
-sub EMULTIHOP () { 72 }
-sub EDOTDOT () { 73 }
-sub EBADMSG () { 74 }
-sub EOVERFLOW () { 75 }
-sub ENOTUNIQ () { 76 }
-sub EBADFD () { 77 }
-sub EREMCHG () { 78 }
-sub ELIBACC () { 79 }
-sub ELIBBAD () { 80 }
-sub ELIBSCN () { 81 }
-sub ELIBMAX () { 82 }
-sub ELIBEXEC () { 83 }
-sub EILSEQ () { 84 }
-sub ERESTART () { 85 }
-sub ESTRPIPE () { 86 }
-sub EUSERS () { 87 }
-sub ENOTSOCK () { 88 }
-sub EDESTADDRREQ () { 89 }
-sub EMSGSIZE () { 90 }
-sub EPROTOTYPE () { 91 }
-sub ENOPROTOOPT () { 92 }
-sub EPROTONOSUPPORT () { 93 }
-sub ESOCKTNOSUPPORT () { 94 }
-sub ENOTSUP () { 95 }
-sub EOPNOTSUPP () { 95 }
-sub EPFNOSUPPORT () { 96 }
-sub EAFNOSUPPORT () { 97 }
-sub EADDRINUSE () { 98 }
-sub EADDRNOTAVAIL () { 99 }
-sub ENETDOWN () { 100 }
-sub ENETUNREACH () { 101 }
-sub ENETRESET () { 102 }
-sub ECONNABORTED () { 103 }
-sub ECONNRESET () { 104 }
-sub ENOBUFS () { 105 }
-sub EISCONN () { 106 }
-sub ENOTCONN () { 107 }
-sub ESHUTDOWN () { 108 }
-sub ETOOMANYREFS () { 109 }
-sub ETIMEDOUT () { 110 }
-sub ECONNREFUSED () { 111 }
-sub EHOSTDOWN () { 112 }
-sub EHOSTUNREACH () { 113 }
-sub EALREADY () { 114 }
-sub EINPROGRESS () { 115 }
-sub ESTALE () { 116 }
-sub EUCLEAN () { 117 }
-sub ENOTNAM () { 118 }
-sub ENAVAIL () { 119 }
-sub EISNAM () { 120 }
-sub EREMOTEIO () { 121 }
-sub EDQUOT () { 122 }
-sub ENOMEDIUM () { 123 }
-sub EMEDIUMTYPE () { 124 }
-sub ECANCELED () { 125 }
-sub ENOKEY () { 126 }
-sub EKEYEXPIRED () { 127 }
-sub EKEYREVOKED () { 128 }
-sub EKEYREJECTED () { 129 }
-sub EOWNERDEAD () { 130 }
-sub ENOTRECOVERABLE () { 131 }
-sub ERFKILL () { 132 }
-sub EHWPOISON () { 133 }
-
-sub TIEHASH { bless [] }
+sub TIEHASH { bless \%err }
 
 sub FETCH {
-    my ($self, $errname) = @_;
-    my $proto = prototype("Errno::$errname");
-    my $errno = "";
-    if (defined($proto) && $proto eq "") {
-	no strict 'refs';
-	$errno = &$errname;
-        $errno = 0 unless $! == $errno;
-    }
-    return $errno;
+    my (undef, $errname) = @_;
+    return "" unless exists $err{$errname};
+    my $errno = $err{$errname};
+    return $errno == $! ? $errno : 0;
 }
 
 sub STORE {
@@ -203,33 +207,24 @@ sub STORE {
     Carp::confess("ERRNO hash is read only!");
 }
 
-*CLEAR = \&STORE;
-*DELETE = \&STORE;
+*CLEAR = *DELETE = \*STORE; # Typeglob aliasing uses less space
 
 sub NEXTKEY {
-    my($k,$v);
-    while(($k,$v) = each %Errno::) {
-	my $proto = prototype("Errno::$k");
-	last if (defined($proto) && $proto eq "");
-    }
-    $k
+    each %err;
 }
 
 sub FIRSTKEY {
-    my $s = scalar keys %Errno::;	# initialize iterator
-    goto &NEXTKEY;
+    my $s = scalar keys %err;	# initialize iterator
+    each %err;
 }
 
 sub EXISTS {
-    my ($self, $errname) = @_;
-    my $r = ref $errname;
-    my $proto = !$r || $r eq 'CODE' ? prototype($errname) : undef;
-    defined($proto) && $proto eq "";
+    my (undef, $errname) = @_;
+    exists $err{$errname};
 }
 
-tie %!, __PACKAGE__;
+tie %!, __PACKAGE__; # Returns an object, objects are true.
 
-1;
 __END__
 
 =head1 NAME
@@ -285,3 +280,4 @@ under the same terms as Perl itself.
 
 =cut
 
+# ex: set ro:

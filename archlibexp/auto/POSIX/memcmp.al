@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 498 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/memcmp.al)"
+#line 492 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/memcmp.al)"
 sub memcmp {
     unimpl "memcmp() is C-specific, use eq instead";
 }

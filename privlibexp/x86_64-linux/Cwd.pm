@@ -129,7 +129,7 @@ it from Cwd.
 
 =item *
 
-Since the path seperators are different on some operating systems ('/'
+Since the path separators are different on some operating systems ('/'
 on Unix, ':' on MacPerl, etc...) we recommend you use the File::Spec
 modules wherever portability is a concern.
 
@@ -171,7 +171,7 @@ use strict;
 use Exporter;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 
-$VERSION = '3.31';
+$VERSION = '3.36';
 my $xs_version = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -747,6 +747,13 @@ sub _os2_cwd {
     return $ENV{'PWD'};
 }
 
+sub _win32_cwd_simple {
+    $ENV{'PWD'} = `cd`;
+    chomp $ENV{'PWD'};
+    $ENV{'PWD'} =~ s:\\:/:g ;
+    return $ENV{'PWD'};
+}
+
 sub _win32_cwd {
     if (eval 'defined &DynaLoader::boot_DynaLoader') {
 	$ENV{'PWD'} = Win32::GetCwd();
@@ -758,7 +765,7 @@ sub _win32_cwd {
     return $ENV{'PWD'};
 }
 
-*_NT_cwd = defined &Win32::GetCwd ? \&_win32_cwd : \&_os2_cwd;
+*_NT_cwd = defined &Win32::GetCwd ? \&_win32_cwd : \&_win32_cwd_simple;
 
 sub _dos_cwd {
     if (!defined &Dos::GetCwd) {

@@ -2,11 +2,17 @@ use 5.006_001;
 
 =head1 NAME
 
-Devel::DProf - a Perl code profiler
+Devel::DProf - a B<DEPRECATED> Perl code profiler
 
 =head1 SYNOPSIS
 
 	perl -d:DProf test.pl
+
+=head1 ACHTUNG!
+
+C<Devel::DProf> is B<DEPRECATED> and will be removed from a future version of
+Perl. We strongly recommend that you install and use L<Devel::NYTProf> instead,
+as it offers significantly improved profiling and reporting.
 
 =head1 DESCRIPTION
 
@@ -197,9 +203,6 @@ For example, this code will break under Devel::DProf:
 A pattern like this is used by Test::More's skip() function, for
 example.  See L<perldiag> for more details.
 
-Mail bug reports and feature requests to the perl5-porters mailing list at
-F<E<lt>perl5-porters@perl.orgE<gt>>.
-
 =head1 SEE ALSO
 
 L<perl>, L<dprofpp>, times(2)
@@ -213,26 +216,32 @@ sub NONESUCH_noxs {
 	return $Devel::DProf::VERSION;
 }
 
-package DB;
+{
+    package DB;
 
-#
-# As of perl5.003_20, &DB::sub stub is not needed (some versions
-# even had problems if stub was redefined with XS version).
-#
+    #
+    # As of perl5.003_20, &DB::sub stub is not needed (some versions
+    # even had problems if stub was redefined with XS version).
+    #
 
-# disable DB single-stepping
-BEGIN { $single = 0; }
+    # disable DB single-stepping
+    BEGIN { $single = 0; }
 
-# This sub is needed during startup.
-sub DB { 
-#	print "nonXS DBDB\n";
+    # This sub is needed during startup.
+    sub DB {
+	#	print "nonXS DBDB\n";
+    }
 }
 
 use XSLoader ();
 
-$Devel::DProf::VERSION = '20080331.00';  # this version not authorized by
+$Devel::DProf::VERSION = '20110228.00';  # this version not authorized by
 				         # Dean Roehrich. See "Changes" file.
 
-XSLoader::load 'Devel::DProf', $Devel::DProf::VERSION;
+use if $] >= 5.013, 'deprecate';
+
+sub import {
+    XSLoader::load 'Devel::DProf', $Devel::DProf::VERSION;
+}
 
 1;

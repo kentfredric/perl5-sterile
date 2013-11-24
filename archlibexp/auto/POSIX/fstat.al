@@ -3,7 +3,7 @@
 # See AutoSplit.pm.
 package POSIX;
 
-#line 582 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fstat.al)"
+#line 576 "../../lib/POSIX.pm (autosplit into ../../lib/auto/POSIX/fstat.al)"
 sub fstat {
     usage "fstat(fd)" if @_ != 1;
     local *TMP;

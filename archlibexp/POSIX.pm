@@ -4,11 +4,11 @@ use warnings;
 
 our(@ISA, %EXPORT_TAGS, @EXPORT_OK, @EXPORT, $AUTOLOAD, %SIGRT) = ();
 
-our $VERSION = "1.19";
+our $VERSION = "1.24";
 
 use AutoLoader;
 
-use XSLoader ();
+require XSLoader;
 
 use Fcntl qw(FD_CLOEXEC F_DUPFD F_GETFD F_GETFL F_GETLK F_RDLCK F_SETFD
 	     F_SETFL F_SETLK F_SETLKW F_UNLCK F_WRLCK O_ACCMODE O_APPEND
@@ -33,24 +33,18 @@ sub croak { require Carp;  goto &Carp::croak }
 # declare usage to assist AutoLoad
 sub usage;
 
-XSLoader::load 'POSIX', $VERSION;
+XSLoader::load();
 
 sub AUTOLOAD {
-    no strict;
     no warnings 'uninitialized';
     if ($AUTOLOAD =~ /::(_?[a-z])/) {
 	# require AutoLoader;
 	$AutoLoader::AUTOLOAD = $AUTOLOAD;
 	goto &AutoLoader::AUTOLOAD
     }
-    local $! = 0;
     my $constname = $AUTOLOAD;
     $constname =~ s/.*:://;
-    my ($error, $val) = constant($constname);
-    croak $error if $error;
-    *$AUTOLOAD = sub { $val };
-
-    goto &$AUTOLOAD;
+    constant($constname);
 }
 
 package POSIX::SigAction;
@@ -829,7 +823,8 @@ sub load_imports {
 		SA_RESETHAND SA_RESTART SA_SIGINFO SIGABRT SIGALRM
 		SIGCHLD SIGCONT SIGFPE SIGHUP SIGILL SIGINT SIGKILL
 		SIGPIPE %SIGRT SIGRTMIN SIGRTMAX SIGQUIT SIGSEGV SIGSTOP
-		SIGTERM SIGTSTP SIGTTIN	SIGTTOU SIGUSR1 SIGUSR2
+		SIGTERM SIGTSTP SIGTTIN SIGTTOU SIGUSR1 SIGUSR2 SIGBUS
+		SIGPOLL SIGPROF SIGSYS SIGTRAP SIGURG SIGVTALRM SIGXCPU SIGXFSZ
 		SIG_BLOCK SIG_DFL SIG_ERR SIG_IGN SIG_SETMASK SIG_UNBLOCK
 		raise sigaction signal sigpending sigprocmask sigsuspend)],
 
@@ -912,7 +907,7 @@ sub load_imports {
   my %export;
   @export{map {@$_} values %EXPORT_TAGS} = ();
   # Doing the de-dup with a temporary hash has the advantage that the SVs in
-  # @EXPORT are actually shared hash key sacalars, which will save some memory.
+  # @EXPORT are actually shared hash key scalars, which will save some memory.
   push @EXPORT, keys %export;
 }
 

@@ -289,7 +289,7 @@ L<perlfunc/"sysopen"> for more on this approach.
 
 Some devices will be expecting a "\r" at the end of each line rather
 than a "\n".  In some ports of perl, "\r" and "\n" are different from
-their usual (Unix) ASCII values of "\012" and "\015".  You may have to
+their usual (Unix) ASCII values of "\015" and "\012".  You may have to
 give the numeric values you want directly, using octal ("\015"), hex
 ("0x0D"), or as a control-character specification ("\cM").
 
@@ -523,12 +523,12 @@ L<perlfunc/syscall>.
 
 =head2 How can I do an atexit() or setjmp()/longjmp()? (Exception handling)
 
-Release 5 of Perl added the END block, which can be used to simulate
-C<atexit()>.  Each package's END block is called when the program or
-thread ends (see L<perlmod> manpage for more details).
+You can use the C<END> block to simulate C<atexit()>. Each package's
+C<END> block is called when the program or thread ends. See the L<perlmod>
+manpage for more details about C<END> blocks.
 
-For example, you can use this to make sure your filter program
-managed to finish its output without filling up the disk:
+For example, you can use this to make sure your filter program managed
+to finish its output without filling up the disk:
 
 	END {
 		close(STDOUT) || die "stdout close failed: $!";
@@ -540,16 +540,16 @@ though, so if you use C<END> blocks you should also use
 	use sigtrap qw(die normal-signals);
 
 Perl's exception-handling mechanism is its C<eval()> operator.  You
-can use C<eval()> as C<setjmp> and C<die()> as C<longjmp>.  For
+can use C<eval()> as C<setjmp> and C<die()> as C<longjmp>. For
 details of this, see the section on signals, especially the time-out
 handler for a blocking C<flock()> in L<perlipc/"Signals"> or the
-section on "Signals" in the Camel Book.
+section on "Signals" in I<Programming Perl>.
 
-If exception handling is all you're interested in, try the
-C<exceptions.pl> library (part of the standard perl distribution).
+If exception handling is all you're interested in, use one of the
+many CPAN modules that handle exceptions, such as C<Try::Tiny>.
 
-If you want the atexit() syntax (and an rmexit() as well), try the
-AtExit module available from CPAN.
+If you want the C<atexit()> syntax (and an C<rmexit()> as well), try the
+C<AtExit> module available from CPAN.
 
 =head2 Why doesn't my sockets program work under System V (Solaris)?  What does the error message "Protocol not supported" mean?
 
@@ -860,7 +860,7 @@ list. Further examples of this can be found in L<perlipc/"Safe Pipe
 Opens">.
 
 Note that if you're using Windows, no solution to this vexing issue is
-even possible.  Even if Perl were to emulate C<fork()>, you'd still be
+even possible.  Even though Perl emulates C<fork()>, you'll still be
 stuck, because Windows does not have an argc/argv-style API.
 
 =head2 Why can't my script read from STDIN after I gave it EOF (^D on Unix, ^Z on MS-DOS)?
@@ -909,7 +909,7 @@ causes many inefficiencies.
 =head2 Can I use perl to run a telnet or ftp session?
 
 Try the C<Net::FTP>, C<TCP::Client>, and C<Net::Telnet> modules
-(available from CPAN). 
+(available from CPAN).
 http://www.cpan.org/scripts/netstuff/telnet.emul.shar will also help
 for emulating the telnet protocol, but C<Net::Telnet> is quite
 probably easier to use.
@@ -933,7 +933,7 @@ approach will suffice:
 
 =head2 How can I write expect in Perl?
 
-Once upon a time, there was a library called L<chat2.pl> (part of the
+Once upon a time, there was a library called F<chat2.pl> (part of the
 standard perl distribution), which never really got finished.  If you
 find it somewhere, I<don't use it>.  These days, your best bet is to
 look at the Expect module available from CPAN, which also requires two
@@ -1014,8 +1014,8 @@ perform these actions for you.
 
 (contributed by brian d foy)
 
-This is a difficult question to answer, and the best answer is 
-only a guess. 
+This is a difficult question to answer, and the best answer is
+only a guess.
 
 What do you really want to know? If you merely want to know if one of
 your filehandles is connected to a terminal, you can try the C<-t>
@@ -1024,7 +1024,7 @@ file test:
 	if( -t STDOUT ) {
 		print "I'm connected to a terminal!\n";
 		}
-		
+
 However, you might be out of luck if you expect that means there is a
 real person on the other side. With the C<Expect> module, another
 program can pretend to be a person. The program might even come close
@@ -1037,7 +1037,7 @@ session is interactive. Otherwise, the filehandle is a null handle
 that simply discards the output:
 
 	use IO::Interactive;
-	
+
 	print { is_interactive } "I might go to standard output!\n";
 
 This still doesn't guarantee that a real person is answering your
@@ -1192,7 +1192,7 @@ might not be perl's message.
 (contributed by brian d foy)
 
 The easiest way is to have a module also named CPAN do it for you by using
-the C<cpan> command the comes with Perl. You can give it a list of modules
+the C<cpan> command that comes with Perl. You can give it a list of modules
 to install:
 
 	$ cpan IO::Interactive Getopt::Whatever
@@ -1200,7 +1200,7 @@ to install:
 If you prefer C<CPANPLUS>, it's just as easy:
 
 	$ cpanp i IO::Interactive Getopt::Whatever
-	
+
 If you want to install a distribution from the current directory, you can
 tell C<CPAN.pm> to install C<.> (the full stop):
 
@@ -1217,7 +1217,7 @@ For distributions that use I<Makefile.PL>:
 
 	$ perl Makefile.PL
 	$ make test install
-	
+
 For distributions that use I<Build.PL>:
 
 	$ perl Build.PL
@@ -1265,6 +1265,14 @@ See the entry for C<use> in L<perlfunc> for more details.
 
 When you build modules, tell Perl where to install the modules.
 
+If you want to install modules for your own use, the easiest way might
+be C<local::lib>, which you can download from CPAN. It sets various
+installation settings for you, and uses those same settings within
+your programs.
+
+If you want more flexibility, you need to configure your CPAN client
+for your particular situation.
+
 For C<Makefile.PL>-based distributions, use the INSTALL_BASE option
 when generating Makefiles:
 
@@ -1294,11 +1302,11 @@ include path (@INC) at runtime?> for details on how to run your newly
 installed modules.
 
 There is one caveat with INSTALL_BASE, though, since it acts
-differently than the PREFIX and LIB settings that older versions of
+differently from the PREFIX and LIB settings that older versions of
 C<ExtUtils::MakeMaker> advocated. INSTALL_BASE does not support
 installing modules for multiple versions of Perl or different
-architectures under the same directory. You should consider if you
-really want that , and if you do, use the older PREFIX and LIB
+architectures under the same directory. You should consider whether you
+really want that and, if you do, use the older PREFIX and LIB
 settings. See the C<ExtUtils::Makemaker> documentation for more details.
 
 =head2 How do I add the directory my program lives in to the module/library search path?
@@ -1342,6 +1350,14 @@ you can then use to construct the right library path:
 
 	use FindBin qw($Bin);
 
+You can also use C<local::lib> to do much of the same thing. Install
+modules using C<local::lib>'s settings then use the module in your
+program:
+
+	 use local::lib; # sets up a local lib at ~/perl5
+
+See the C<local::lib> documentation for more details.
+
 =head2 How do I add a directory to my include path (@INC) at runtime?
 
 Here are the suggested ways of modifying your include path, including
@@ -1349,28 +1365,34 @@ environment variables, run-time switches, and in-code statements:
 
 =over 4
 
-=item the PERLLIB environment variable
+=item the C<PERLLIB> environment variable
 
 	$ export PERLLIB=/path/to/my/dir
 	$ perl program.pl
 
-=item the PERL5LIB environment variable
+=item the C<PERL5LIB> environment variable
 
 	$ export PERL5LIB=/path/to/my/dir
 	$ perl program.pl
 
-=item the perl -Idir command line flag
+=item the C<perl -Idir> command line flag
 
 	$ perl -I/path/to/my/dir program.pl
 
-=item the use lib pragma:
+=item the C<lib> pragma:
 
 	use lib "$ENV{HOME}/myown_perllib";
 
+=item the C<local::lib> module:
+
+	use local::lib;
+
+	use local::lib "~/myown_perllib";
+
 =back
 
-The last is particularly useful because it knows about machine
-dependent architectures.  The C<lib.pm> pragmatic module was first
+The last is particularly useful because it knows about machine-dependent
+architectures.  The C<lib.pm> pragmatic module was first
 included with the 5.002 release of Perl.
 
 =head2 What is socket.ph and where do I get it?
