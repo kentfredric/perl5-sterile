@@ -1709,6 +1709,9 @@ X<emulate_cop_io>
 =item feature_is_enabled
 X<feature_is_enabled>
 
+=item find_lexical_cv
+X<find_lexical_cv>
+
 =item find_runcv_where
 X<find_runcv_where>
 

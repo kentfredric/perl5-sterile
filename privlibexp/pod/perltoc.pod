@@ -4375,10 +4375,11 @@ Module::Build::Platform::VOS, Module::Build::Platform::Windows,
 Module::Build::Platform::aix, Module::Build::Platform::cygwin,
 Module::Build::Platform::darwin, Module::Build::Platform::os2,
 Module::Build::Version, Module::Build::YAML, Module::CoreList,
-Module::Load, Module::Load::Conditional, Module::Loaded, Module::Metadata,
-Module::Pluggable, Module::Pluggable::Object, NDBM_File, NEXT, Net::Cmd,
-Net::Config, Net::Domain, Net::FTP, Net::NNTP, Net::Netrc, Net::POP3,
-Net::Ping, Net::SMTP, Net::Time, Net::hostent, Net::libnetFAQ, Net::netent,
+Module::CoreList::Utils, Module::Load, Module::Load::Conditional,
+Module::Loaded, Module::Metadata, Module::Pluggable,
+Module::Pluggable::Object, NDBM_File, NEXT, Net::Cmd, Net::Config,
+Net::Domain, Net::FTP, Net::NNTP, Net::Netrc, Net::POP3, Net::Ping,
+Net::SMTP, Net::Time, Net::hostent, Net::libnetFAQ, Net::netent,
 Net::protoent, Net::servent, O, ODBM_File, Object::Accessor, Opcode, POSIX,
 Package::Constants, Params::Check, Parse::CPAN::Meta, Perl::OSType, PerlIO,
 PerlIO::encoding, PerlIO::mmap, PerlIO::scalar, PerlIO::via,
@@ -4782,8 +4783,8 @@ that execute the most opcodes
 
 =item REFERENCES
 
-DTrace User Guide, DTrace: Dynamic Tracing in Oracle Solaris, Mac OS X and
-FreeBSD
+DTrace Dynamic Tracing Guide, DTrace: Dynamic Tracing in Oracle Solaris,
+Mac OS X and FreeBSD
 
 =item SEE ALSO
 
@@ -6587,22 +6588,23 @@ do_trans X<do_trans>, do_vecget X<do_vecget>, do_vecset X<do_vecset>,
 do_vop X<do_vop>, dofile X<dofile>, dump_all_perl X<dump_all_perl>,
 dump_packsubs_perl X<dump_packsubs_perl>, dump_sub_perl X<dump_sub_perl>,
 dump_sv_child X<dump_sv_child>, emulate_cop_io X<emulate_cop_io>,
-feature_is_enabled X<feature_is_enabled>, find_runcv_where
-X<find_runcv_where>, find_rundefsv2 X<find_rundefsv2>, find_script
-X<find_script>, free_tied_hv_pool X<free_tied_hv_pool>,
-get_and_check_backslash_N_name X<get_and_check_backslash_N_name>,
-get_db_sub X<get_db_sub>, get_debug_opts X<get_debug_opts>, get_hash_seed
-X<get_hash_seed>, get_invlist_iter_addr X<get_invlist_iter_addr>,
-get_invlist_previous_index_addr X<get_invlist_previous_index_addr>,
-get_invlist_version_id_addr X<get_invlist_version_id_addr>,
-get_invlist_zero_addr X<get_invlist_zero_addr>, get_no_modify
-X<get_no_modify>, get_opargs X<get_opargs>, get_re_arg X<get_re_arg>,
-getenv_len X<getenv_len>, grok_bslash_x X<grok_bslash_x>, hfree_next_entry
-X<hfree_next_entry>, hv_backreferences_p X<hv_backreferences_p>,
-hv_kill_backrefs X<hv_kill_backrefs>, hv_undef_flags X<hv_undef_flags>,
-init_argv_symbols X<init_argv_symbols>, init_constants X<init_constants>,
-init_dbargs X<init_dbargs>, init_debugger X<init_debugger>, invert
-X<invert>, invlist_array X<invlist_array>, invlist_clone X<invlist_clone>,
+feature_is_enabled X<feature_is_enabled>, find_lexical_cv
+X<find_lexical_cv>, find_runcv_where X<find_runcv_where>, find_rundefsv2
+X<find_rundefsv2>, find_script X<find_script>, free_tied_hv_pool
+X<free_tied_hv_pool>, get_and_check_backslash_N_name
+X<get_and_check_backslash_N_name>, get_db_sub X<get_db_sub>, get_debug_opts
+X<get_debug_opts>, get_hash_seed X<get_hash_seed>, get_invlist_iter_addr
+X<get_invlist_iter_addr>, get_invlist_previous_index_addr
+X<get_invlist_previous_index_addr>, get_invlist_version_id_addr
+X<get_invlist_version_id_addr>, get_invlist_zero_addr
+X<get_invlist_zero_addr>, get_no_modify X<get_no_modify>, get_opargs
+X<get_opargs>, get_re_arg X<get_re_arg>, getenv_len X<getenv_len>,
+grok_bslash_x X<grok_bslash_x>, hfree_next_entry X<hfree_next_entry>,
+hv_backreferences_p X<hv_backreferences_p>, hv_kill_backrefs
+X<hv_kill_backrefs>, hv_undef_flags X<hv_undef_flags>, init_argv_symbols
+X<init_argv_symbols>, init_constants X<init_constants>, init_dbargs
+X<init_dbargs>, init_debugger X<init_debugger>, invert X<invert>,
+invlist_array X<invlist_array>, invlist_clone X<invlist_clone>,
 invlist_highest X<invlist_highest>, invlist_is_iterating
 X<invlist_is_iterating>, invlist_iterfinish X<invlist_iterfinish>,
 invlist_iterinit X<invlist_iterinit>, invlist_max X<invlist_max>,
@@ -7376,197 +7378,33 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.18.0
+=head2 perldelta - what is new for perl v5.18.1
 
 =over 4
 
 =item DESCRIPTION
 
-=item Core Enhancements
-
-=over 4
-
-=item New mechanism for experimental features
-
-=item Hash overhaul
-
-=item Upgrade to Unicode 6.2
-
-=item Character name aliases may now include non-Latin1-range characters
-
-=item New DTrace probes
-
-=item C<${^LAST_FH}>
-
-=item Regular Expression Set Operations
-
-=item Lexical subroutines
-
-=item Computed Labels
-
-=item More CORE:: subs
-
-=item C<kill> with negative signal names
-
-=back
-
-=item Security
-
-=over 4
-
-=item See also: hash overhaul
-
-=item C<Storable> security warning in documentation
-
-=item C<Locale::Maketext> allowed code injection via a malicious template
-
-=item Avoid calling memset with a negative count
-
-=back
-
 =item Incompatible Changes
-
-=over 4
-
-=item See also: hash overhaul
-
-=item An unknown character name in C<\N{...}> is now a syntax error
-
-=item Formerly deprecated characters in C<\N{}> character name aliases are
-now errors.
-
-=item C<\N{BELL}> now refers to U+1F514 instead of U+0007
-
-=item New Restrictions in Multi-Character Case-Insensitive Matching in
-Regular Expression Bracketed Character Classes
-
-=item Explicit rules for variable names and identifiers
-
-=item Vertical tabs are now whitespace
-
-=item C</(?{})/> and C</(??{})/> have been heavily reworked
-
-=item Stricter parsing of substitution replacement
-
-=item C<given> now aliases the global C<$_>
-
-=item The smartmatch family of features are now experimental
-
-=item Lexical C<$_> is now experimental
-
-=item readline() with C<$/ = \N> now reads N characters, not N bytes
-
-=item Overridden C<glob> is now passed one argument
-
-=item Here doc parsing
-
-=item Alphanumeric operators must now be separated from the closing
-delimiter of regular expressions
-
-=item qw(...) can no longer be used as parentheses
-
-=item Interaction of lexical and default warnings
-
-=item C<state sub> and C<our sub>
-
-=item Defined values stored in environment are forced to byte strings
-
-=item C<require> dies for unreadable files
-
-=item C<gv_fetchmeth_*> and SUPER
-
-=item C<split>'s first argument is more consistently interpreted
-
-=back
-
-=item Deprecations
-
-=over 4
-
-=item Module removals
-
-L<encoding>, L<Archive::Extract>, L<B::Lint>, L<B::Lint::Debug>,
-L<CPANPLUS> and all included C<CPANPLUS::*> modules,
-L<Devel::InnerPackage>, L<Log::Message>, L<Log::Message::Config>,
-L<Log::Message::Handlers>, L<Log::Message::Item>, L<Log::Message::Simple>,
-L<Module::Pluggable>, L<Module::Pluggable::Object>, L<Object::Accessor>,
-L<Pod::LaTeX>, L<Term::UI>, L<Term::UI::History>
-
-=item Deprecated Utilities
-
-L<cpanp>, C<cpanp-run-perl>, L<cpan2dist>, L<pod2latex>
-
-=item PL_sv_objcount
-
-=item Five additional characters should be escaped in patterns with C</x>
-
-=item User-defined charnames with surprising whitespace
-
-=item Various XS-callable functions are now deprecated
-
-=item Certain rare uses of backslashes within regexes are now deprecated
-
-=item Splitting the tokens C<(?> and C<(*> in regular expressions
-
-=item Pre-PerlIO IO implementations
-
-=back
-
-=item Future Deprecations
-
-DG/UX, NeXT
-
-=item Performance Enhancements
 
 =item Modules and Pragmata
 
 =over 4
 
-=item New Modules and Pragmata
-
 =item Updated Modules and Pragmata
 
-=item Removed Modules and Pragmata
-
 =back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=item New Diagnostics
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Utility Changes
-
-=item Configuration and Compilation
-
-=item Testing
 
 =item Platform Support
 
 =over 4
 
-=item Discontinued Platforms
-
-BeOS, UTS Global, VM/ESA, MPE/IX, EPOC, Rhapsody
-
 =item Platform-Specific Notes
+
+AIX, MidnightBSD
 
 =back
 
-=item Internal Changes
-
 =item Selected Bug Fixes
-
-=item Known Problems
-
-=item Obituary
 
 =item Acknowledgements
 
@@ -7576,197 +7414,33 @@ BeOS, UTS Global, VM/ESA, MPE/IX, EPOC, Rhapsody
 
 =back
 
-=head2 perl5180delta, perldelta - what is new for perl v5.18.0
+=head2 perl5181delta, perldelta - what is new for perl v5.18.1
 
 =over 4
 
 =item DESCRIPTION
 
-=item Core Enhancements
-
-=over 4
-
-=item New mechanism for experimental features
-
-=item Hash overhaul
-
-=item Upgrade to Unicode 6.2
-
-=item Character name aliases may now include non-Latin1-range characters
-
-=item New DTrace probes
-
-=item C<${^LAST_FH}>
-
-=item Regular Expression Set Operations
-
-=item Lexical subroutines
-
-=item Computed Labels
-
-=item More CORE:: subs
-
-=item C<kill> with negative signal names
-
-=back
-
-=item Security
-
-=over 4
-
-=item See also: hash overhaul
-
-=item C<Storable> security warning in documentation
-
-=item C<Locale::Maketext> allowed code injection via a malicious template
-
-=item Avoid calling memset with a negative count
-
-=back
-
 =item Incompatible Changes
-
-=over 4
-
-=item See also: hash overhaul
-
-=item An unknown character name in C<\N{...}> is now a syntax error
-
-=item Formerly deprecated characters in C<\N{}> character name aliases are
-now errors.
-
-=item C<\N{BELL}> now refers to U+1F514 instead of U+0007
-
-=item New Restrictions in Multi-Character Case-Insensitive Matching in
-Regular Expression Bracketed Character Classes
-
-=item Explicit rules for variable names and identifiers
-
-=item Vertical tabs are now whitespace
-
-=item C</(?{})/> and C</(??{})/> have been heavily reworked
-
-=item Stricter parsing of substitution replacement
-
-=item C<given> now aliases the global C<$_>
-
-=item The smartmatch family of features are now experimental
-
-=item Lexical C<$_> is now experimental
-
-=item readline() with C<$/ = \N> now reads N characters, not N bytes
-
-=item Overridden C<glob> is now passed one argument
-
-=item Here doc parsing
-
-=item Alphanumeric operators must now be separated from the closing
-delimiter of regular expressions
-
-=item qw(...) can no longer be used as parentheses
-
-=item Interaction of lexical and default warnings
-
-=item C<state sub> and C<our sub>
-
-=item Defined values stored in environment are forced to byte strings
-
-=item C<require> dies for unreadable files
-
-=item C<gv_fetchmeth_*> and SUPER
-
-=item C<split>'s first argument is more consistently interpreted
-
-=back
-
-=item Deprecations
-
-=over 4
-
-=item Module removals
-
-L<encoding>, L<Archive::Extract>, L<B::Lint>, L<B::Lint::Debug>,
-L<CPANPLUS> and all included C<CPANPLUS::*> modules,
-L<Devel::InnerPackage>, L<Log::Message>, L<Log::Message::Config>,
-L<Log::Message::Handlers>, L<Log::Message::Item>, L<Log::Message::Simple>,
-L<Module::Pluggable>, L<Module::Pluggable::Object>, L<Object::Accessor>,
-L<Pod::LaTeX>, L<Term::UI>, L<Term::UI::History>
-
-=item Deprecated Utilities
-
-L<cpanp>, C<cpanp-run-perl>, L<cpan2dist>, L<pod2latex>
-
-=item PL_sv_objcount
-
-=item Five additional characters should be escaped in patterns with C</x>
-
-=item User-defined charnames with surprising whitespace
-
-=item Various XS-callable functions are now deprecated
-
-=item Certain rare uses of backslashes within regexes are now deprecated
-
-=item Splitting the tokens C<(?> and C<(*> in regular expressions
-
-=item Pre-PerlIO IO implementations
-
-=back
-
-=item Future Deprecations
-
-DG/UX, NeXT
-
-=item Performance Enhancements
 
 =item Modules and Pragmata
 
 =over 4
 
-=item New Modules and Pragmata
-
 =item Updated Modules and Pragmata
 
-=item Removed Modules and Pragmata
-
 =back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=item New Diagnostics
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Utility Changes
-
-=item Configuration and Compilation
-
-=item Testing
 
 =item Platform Support
 
 =over 4
 
-=item Discontinued Platforms
-
-BeOS, UTS Global, VM/ESA, MPE/IX, EPOC, Rhapsody
-
 =item Platform-Specific Notes
+
+AIX, MidnightBSD
 
 =back
 
-=item Internal Changes
-
 =item Selected Bug Fixes
-
-=item Known Problems
-
-=item Obituary
 
 =item Acknowledgements
 
@@ -7776,7 +7450,7 @@ BeOS, UTS Global, VM/ESA, MPE/IX, EPOC, Rhapsody
 
 =back
 
-=head2 perl5180delta, perldelta - what is new for perl v5.18.0
+=head2 perl5180delta - what is new for perl v5.18.0
 
 =over 4
 
@@ -15870,7 +15544,7 @@ FILL, MAX, ARRAY, ARRAYelt, OFF, AvFLAGS
 =item B::CV Methods
 
 STASH, START, ROOT, GV, FILE, DEPTH, PADLIST, OUTSIDE, OUTSIDE_SEQ, XSUB,
-XSUBANY, CvFLAGS, const_sv
+XSUBANY, CvFLAGS, const_sv, NAME_HEK
 
 =item B::HV Methods
 
@@ -30223,6 +29897,32 @@ C<%Module::CoreList::upstream>, C<%Module::CoreList::bug_tracker>
 =item CAVEATS
 
 =item HISTORY
+
+=item AUTHOR
+
+=item LICENSE
+
+=item SEE ALSO
+
+=back
+
+=head2 Module::CoreList::Utils - what utilities shipped with versions of
+perl
+
+=over 4
+
+=item SYNOPSIS
+
+=item DESCRIPTION
+
+=item FUNCTIONS API
+
+C<utilities>, C<first_release( UTILITY )>, C<first_release_by_date( UTILITY
+)>, C<removed_from( UTILITY )>, C<removed_from_by_date( UTILITY )>
+
+=item DATA STRUCTURES
+
+C<%Module::CoreList::Utils::utilities>
 
 =item AUTHOR
 

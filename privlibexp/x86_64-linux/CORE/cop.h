@@ -581,7 +581,9 @@ struct block_format {
  * decremented by LEAVESUB, the other by LEAVE. */
 
 #define PUSHSUB_BASE(cx)						\
-	ENTRY_PROBE(GvENAME(CvGV(cv)),		       			\
+	ENTRY_PROBE(CvNAMED(cv)						\
+			? HEK_KEY(CvNAME_HEK(cv))			\
+			: GvENAME(CvGV(cv)),	       			\
 		CopFILE((const COP *)CvSTART(cv)),			\
 		CopLINE((const COP *)CvSTART(cv)),			\
 		CopSTASHPV((const COP *)CvSTART(cv)));			\
@@ -596,16 +598,19 @@ struct block_format {
 	    SAVEFREESV(cv);						\
 	}
 
-
-#define PUSHSUB(cx)							\
-    {									\
+#define PUSHSUB_GET_LVALUE_MASK(func) \
 	/* If the context is indeterminate, then only the lvalue */	\
 	/* flags that the caller also has are applicable.        */	\
-	U8 phlags =							\
+	(								\
 	   (PL_op->op_flags & OPf_WANT)					\
 	       ? OPpENTERSUB_LVAL_MASK					\
 	       : !(PL_op->op_private & OPpENTERSUB_LVAL_MASK)		\
-	           ? 0 : (U8)Perl_was_lvalue_sub(aTHX);			\
+	           ? 0 : (U8)func(aTHX)					\
+	)
+
+#define PUSHSUB(cx)							\
+    {									\
+	U8 phlags = PUSHSUB_GET_LVALUE_MASK(Perl_was_lvalue_sub);	\
 	PUSHSUB_BASE(cx)						\
 	cx->blk_u16 = PL_op->op_private &				\
 	                  (phlags|OPpDEREF);				\
@@ -643,7 +648,9 @@ struct block_format {
 
 #define POPSUB(cx,sv)							\
     STMT_START {							\
-	RETURN_PROBE(GvENAME(CvGV((const CV*)cx->blk_sub.cv)),		\
+	RETURN_PROBE(CvNAMED(cx->blk_sub.cv)				\
+			? HEK_KEY(CvNAME_HEK(cx->blk_sub.cv))		\
+			: GvENAME(CvGV(cx->blk_sub.cv)),		\
 		CopFILE((COP*)CvSTART((const CV*)cx->blk_sub.cv)),	\
 		CopLINE((COP*)CvSTART((const CV*)cx->blk_sub.cv)),	\
 		CopSTASHPV((COP*)CvSTART((const CV*)cx->blk_sub.cv)));	\
