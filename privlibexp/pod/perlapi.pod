@@ -1567,7 +1567,7 @@ Found in file mathoms.c
 =item gv_fetchmethod
 X<gv_fetchmethod>
 
-See L<gv_fetchmethod_autoload>.
+See L</gv_fetchmethod_autoload>.
 
 	GV*	gv_fetchmethod(HV* stash, const char* name)
 
@@ -2487,7 +2487,8 @@ Found in file hv.c
 =item hv_clear
 X<hv_clear>
 
-Clears a hash, making it empty.
+Frees the all the elements of a hash, leaving it empty.
+The XS equivalent of %hash = (). See also L</hv_undef>.
 
 	void	hv_clear(HV *hv)
 
@@ -2637,7 +2638,7 @@ Found in file hv.c
 X<hv_iterinit>
 
 Prepares a starting point to traverse a hash table.  Returns the number of
-keys in the hash (i.e. the same as C<HvKEYS(hv)>).  The return value is
+keys in the hash (i.e. the same as C<HvUSEDKEYS(hv)>).  The return value is
 currently only meaningful for hashes without tie magic.
 
 NOTE: Before version 5.004_65, C<hv_iterinit> used to return the number of
@@ -2826,7 +2827,11 @@ Found in file hv.c
 =item hv_undef
 X<hv_undef>
 
-Undefines the hash.
+Undefines the hash.  The XS equivalent of undef(%hash).
+
+As well as freeing all the elements of the hash (like hv_clear()), this
+also frees any auxiliary data and storage associated with the hash.
+See also L</hv_clear>.
 
 	void	hv_undef(HV *hv)
 
@@ -3837,7 +3842,7 @@ The XSUB-writer's interface to the C C<malloc> function.
 In 5.9.3, Newx() and friends replace the older New() API, and drops
 the first parameter, I<x>, a debug aid which allowed callers to identify
 themselves.  This aid has been superseded by a new build option,
-PERL_MEM_LOG (see L<perlhack/PERL_MEM_LOG>).  The older API is still
+PERL_MEM_LOG (see L<perlhacktips/PERL_MEM_LOG>).  The older API is still
 there for use in XS modules supporting older perls.
 
 	void	Newx(void* ptr, int nitems, type)
@@ -4583,7 +4588,7 @@ Found in file mro.c
 =item dMULTICALL
 X<dMULTICALL>
 
-Declare local variables for a multicall. See L<perlcall/Lightweight Callbacks>.
+Declare local variables for a multicall. See L<perlcall/LIGHTWEIGHT CALLBACKS>.
 
 		dMULTICALL;
 
@@ -4593,7 +4598,7 @@ Found in file cop.h
 =item MULTICALL
 X<MULTICALL>
 
-Make a lightweight callback. See L<perlcall/Lightweight Callbacks>.
+Make a lightweight callback. See L<perlcall/LIGHTWEIGHT CALLBACKS>.
 
 		MULTICALL;
 
@@ -4604,7 +4609,7 @@ Found in file cop.h
 X<POP_MULTICALL>
 
 Closing bracket for a lightweight callback.
-See L<perlcall/Lightweight Callbacks>.
+See L<perlcall/LIGHTWEIGHT CALLBACKS>.
 
 		POP_MULTICALL;
 
@@ -4615,7 +4620,7 @@ Found in file cop.h
 X<PUSH_MULTICALL>
 
 Opening bracket for a lightweight callback.
-See L<perlcall/Lightweight Callbacks>.
+See L<perlcall/LIGHTWEIGHT CALLBACKS>.
 
 		PUSH_MULTICALL;
 
@@ -9188,7 +9193,7 @@ X<sv_utf8_decode>
 If the PV of the SV is an octet sequence in UTF-8
 and contains a multiple-byte character, the C<SvUTF8> flag is turned on
 so that it looks like a character. If the PV contains only single-byte
-characters, the C<SvUTF8> flag stays being off.
+characters, the C<SvUTF8> flag stays off.
 Scans PV for validity and returns false if the PV is invalid UTF-8.
 
 NOTE: this function is experimental and may change or be

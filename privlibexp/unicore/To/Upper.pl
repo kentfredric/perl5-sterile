@@ -7,6 +7,7 @@
 # the main body of the table, and what all code points missing from this file
 # map to.
 $utf8::SwashInfo{'ToUpper'}{'format'} = 'x'; # positive hex whole number; a code point
+$utf8::SwashInfo{'ToUpper'}{'specials_name'} = 'utf8::ToSpecUpper'; # Name of hash of special mappings
 $utf8::SwashInfo{'ToUpper'}{'missing'} = '<code point>'; # code point maps to itself
 
 # Some code points require special handling because their mappings are each to

@@ -1901,6 +1901,9 @@ X<gv_magicalize_isa>
 =item gv_magicalize_overload
 X<gv_magicalize_overload>
 
+=item hfree_next_entry
+X<hfree_next_entry>
+
 =item hfreeentries
 X<hfreeentries>
 
@@ -1915,6 +1918,9 @@ X<hv_backreferences_p>
 
 =item hv_delete_common
 X<hv_delete_common>
+
+=item hv_free_ent_ret
+X<hv_free_ent_ret>
 
 =item hv_kill_backrefs
 X<hv_kill_backrefs>
@@ -1996,9 +2002,6 @@ X<invlist_len>
 
 =item invlist_max
 X<invlist_max>
-
-=item invlist_set_array
-X<invlist_set_array>
 
 =item invlist_set_len
 X<invlist_set_len>

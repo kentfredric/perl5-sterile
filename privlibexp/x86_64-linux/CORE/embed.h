@@ -882,7 +882,6 @@
 #define invlist_intersection(a,b)	S_invlist_intersection(aTHX_ a,b)
 #define invlist_len(a)		S_invlist_len(aTHX_ a)
 #define invlist_max(a)		S_invlist_max(aTHX_ a)
-#define invlist_set_array(a,b)	S_invlist_set_array(aTHX_ a,b)
 #define invlist_set_len(a,b)	S_invlist_set_len(aTHX_ a,b)
 #define invlist_set_max(a,b)	S_invlist_set_max(aTHX_ a,b)
 #define invlist_trim(a)		S_invlist_trim(aTHX_ a)
@@ -1286,6 +1285,7 @@
 #define hsplit(a)		S_hsplit(aTHX_ a)
 #define hv_auxinit		S_hv_auxinit
 #define hv_delete_common(a,b,c,d,e,f,g)	S_hv_delete_common(aTHX_ a,b,c,d,e,f,g)
+#define hv_free_ent_ret(a,b)	S_hv_free_ent_ret(aTHX_ a,b)
 #define hv_magic_check		S_hv_magic_check
 #define hv_notallowed(a,b,c,d)	S_hv_notallowed(aTHX_ a,b,c,d)
 #define new_he()		S_new_he(aTHX)

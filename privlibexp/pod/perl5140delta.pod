@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-perldelta - what is new for perl v5.14.0
+perl5140delta - what is new for perl v5.14.0
 
 =head1 DESCRIPTION
 
@@ -1108,7 +1108,7 @@ and penalised well-behaved code.  It has been removed.
 =head2 Freeing weak references
 
 When there are many weak references to an object, freeing that object
-can under some circumstances take O(I<NE<0xB2>>) time to free, where 
+can under some circumstances take O(I<N*N>) time to free, where
 I<N> is the number of references.  The circumstances in which this can happen
 have been reduced [perl #75254]
 
@@ -4445,8 +4445,8 @@ See also: L<http://rt.perl.org/rt3/Public/Bug/Display.html?id=67694>
 
 =item *
 
-readline() returns an empty string instead of undef when it is
-interrupted by a signal.
+readline() returns an empty string instead of a cached previous value
+when it is interrupted by a signal
 
 =item *
 
@@ -4569,7 +4569,7 @@ analysed by the Perl porting team.
 If the bug you are reporting has security implications, which make it
 inappropriate to send to a publicly archived mailing list, then please send
 it to perl5-security-report@perl.org.  This points to a closed subscription
-unarchived mailing list, which includes all the core committers, who be able
+unarchived mailing list, which includes all the core committers, who are able
 to help assess the impact of issues, figure out a resolution, and help
 co-ordinate the release of patches to mitigate or fix the problem across all
 platforms on which Perl is supported.  Please use this address for

@@ -7,6 +7,7 @@
 # the main body of the table, and what all code points missing from this file
 # map to.
 $utf8::SwashInfo{'ToFold'}{'format'} = 'x'; # positive hex whole number; a code point
+$utf8::SwashInfo{'ToFold'}{'specials_name'} = 'utf8::ToSpecFold'; # Name of hash of special mappings
 $utf8::SwashInfo{'ToFold'}{'missing'} = '<code point>'; # code point maps to itself
 
 # Some code points require special handling because their mappings are each to

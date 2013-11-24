@@ -2,7 +2,7 @@
 
 package XSLoader;
 
-$VERSION = "0.13";
+$VERSION = "0.15";
 
 #use strict;
 
@@ -23,9 +23,9 @@ sub load {
     my ($module, $modlibname) = caller();
 
     if (@_) {
-	$module = $_[0];
+        $module = $_[0];
     } else {
-	$_[0] = $module;
+        $_[0] = $module;
     }
 
     # work with static linking too
@@ -39,7 +39,7 @@ sub load {
 
     my $modpname = join('/',@modparts);
     my $c = @modparts;
-    $modlibname =~ s,[\\/][^\\/]+$,, while $c--;	# Q&D basename
+    $modlibname =~ s,[\\/][^\\/]+$,, while $c--;    # Q&D basename
     my $file = "$modlibname/auto/$modpname/$modfname.so";
 
 #   print STDERR "XSLoader::load for $module ($file)\n" if $dl_debug;
@@ -111,7 +111,7 @@ XSLoader - Dynamically load C libraries into Perl code
 
 =head1 VERSION
 
-Version 0.13
+Version 0.15
 
 =head1 SYNOPSIS
 
@@ -322,6 +322,12 @@ may have much more overhead than running the same extensions after
 C<make install>.
 
 
+=head1 KNOWN BUGS
+
+The new simpler way to call C<XSLoader::load()> with no arguments at all
+does not work on Perl 5.8.4 and 5.8.5.
+
+
 =head1 BUGS
 
 Please report any bugs or feature requests via the perlbug(1) utility.
@@ -344,7 +350,7 @@ Previous maintainer was Michael G Schwern <schwern@pobox.com>.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright (C) 1990-2007 by Larry Wall and others.
+Copyright (C) 1990-2011 by Larry Wall and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

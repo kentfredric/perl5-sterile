@@ -9,5 +9,5 @@
 
 
 return <<'END';
-!utf8::IsAny
+!utf8::Any
 END

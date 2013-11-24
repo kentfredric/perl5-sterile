@@ -23,12 +23,15 @@ $utf8::SwashInfo{'ToName'}{'missing'} = ''; # code point maps to the null string
 
     # Matches legal code point.  4-6 hex numbers, If there are 6, the
     # first two must be '10'; if there are 5, the first must not be a '0'.
-    my $code_point_re = qr/(?^x: \b (?: 10[0-9A-F]{4} | [1-9A-F][0-9A-F]{4} | [0-9A-F]{4} ) \b)/;
+    # First can match at the end of a word provided that the end of the
+    # word doesn't look like a hex number.
+    my $run_on_code_point_re = qr/(?^x: (?: 10[0-9A-F]{4} | [1-9A-F][0-9A-F]{4} | [0-9A-F]{4} ) \b)/;
+    my $code_point_re = qr/(?^:\b(?^x: (?: 10[0-9A-F]{4} | [1-9A-F][0-9A-F]{4} | [0-9A-F]{4} ) \b))/;
 
     # In the following hash, the keys are the bases of names which includes
     # the code point in the name, like CJK UNIFIED IDEOGRAPH-4E01.  The values
     # of each key is another hash which is used to get the low and high ends
-    # for each range of code points that apply to the name
+    # for each range of code points that apply to the name.
     my %names_ending_in_code_point = (
         'CJK COMPATIBILITY IDEOGRAPH' => 
           {
@@ -48,6 +51,48 @@ $utf8::SwashInfo{'ToName'}{'missing'} = ''; # code point maps to the null string
               ],
           },
         'CJK UNIFIED IDEOGRAPH' => 
+          {
+            'high' => 
+              [
+                19893, # [0]
+                40907, # [1]
+                173782, # [2]
+                177972, # [3]
+                178205, # [4]
+              ],
+            'low' => 
+              [
+                13312, # [0]
+                19968, # [1]
+                131072, # [2]
+                173824, # [3]
+                177984, # [4]
+              ],
+          },
+
+    );
+
+    # The following hash is a copy of the previous one, except is for loose
+    # matching, so each name has blanks and dashes squeezed out
+    my %loose_names_ending_in_code_point = (
+        'CJKCOMPATIBILITYIDEOGRAPH' => 
+          {
+            'high' => 
+              [
+                64045, # [0]
+                64109, # [1]
+                64217, # [2]
+                195101, # [3]
+              ],
+            'low' => 
+              [
+                63744, # [0]
+                64048, # [1]
+                64112, # [2]
+                194560, # [3]
+              ],
+          },
+        'CJKUNIFIEDIDEOGRAPH' => 
           {
             'high' => 
               [
@@ -281,7 +326,7 @@ $utf8::SwashInfo{'ToName'}{'missing'} = ''; # code point maps to the null string
     my $syllable_re = qr/(|B|BB|C|D|DD|G|GG|H|J|JJ|K|M|N|P|R|S|SS|T)(A|AE|E|EO|EU|I|O|OE|U|WA|WAE|WE|WEO|WI|YA|YAE|YE|YEO|YI|YO|YU)(B|BS|C|D|G|GG|GS|H|J|K|L|LB|LG|LH|LM|LP|LS|LT|M|N|NG|NH|NJ|P|S|SS|T)?/;
 
     my $HANGUL_SYLLABLE = "HANGUL SYLLABLE ";
-    my $HANGUL_SYLLABLE_LENGTH = length $HANGUL_SYLLABLE;
+    my $loose_HANGUL_SYLLABLE = "HANGULSYLLABLE";
 
     # These constants names and values were taken from the Unicode standard,
     # version 5.1, section 3.12.  They are used in conjunction with Hangul
@@ -297,13 +342,16 @@ $utf8::SwashInfo{'ToName'}{'missing'} = ''; # code point maps to the null string
     my $NCount = $VCount * $TCount;
 
     sub name_to_code_point_special {
-        my $name = shift;
+        my ($name, $loose) = @_;
 
         # Returns undef if not one of the specially handled names; otherwise
         # returns the code point equivalent to the input name
+        # $loose is non-zero if to use loose matching, 'name' in that case
+        # must be input as upper case with all blanks and dashes squeezed out.
 
-        if (substr($name, 0, $HANGUL_SYLLABLE_LENGTH) eq $HANGUL_SYLLABLE) {
-            $name = substr($name, $HANGUL_SYLLABLE_LENGTH);
+        if ((! $loose && $name =~ s/$HANGUL_SYLLABLE//)
+            || ($loose && $name =~ s/$loose_HANGUL_SYLLABLE//))
+        {
             return if $name !~ qr/^$syllable_re$/;
             my $L = $Jamo_L{$1};
             my $V = $Jamo_V{$2};
@@ -311,22 +359,30 @@ $utf8::SwashInfo{'ToName'}{'missing'} = ''; # code point maps to the null string
             return ($L * $VCount + $V) * $TCount + $T + $SBase;
         }
 
-        # Name must end in '-code_point' for this to handle.
-        if ($name !~ /^ (.*) - ($code_point_re) $/x) {
-            return;
-        }
+        # Name must end in 'code_point' for this to handle.
+        return if (($loose && $name !~ /^ (.*?) ($run_on_code_point_re) $/x)
+                   || (! $loose && $name !~ /^ (.*) ($code_point_re) $/x));
 
         my $base = $1;
         my $code_point = CORE::hex $2;
+        my $names_ref;
+
+        if ($loose) {
+            $names_ref = \%loose_names_ending_in_code_point;
+        }
+        else {
+            return if $base !~ s/-$//;
+            $names_ref = \%names_ending_in_code_point;
+        }
 
         # Name must be one of the ones which has the code point in it.
-        return if ! $names_ending_in_code_point{$base};
+        return if ! $names_ref->{$base};
 
         # Look through the list of ranges that apply to this name to see if
         # the code point is in one of them.
-        for (my $i = 0; $i < scalar @{$names_ending_in_code_point{$base}{'low'}}; $i++) {
-            return if $names_ending_in_code_point{$base}{'low'}->[$i] > $code_point;
-            next if $names_ending_in_code_point{$base}{'high'}->[$i] < $code_point;
+        for (my $i = 0; $i < scalar @{$names_ref->{$base}{'low'}}; $i++) {
+            return if $names_ref->{$base}{'low'}->[$i] > $code_point;
+            next if $names_ref->{$base}{'high'}->[$i] < $code_point;
 
             # Here, the code point is in the range.
             return $code_point;
