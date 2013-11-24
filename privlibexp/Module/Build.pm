@@ -15,7 +15,7 @@ use Module::Build::Base;
 
 use vars qw($VERSION @ISA);
 @ISA = qw(Module::Build::Base);
-$VERSION = '0.35';
+$VERSION = '0.3603';
 $VERSION = eval $VERSION;
 
 # Okay, this is the brute-force method of finding out what kind of
@@ -167,25 +167,7 @@ This illustrates initial configuration and the running of three
 'actions'.  In this case the actions run are 'build' (the default
 action), 'test', and 'install'.  Other actions defined so far include:
 
-  build                          manpages    
-  clean                          pardist     
-  code                           ppd         
-  config_data                    ppmdist     
-  diff                           prereq_data 
-  dist                           prereq_report
-  distcheck                      pure_install
-  distclean                      realclean   
-  distdir                        retest      
-  distmeta                       skipcheck   
-  distsign                       test        
-  disttest                       testall     
-  docs                           testcover   
-  fakeinstall                    testdb      
-  help                           testpod     
-  html                           testpodcoverage
-  install                        versioninstall
-  manifest                                   
-
+<action_list>
 
 You can run the 'help' action for a complete list of actions.
 
@@ -318,7 +300,7 @@ tarball of the files listed in F<MANIFEST> and compress the tarball using
 GZIP compression.
 
 By default, this action will use the C<Archive::Tar> module. However, you can
-force it to use binary "tar" and "gzip" executables by supplying an explicit 
+force it to use binary "tar" and "gzip" executables by supplying an explicit
 C<tar> (and optional C<gzip>) parameter:
 
   ./Build dist --tar C:\path\to\tar.exe --gzip C:\path\to\zip.exe
@@ -355,8 +337,8 @@ F<META.yml> is a file containing various bits of I<metadata> about the
 distribution.  The metadata includes the distribution name, version,
 abstract, prerequisites, license, and various other data about the
 distribution.  This file is created as F<META.yml> in YAML format.
-It is recommended that the C<YAML> module be installed to create it.
-If the C<YAML> module is not installed, an internal module supplied
+It is recommended that the C<YAML::Tiny> module be installed to create it.
+If the C<YAML::Tiny> module is not installed, an internal module supplied
 with Module::Build will be used to write the META.yml file, and this
 will most likely be fine.
 
@@ -444,6 +426,24 @@ do so:
 This can be a good idea, as it helps prevent multiple versions of a
 module from being present on your system, which can be a confusing
 situation indeed.
+
+=item installdeps
+
+[version 0.36]
+
+This action will use the C<cpan_client> parameter as a command to install
+missing prerequisites.  You will be prompted whether to install
+optional dependencies.
+
+The C<cpan_client> option defaults to 'cpan' but can be set as an option or in
+F<.modulebuildrc>.  It must be a shell command that takes a list of modules to
+install as arguments (e.g. 'cpanp -i' for CPANPLUS).  If the program part is a
+relative path (e.g. 'cpan' or 'cpanp'), it will be located relative to the perl
+program that executed Build.PL.
+
+  /opt/perl/5.8.9/bin/perl Build.PL
+  ./Build installdeps --cpan_client 'cpanp -i'
+  # installs to 5.8.9
 
 =item manifest
 
@@ -541,7 +541,7 @@ for a bug report.
 [version 0.28]
 
 This action is identical to the C<install> action.  In the future,
-though, when C<install> starts writing to the file 
+though, when C<install> starts writing to the file
 F<$(INSTALLARCHLIB)/perllocal.pod>, C<pure_install> won't, and that
 will be the only difference between them.
 
@@ -666,7 +666,7 @@ argument.
 
 [version 0.25]
 
-This checks all the files described in the C<docs> action and 
+This checks all the files described in the C<docs> action and
 produces C<Test::Harness>-style output.  If you are a module author,
 this is useful to run before creating a new release.
 
@@ -674,7 +674,7 @@ this is useful to run before creating a new release.
 
 [version 0.28]
 
-This checks the pod coverage of the distribution and 
+This checks the pod coverage of the distribution and
 produces C<Test::Harness>-style output. If you are a module author,
 this is useful to run before creating a new release.
 
@@ -731,21 +731,27 @@ C<no> or C<no-> (e.g. C<--noverbose> or C<--no-verbose>).
 
 Suppress informative messages on output.
 
+=item verbose
+
+Display extra information about the Build on output.
+
+=item cpan_client
+
+Sets the C<cpan_client> command for use with the C<installdeps> action.
+See C<installdeps> for more details.
+
 =item use_rcfile
 
 Load the F<~/.modulebuildrc> option file.  This option can be set to
 false to prevent the custom resource file from being loaded.
-
-=item verbose
-
-Display extra information about the Build on output.
 
 =item allow_mb_mismatch
 
 Suppresses the check upon startup that the version of Module::Build
 we're now running under is the same version that was initially invoked
 when building the distribution (i.e. when the C<Build.PL> script was
-first run).  Use with caution.
+first run).  As of 0.3601, a mismatch results in a warning instead of
+a fatal error, so this option effectively just suppresses the warning.
 
 =item debug
 
@@ -753,7 +759,6 @@ Prints Module::Build debugging information to STDOUT, such as a trace of
 executed build actions.
 
 =back
-
 
 =head2 Default Options File (F<.modulebuildrc>)
 
@@ -782,15 +787,35 @@ key C<*> (asterisk) denotes any global options that should be applied
 to all actions, and the key 'Build_PL' specifies options to be applied
 when you invoke C<perl Build.PL>.
 
-  *        verbose=1   # global options
-  diff     flags=-u
-  install  --install_base /home/ken
-           --install_path html=/home/ken/docs/html
+  *           verbose=1   # global options
+  diff        flags=-u
+  install     --install_base /home/ken
+              --install_path html=/home/ken/docs/html
+  installdeps --cpan_client 'cpanp -i'
 
 If you wish to locate your resource file in a different location, you
 can set the environment variable C<MODULEBUILDRC> to the complete
 absolute path of the file containing your options.
 
+=head2 Environment variables
+
+=over
+
+=item MODULEBUILDRC
+
+[version 0.28]
+
+Specifies an alternate location for a default options file as described above.
+
+=item PERL_MB_OPT
+
+[version 0.36]
+
+Command line options that are applied to Build.PL or any Build action.  The
+string is split as the shell would (e.g. whitespace) and the result is
+prepended to any actual command-line arguments.
+
+=back
 
 =head1 INSTALL PATHS
 
@@ -1091,7 +1116,7 @@ modify it under the same terms as Perl itself.
 =head1 SEE ALSO
 
 perl(1), L<Module::Build::Cookbook>, L<Module::Build::Authoring>,
-L<Module::Build::API>, L<ExtUtils::MakeMaker>, L<YAML>
+L<Module::Build::API>, L<ExtUtils::MakeMaker>, L<YAML::Tiny>
 
 F<META.yml> Specification:
 L<http://module-build.sourceforge.net/META-spec-current.html>

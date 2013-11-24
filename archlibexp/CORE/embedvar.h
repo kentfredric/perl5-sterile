@@ -265,6 +265,7 @@
 #define PL_scopestack		(vTHX->Iscopestack)
 #define PL_scopestack_ix	(vTHX->Iscopestack_ix)
 #define PL_scopestack_max	(vTHX->Iscopestack_max)
+#define PL_scopestack_name	(vTHX->Iscopestack_name)
 #define PL_screamfirst		(vTHX->Iscreamfirst)
 #define PL_screamnext		(vTHX->Iscreamnext)
 #define PL_secondgv		(vTHX->Isecondgv)
@@ -323,6 +324,16 @@
 #define PL_unitcheckav_save	(vTHX->Iunitcheckav_save)
 #define PL_unlockhook		(vTHX->Iunlockhook)
 #define PL_unsafe		(vTHX->Iunsafe)
+#define PL_utf8_X_L		(vTHX->Iutf8_X_L)
+#define PL_utf8_X_LV		(vTHX->Iutf8_X_LV)
+#define PL_utf8_X_LVT		(vTHX->Iutf8_X_LVT)
+#define PL_utf8_X_LV_LVT_V	(vTHX->Iutf8_X_LV_LVT_V)
+#define PL_utf8_X_T		(vTHX->Iutf8_X_T)
+#define PL_utf8_X_V		(vTHX->Iutf8_X_V)
+#define PL_utf8_X_begin		(vTHX->Iutf8_X_begin)
+#define PL_utf8_X_extend	(vTHX->Iutf8_X_extend)
+#define PL_utf8_X_non_hangul	(vTHX->Iutf8_X_non_hangul)
+#define PL_utf8_X_prepend	(vTHX->Iutf8_X_prepend)
 #define PL_utf8_alnum		(vTHX->Iutf8_alnum)
 #define PL_utf8_alpha		(vTHX->Iutf8_alpha)
 #define PL_utf8_ascii		(vTHX->Iutf8_ascii)
@@ -333,6 +344,9 @@
 #define PL_utf8_idstart		(vTHX->Iutf8_idstart)
 #define PL_utf8_lower		(vTHX->Iutf8_lower)
 #define PL_utf8_mark		(vTHX->Iutf8_mark)
+#define PL_utf8_perl_space	(vTHX->Iutf8_perl_space)
+#define PL_utf8_perl_word	(vTHX->Iutf8_perl_word)
+#define PL_utf8_posix_digit	(vTHX->Iutf8_posix_digit)
 #define PL_utf8_print		(vTHX->Iutf8_print)
 #define PL_utf8_punct		(vTHX->Iutf8_punct)
 #define PL_utf8_space		(vTHX->Iutf8_space)
@@ -578,6 +592,7 @@
 #define PL_Iscopestack		PL_scopestack
 #define PL_Iscopestack_ix	PL_scopestack_ix
 #define PL_Iscopestack_max	PL_scopestack_max
+#define PL_Iscopestack_name	PL_scopestack_name
 #define PL_Iscreamfirst		PL_screamfirst
 #define PL_Iscreamnext		PL_screamnext
 #define PL_Isecondgv		PL_secondgv
@@ -636,6 +651,16 @@
 #define PL_Iunitcheckav_save	PL_unitcheckav_save
 #define PL_Iunlockhook		PL_unlockhook
 #define PL_Iunsafe		PL_unsafe
+#define PL_Iutf8_X_L		PL_utf8_X_L
+#define PL_Iutf8_X_LV		PL_utf8_X_LV
+#define PL_Iutf8_X_LVT		PL_utf8_X_LVT
+#define PL_Iutf8_X_LV_LVT_V	PL_utf8_X_LV_LVT_V
+#define PL_Iutf8_X_T		PL_utf8_X_T
+#define PL_Iutf8_X_V		PL_utf8_X_V
+#define PL_Iutf8_X_begin	PL_utf8_X_begin
+#define PL_Iutf8_X_extend	PL_utf8_X_extend
+#define PL_Iutf8_X_non_hangul	PL_utf8_X_non_hangul
+#define PL_Iutf8_X_prepend	PL_utf8_X_prepend
 #define PL_Iutf8_alnum		PL_utf8_alnum
 #define PL_Iutf8_alpha		PL_utf8_alpha
 #define PL_Iutf8_ascii		PL_utf8_ascii
@@ -646,6 +671,9 @@
 #define PL_Iutf8_idstart	PL_utf8_idstart
 #define PL_Iutf8_lower		PL_utf8_lower
 #define PL_Iutf8_mark		PL_utf8_mark
+#define PL_Iutf8_perl_space	PL_utf8_perl_space
+#define PL_Iutf8_perl_word	PL_utf8_perl_word
+#define PL_Iutf8_posix_digit	PL_utf8_posix_digit
 #define PL_Iutf8_print		PL_utf8_print
 #define PL_Iutf8_punct		PL_utf8_punct
 #define PL_Iutf8_space		PL_utf8_space
@@ -695,6 +723,8 @@
 #define PL_Ginterp_size		(my_vars->Ginterp_size)
 #define PL_interp_size_5_10_0	(my_vars->Ginterp_size_5_10_0)
 #define PL_Ginterp_size_5_10_0	(my_vars->Ginterp_size_5_10_0)
+#define PL_keyword_plugin	(my_vars->Gkeyword_plugin)
+#define PL_Gkeyword_plugin	(my_vars->Gkeyword_plugin)
 #define PL_malloc_mutex		(my_vars->Gmalloc_mutex)
 #define PL_Gmalloc_mutex	(my_vars->Gmalloc_mutex)
 #define PL_mmap_page_size	(my_vars->Gmmap_page_size)
@@ -774,6 +804,7 @@
 #define PL_Ghints_mutex		PL_hints_mutex
 #define PL_Ginterp_size		PL_interp_size
 #define PL_Ginterp_size_5_10_0	PL_interp_size_5_10_0
+#define PL_Gkeyword_plugin	PL_keyword_plugin
 #define PL_Gmalloc_mutex	PL_malloc_mutex
 #define PL_Gmmap_page_size	PL_mmap_page_size
 #define PL_Gmy_ctx_mutex	PL_my_ctx_mutex

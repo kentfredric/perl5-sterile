@@ -174,7 +174,7 @@ Topaz. However, Topaz provided valuable insights to the next version
 of Perl and its implementation, but was ultimately abandoned.
 
 If you want to learn more about Perl 6, or have a desire to help in
-the crusade to make Perl a better place then peruse the Perl 6 developers
+the crusade to make Perl a better place then read the Perl 6 developers
 page at http://dev.perl.org/perl6/ and get involved.
 
 Perl 6 is not scheduled for release yet, and Perl 5 will still be supported
@@ -395,17 +395,9 @@ You might find these links useful:
 
 =back
 
-=head1 REVISION
-
-Revision: $Revision$
-
-Date: $Date$
-
-See L<perlfaq> for source control details and availability.
-
 =head1 AUTHOR AND COPYRIGHT
 
-Copyright (c) 1997-2009 Tom Christiansen, Nathan Torkington, and
+Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and
 other authors as noted. All rights reserved.
 
 This documentation is free; you can redistribute it and/or modify it

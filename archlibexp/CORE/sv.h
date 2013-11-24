@@ -103,10 +103,10 @@ typedef struct hek HEK;
 
 #define _SV_HEAD_UNION \
     union {				\
+	char*   svu_pv;		/* pointer to malloced string */	\
 	IV      svu_iv;			\
 	UV      svu_uv;			\
 	SV*     svu_rv;		/* pointer to another SV */		\
-	char*   svu_pv;		/* pointer to malloced string */	\
 	SV**    svu_array;		\
 	HE**	svu_hash;		\
 	GP*	svu_gp;			\
@@ -529,7 +529,7 @@ struct xpvfm {
 	DIR *	xiou_dirp;	/* for opendir, readdir, etc */		\
 	void *	xiou_any;	/* for alignment */			\
     } xio_dirpu;							\
-    IV		xio_lines;	/* $. */				\
+    /* IV xio_lines is now in IVX  $. */				\
     IV		xio_page;	/* $% */				\
     IV		xio_page_len;	/* $= */				\
     IV		xio_lines_left;	/* $- */				\
@@ -1071,6 +1071,7 @@ the scalar's value cannot change unless written to.
 	    assert(SvTYPE(_svivx) != SVt_PVHV);				\
 	    assert(SvTYPE(_svivx) != SVt_PVCV);				\
 	    assert(SvTYPE(_svivx) != SVt_PVFM);				\
+	    assert(SvTYPE(_svivx) != SVt_PVIO);				\
 	    assert(!isGV_with_GP(_svivx));				\
 	    &(((XPVIV*) MUTABLE_PTR(SvANY(_svivx)))->xiv_iv);		\
 	 }))
@@ -1081,6 +1082,7 @@ the scalar's value cannot change unless written to.
 	    assert(SvTYPE(_svuvx) != SVt_PVHV);				\
 	    assert(SvTYPE(_svuvx) != SVt_PVCV);				\
 	    assert(SvTYPE(_svuvx) != SVt_PVFM);				\
+	    assert(SvTYPE(_svuvx) != SVt_PVIO);				\
 	    assert(!isGV_with_GP(_svuvx));				\
 	    &(((XPVUV*) MUTABLE_PTR(SvANY(_svuvx)))->xuv_uv);		\
 	 }))
@@ -1315,7 +1317,7 @@ the scalar's value cannot change unless written to.
 #define IoOFP(sv)	((XPVIO*)  SvANY(sv))->xio_ofp
 #define IoDIRP(sv)	((XPVIO*)  SvANY(sv))->xio_dirp
 #define IoANY(sv)	((XPVIO*)  SvANY(sv))->xio_any
-#define IoLINES(sv)	((XPVIO*)  SvANY(sv))->xio_lines
+#define IoLINES(sv)	((XPVIO*)  SvANY(sv))->xiv_u.xivu_iv
 #define IoPAGE(sv)	((XPVIO*)  SvANY(sv))->xio_page
 #define IoPAGE_LEN(sv)	((XPVIO*)  SvANY(sv))->xio_page_len
 #define IoLINES_LEFT(sv)((XPVIO*)  SvANY(sv))->xio_lines_left

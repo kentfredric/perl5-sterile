@@ -47,7 +47,7 @@ use vars qw(
              "CPAN/Tarzip.pm",
              "CPAN/Version.pm",
             );
-$VERSION = "5.5";
+$VERSION = "5.5001";
 # record the initial timestamp for reload.
 $reload = { map {$INC{$_} ? ($_,(stat $INC{$_})[9]) : ()} @relo };
 @CPAN::Shell::ISA = qw(CPAN::Debug);
@@ -325,7 +325,14 @@ sub d { $CPAN::Frontend->myprint(shift->format_result('Distribution',@_));}
 #-> sub CPAN::Shell::m ;
 sub m { # emacs confused here }; sub mimimimimi { # emacs in sync here
     my $self = shift;
-    $CPAN::Frontend->myprint($self->format_result('Module',@_));
+    my @m = @_;
+    for (@m) {
+        if (m|(?:\w+/)*\w+\.pm$|) { # same regexp in expandany
+            s/.pm$//;
+            s|/|::|g;
+        }
+    }
+    $CPAN::Frontend->myprint($self->format_result('Module',@m));
 }
 
 #-> sub CPAN::Shell::i ;
@@ -1229,7 +1236,21 @@ sub autobundle {
 sub expandany {
     my($self,$s) = @_;
     CPAN->debug("s[$s]") if $CPAN::DEBUG;
-    if ($s =~ m|/| or substr($s,-1,1) eq ".") { # looks like a file or a directory
+    my $module_as_path = "";
+    if ($s =~ m|(?:\w+/)*\w+\.pm$|) { # same regexp in sub m
+        $module_as_path = $s;
+        $module_as_path =~ s/.pm$//;
+        $module_as_path =~ s|/|::|g;
+    }
+    if ($module_as_path) {
+        if ($module_as_path =~ m|^Bundle::|) {
+            $self->local_bundles;
+            return $self->expand('Bundle',$module_as_path);
+        } else {
+            return $self->expand('Module',$module_as_path)
+                if $CPAN::META->exists('CPAN::Module',$module_as_path);
+        }
+    } elsif ($s =~ m|/| or substr($s,-1,1) eq ".") { # looks like a file or a directory
         $s = CPAN::Distribution->normalize($s);
         return $CPAN::META->instance('CPAN::Distribution',$s);
         # Distributions spring into existence, not expand
@@ -1483,6 +1504,13 @@ sub myprint {
                            );
 }
 
+my %already_printed;
+#-> sub CPAN::Shell::mywarnonce ;
+sub myprintonce {
+    my($self,$what) = @_;
+    $self->myprint($what) unless $already_printed{$what}++;
+}
+
 sub optprint {
     my($self,$category,$what) = @_;
     my $vname = $category . "_verbosity";
@@ -1505,6 +1533,13 @@ sub myexit {
 sub mywarn {
     my($self,$what) = @_;
     $self->print_ornamented($what, $CPAN::Config->{colorize_warn}||'bold red on_white');
+}
+
+my %already_warned;
+#-> sub CPAN::Shell::mywarnonce ;
+sub mywarnonce {
+    my($self,$what) = @_;
+    $self->mywarn($what) unless $already_warned{$what}++;
 }
 
 # only to be used for shell commands
@@ -1585,6 +1620,8 @@ sub setup_output {
 # RE-adme||MA-ke||TE-st||IN-stall : nearly everything runs through here
 sub rematein {
     my $self = shift;
+    # this variable was global and disturbed programmers, so localize:
+    local $CPAN::Distrostatus::something_has_failed_at;
     my($meth,@some) = @_;
     my @pragma;
     while($meth =~ /^(ff?orce|notest)$/) {
@@ -1626,10 +1663,22 @@ sub rematein {
             if (substr($s,-1,1) eq ".") {
                 $obj = CPAN::Shell->expandany($s);
             } else {
-                $CPAN::Frontend->mywarn("Sorry, $meth with a regular expression is ".
-                                        "not supported.\nRejecting argument '$s'\n");
-                $CPAN::Frontend->mysleep(2);
-                next;
+                my @obj;
+            CLASS: for my $class (qw(Distribution Bundle Module)) {
+                    if (@obj = $self->expand($class,$s)) {
+                        last CLASS;
+                    }
+                }
+                if (@obj) {
+                    if (1==@obj) {
+                        $obj = $obj[0];
+                    } else {
+                        $CPAN::Frontend->mywarn("Sorry, $meth with a regular expression is ".
+                                                "only supported when unambiguous.\nRejecting argument '$s'\n");
+                        $CPAN::Frontend->mysleep(2);
+                        next STHING;
+                    }
+                }
             }
         } elsif ($meth eq "ls") {
             $self->globls($s,\@pragma);

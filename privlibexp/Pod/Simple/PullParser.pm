@@ -1,7 +1,7 @@
 
 require 5;
 package Pod::Simple::PullParser;
-$VERSION = '2.02';
+$VERSION = '3.13';
 use Pod::Simple ();
 BEGIN {@ISA = ('Pod::Simple')}
 
@@ -319,6 +319,7 @@ sub _get_titled_section {
   my $desperate_for_title  = delete $options{'desperate'};
   my $accept_verbatim      = delete $options{'accept_verbatim'};
   my $max_content_length   = delete $options{'max_content_length'};
+  my $nocase               = delete $options{'nocase'};
   $max_content_length = 120 unless defined $max_content_length;
 
   Carp::croak( "Unknown " . ((1 == keys %options) ? "option: " : "options: ")
@@ -366,6 +367,7 @@ sub _get_titled_section {
         $head1_text_content .= $token->text;
       } elsif( $token->is_end and $token->tagname eq 'head1' ) {
         DEBUG and print "  Found end of head1.  Considering content...\n";
+        $head1_text_content = uc $head1_text_content if $nocase;
         if($head1_text_content eq $titlename
           or $head1_text_content =~ m/\($titlename_re\)/s
           # We accept "=head1 Nomen Modularis (NAME)" for sake of i18n
@@ -626,7 +628,15 @@ For example, suppose you have a document that starts out:
   Hoo::Boy::Wowza -- Stuff B<wow> yeah!
 
 $parser->get_title on that document will return "Hoo::Boy::Wowza --
-Stuff wow yeah!".
+Stuff wow yeah!". If the document starts with:
+
+  =head1 Name
+  
+  Hoo::Boy::W00t -- Stuff B<w00t> yeah!
+
+Then you'll need to pass the C<nocase> option in order to recognize "Name":
+
+  $parser->get_title(nocase => 1);
 
 In cases where get_title can't find the title, it will return empty-string
 ("").
@@ -652,7 +662,15 @@ But if the document starts out:
   Hooboy, stuff B<wow> yeah!
 
 then $parser->get_short_title on that document will return "Hooboy,
-stuff wow yeah!".
+stuff wow yeah!". If the document starts with:
+
+  =head1 Name
+  
+  Hoo::Boy::W00t -- Stuff B<w00t> yeah!
+
+Then you'll need to pass the C<nocase> option in order to recognize "Name":
+
+  $parser->get_short_title(nocase => 1);
 
 If the title can't be found, then get_short_title returns empty-string
 ("").
@@ -661,22 +679,30 @@ If the title can't be found, then get_short_title returns empty-string
 
 This works like get_title except that it returns the contents of the
 "=head1 AUTHOR\n\nParagraph...\n" section, assuming that that section
-isn't terribly long.
+isn't terribly long. To recognize a "=head1 Author\n\nParagraph\n"
+section, pass the C<nocase> otpion:
+
+  $parser->get_author(nocase => 1);
 
 (This method tolerates "AUTHORS" instead of "AUTHOR" too.)
 
 =item $description_name = $parser->get_description
 
 This works like get_title except that it returns the contents of the
-"=head1 PARAGRAPH\n\nParagraph...\n" section, assuming that that section
-isn't terribly long.
+"=head1 DESCRIPTION\n\nParagraph...\n" section, assuming that that section
+isn't terribly long. To recognize a "=head1 Description\n\nParagraph\n"
+section, pass the C<nocase> otpion:
+
+  $parser->get_description(nocase => 1);
 
 =item $version_block = $parser->get_version
 
 This works like get_title except that it returns the contents of
 the "=head1 VERSION\n\n[BIG BLOCK]\n" block.  Note that this does NOT
-return the module's C<$VERSION>!!
+return the module's C<$VERSION>!! To recognize a
+"=head1 Version\n\n[BIG BLOCK]\n" section, pass the C<nocase> otpion:
 
+  $parser->get_version(nocase => 1);
 
 =back
 
@@ -702,9 +728,22 @@ L<Pod::Simple::PullParserEndToken>.
 
 L<HTML::TokeParser>, which inspired this.
 
+=head1 SUPPORT
+
+Questions or discussion about POD and Pod::Simple should be sent to the
+pod-people@perl.org mail list. Send an empty email to
+pod-people-subscribe@perl.org to subscribe.
+
+This module is managed in an open GitHub repository,
+L<http://github.com/theory/pod-simple/>. Feel free to fork and contribute, or
+to clone L<git://github.com/theory/pod-simple.git> and send patches!
+
+Patches against Pod::Simple are welcome. Please send bug reports to
+<bug-pod-simple@rt.cpan.org>.
+
 =head1 COPYRIGHT AND DISCLAIMERS
 
-Copyright (c) 2002 Sean M. Burke.  All rights reserved.
+Copyright (c) 2002 Sean M. Burke.
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -715,12 +754,22 @@ merchantability or fitness for a particular purpose.
 
 =head1 AUTHOR
 
-Sean M. Burke C<sburke@cpan.org>
+Pod::Simple was created by Sean M. Burke <sburke@cpan.org>.
+But don't bother him, he's retired.
+
+Pod::Simple is maintained by:
+
+=over
+
+=item * Allison Randal C<allison@perl.org>
+
+=item * Hans Dieter Pearcey C<hdp@cpan.org>
+
+=item * David E. Wheeler C<dwheeler@cpan.org>
+
+=back
 
 =cut
-
-
-
 JUNK:
 
 sub _old_get_title {  # some witchery in here

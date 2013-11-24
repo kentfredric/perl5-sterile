@@ -5,7 +5,7 @@ use strict;
 use Carp ();
 BEGIN           { *DEBUG = sub () {0} unless defined &DEBUG }
 use integer;
-use Pod::Escapes 1.03 ();
+use Pod::Escapes 1.04 ();
 use Pod::Simple::LinkSection ();
 use Pod::Simple::BlackBox ();
 #use utf8;
@@ -18,7 +18,7 @@ use vars qw(
 );
 
 @ISA = ('Pod::Simple::BlackBox');
-$VERSION = '3.07';
+$VERSION = '3.13';
 
 @Known_formatting_codes = qw(I B C L E F S X Z); 
 %Known_formatting_codes = map(($_=>1), @Known_formatting_codes);
@@ -67,7 +67,7 @@ __PACKAGE__->_accessorize(
 
   'hide_line_numbers', # For some dumping subclasses: whether to pointedly
                        # suppress the start_line attribute
-                      
+
   'line_count',        # the current line number
   'pod_para_count',    # count of pod paragraphs seen so far
 
@@ -80,13 +80,12 @@ __PACKAGE__->_accessorize(
   'bare_output',       # For some subclasses: whether to prepend
                        #  header-code and postpend footer-code
 
-  'fullstop_space_harden', # Whether to turn ".  " into ".[nbsp] ";
-
   'nix_X_codes',       # whether to ignore X<...> codes
   'merge_text',        # whether to avoid breaking a single piece of
                        #  text up into several events
 
   'preserve_whitespace', # whether to try to keep whitespace as-is
+  'strip_verbatim_indent', # What indent to strip from verbatim
 
  'content_seen',      # whether we've seen any real Pod content
  'errors_seen',       # TODO: document.  whether we've seen any errors (fatal or not)
@@ -98,7 +97,7 @@ __PACKAGE__->_accessorize(
  #Called like:
  # $code_handler->($line, $self->{'line_count'}, $self) if $code_handler;
  #  $cut_handler->($line, $self->{'line_count'}, $self) if $cut_handler;
-  
+
 );
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -983,7 +982,7 @@ sub _treat_Ls {  # Process our dear dear friends, the L<...> sequences
   # L<text|name/"sec"> or L<text|name/sec>
   # L<text|/"sec"> or L<text|/sec> or L<text|"sec">
   # L<scheme:...>
-  # Ltext|scheme:...>
+  # L<text|scheme:...>
 
   my($self,@stack) = @_;
 

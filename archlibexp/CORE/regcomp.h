@@ -35,7 +35,7 @@ typedef OP OP_4tree;			/* Will be redefined later. */
  *
  * -demerphq
  */
-#define PERL_LEGACY_UNICODE_CHARCLASS_MAPPINGS 0
+#define PERL_LEGACY_UNICODE_CHARCLASS_MAPPINGS 1
 
 /* Should the optimiser take positive assertions into account? */
 #define PERL_ENABLE_POSITIVE_ASSERTION_STUDY 0
@@ -197,7 +197,7 @@ struct regnode_2 {
 
 
 #define ANYOF_BITMAP_SIZE	32	/* 256 b/(8 b/B) */
-#define ANYOF_CLASSBITMAP_SIZE	 4	/* up to 40 (8*5) named classes */
+#define ANYOF_CLASSBITMAP_SIZE	 4	/* up to 32 (8*4) named classes */
 
 /* also used by trie */
 struct regnode_charclass {

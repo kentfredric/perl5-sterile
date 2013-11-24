@@ -396,7 +396,7 @@ You can now set C<-W> from the C<PERL5OPT> environment variable
 
 =head2 C<delete local>
 
-C<delete local> now allows you to lexically delete a hash entry.
+C<delete local> now allows you to locally delete a hash entry.
 
 =head2 New support for Abstract namespace sockets
 
@@ -858,7 +858,7 @@ file. This eliminates a potential race condition [RT #60904].
 
 =item *
 
-On some UNIX systems, the value in C<$?> would not have the top bit set
+On some Unix systems, the value in C<$?> would not have the top bit set
 (C<$? & 128>) even if the child core dumped.
 
 =item *

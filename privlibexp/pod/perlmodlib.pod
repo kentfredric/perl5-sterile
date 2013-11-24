@@ -77,7 +77,7 @@ Produce verbose warning diagnostics
 
 =item feature
 
-Enable new syntactic features
+Enable new features
 
 =item filetest
 
@@ -377,10 +377,6 @@ Open a process for both reading and writing using open2()
 
 Open a process for reading, writing, and error handling using open3()
 
-=item Module::Build::ConfigData
-
-Configuration for Module::Build
-
 =item NDBM_File
 
 Tied access to ndbm files
@@ -561,11 +557,15 @@ Win32 CORE function stubs
 
 Test the perl C API
 
+=item XS::APItest::KeywordRPN
+
+Write arithmetic expressions in RPN
+
 =item XS::Typemap
 
 Module to test the XS typemaps distributed with perl
 
-=item version::Internal
+=item version::Internals
 
 Perl extension for Version Objects
 
@@ -1558,7 +1558,7 @@ of code that need less strictness.
 
 Always use B<-w>.
 
-Follow the guidelines in the perlstyle(1) manual.
+Follow the guidelines in L<perlstyle>.
 
 Always use B<-w>.
 
@@ -1817,8 +1817,6 @@ old behavior if people rely on it.  Document incompatible changes.
 
 =back
 
-=back
-
 =head2 Guidelines for Converting Perl 4 Library Scripts into Modules
 
 =over 4
@@ -1914,6 +1912,8 @@ the application could invoked as:
      % perl -e 'use Module::Name; method(@ARGV)' ...
 or
      % perl -mModule::Name ...    (in perl5.002 or higher)
+
+=back
 
 =back
 

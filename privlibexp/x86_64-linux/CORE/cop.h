@@ -1,13 +1,13 @@
 /*    cop.h
  *
  *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
- *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
  *
- * Control ops (cops) are one of the three ops OP_NEXTSTATE, OP_DBSTATE,
- * and OP_SETSTATE that (loosely speaking) are separate statements.
+ * Control ops (cops) are one of the two ops OP_NEXTSTATE and OP_DBSTATE,
+ * that (loosely speaking) are separate statements.
  * They hold information important for lexical state and error reporting.
  * At run time, PL_curcop is set to point to the most recently executed cop,
  * and thus can be used to determine our current state.
@@ -99,8 +99,9 @@ typedef struct jmpenv JMPENV;
 
 #define JMPENV_PUSH(v) \
     STMT_START {							\
-	DEBUG_l(Perl_deb(aTHX_ "Setting up jumplevel %p, was %p\n",	\
-			 (void*)&cur_env, (void*)PL_top_env));			\
+	DEBUG_l(Perl_deb(aTHX_ "Setting up jumplevel %p, was %p at %s:%d\n",	\
+		         (void*)&cur_env, (void*)PL_top_env,			\
+		         __FILE__, __LINE__));					\
 	cur_env.je_prev = PL_top_env;					\
 	OP_REG_TO_MEM;							\
 	cur_env.je_ret = PerlProc_setjmp(cur_env.je_buf, SCOPE_SAVES_SIGNAL_MASK);		\
@@ -112,8 +113,10 @@ typedef struct jmpenv JMPENV;
 
 #define JMPENV_POP \
     STMT_START {							\
-	DEBUG_l(Perl_deb(aTHX_ "popping jumplevel was %p, now %p\n",	\
-			 (void*)PL_top_env, (void*)cur_env.je_prev));			\
+	DEBUG_l(Perl_deb(aTHX_ "popping jumplevel was %p, now %p at %s:%d\n",	\
+		         (void*)PL_top_env, (void*)cur_env.je_prev,		\
+		         __FILE__, __LINE__));					\
+	assert(PL_top_env == &cur_env);					\
 	PL_top_env = cur_env.je_prev;					\
     } STMT_END
 

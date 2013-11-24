@@ -145,12 +145,13 @@ use constant TEST_FAIL_STAGE
 use constant MISSING_PREREQS_LIST
                             => sub {
                                 my $buffer = shift;
+                                my $last = ( split /\[ERROR\] .+? MAKE TEST/, $buffer )[-1];
                                 my @list = map { s/.pm$//; s|/|::|g; $_ }
-                                    ($buffer =~
+                                    ($last =~
                                         m/\bCan\'t locate (\S+) in \@INC/g);
                                 
                                 ### make sure every missing prereq is only 
-                                ### listed ones
+                                ### listed once
                                 {   my %seen;
                                     @list = grep { !$seen{$_}++ } @list
                                 }
@@ -306,10 +307,62 @@ managed to load:
                                                 $want
                                               ],
                                         ### might be empty entries in there
-                                        } grep { defined $_ } @prq;   
+                                        } grep { $_ } @prq;   
                                 
                                 return $str;
                             };
+
+use constant REPORT_TOOLCHAIN_VERSIONS
+                            => sub {
+                                my $mod = shift;
+                                my $cb  = $mod->parent;
+                                #die unless $cb->isa('CPANPLUS::Backend');
+
+                                my @toolchain_modules= qw(
+                                    CPANPLUS
+                                    CPANPLUS::Dist::Build
+                                    Cwd
+                                    ExtUtils::CBuilder
+                                    ExtUtils::Command
+                                    ExtUtils::Install
+                                    ExtUtils::MakeMaker
+                                    ExtUtils::Manifest
+                                    ExtUtils::ParseXS
+                                    File::Spec
+                                    Module::Build
+                                    Test::Harness
+                                    Test::More
+                                    version
+                                );
+
+                                my @toolchain =
+                                          grep { $_ } #module_tree returns '' when module is not found
+                                          map { $cb->module_tree($_) }
+                                          sort @toolchain_modules;
+
+                                ### no prereqs?
+                                return '' unless @toolchain;
+
+                                ### toolchain modules
+                                my $str = << ".";
+
+Perl module toolchain versions installed:
+.
+                                $str .= join '', 
+                                        map { sprintf "\t%-30s %8s\n", 
+                                              @$_
+                                        
+                                        } ['Module Name', 'Have'],
+                                          map {
+                                              [ $_->name,
+                                                $_->installed_version,
+                                              ],
+                                        ### might be empty entries in there
+                                        } @toolchain;   
+                                
+                                return $str;
+                            };
+
 
 use constant REPORT_TESTS_SKIPPED 
                             => sub {

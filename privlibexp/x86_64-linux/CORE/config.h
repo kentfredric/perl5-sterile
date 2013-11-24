@@ -13,7 +13,7 @@
 /*
  * Package name      : perl5
  * Source directory  : .
- * Configuration time: Sun Nov 24 20:38:03 NZDT 2013
+ * Configuration time: Sun Nov 24 21:24:35 NZDT 2013
  * Configured by     : kent
  * Target system     : linux katipo2 3.12.0-gentoo #54 smp wed nov 6 04:43:49 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
  */
@@ -861,6 +861,28 @@
  */
 /*#define I_VFORK	/ **/
 
+/* CAN_VAPROTO:
+ *	This variable is defined on systems supporting prototype declaration
+ *	of functions with a variable number of arguments.
+ */
+/* _V:
+ *	This macro is used to declare function parameters in prototypes for
+ *	functions with a variable number of parameters. Use double parentheses.
+ *	For example:
+ *
+ *		int printf _V((char *fmt, ...));
+ *
+ *	Remember to use the plain simple _() macro when declaring a function
+ *	with no variable number of arguments, since it might be possible to
+ *	have a non-effect _V() macro and still get prototypes via _().
+ */
+#define CAN_VAPROTO	/**/
+#ifdef CAN_VAPROTO
+#define	_V(args) args
+#else
+#define	_V(args) ()
+#endif
+
 /* INTSIZE:
  *	This symbol contains the value of sizeof(int) so that the C
  *	preprocessor can make decisions based on it.
@@ -928,8 +950,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/5.11.0/x86_64-linux"		/**/
-#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/5.11.0/x86_64-linux"		/**/
+#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0/x86_64-linux"		/**/
+#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0/x86_64-linux"		/**/
 
 /* ARCHNAME:
  *	This symbol holds a string representing the architecture name.
@@ -951,8 +973,8 @@
  *	This symbol, if defined, indicates that we'd like to relocate entries
  *	in @INC at run time based on the location of the perl binary.
  */
-#define BIN "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/bin"	/**/
-#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/bin"	/**/
+#define BIN "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/bin"	/**/
+#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/bin"	/**/
 #define PERL_RELOCATABLE_INC "undef" 		/**/
 
 /* CAT2:
@@ -2595,8 +2617,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/5.11.0"		/**/
-#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/5.11.0"		/**/
+#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0"		/**/
+#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/5.12.0"		/**/
 
 /* CAN_PROTOTYPE:
  *	If defined, this macro indicates that the C compiler can handle
@@ -2688,8 +2710,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/site_perl/5.11.0/x86_64-linux"		/**/
-#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/site_perl/5.11.0/x86_64-linux"		/**/
+#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0/x86_64-linux"		/**/
+#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0/x86_64-linux"		/**/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -2711,9 +2733,9 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/site_perl/5.11.0"		/**/
-#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/site_perl/5.11.0"		/**/
-#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.11.0-pristine/lib/site_perl"		/**/
+#define SITELIB "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0"		/**/
+#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl/5.12.0"		/**/
+#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.12.0-pristine/lib/site_perl"		/**/
 
 /* Size_t_size:
  *	This symbol holds the size of a Size_t in bytes.
@@ -2909,6 +2931,12 @@
 #else
 #define BYTEORDER 0x12345678	/* large digits for MSB */
 #endif /* NeXT */
+
+/* CHARBITS:
+ *	This symbol contains the size of a char, so that the C preprocessor
+ *	can make decisions based on it.
+ */
+#define CHARBITS 8		/**/
 
 /* CASTI32:
  *	This symbol is defined if the C compiler can cast negative
@@ -3273,7 +3301,7 @@
  *	-Dusedevel, to enable development features.  This should not be
  *	done for production builds.
  */
-#define	PERL_USE_DEVEL		/**/
+/*#define	PERL_USE_DEVEL		/ **/
 
 /* HAS_ATOLF:
  *	This symbol, if defined, indicates that the atolf routine is
@@ -4491,7 +4519,7 @@
  *	script to make sure (one hopes) that it runs with perl and not
  *	some shell.
  */
-#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.11.0-pristine/bin/perl5.11.0"		/**/
+#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.12.0-pristine/bin/perl"		/**/
 
 /* HAS_STDIO_STREAM_ARRAY:
  *	This symbol, if defined, tells that there is an array

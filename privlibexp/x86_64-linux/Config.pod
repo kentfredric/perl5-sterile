@@ -522,6 +522,20 @@ From F<cf_who.U>:
 Holds the output of the C<date> command when the configuration file was
 produced. This is used to tag both F<config.sh> and F<config_h.SH>.
 
+=item C<charbits>
+
+From F<charsize.U>:
+
+This variable contains the value of the C<CHARBITS> symbol, which
+indicates to the C program how many bits there are in a character.
+
+=item C<charsize>
+
+From F<charsize.U>:
+
+This variable contains the value of the C<CHARSIZE> symbol, which
+indicates to the C program how many bytes there are in a character.
+
 =item C<chgrp>
 
 From F<Loc.U>:
@@ -566,6 +580,32 @@ From F<Loc.U>:
 
 This variable is defined but not used by Configure.
 The value is the empty string and is not useful.
+
+=item C<config_arg0>
+
+From F<Options.U>:
+
+This variable contains the string used to invoke the Configure
+command, as reported by the shell in the $0 variable.
+
+=item C<config_argc>
+
+From F<Options.U>:
+
+This variable countains the number of command-line arguments
+passed to Configure, as reported by the shell in the $# variable.
+The individual arguments are stored as variables config_argc1,
+config_argc2, etc.
+
+=item C<config_args>
+
+From F<Options.U>:
+
+This variable contains a single string giving the command-line
+arguments passed to Configure.	Spaces within arguments,
+quotes, and escaped characters are not correctly preserved.
+To reconstruct the command line, you must assemble the individual
+command line pieces, given in config_arg[0-9]*.
 
 =item C<contains>
 
@@ -8509,6 +8549,14 @@ a Perl C<UV> as an unsigned hexadecimal integer in uppercase C<ABCDEF>.
 =over 4
 
 =cut
+
+=item C<vaproto>
+
+From F<vaproto.U>:
+
+This variable conditionally defines C<CAN_VAPROTO> on systems supporting
+prototype declaration of functions with a variable number of
+arguments. See also prototype.
 
 =item C<vendorarch>
 

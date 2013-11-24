@@ -26,7 +26,7 @@ local $Data::Dumper::Indent     = 1; # for dumpering from !
 BEGIN {
     use vars        qw[ $VERSION @ISA ];
     @ISA        =   qw[ CPANPLUS::Shell::_Base::ReadLine ];
-    $VERSION = "0.88";
+    $VERSION = "0.90";
 }
 
 load CPANPLUS::Shell;
@@ -914,6 +914,15 @@ sub _install {
         ### would you like a log file of what happened?
         if( $conf->get_conf('write_install_logs') ) {
 
+            if ( ON_WIN32 and !check_install(
+                              module => 'IPC::Run', version => 0.55 ) 
+               ) {
+               error(loc("IPC::Run version '%1' is required on MSWin32" 
+                         . " in order to capture buffers." 
+                         . " The logfile generated may not contain" 
+                         . " any useful data, until it is installed", 0.55));
+            }
+
             my $dir = File::Spec->catdir(
                             $conf->get_conf('base'),
                             $conf->_get_build('install_log_dir'),
@@ -1211,7 +1220,8 @@ sub _set_conf {
         $args = check( $tmpl, \%hash ) or return;
     }
 
-    my ($type,$key,$value) = $input =~ m/(\w+)\s*(\w*)\s*(.*?)\s*$/;
+    my ($type,$key,$value) = $input =~ m/(\w+)\s*(\w*)\s*(.*?)$/;
+    $value =~ s/\s+$//g if $value;
     $type = lc $type;
 
     if( $type eq 'reconfigure' ) {
@@ -1264,7 +1274,7 @@ sub _set_conf {
         }->{ $key } || CONFIG_USER;      
 
         my $file = $conf->_config_pm_to_file( $where );
-        system("$editor $file");
+        system($editor,$file);
 
         ### now reload it
         ### disable warnings for this
@@ -1554,7 +1564,7 @@ should use the same package manager to uninstall them
             loc("All modules %tense(uninstall,past) successfully"), "\n" );
     } else {
         $self->__print( 
-            loc("Problem %tense(uninstalling,present) one or more modules" ),
+            loc("Problem %tense(uninstall,present) one or more modules" ),
             "\n" );
             
         $self->__print( 

@@ -5,12 +5,12 @@ use strict;
 use Pod::Simple::PullParser ();
 use vars qw(
   @ISA %Tagmap $Computerese $LamePad $Linearization_Limit $VERSION
-  $Perldoc_URL_Prefix $Perldoc_URL_Postfix
+  $Perldoc_URL_Prefix $Perldoc_URL_Postfix $Man_URL_Prefix $Man_URL_Postfix
   $Title_Prefix $Title_Postfix $HTML_EXTENSION %ToIndex
   $Doctype_decl  $Content_decl
 );
 @ISA = ('Pod::Simple::PullParser');
-$VERSION = '3.03';
+$VERSION = '3.13';
 
 use UNIVERSAL ();
 BEGIN {
@@ -37,6 +37,10 @@ $Perldoc_URL_Prefix  = 'http://search.cpan.org/perldoc?'
 $Perldoc_URL_Postfix = ''
  unless defined $Perldoc_URL_Postfix;
 
+
+$Man_URL_Prefix  = 'http://man.he.net/man';
+$Man_URL_Postfix = '';
+
 $Title_Prefix  = '' unless defined $Title_Prefix;
 $Title_Postfix = '' unless defined $Title_Postfix;
 %ToIndex = map {; $_ => 1 } qw(head1 head2 head3 head4 ); # item-text
@@ -52,6 +56,12 @@ __PACKAGE__->_accessorize(
  'perldoc_url_postfix',
    # what to put after "Foo%3a%3aBar" in the URL.  Normally "".
 
+ 'man_url_prefix',
+   # In turning L<crontab(5)> into http://whatever/man/1/crontab, what
+   #  to put before the "1/crontab".
+ 'man_url_postfix',
+   #  what to put after the "1/crontab" in the URL. Normally "".
+
  'batch_mode', # whether we're in batch mode
  'batch_mode_current_level',
     # When in batch mode, how deep the current module is: 1 for "LWP",
@@ -60,6 +70,8 @@ __PACKAGE__->_accessorize(
  'title_prefix',  'title_postfix',
   # What to put before and after the title in the head.
   # Should already be &-escaped
+
+ 'html_h_level',
   
  'html_header_before_title',
  'html_header_after_title',
@@ -180,6 +192,8 @@ sub new {
 
   $new->perldoc_url_prefix(  $Perldoc_URL_Prefix  );
   $new->perldoc_url_postfix( $Perldoc_URL_Postfix );
+  $new->man_url_prefix(  $Man_URL_Prefix  );
+  $new->man_url_postfix( $Man_URL_Postfix );
   $new->title_prefix(  $Title_Prefix  );
   $new->title_postfix( $Title_Postfix );
 
@@ -196,7 +210,23 @@ sub new {
   $new->html_footer( qq[\n<!-- end doc -->\n\n</body></html>\n] );
 
   $new->{'Tagmap'} = {%Tagmap};
+
   return $new;
+}
+
+sub __adjust_html_h_levels {
+  my ($self) = @_;
+  my $Tagmap = $self->{'Tagmap'};
+
+  my $add = $self->html_h_level;
+  return unless defined $add;
+  return if ($self->{'Adjusted_html_h_levels'}||0) == $add;
+
+  $add -= 1;
+  for (1 .. 4) {
+    $Tagmap->{"head$_"}  =~ s/$_/$_ + $add/e;
+    $Tagmap->{"/head$_"} =~ s/$_/$_ + $add/e;
+  }
 }
 
 sub batch_mode_page_object_init {
@@ -408,7 +438,7 @@ sub index_as_html {
     $indent = '  '  x $level;
     push @out, sprintf
       "%s<li class='indexItem indexItem%s'><a href='#%s'>%s</a>",
-      $indent, $level, $anchorname, esc($text)
+      $indent, $level, esc($anchorname), esc($text)
     ;
   }
   push @out, "</div>\n";
@@ -421,6 +451,8 @@ sub _do_middle_main_loop {
   my $self = $_[0];
   my $fh = $self->{'output_fh'};
   my $tagmap = $self->{'Tagmap'};
+
+  $self->__adjust_html_h_levels;
   
   my($token, $type, $tagname, $linkto, $linktype);
   my @stack;
@@ -457,7 +489,8 @@ sub _do_middle_main_loop {
         }
 
         my $name = $self->linearize_tokens(@to_unget);
-        
+        $name = $self->do_section($name, $token) if defined $name;
+
         print $fh "<a ";
         print $fh "class='u' href='#___top' title='click to go to top of document'\n"
          if $tagname =~ m/^head\d$/s;
@@ -487,7 +520,7 @@ sub _do_middle_main_loop {
           next;
         }
         DEBUG and print "    raw text ", $next->text, "\n";
-        printf $fh "\n" . $next->text . "\n";
+        print $fh "\n" . $next->text . "\n";
         next;
        
       } else {
@@ -512,7 +545,7 @@ sub _do_middle_main_loop {
         $stack[-1] = $tagmap->{"/$tagname"};
         if( $tagname eq 'item-text' and defined(my $next = $self->get_token) ) {
           $self->unget_token($next);
-          if( $next->type eq 'start' and $next->tagname !~ m/^item-/s ) {
+          if( $next->type eq 'start' ) {
             print $fh $tagmap->{"/item-text"},$tagmap->{"item-body"};
             $stack[-1] = $tagmap->{"/item-body"};
           }
@@ -536,6 +569,11 @@ sub _do_middle_main_loop {
 ###########################################################################
 #
 
+sub do_section {
+  my($self, $name, $token) = @_;
+  return $name;
+}
+
 sub do_link {
   my($self, $token) = @_;
   my $type = $token->attr('type');
@@ -554,9 +592,20 @@ sub do_link {
 
 sub do_url_link { return $_[1]->attr('to') }
 
-sub do_man_link { return undef }
- # But subclasses are welcome to override this if they have man
- #  pages somewhere URL-accessible.
+sub do_man_link {
+  my ($self, $link) = @_;
+  my $to = $link->attr('to');
+  my $frag = $link->attr('section');
+
+  return undef unless defined $to and length $to; # should never happen
+
+  $frag = $self->section_escape($frag)
+   if defined $frag and length($frag .= ''); # (stringify)
+
+  DEBUG and print "Resolving \"$to/$frag\"\n\n";
+
+  return $self->resolve_man_page_link($to, $frag);
+}
 
 
 sub do_pod_link {
@@ -646,6 +695,7 @@ sub section_name_tidy {
 
 sub section_url_escape  { shift->general_url_escape(@_) }
 sub pagepath_url_escape { shift->general_url_escape(@_) }
+sub manpage_url_escape  { shift->general_url_escape(@_) }
 
 sub general_url_escape {
   my($self, $string) = @_;
@@ -717,6 +767,18 @@ sub batch_mode_rectify_path {
     unshift @$pathbits, ('..') x $level;
   }
   return;
+}
+
+sub resolve_man_page_link {
+  my ($self, $to, $frag) = @_;
+  my ($page, $section) = $to =~ /^([^(]+)(?:[(](\d+)[)])?$/;
+
+  return undef unless defined $page and length $page;
+  $section ||= 1;
+
+  return $self->man_url_prefix . "$section/"
+      . $self->manpage_url_escape($page)
+      . $self->man_url_postfix;
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -858,21 +920,29 @@ maybe override do_pod_link
 
 maybe override do_beginning do_end
 
-
-
 =head1 SEE ALSO
 
 L<Pod::Simple>, L<Pod::Simple::HTMLBatch>
 
-
 TODO: a corpus of sample Pod input and HTML output?  Or common
 idioms?
 
+=head1 SUPPORT
 
+Questions or discussion about POD and Pod::Simple should be sent to the
+pod-people@perl.org mail list. Send an empty email to
+pod-people-subscribe@perl.org to subscribe.
+
+This module is managed in an open GitHub repository,
+L<http://github.com/theory/pod-simple/>. Feel free to fork and contribute, or
+to clone L<git://github.com/theory/pod-simple.git> and send patches!
+
+Patches against Pod::Simple are welcome. Please send bug reports to
+<bug-pod-simple@rt.cpan.org>.
 
 =head1 COPYRIGHT AND DISCLAIMERS
 
-Copyright (c) 2002-2004 Sean M. Burke.  All rights reserved.
+Copyright (c) 2002-2004 Sean M. Burke.
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -881,9 +951,29 @@ This program is distributed in the hope that it will be useful, but
 without any warranty; without even the implied warranty of
 merchantability or fitness for a particular purpose.
 
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to L<Hurricane Electrict|http://he.net/> for permission to use its
+L<Linux man pages online|http://man.he.net/> site for man page links.
+
+Thanks to L<search.cpan.org|http://search.cpan.org/> for permission to use the
+site for Perl module links.
+
 =head1 AUTHOR
 
-Sean M. Burke C<sburke@cpan.org>
+Pod::Simple was created by Sean M. Burke <sburke@cpan.org>.
+But don't bother him, he's retired.
+
+Pod::Simple is maintained by:
+
+=over
+
+=item * Allison Randal C<allison@perl.org>
+
+=item * Hans Dieter Pearcey C<hdp@cpan.org>
+
+=item * David E. Wheeler C<dwheeler@cpan.org>
+
+=back
 
 =cut
-

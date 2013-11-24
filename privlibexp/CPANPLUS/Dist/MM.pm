@@ -465,6 +465,13 @@ sub _find_prereqs {
     };
     
     my $args = check( $tmpl, \%hash ) or return;      
+
+    ### see if we got prereqs from MYMETA
+    my $prereqs = $dist->find_mymeta_requires();
+    
+    ### we found some prereqs, we'll trust MYMETA
+    ### but we do need to run it through the callback
+    return $cb->_callbacks->filter_prereqs->( $cb, $prereqs ) if keys %$prereqs;
     
     my $fh = FileHandle->new();
     unless( $fh->open( $file ) ) {
@@ -480,11 +487,13 @@ sub _find_prereqs {
         
         while( $found =~ m/(?:\s)([\w\:]+)=>(?:q\[(.*?)\],?|undef)/g ) {
             if( defined $p{$1} ) {
-                msg(loc("Warning: PREREQ_PM mentions '%1' more than once. " .
-                        "Last mention wins.", $1 ), $verbose );
+                my $ver = $cb->_version_to_number(version => $2);
+                $p{$1} = $ver
+                  if $cb->_vcmp( $ver, $p{$1} ) > 0;
             }
-            
-            $p{$1} = $cb->_version_to_number(version => $2);                  
+            else {
+                $p{$1} = $cb->_version_to_number(version => $2);                  
+            }
         }
         last;
     }
@@ -680,7 +689,7 @@ sub create {
                 if ( NO_TESTS_DEFINED->( $captured ) ) {
                     msg( NO_TESTS_DEFINED->( $captured ), 0 )
                 } else {
-                    msg( loc( "MAKE TEST passed: %1", $captured ), $verbose );
+                    msg( loc( "MAKE TEST passed: %1", $captured ), 0 );
                 }
             
                 $dist->status->test(1);

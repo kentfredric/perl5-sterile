@@ -16,13 +16,14 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
 	 OPpTRANS_SQUASH OPpTRANS_DELETE OPpTRANS_COMPLEMENT OPpTARGET_MY
 	 OPpCONST_ARYBASE OPpEXISTS_SUB OPpSORT_NUMERIC OPpSORT_INTEGER
 	 OPpSORT_REVERSE OPpSORT_INPLACE OPpSORT_DESCEND OPpITER_REVERSED
+	 OPpREVERSE_INPLACE
 	 SVf_IOK SVf_NOK SVf_ROK SVf_POK SVpad_OUR SVf_FAKE SVs_RMG SVs_SMG
          CVf_METHOD CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED),
 	 ($] < 5.009 ? 'PMf_SKIPWHITE' : 'RXf_SKIPWHITE'),
 	 ($] < 5.011 ? 'CVf_LOCKED' : ());
-$VERSION = 0.91;
+$VERSION = 0.96;
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -607,25 +608,6 @@ sub new {
     sub WARN_MASK () {
 	return $WARN_MASK;
     }
-}
-
-sub scan_for_constants {
-    my ($self) = @_;
-    my %ret;
-
-    B::walksymtable(\%::, sub {
-        my ($gv) = @_;
-
-        my $cv = $gv->CV;
-        return if !$cv || class($cv) ne 'CV';
-
-        my $const = $cv->const_sv;
-        return if !$const || class($const) eq 'SPECIAL';
-
-        $ret{ 0 + $const->object_2svref } = $gv->NAME;
-    }, sub { 1 });
-
-    return \%ret;
 }
 
 # Initialise the contextual information, either from
@@ -1612,6 +1594,10 @@ sub unop {
     my $kid;
     if ($op->flags & OPf_KIDS) {
 	$kid = $op->first;
+ 	if (not $name) {
+ 	    # this deals with 'boolkeys' right now
+ 	    return $self->deparse($kid,$cx);
+ 	}
 	my $builtinname = $name;
 	$builtinname =~ /^CORE::/ or $builtinname = "CORE::$name";
 	if (defined prototype($builtinname)
@@ -1655,6 +1641,10 @@ sub pp_chr { maybe_targmy(@_, \&unop, "chr") }
 sub pp_each { unop(@_, "each") }
 sub pp_values { unop(@_, "values") }
 sub pp_keys { unop(@_, "keys") }
+sub pp_boolkeys { 
+    # no name because its an optimisation op that has no keyword
+    unop(@_,"");
+}
 sub pp_aeach { unop(@_, "each") }
 sub pp_avalues { unop(@_, "values") }
 sub pp_akeys { unop(@_, "keys") }
@@ -2299,6 +2289,9 @@ sub listop {
     }
     for (; !null($kid); $kid = $kid->sibling) {
 	push @exprs, $self->deparse($kid, 6);
+    }
+    if ($name eq "reverse" && ($op->private & OPpREVERSE_INPLACE)) {
+	return "$exprs[0] = $name" . ($parens ? "($exprs[0])" : " $exprs[0]");
     }
     if ($parens) {
 	return "$name(" . join(", ", @exprs) . ")";
@@ -3661,13 +3654,6 @@ sub const {
     if (class($sv) eq "NULL") {
        return 'undef';
     }
-    if ($cx) {
-	unless ($self->{'inlined_constants'}) {
-	    $self->{'inlined_constants'} = $self->scan_for_constants;
-	}
-	my $const = $self->{'inlined_constants'}->{ 0 + $sv->object_2svref };
-        return $const if $const;
-    }
     # convert a version object into the "v1.2.3" string in its V magic
     if ($sv->FLAGS & SVs_RMG) {
 	for (my $mg = $sv->MAGIC; $mg; $mg = $mg->MOREMAGIC) {
@@ -4299,10 +4285,11 @@ sub pp_split {
     }
 
     # handle special case of split(), and split(' ') that compiles to /\s+/
+    # Under 5.10, the reflags may be undef if the split regexp isn't a constant
     $kid = $op->first;
     if ( $kid->flags & OPf_SPECIAL
 	 and ( $] < 5.009 ? $kid->pmflags & PMf_SKIPWHITE()
-	      : $kid->reflags & RXf_SKIPWHITE() ) ) {
+	      : ($kid->reflags || 0) & RXf_SKIPWHITE() ) ) {
 	$exprs[0] = "' '";
     }
 

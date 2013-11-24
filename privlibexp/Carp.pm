@@ -1,6 +1,6 @@
 package Carp;
 
-our $VERSION = '1.12';
+our $VERSION = '1.15';
 
 our $MaxEvalLen = 0;
 our $Verbose    = 0;
@@ -43,7 +43,7 @@ sub longmess {
     # number of call levels to go back, so calls to longmess were off
     # by one.  Other code began calling longmess and expecting this
     # behaviour, so the replacement has to emulate that behaviour.
-    my $call_pack = caller();
+    my $call_pack = defined &{"CORE::GLOBAL::caller"} ? &{"CORE::GLOBAL::caller"}() : caller();
     if ($Internal{$call_pack} or $CarpInternal{$call_pack}) {
       return longmess_heavy(@_);
     }
@@ -55,7 +55,7 @@ sub longmess {
 
 sub shortmess {
     # Icky backwards compatibility wrapper. :-(
-    local @CARP_NOT = caller();
+    local @CARP_NOT = defined &{"CORE::GLOBAL::caller"} ? &{"CORE::GLOBAL::caller"}() : caller();
     shortmess_heavy(@_);
 };
 
@@ -70,7 +70,7 @@ sub caller_info {
   my %call_info;
   @call_info{
     qw(pack file line sub has_args wantarray evaltext is_require)
-  } = caller($i);
+  } = defined &{"CORE::GLOBAL::caller"} ? &{"CORE::GLOBAL::caller"}($i) : caller($i);
   
   unless (defined $call_info{pack}) {
     return ();
@@ -149,7 +149,8 @@ sub long_error_loc {
   my $i;
   my $lvl = $CarpLevel;
   {
-    my $pkg = caller(++$i);
+    ++$i;
+    my $pkg = defined &{"CORE::GLOBAL::caller"} ? &{"CORE::GLOBAL::caller"}($i) : caller($i);
     unless(defined($pkg)) {
       # This *shouldn't* happen.
       if (%Internal) {
@@ -224,8 +225,10 @@ sub short_error_loc {
   my $i = 1;
   my $lvl = $CarpLevel;
   {
-    my $called = caller($i++);
-    my $caller = caller($i);
+
+    my $called = defined &{"CORE::GLOBAL::caller"} ? &{"CORE::GLOBAL::caller"}($i) : caller($i);
+    $i++;
+    my $caller = defined &{"CORE::GLOBAL::caller"} ? &{"CORE::GLOBAL::caller"}($i) : caller($i);
 
     return 0 unless defined($caller); # What happened?
     redo if $Internal{$caller};
@@ -463,7 +466,7 @@ Example of use:
 This would make C<Carp> report the error as coming from a caller not
 in C<My::Carping::Package>, nor from C<My::Friendly::Caller>.
 
-Also read the L</"Description"> section above, about how C<Carp> decides
+Also read the L</DESCRIPTION> section above, about how C<Carp> decides
 where the error is reported from.
 
 Use C<@CARP_NOT>, instead of C<$Carp::CarpLevel>.

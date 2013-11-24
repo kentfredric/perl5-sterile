@@ -22,7 +22,7 @@ sub syscopy;
 sub cp;
 sub mv;
 
-$VERSION = '2.16';
+$VERSION = '2.18';
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -242,8 +242,7 @@ sub copy {
     if ($to_a_handle) {
        $to_h = $to;
     } else {
-	$to = _protect($to) if $to =~ /^\s/s;
-	$to_h = \do { local *FH };
+	$to_h = \do { local *FH }; # XXX is this line obsolete?
 	open $to_h, ">", $to or goto fail_open2;
 	binmode $to_h or die "($!,$^E)";
 	$closeto = 1;
@@ -313,14 +312,10 @@ sub cp {
 	    $perm &= ~06000;
 	}
 
-	if ($perm & 02000) {                      # setgid
+	if ($perm & 02000 && $> != 0) {           # if not root, setgid
 	    my $ok = $fromstat[5] == $tostat[5];  # group must match
 	    if ($ok) {                            # and we must be in group
-	        my $uname = (getpwuid($>))[0] || '';
-                my $group = (getpwuid($>))[3];
-                $ok = $group && $group == $fromstat[5] ||
-                      grep { $_ eq $uname }
-                             split /\s+/, (getgrgid($fromstat[5]))[3];
+                $ok = grep { $_ == $fromstat[5] } split /\s+/, $)
 	    }
 	    $perm &= ~06000 unless $ok;
 	}

@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 use warnings::register;
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 require Exporter;
 require Cwd;
 
@@ -448,7 +448,7 @@ sub contract_name {
     my $abs_name= $cdir . $fn;
 
     if (substr($fn,0,3) eq '../') {
-       1 while $abs_name =~ s!/[^/]*/\.\./!/!;
+       1 while $abs_name =~ s!/[^/]*/\.\./+!/!;
     }
 
     return $abs_name;

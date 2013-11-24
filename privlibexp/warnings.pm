@@ -6,7 +6,7 @@
 
 package warnings;
 
-our $VERSION = '1.07';
+our $VERSION = '1.09';
 
 # Verify that we're called correctly so that warnings will work.
 # see also strict.pm.
@@ -82,6 +82,27 @@ warnings category.
 
 Return TRUE if that warnings category is enabled in the first scope
 where the object is used.
+Otherwise returns FALSE.
+
+=item warnings::fatal_enabled()
+
+Return TRUE if the warnings category with the same name as the current
+package has been set to FATAL in the calling module.
+Otherwise returns FALSE.
+
+=item warnings::fatal_enabled($category)
+
+Return TRUE if the warnings category C<$category> has been set to FATAL in
+the calling module.
+Otherwise returns FALSE.
+
+=item warnings::fatal_enabled($object)
+
+Use the name of the class for the object reference, C<$object>, as the
+warnings category.
+
+Return TRUE if that warnings category has been set to FATAL in the first
+scope where the object is used.
 Otherwise returns FALSE.
 
 =item warnings::warn($message)
@@ -192,10 +213,11 @@ our %Offsets = (
     # Warnings Categories added in Perl 5.011
 
     'imprecision'	=> 92,
+    'illegalproto'	=> 94,
   );
 
 our %Bits = (
-    'all'		=> "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x15", # [0..46]
+    'all'		=> "\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55\x55", # [0..47]
     'ambiguous'		=> "\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00", # [29]
     'bareword'		=> "\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00\x00", # [30]
     'closed'		=> "\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [6]
@@ -206,6 +228,7 @@ our %Bits = (
     'exec'		=> "\x00\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [7]
     'exiting'		=> "\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [3]
     'glob'		=> "\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [4]
+    'illegalproto'	=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x40", # [47]
     'imprecision'	=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10", # [46]
     'inplace'		=> "\x00\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00", # [23]
     'internal'		=> "\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00", # [24]
@@ -233,7 +256,7 @@ our %Bits = (
     'severe'		=> "\x00\x00\x00\x00\x00\x54\x05\x00\x00\x00\x00\x00", # [21..25]
     'signal'		=> "\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00\x00\x00", # [26]
     'substr'		=> "\x00\x00\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00", # [27]
-    'syntax'		=> "\x00\x00\x00\x00\x00\x00\x00\x55\x55\x15\x00\x00", # [28..38]
+    'syntax'		=> "\x00\x00\x00\x00\x00\x00\x00\x55\x55\x15\x00\x40", # [28..38,47]
     'taint'		=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x40\x00\x00", # [39]
     'threads'		=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00", # [40]
     'uninitialized'	=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00", # [41]
@@ -245,7 +268,7 @@ our %Bits = (
   );
 
 our %DeadBits = (
-    'all'		=> "\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\x2a", # [0..46]
+    'all'		=> "\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa", # [0..47]
     'ambiguous'		=> "\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x00", # [29]
     'bareword'		=> "\x00\x00\x00\x00\x00\x00\x00\x20\x00\x00\x00\x00", # [30]
     'closed'		=> "\x00\x20\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [6]
@@ -256,6 +279,7 @@ our %DeadBits = (
     'exec'		=> "\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [7]
     'exiting'		=> "\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [3]
     'glob'		=> "\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", # [4]
+    'illegalproto'	=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80", # [47]
     'imprecision'	=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x20", # [46]
     'inplace'		=> "\x00\x00\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00", # [23]
     'internal'		=> "\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00", # [24]
@@ -283,7 +307,7 @@ our %DeadBits = (
     'severe'		=> "\x00\x00\x00\x00\x00\xa8\x0a\x00\x00\x00\x00\x00", # [21..25]
     'signal'		=> "\x00\x00\x00\x00\x00\x00\x20\x00\x00\x00\x00\x00", # [26]
     'substr'		=> "\x00\x00\x00\x00\x00\x00\x80\x00\x00\x00\x00\x00", # [27]
-    'syntax'		=> "\x00\x00\x00\x00\x00\x00\x00\xaa\xaa\x2a\x00\x00", # [28..38]
+    'syntax'		=> "\x00\x00\x00\x00\x00\x00\x00\xaa\xaa\x2a\x00\x80", # [28..38,47]
     'taint'		=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x00\x00", # [39]
     'threads'		=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00", # [40]
     'uninitialized'	=> "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00", # [41]
@@ -295,7 +319,7 @@ our %DeadBits = (
   );
 
 $NONE     = "\0\0\0\0\0\0\0\0\0\0\0\0";
-$LAST_BIT = 94 ;
+$LAST_BIT = 96 ;
 $BYTES    = 12 ;
 
 $All = "" ; vec($All, $Offsets{'all'}, 2) = 3 ;
@@ -469,6 +493,17 @@ sub enabled
            vec($callers_bitmask, $Offsets{'all'}, 1) ;
 }
 
+sub fatal_enabled
+{
+    Croaker("Usage: warnings::fatal_enabled([category])")
+  unless @_ == 1 || @_ == 0 ;
+
+    my ($callers_bitmask, $offset, $i) = __chk(@_) ;
+
+    return 0 unless defined $callers_bitmask;
+    return vec($callers_bitmask, $offset + 1, 1) ||
+           vec($callers_bitmask, $Offsets{'all'} + 1, 1) ;
+}
 
 sub warn
 {

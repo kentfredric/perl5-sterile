@@ -330,9 +330,59 @@ Found in file pad.h
 
 =back
 
+=head1 Functions in file pp_ctl.c
+
+
+=over 8
+
+=item docatch
+X<docatch>
+
+Check for the cases 0 or 3 of cur_env.je_ret, only used inside an eval context.
+
+0 is used as continue inside eval,
+
+3 is used for a die caught by an inner eval - continue inner loop
+
+See cop.h: je_mustcatch, when set at any runlevel to TRUE, means eval ops must
+establish a local jmpenv to handle exception traps.
+
+	OP*	docatch(OP *o)
+
+=for hackers
+Found in file pp_ctl.c
+
+
+=back
+
 =head1 GV Functions
 
 =over 8
+
+=item gv_try_downgrade
+X<gv_try_downgrade>
+
+If the typeglob C<gv> can be expressed more succinctly, by having
+something other than a real GV in its place in the stash, replace it
+with the optimised form.  Basic requirements for this are that C<gv>
+is a real typeglob, is sufficiently ordinary, and is only referenced
+from its package.  This function is meant to be used when a GV has been
+looked up in part to see what was there, causing upgrading, but based
+on what was found it turns out that the real GV isn't required after all.
+
+If C<gv> is a completely empty typeglob, it is deleted from the stash.
+
+If C<gv> is a typeglob containing only a sufficiently-ordinary constant
+sub, the typeglob is replaced with a scalar-reference placeholder that
+more compactly represents the same thing.
+
+NOTE: this function is experimental and may change or be
+removed without notice.
+
+	void	gv_try_downgrade(GV* gv)
+
+=for hackers
+Found in file gv.c
 
 =item is_gv_magical_sv
 X<is_gv_magical_sv>
@@ -367,6 +417,9 @@ X<refcounted_he_chain_2hv>
 Generates and returns a C<HV *> by walking up the tree starting at the passed
 in C<struct refcounted_he *>.
 
+NOTE: this function is experimental and may change or be
+removed without notice.
+
 	HV *	refcounted_he_chain_2hv(const struct refcounted_he *c)
 
 =for hackers
@@ -379,6 +432,9 @@ Decrements the reference count of the passed in C<struct refcounted_he *>
 by one. If the reference count reaches zero the structure's memory is freed,
 and C<refcounted_he_free> iterates onto the parent node.
 
+NOTE: this function is experimental and may change or be
+removed without notice.
+
 	void	refcounted_he_free(struct refcounted_he *he)
 
 =for hackers
@@ -390,6 +446,9 @@ X<refcounted_he_new>
 Creates a new C<struct refcounted_he>. As S<key> is copied, and value is
 stored in a compact form, all references remain the property of the caller.
 The C<struct refcounted_he> is returned with a reference count of 1.
+
+NOTE: this function is experimental and may change or be
+removed without notice.
 
 	struct refcounted_he *	refcounted_he_new(struct refcounted_he *const parent, SV *const key, SV *const value)
 
@@ -410,6 +469,9 @@ Function called by C<do_readline> to spawn a glob (or do the glob inside
 perl on VMS). This code used to be inline, but now perl uses C<File::Glob>
 this glob starter is only used by miniperl during the build process.
 Moving it away shrinks pp_hot.c; shrinking pp_hot.c helps speed perl up.
+
+NOTE: this function is experimental and may change or be
+removed without notice.
 
 	PerlIO*	start_glob(SV *tmpglob, IO *io)
 
@@ -589,13 +651,13 @@ become so if C<my sub foo {}> is implemented.)
 Note that formats are treated as anon subs, and are cloned each time
 write is called (if necessary).
 
-The flag SVf_PADSTALE is cleared on lexicals each time the my() is executed,
+The flag SVs_PADSTALE is cleared on lexicals each time the my() is executed,
 and set on scope exit. This allows the 'Variable $x is not available' warning
 to be generated in evals, such as 
 
     { my $x = 1; sub f { eval '$x'} } f();
 
-For state vars, SVf_PADSTALE is overloaded to mean 'not yet initialised'
+For state vars, SVs_PADSTALE is overloaded to mean 'not yet initialised'
 
 	AV *	CvPADLIST(CV *cv)
 
@@ -666,7 +728,10 @@ SvOURSTASH to that value
 
 If fake, it means we're cloning an existing entry
 
-	PADOFFSET	pad_add_name(const char *name, HV* typestash, HV* ourstash, bool clone, bool state)
+NOTE: this function is experimental and may change or be
+removed without notice.
+
+	PADOFFSET	pad_add_name(const char *name, const STRLEN len, const U32 flags, HV *typestash, HV *ourstash)
 
 =for hackers
 Found in file pad.c
@@ -702,7 +767,7 @@ Check for duplicate declarations: report any of:
        as C<ourstash>
 C<is_our> indicates that the name to check is an 'our' declaration
 
-	void	pad_check_dup(const char* name, bool is_our, const HV* ourstash)
+	void	pad_check_dup(SV *name, const U32 flags, const HV *ourstash)
 
 =for hackers
 Found in file pad.c
@@ -728,20 +793,6 @@ because fake namesvs in anon protoypes have to store in xlow the index into
 the parent pad.
 
 	PADOFFSET	pad_findlex(const char *name, const CV* cv, U32 seq, int warn, SV** out_capture, SV** out_name_sv, int *out_flags)
-
-=for hackers
-Found in file pad.c
-
-=item pad_findmy
-X<pad_findmy>
-
-Given a lexical name, try to find its offset, first in the current pad,
-or failing that, in the pads of any lexically enclosing subs (including
-the complications introduced by eval). If the name is found in an outer pad,
-then a fake entry is added to the current pad.
-Returns the offset in the current pad, or NOT_IN_PAD on failure.
-
-	PADOFFSET	pad_findmy(const char* name)
 
 =for hackers
 Found in file pad.c
@@ -1048,6 +1099,9 @@ Return an SV with the numeric value of the source SV, doing any necessary
 reference or overload conversion.  You must use the C<SvNUM(sv)> macro to
 access this function.
 
+NOTE: this function is experimental and may change or be
+removed without notice.
+
 	SV*	sv_2num(SV *const sv)
 
 =for hackers
@@ -1077,6 +1131,9 @@ The name is returned as a mortal SV.
 Assumes that PL_op is the op that originally triggered the error, and that
 PL_comppad/PL_curpad points to the currently executing pad.
 
+NOTE: this function is experimental and may change or be
+removed without notice.
+
 	SV*	find_uninit_var(const OP *const obase, const SV *const uninit_sv, bool top)
 
 =for hackers
@@ -1094,6 +1151,1796 @@ Found in file sv.c
 
 
 =back
+=head1 Undocumented functions
+
+These functions are currently undocumented:
+
+=over
+
+=item F0convert
+X<F0convert>
+
+=item Slab_to_rw
+X<Slab_to_rw>
+
+=item add_data
+X<add_data>
+
+=item add_utf16_textfilter
+X<add_utf16_textfilter>
+
+=item addmad
+X<addmad>
+
+=item allocmy
+X<allocmy>
+
+=item amagic_cmp
+X<amagic_cmp>
+
+=item amagic_cmp_locale
+X<amagic_cmp_locale>
+
+=item amagic_i_ncmp
+X<amagic_i_ncmp>
+
+=item amagic_ncmp
+X<amagic_ncmp>
+
+=item anonymise_cv
+X<anonymise_cv>
+
+=item ao
+X<ao>
+
+=item append_elem
+X<append_elem>
+
+=item append_list
+X<append_list>
+
+=item append_madprops
+X<append_madprops>
+
+=item apply
+X<apply>
+
+=item apply_attrs
+X<apply_attrs>
+
+=item apply_attrs_my
+X<apply_attrs_my>
+
+=item av_reify
+X<av_reify>
+
+=item bad_type
+X<bad_type>
+
+=item bind_match
+X<bind_match>
+
+=item block_end
+X<block_end>
+
+=item block_start
+X<block_start>
+
+=item boot_core_PerlIO
+X<boot_core_PerlIO>
+
+=item boot_core_UNIVERSAL
+X<boot_core_UNIVERSAL>
+
+=item boot_core_mro
+X<boot_core_mro>
+
+=item bytes_to_uni
+X<bytes_to_uni>
+
+=item cando
+X<cando>
+
+=item check_type_and_open
+X<check_type_and_open>
+
+=item check_uni
+X<check_uni>
+
+=item checkcomma
+X<checkcomma>
+
+=item checkposixcc
+X<checkposixcc>
+
+=item ck_anoncode
+X<ck_anoncode>
+
+=item ck_bitop
+X<ck_bitop>
+
+=item ck_concat
+X<ck_concat>
+
+=item ck_defined
+X<ck_defined>
+
+=item ck_delete
+X<ck_delete>
+
+=item ck_die
+X<ck_die>
+
+=item ck_each
+X<ck_each>
+
+=item ck_eof
+X<ck_eof>
+
+=item ck_eval
+X<ck_eval>
+
+=item ck_exec
+X<ck_exec>
+
+=item ck_exists
+X<ck_exists>
+
+=item ck_exit
+X<ck_exit>
+
+=item ck_ftst
+X<ck_ftst>
+
+=item ck_fun
+X<ck_fun>
+
+=item ck_glob
+X<ck_glob>
+
+=item ck_grep
+X<ck_grep>
+
+=item ck_index
+X<ck_index>
+
+=item ck_join
+X<ck_join>
+
+=item ck_lfun
+X<ck_lfun>
+
+=item ck_listiob
+X<ck_listiob>
+
+=item ck_match
+X<ck_match>
+
+=item ck_method
+X<ck_method>
+
+=item ck_null
+X<ck_null>
+
+=item ck_open
+X<ck_open>
+
+=item ck_readline
+X<ck_readline>
+
+=item ck_repeat
+X<ck_repeat>
+
+=item ck_require
+X<ck_require>
+
+=item ck_return
+X<ck_return>
+
+=item ck_rfun
+X<ck_rfun>
+
+=item ck_rvconst
+X<ck_rvconst>
+
+=item ck_sassign
+X<ck_sassign>
+
+=item ck_select
+X<ck_select>
+
+=item ck_shift
+X<ck_shift>
+
+=item ck_sort
+X<ck_sort>
+
+=item ck_spair
+X<ck_spair>
+
+=item ck_split
+X<ck_split>
+
+=item ck_subr
+X<ck_subr>
+
+=item ck_substr
+X<ck_substr>
+
+=item ck_svconst
+X<ck_svconst>
+
+=item ck_trunc
+X<ck_trunc>
+
+=item ck_unpack
+X<ck_unpack>
+
+=item ckwarn_common
+X<ckwarn_common>
+
+=item cl_and
+X<cl_and>
+
+=item cl_anything
+X<cl_anything>
+
+=item cl_init
+X<cl_init>
+
+=item cl_init_zero
+X<cl_init_zero>
+
+=item cl_is_anything
+X<cl_is_anything>
+
+=item cl_or
+X<cl_or>
+
+=item clear_placeholders
+X<clear_placeholders>
+
+=item closest_cop
+X<closest_cop>
+
+=item convert
+X<convert>
+
+=item cop_free
+X<cop_free>
+
+=item cr_textfilter
+X<cr_textfilter>
+
+=item create_eval_scope
+X<create_eval_scope>
+
+=item curmad
+X<curmad>
+
+=item cv_ckproto_len
+X<cv_ckproto_len>
+
+=item deb_curcv
+X<deb_curcv>
+
+=item deb_stack_all
+X<deb_stack_all>
+
+=item deb_stack_n
+X<deb_stack_n>
+
+=item debprof
+X<debprof>
+
+=item debug_start_match
+X<debug_start_match>
+
+=item del_sv
+X<del_sv>
+
+=item delete_eval_scope
+X<delete_eval_scope>
+
+=item deprecate_commaless_var_list
+X<deprecate_commaless_var_list>
+
+=item destroy_matcher
+X<destroy_matcher>
+
+=item die_where
+X<die_where>
+
+=item div128
+X<div128>
+
+=item do_aexec
+X<do_aexec>
+
+=item do_aexec5
+X<do_aexec5>
+
+=item do_chomp
+X<do_chomp>
+
+=item do_chop
+X<do_chop>
+
+=item do_delete_local
+X<do_delete_local>
+
+=item do_eof
+X<do_eof>
+
+=item do_exec
+X<do_exec>
+
+=item do_exec3
+X<do_exec3>
+
+=item do_execfree
+X<do_execfree>
+
+=item do_ipcctl
+X<do_ipcctl>
+
+=item do_ipcget
+X<do_ipcget>
+
+=item do_kv
+X<do_kv>
+
+=item do_msgrcv
+X<do_msgrcv>
+
+=item do_msgsnd
+X<do_msgsnd>
+
+=item do_oddball
+X<do_oddball>
+
+=item do_op_xmldump
+X<do_op_xmldump>
+
+=item do_pmop_xmldump
+X<do_pmop_xmldump>
+
+=item do_print
+X<do_print>
+
+=item do_readline
+X<do_readline>
+
+=item do_seek
+X<do_seek>
+
+=item do_semop
+X<do_semop>
+
+=item do_shmio
+X<do_shmio>
+
+=item do_smartmatch
+X<do_smartmatch>
+
+=item do_sysseek
+X<do_sysseek>
+
+=item do_tell
+X<do_tell>
+
+=item do_trans
+X<do_trans>
+
+=item do_trans_complex
+X<do_trans_complex>
+
+=item do_trans_complex_utf8
+X<do_trans_complex_utf8>
+
+=item do_trans_count
+X<do_trans_count>
+
+=item do_trans_count_utf8
+X<do_trans_count_utf8>
+
+=item do_trans_simple
+X<do_trans_simple>
+
+=item do_trans_simple_utf8
+X<do_trans_simple_utf8>
+
+=item do_vecget
+X<do_vecget>
+
+=item do_vecset
+X<do_vecset>
+
+=item do_vop
+X<do_vop>
+
+=item doeval
+X<doeval>
+
+=item dofile
+X<dofile>
+
+=item dofindlabel
+X<dofindlabel>
+
+=item doform
+X<doform>
+
+=item dooneliner
+X<dooneliner>
+
+=item doopen_pm
+X<doopen_pm>
+
+=item doparseform
+X<doparseform>
+
+=item dopoptoeval
+X<dopoptoeval>
+
+=item dopoptogiven
+X<dopoptogiven>
+
+=item dopoptolabel
+X<dopoptolabel>
+
+=item dopoptoloop
+X<dopoptoloop>
+
+=item dopoptosub_at
+X<dopoptosub_at>
+
+=item dopoptowhen
+X<dopoptowhen>
+
+=item dump_all_perl
+X<dump_all_perl>
+
+=item dump_exec_pos
+X<dump_exec_pos>
+
+=item dump_packsubs_perl
+X<dump_packsubs_perl>
+
+=item dump_sub_perl
+X<dump_sub_perl>
+
+=item dump_sv_child
+X<dump_sv_child>
+
+=item dump_trie
+X<dump_trie>
+
+=item dump_trie_interim_list
+X<dump_trie_interim_list>
+
+=item dump_trie_interim_table
+X<dump_trie_interim_table>
+
+=item dumpuntil
+X<dumpuntil>
+
+=item dup_attrlist
+X<dup_attrlist>
+
+=item emulate_cop_io
+X<emulate_cop_io>
+
+=item exec_failed
+X<exec_failed>
+
+=item expect_number
+X<expect_number>
+
+=item feature_is_enabled
+X<feature_is_enabled>
+
+=item filter_gets
+X<filter_gets>
+
+=item find_and_forget_pmops
+X<find_and_forget_pmops>
+
+=item find_array_subscript
+X<find_array_subscript>
+
+=item find_beginning
+X<find_beginning>
+
+=item find_byclass
+X<find_byclass>
+
+=item find_hash_subscript
+X<find_hash_subscript>
+
+=item find_in_my_stash
+X<find_in_my_stash>
+
+=item find_script
+X<find_script>
+
+=item first_symbol
+X<first_symbol>
+
+=item fold_constants
+X<fold_constants>
+
+=item forbid_setid
+X<forbid_setid>
+
+=item force_ident
+X<force_ident>
+
+=item force_list
+X<force_list>
+
+=item force_next
+X<force_next>
+
+=item force_strict_version
+X<force_strict_version>
+
+=item force_version
+X<force_version>
+
+=item force_word
+X<force_word>
+
+=item forget_pmop
+X<forget_pmop>
+
+=item free_tied_hv_pool
+X<free_tied_hv_pool>
+
+=item gen_constant_list
+X<gen_constant_list>
+
+=item get_arena
+X<get_arena>
+
+=item get_aux_mg
+X<get_aux_mg>
+
+=item get_db_sub
+X<get_db_sub>
+
+=item get_debug_opts
+X<get_debug_opts>
+
+=item get_hash_seed
+X<get_hash_seed>
+
+=item get_isa_hash
+X<get_isa_hash>
+
+=item get_no_modify
+X<get_no_modify>
+
+=item get_num
+X<get_num>
+
+=item get_opargs
+X<get_opargs>
+
+=item get_re_arg
+X<get_re_arg>
+
+=item getenv_len
+X<getenv_len>
+
+=item glob_2number
+X<glob_2number>
+
+=item glob_assign_glob
+X<glob_assign_glob>
+
+=item glob_assign_ref
+X<glob_assign_ref>
+
+=item group_end
+X<group_end>
+
+=item gv_ename
+X<gv_ename>
+
+=item gv_get_super_pkg
+X<gv_get_super_pkg>
+
+=item gv_init_sv
+X<gv_init_sv>
+
+=item hfreeentries
+X<hfreeentries>
+
+=item hsplit
+X<hsplit>
+
+=item hv_auxinit
+X<hv_auxinit>
+
+=item hv_backreferences_p
+X<hv_backreferences_p>
+
+=item hv_copy_hints_hv
+X<hv_copy_hints_hv>
+
+=item hv_delete_common
+X<hv_delete_common>
+
+=item hv_kill_backrefs
+X<hv_kill_backrefs>
+
+=item hv_magic_check
+X<hv_magic_check>
+
+=item hv_notallowed
+X<hv_notallowed>
+
+=item incline
+X<incline>
+
+=item incpush
+X<incpush>
+
+=item incpush_if_exists
+X<incpush_if_exists>
+
+=item incpush_use_sep
+X<incpush_use_sep>
+
+=item ingroup
+X<ingroup>
+
+=item init_argv_symbols
+X<init_argv_symbols>
+
+=item init_debugger
+X<init_debugger>
+
+=item init_ids
+X<init_ids>
+
+=item init_interp
+X<init_interp>
+
+=item init_main_stash
+X<init_main_stash>
+
+=item init_perllib
+X<init_perllib>
+
+=item init_postdump_symbols
+X<init_postdump_symbols>
+
+=item init_predump_symbols
+X<init_predump_symbols>
+
+=item intuit_method
+X<intuit_method>
+
+=item intuit_more
+X<intuit_more>
+
+=item invert
+X<invert>
+
+=item io_close
+X<io_close>
+
+=item is_an_int
+X<is_an_int>
+
+=item is_handle_constructor
+X<is_handle_constructor>
+
+=item is_inplace_av
+X<is_inplace_av>
+
+=item is_list_assignment
+X<is_list_assignment>
+
+=item is_utf8_X_L
+X<is_utf8_X_L>
+
+=item is_utf8_X_LV
+X<is_utf8_X_LV>
+
+=item is_utf8_X_LVT
+X<is_utf8_X_LVT>
+
+=item is_utf8_X_LV_LVT_V
+X<is_utf8_X_LV_LVT_V>
+
+=item is_utf8_X_T
+X<is_utf8_X_T>
+
+=item is_utf8_X_V
+X<is_utf8_X_V>
+
+=item is_utf8_X_begin
+X<is_utf8_X_begin>
+
+=item is_utf8_X_extend
+X<is_utf8_X_extend>
+
+=item is_utf8_X_non_hangul
+X<is_utf8_X_non_hangul>
+
+=item is_utf8_X_prepend
+X<is_utf8_X_prepend>
+
+=item is_utf8_char_slow
+X<is_utf8_char_slow>
+
+=item is_utf8_common
+X<is_utf8_common>
+
+=item isa_lookup
+X<isa_lookup>
+
+=item jmaybe
+X<jmaybe>
+
+=item join_exact
+X<join_exact>
+
+=item keyword
+X<keyword>
+
+=item keyword_plugin_standard
+X<keyword_plugin_standard>
+
+=item lex_end
+X<lex_end>
+
+=item lex_start
+X<lex_start>
+
+=item linklist
+X<linklist>
+
+=item list
+X<list>
+
+=item listkids
+X<listkids>
+
+=item localize
+X<localize>
+
+=item looks_like_bool
+X<looks_like_bool>
+
+=item lop
+X<lop>
+
+=item mad_free
+X<mad_free>
+
+=item madlex
+X<madlex>
+
+=item madparse
+X<madparse>
+
+=item magic_clear_all_env
+X<magic_clear_all_env>
+
+=item magic_clearenv
+X<magic_clearenv>
+
+=item magic_clearisa
+X<magic_clearisa>
+
+=item magic_clearpack
+X<magic_clearpack>
+
+=item magic_clearsig
+X<magic_clearsig>
+
+=item magic_existspack
+X<magic_existspack>
+
+=item magic_freearylen_p
+X<magic_freearylen_p>
+
+=item magic_freeovrld
+X<magic_freeovrld>
+
+=item magic_get
+X<magic_get>
+
+=item magic_getarylen
+X<magic_getarylen>
+
+=item magic_getdefelem
+X<magic_getdefelem>
+
+=item magic_getnkeys
+X<magic_getnkeys>
+
+=item magic_getpack
+X<magic_getpack>
+
+=item magic_getpos
+X<magic_getpos>
+
+=item magic_getsig
+X<magic_getsig>
+
+=item magic_getsubstr
+X<magic_getsubstr>
+
+=item magic_gettaint
+X<magic_gettaint>
+
+=item magic_getuvar
+X<magic_getuvar>
+
+=item magic_getvec
+X<magic_getvec>
+
+=item magic_killbackrefs
+X<magic_killbackrefs>
+
+=item magic_len
+X<magic_len>
+
+=item magic_methcall
+X<magic_methcall>
+
+=item magic_methpack
+X<magic_methpack>
+
+=item magic_nextpack
+X<magic_nextpack>
+
+=item magic_regdata_cnt
+X<magic_regdata_cnt>
+
+=item magic_regdatum_get
+X<magic_regdatum_get>
+
+=item magic_regdatum_set
+X<magic_regdatum_set>
+
+=item magic_scalarpack
+X<magic_scalarpack>
+
+=item magic_set
+X<magic_set>
+
+=item magic_set_all_env
+X<magic_set_all_env>
+
+=item magic_setamagic
+X<magic_setamagic>
+
+=item magic_setarylen
+X<magic_setarylen>
+
+=item magic_setcollxfrm
+X<magic_setcollxfrm>
+
+=item magic_setdbline
+X<magic_setdbline>
+
+=item magic_setdefelem
+X<magic_setdefelem>
+
+=item magic_setenv
+X<magic_setenv>
+
+=item magic_setisa
+X<magic_setisa>
+
+=item magic_setmglob
+X<magic_setmglob>
+
+=item magic_setnkeys
+X<magic_setnkeys>
+
+=item magic_setpack
+X<magic_setpack>
+
+=item magic_setpos
+X<magic_setpos>
+
+=item magic_setregexp
+X<magic_setregexp>
+
+=item magic_setsig
+X<magic_setsig>
+
+=item magic_setsubstr
+X<magic_setsubstr>
+
+=item magic_settaint
+X<magic_settaint>
+
+=item magic_setutf8
+X<magic_setutf8>
+
+=item magic_setuvar
+X<magic_setuvar>
+
+=item magic_setvec
+X<magic_setvec>
+
+=item magic_sizepack
+X<magic_sizepack>
+
+=item magic_wipepack
+X<magic_wipepack>
+
+=item make_matcher
+X<make_matcher>
+
+=item make_trie
+X<make_trie>
+
+=item make_trie_failtable
+X<make_trie_failtable>
+
+=item malloc_good_size
+X<malloc_good_size>
+
+=item malloced_size
+X<malloced_size>
+
+=item matcher_matches_sv
+X<matcher_matches_sv>
+
+=item measure_struct
+X<measure_struct>
+
+=item mem_collxfrm
+X<mem_collxfrm>
+
+=item mem_log_common
+X<mem_log_common>
+
+=item mess_alloc
+X<mess_alloc>
+
+=item method_common
+X<method_common>
+
+=item missingterm
+X<missingterm>
+
+=item mod
+X<mod>
+
+=item mode_from_discipline
+X<mode_from_discipline>
+
+=item modkids
+X<modkids>
+
+=item more_bodies
+X<more_bodies>
+
+=item more_sv
+X<more_sv>
+
+=item mro_meta_dup
+X<mro_meta_dup>
+
+=item mro_meta_init
+X<mro_meta_init>
+
+=item mul128
+X<mul128>
+
+=item mulexp10
+X<mulexp10>
+
+=item my_attrs
+X<my_attrs>
+
+=item my_betoh16
+X<my_betoh16>
+
+=item my_betoh32
+X<my_betoh32>
+
+=item my_betoh64
+X<my_betoh64>
+
+=item my_betohi
+X<my_betohi>
+
+=item my_betohl
+X<my_betohl>
+
+=item my_betohs
+X<my_betohs>
+
+=item my_clearenv
+X<my_clearenv>
+
+=item my_exit_jump
+X<my_exit_jump>
+
+=item my_htobe16
+X<my_htobe16>
+
+=item my_htobe32
+X<my_htobe32>
+
+=item my_htobe64
+X<my_htobe64>
+
+=item my_htobei
+X<my_htobei>
+
+=item my_htobel
+X<my_htobel>
+
+=item my_htobes
+X<my_htobes>
+
+=item my_htole16
+X<my_htole16>
+
+=item my_htole32
+X<my_htole32>
+
+=item my_htole64
+X<my_htole64>
+
+=item my_htolei
+X<my_htolei>
+
+=item my_htolel
+X<my_htolel>
+
+=item my_htoles
+X<my_htoles>
+
+=item my_kid
+X<my_kid>
+
+=item my_letoh16
+X<my_letoh16>
+
+=item my_letoh32
+X<my_letoh32>
+
+=item my_letoh64
+X<my_letoh64>
+
+=item my_letohi
+X<my_letohi>
+
+=item my_letohl
+X<my_letohl>
+
+=item my_letohs
+X<my_letohs>
+
+=item my_swabn
+X<my_swabn>
+
+=item my_unexec
+X<my_unexec>
+
+=item need_utf8
+X<need_utf8>
+
+=item newDEFSVOP
+X<newDEFSVOP>
+
+=item newGIVWHENOP
+X<newGIVWHENOP>
+
+=item newGP
+X<newGP>
+
+=item newMADPROP
+X<newMADPROP>
+
+=item newMADsv
+X<newMADsv>
+
+=item newTOKEN
+X<newTOKEN>
+
+=item new_constant
+X<new_constant>
+
+=item new_he
+X<new_he>
+
+=item new_logop
+X<new_logop>
+
+=item new_warnings_bitfield
+X<new_warnings_bitfield>
+
+=item next_symbol
+X<next_symbol>
+
+=item nextargv
+X<nextargv>
+
+=item nextchar
+X<nextchar>
+
+=item no_bareword_allowed
+X<no_bareword_allowed>
+
+=item no_fh_allowed
+X<no_fh_allowed>
+
+=item no_op
+X<no_op>
+
+=item not_a_number
+X<not_a_number>
+
+=item nuke_stacks
+X<nuke_stacks>
+
+=item num_overflow
+X<num_overflow>
+
+=item offer_nice_chunk
+X<offer_nice_chunk>
+
+=item oopsAV
+X<oopsAV>
+
+=item oopsHV
+X<oopsHV>
+
+=item op_clear
+X<op_clear>
+
+=item op_const_sv
+X<op_const_sv>
+
+=item op_getmad
+X<op_getmad>
+
+=item op_getmad_weak
+X<op_getmad_weak>
+
+=item op_refcnt_dec
+X<op_refcnt_dec>
+
+=item op_refcnt_inc
+X<op_refcnt_inc>
+
+=item op_xmldump
+X<op_xmldump>
+
+=item open_script
+X<open_script>
+
+=item opt_scalarhv
+X<opt_scalarhv>
+
+=item pack_rec
+X<pack_rec>
+
+=item package
+X<package>
+
+=item package_version
+X<package_version>
+
+=item pad_add_name_sv
+X<pad_add_name_sv>
+
+=item pad_compname_type
+X<pad_compname_type>
+
+=item pad_peg
+X<pad_peg>
+
+=item parse_body
+X<parse_body>
+
+=item parse_unicode_opts
+X<parse_unicode_opts>
+
+=item parser_free
+X<parser_free>
+
+=item path_is_absolute
+X<path_is_absolute>
+
+=item peep
+X<peep>
+
+=item pending_Slabs_to_ro
+X<pending_Slabs_to_ro>
+
+=item pidgone
+X<pidgone>
+
+=item pm_description
+X<pm_description>
+
+=item pmflag
+X<pmflag>
+
+=item pmop_xmldump
+X<pmop_xmldump>
+
+=item pmruntime
+X<pmruntime>
+
+=item pmtrans
+X<pmtrans>
+
+=item prepend_elem
+X<prepend_elem>
+
+=item prepend_madprops
+X<prepend_madprops>
+
+=item printbuf
+X<printbuf>
+
+=item process_special_blocks
+X<process_special_blocks>
+
+=item ptr_table_find
+X<ptr_table_find>
+
+=item put_byte
+X<put_byte>
+
+=item qerror
+X<qerror>
+
+=item qsortsvu
+X<qsortsvu>
+
+=item re_croak2
+X<re_croak2>
+
+=item readpipe_override
+X<readpipe_override>
+
+=item ref_array_or_hash
+X<ref_array_or_hash>
+
+=item refcounted_he_fetch
+X<refcounted_he_fetch>
+
+=item refcounted_he_new_common
+X<refcounted_he_new_common>
+
+=item refcounted_he_value
+X<refcounted_he_value>
+
+=item refkids
+X<refkids>
+
+=item refto
+X<refto>
+
+=item reg
+X<reg>
+
+=item reg_check_named_buff_matched
+X<reg_check_named_buff_matched>
+
+=item reg_named_buff
+X<reg_named_buff>
+
+=item reg_named_buff_iter
+X<reg_named_buff_iter>
+
+=item reg_namedseq
+X<reg_namedseq>
+
+=item reg_node
+X<reg_node>
+
+=item reg_numbered_buff_fetch
+X<reg_numbered_buff_fetch>
+
+=item reg_numbered_buff_length
+X<reg_numbered_buff_length>
+
+=item reg_numbered_buff_store
+X<reg_numbered_buff_store>
+
+=item reg_qr_package
+X<reg_qr_package>
+
+=item reg_recode
+X<reg_recode>
+
+=item reg_scan_name
+X<reg_scan_name>
+
+=item reg_skipcomment
+X<reg_skipcomment>
+
+=item reg_temp_copy
+X<reg_temp_copy>
+
+=item reganode
+X<reganode>
+
+=item regatom
+X<regatom>
+
+=item regbranch
+X<regbranch>
+
+=item regclass
+X<regclass>
+
+=item regcppop
+X<regcppop>
+
+=item regcppush
+X<regcppush>
+
+=item regcurly
+X<regcurly>
+
+=item regdump_extflags
+X<regdump_extflags>
+
+=item reghop3
+X<reghop3>
+
+=item reghop4
+X<reghop4>
+
+=item reghopmaybe3
+X<reghopmaybe3>
+
+=item reginclass
+X<reginclass>
+
+=item reginsert
+X<reginsert>
+
+=item regmatch
+X<regmatch>
+
+=item regpiece
+X<regpiece>
+
+=item regpposixcc
+X<regpposixcc>
+
+=item regprop
+X<regprop>
+
+=item regrepeat
+X<regrepeat>
+
+=item regtail
+X<regtail>
+
+=item regtail_study
+X<regtail_study>
+
+=item regtry
+X<regtry>
+
+=item reguni
+X<reguni>
+
+=item regwhite
+X<regwhite>
+
+=item report_evil_fh
+X<report_evil_fh>
+
+=item require_tie_mod
+X<require_tie_mod>
+
+=item restore_magic
+X<restore_magic>
+
+=item rsignal_restore
+X<rsignal_restore>
+
+=item rsignal_save
+X<rsignal_save>
+
+=item run_body
+X<run_body>
+
+=item run_user_filter
+X<run_user_filter>
+
+=item rxres_free
+X<rxres_free>
+
+=item rxres_restore
+X<rxres_restore>
+
+=item rxres_save
+X<rxres_save>
+
+=item same_dirent
+X<same_dirent>
+
+=item save_freeop
+X<save_freeop>
+
+=item save_hek_flags
+X<save_hek_flags>
+
+=item save_hints
+X<save_hints>
+
+=item save_lines
+X<save_lines>
+
+=item save_magic
+X<save_magic>
+
+=item save_op
+X<save_op>
+
+=item save_pushi32ptr
+X<save_pushi32ptr>
+
+=item save_pushptri32ptr
+X<save_pushptri32ptr>
+
+=item save_pushptrptr
+X<save_pushptrptr>
+
+=item save_scalar_at
+X<save_scalar_at>
+
+=item sawparens
+X<sawparens>
+
+=item scalar
+X<scalar>
+
+=item scalar_mod_type
+X<scalar_mod_type>
+
+=item scalarboolean
+X<scalarboolean>
+
+=item scalarkids
+X<scalarkids>
+
+=item scalarseq
+X<scalarseq>
+
+=item scalarvoid
+X<scalarvoid>
+
+=item scan_commit
+X<scan_commit>
+
+=item scan_const
+X<scan_const>
+
+=item scan_formline
+X<scan_formline>
+
+=item scan_heredoc
+X<scan_heredoc>
+
+=item scan_ident
+X<scan_ident>
+
+=item scan_inputsymbol
+X<scan_inputsymbol>
+
+=item scan_pat
+X<scan_pat>
+
+=item scan_str
+X<scan_str>
+
+=item scan_subst
+X<scan_subst>
+
+=item scan_trans
+X<scan_trans>
+
+=item scan_word
+X<scan_word>
+
+=item scope
+X<scope>
+
+=item search_const
+X<search_const>
+
+=item sequence
+X<sequence>
+
+=item sequence_num
+X<sequence_num>
+
+=item sequence_tail
+X<sequence_tail>
+
+=item share_hek_flags
+X<share_hek_flags>
+
+=item sighandler
+X<sighandler>
+
+=item simplify_sort
+X<simplify_sort>
+
+=item skipspace
+X<skipspace>
+
+=item skipspace0
+X<skipspace0>
+
+=item skipspace1
+X<skipspace1>
+
+=item skipspace2
+X<skipspace2>
+
+=item softref2xv
+X<softref2xv>
+
+=item sortcv
+X<sortcv>
+
+=item sortcv_stacked
+X<sortcv_stacked>
+
+=item sortcv_xsub
+X<sortcv_xsub>
+
+=item space_join_names_mortal
+X<space_join_names_mortal>
+
+=item start_force
+X<start_force>
+
+=item stdize_locale
+X<stdize_locale>
+
+=item store_cop_label
+X<store_cop_label>
+
+=item strip_return
+X<strip_return>
+
+=item study_chunk
+X<study_chunk>
+
+=item sub_crush_depth
+X<sub_crush_depth>
+
+=item sublex_done
+X<sublex_done>
+
+=item sublex_push
+X<sublex_push>
+
+=item sublex_start
+X<sublex_start>
+
+=item sv_2iuv_common
+X<sv_2iuv_common>
+
+=item sv_2iuv_non_preserve
+X<sv_2iuv_non_preserve>
+
+=item sv_add_backref
+X<sv_add_backref>
+
+=item sv_catxmlpvn
+X<sv_catxmlpvn>
+
+=item sv_catxmlsv
+X<sv_catxmlsv>
+
+=item sv_del_backref
+X<sv_del_backref>
+
+=item sv_dup_inc_multiple
+X<sv_dup_inc_multiple>
+
+=item sv_exp_grow
+X<sv_exp_grow>
+
+=item sv_free2
+X<sv_free2>
+
+=item sv_i_ncmp
+X<sv_i_ncmp>
+
+=item sv_kill_backrefs
+X<sv_kill_backrefs>
+
+=item sv_ncmp
+X<sv_ncmp>
+
+=item sv_pos_b2u_midway
+X<sv_pos_b2u_midway>
+
+=item sv_pos_u2b_cached
+X<sv_pos_u2b_cached>
+
+=item sv_pos_u2b_forwards
+X<sv_pos_u2b_forwards>
+
+=item sv_pos_u2b_midway
+X<sv_pos_u2b_midway>
+
+=item sv_release_COW
+X<sv_release_COW>
+
+=item sv_setsv_cow
+X<sv_setsv_cow>
+
+=item sv_unglob
+X<sv_unglob>
+
+=item sv_xmlpeek
+X<sv_xmlpeek>
+
+=item swallow_bom
+X<swallow_bom>
+
+=item swash_get
+X<swash_get>
+
+=item to_byte_substr
+X<to_byte_substr>
+
+=item to_utf8_substr
+X<to_utf8_substr>
+
+=item token_free
+X<token_free>
+
+=item token_getmad
+X<token_getmad>
+
+=item tokenize_use
+X<tokenize_use>
+
+=item tokeq
+X<tokeq>
+
+=item tokereport
+X<tokereport>
+
+=item too_few_arguments
+X<too_few_arguments>
+
+=item too_many_arguments
+X<too_many_arguments>
+
+=item uiv_2buf
+X<uiv_2buf>
+
+=item unpack_rec
+X<unpack_rec>
+
+=item unshare_hek
+X<unshare_hek>
+
+=item unshare_hek_or_pvn
+X<unshare_hek_or_pvn>
+
+=item unwind_handler_stack
+X<unwind_handler_stack>
+
+=item update_debugger_info
+X<update_debugger_info>
+
+=item usage
+X<usage>
+
+=item utf16_textfilter
+X<utf16_textfilter>
+
+=item utf8_mg_pos_cache_update
+X<utf8_mg_pos_cache_update>
+
+=item utilize
+X<utilize>
+
+=item validate_suid
+X<validate_suid>
+
+=item varname
+X<varname>
+
+=item vdie
+X<vdie>
+
+=item vdie_common
+X<vdie_common>
+
+=item vdie_croak_common
+X<vdie_croak_common>
+
+=item visit
+X<visit>
+
+=item vivify_defelem
+X<vivify_defelem>
+
+=item vivify_ref
+X<vivify_ref>
+
+=item wait4pid
+X<wait4pid>
+
+=item watch
+X<watch>
+
+=item write_no_mem
+X<write_no_mem>
+
+=item write_to_stderr
+X<write_to_stderr>
+
+=item xmldump_all
+X<xmldump_all>
+
+=item xmldump_all_perl
+X<xmldump_all_perl>
+
+=item xmldump_attr
+X<xmldump_attr>
+
+=item xmldump_eval
+X<xmldump_eval>
+
+=item xmldump_form
+X<xmldump_form>
+
+=item xmldump_indent
+X<xmldump_indent>
+
+=item xmldump_packsubs
+X<xmldump_packsubs>
+
+=item xmldump_packsubs_perl
+X<xmldump_packsubs_perl>
+
+=item xmldump_sub
+X<xmldump_sub>
+
+=item xmldump_sub_perl
+X<xmldump_sub_perl>
+
+=item xmldump_vindent
+X<xmldump_vindent>
+
+=item yyerror
+X<yyerror>
+
+=item yylex
+X<yylex>
+
+=item yyparse
+X<yyparse>
+
+=item yywarn
+X<yywarn>
+
+=back
+
 
 =head1 AUTHORS
 
@@ -1103,7 +2950,7 @@ document their functions.
 
 =head1 SEE ALSO
 
-perlguts(1), perlapi(1)
+L<perlguts>, L<perlapi>
 
 =cut
 
