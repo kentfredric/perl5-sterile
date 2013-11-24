@@ -726,9 +726,10 @@ for creating hard links into files, see L<perlfunc/link>.
 =item localeconv
 
 Get numeric formatting information.  Returns a reference to a hash
-containing the current locale formatting values.
-Users of this function should also read L<perllocale>, where there is a
-L<discussion devoted to this function|perllocale/The localeconv function>.
+containing the current locale formatting values.  Users of this function
+should also read L<perllocale>, which provides a comprehensive
+discussion of Perl locale handling, including
+L<a section devoted to this function|perllocale/The localeconv function>.
 
 Here is how to query the database for the B<de> (Deutsch or German) locale.
 
@@ -1085,8 +1086,11 @@ see L<perlfunc/eval>.
 =item setlocale
 
 Modifies and queries the program's underlying locale.  Users of this
-function should also read L<perllocale>, where there is a
-L<discussion devoted to this function|perllocale/The setlocale function>.
+function should read L<perllocale>, whch provides a comprehensive
+discussion of Perl locale handling, knowledge of which is necessary to
+properly use this function.  It contains
+L<a section devoted to this function|perllocale/The setlocale function>.
+The discussion here is merely a summary reference for C<setlocale()>.
 Note that Perl itself is almost entirely unaffected by the locale
 except within the scope of S<C<"use locale">>.  (Exceptions are listed
 in L<perllocale/Not within the scope of any "use locale" variant>.)
@@ -2057,16 +2061,17 @@ _SC_VERSION
 
 =item Constants
 
-E2BIG EACCES EADDRINUSE EADDRNOTAVAIL EAFNOSUPPORT EAGAIN EALREADY EBADF
-EBUSY ECHILD ECONNABORTED ECONNREFUSED ECONNRESET EDEADLK EDESTADDRREQ
-EDOM EDQUOT EEXIST EFAULT EFBIG EHOSTDOWN EHOSTUNREACH EINPROGRESS EINTR
-EINVAL EIO EISCONN EISDIR ELOOP EMFILE EMLINK EMSGSIZE ENAMETOOLONG
-ENETDOWN ENETRESET ENETUNREACH ENFILE ENOBUFS ENODEV ENOENT ENOEXEC
-ENOLCK ENOMEM ENOPROTOOPT ENOSPC ENOSYS ENOTBLK ENOTCONN ENOTDIR
-ENOTEMPTY ENOTSOCK ENOTTY ENXIO EOPNOTSUPP EPERM EPFNOSUPPORT EPIPE
-EPROCLIM EPROTONOSUPPORT EPROTOTYPE ERANGE EREMOTE ERESTART EROFS
-ESHUTDOWN ESOCKTNOSUPPORT ESPIPE ESRCH ESTALE ETIMEDOUT ETOOMANYREFS
-ETXTBSY EUSERS EWOULDBLOCK EXDEV
+E2BIG EACCES EADDRINUSE EADDRNOTAVAIL EAFNOSUPPORT EAGAIN EALREADY EBADF EBADMSG
+EBUSY ECANCELED ECHILD ECONNABORTED ECONNREFUSED ECONNRESET EDEADLK EDESTADDRREQ
+EDOM EDQUOT EEXIST EFAULT EFBIG EHOSTDOWN EHOSTUNREACH EIDRM EILSEQ EINPROGRESS
+EINTR EINVAL EIO EISCONN EISDIR ELOOP EMFILE EMLINK EMSGSIZE ENAMETOOLONG
+ENETDOWN ENETRESET ENETUNREACH ENFILE ENOBUFS ENODATA ENODEV ENOENT ENOEXEC
+ENOLCK ENOLINK ENOMEM ENOMSG ENOPROTOOPT ENOSPC ENOSR ENOSTR ENOSYS ENOTBLK
+ENOTCONN ENOTDIR ENOTEMPTY ENOTRECOVERABLE ENOTSOCK ENOTSUP ENOTTY ENXIO
+EOPNOTSUPP EOTHER EOVERFLOW EOWNERDEAD EPERM EPFNOSUPPORT EPIPE EPROCLIM EPROTO
+EPROTONOSUPPORT EPROTOTYPE ERANGE EREMOTE ERESTART EROFS ESHUTDOWN
+ESOCKTNOSUPPORT ESPIPE ESRCH ESTALE ETIME ETIMEDOUT ETOOMANYREFS ETXTBSY EUSERS
+EWOULDBLOCK EXDEV
 
 =back
 

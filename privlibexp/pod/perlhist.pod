@@ -502,6 +502,7 @@ the strings?).
  Aaron    5.17.8        2013-Jan-20
  BinGOs   5.17.9        2013-Feb-20
  Max M    5.17.10       2013-Mar-21
+ Ricardo  5.17.11       2013-Apr-20
 
  Ricardo  5.18.0-RC1    2013-May-11     The 5.18 maintenance track
  Ricardo  5.18.0-RC2    2013-May-12
@@ -517,6 +518,7 @@ the strings?).
  David G   5.19.1       2013-Jun-21
  Aristotle 5.19.2       2013-Jul-22
  Steve     5.19.3       2013-Aug-20
+ Steve     5.19.4       2013-Sep-20
 
 =head2 SELECTED RELEASE SIZES
 

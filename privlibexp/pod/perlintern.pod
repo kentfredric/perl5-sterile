@@ -1752,6 +1752,9 @@ X<ck_tell>
 =item ck_trunc
 X<ck_trunc>
 
+=item closest_cop
+X<closest_cop>
+
 =item compute_EXACTish
 X<compute_EXACTish>
 
@@ -1874,6 +1877,12 @@ X<do_vop>
 
 =item dofile
 X<dofile>
+
+=item drand48_init_r
+X<drand48_init_r>
+
+=item drand48_r
+X<drand48_r>
 
 =item dump_all_perl
 X<dump_all_perl>
@@ -2244,6 +2253,9 @@ X<newMADsv>
 =item newSTUB
 X<newSTUB>
 
+=item newSVavdefelem
+X<newSVavdefelem>
+
 =item newTOKEN
 X<newTOKEN>
 
@@ -2403,6 +2415,9 @@ X<rxres_save>
 =item same_dirent
 X<same_dirent>
 
+=item save_strlen
+X<save_strlen>
+
 =item sawparens
 X<sawparens>
 
@@ -2450,6 +2465,9 @@ X<sv_magicext_mglob>
 
 =item sv_mortalcopy_flags
 X<sv_mortalcopy_flags>
+
+=item sv_or_pv_pos_u2b
+X<sv_or_pv_pos_u2b>
 
 =item sv_resetpvn
 X<sv_resetpvn>

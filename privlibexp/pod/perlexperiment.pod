@@ -49,6 +49,9 @@ L<[perl #119315]|https://rt.perl.org/rt3/Ticket/Display.html?id=119315>.
 
 =item Pluggable keywords
 
+The ticket for this feature is
+L<[perl #119455]|https://rt.perl.org/rt3/Ticket/Display.html?id=119455>.
+
 See L<perlapi/PL_keyword_plugin> for the mechanism.
 
 Introduced in: Perl 5.11.2
@@ -56,6 +59,9 @@ Introduced in: Perl 5.11.2
 =item Array and hash container functions accept references
 
 Introduced in Perl 5.14.0
+
+The ticket for this feature is
+L<[perl #119437]|https://rt.perl.org/rt3/Ticket/Display.html?id=119437>.
 
 =item Lexical subroutines
 
@@ -70,6 +76,9 @@ C<experimental::lexical_subs>.
 
 Introduced in: Perl 5.18
 
+The ticket for this feature is
+L<[perl #119451]|https://rt.perl.org/rt3/Ticket/Display.html?id=119451>.
+
 See also: L<perlrecharclass/Extended Bracketed Character Classes>
 
 Using this feature triggers warnings in the category
@@ -81,6 +90,9 @@ Introduced in Perl 5.18
 
 =item The <:win32> IO pseudolayer
 
+The ticket for this feature is
+L<[perl #119453]|https://rt.perl.org/rt3/Ticket/Display.html?id=119453>.
+
 See also L<perlrun>
 
 =item There is an C<installhtml> target in the Makefile.
@@ -89,8 +101,6 @@ The ticket for this feature is
 L<[perl #116487]|https://rt.perl.org/rt3/Ticket/Display.html?id=116487>.
 
 =item Unicode in Perl on EBCDIC
-
-See also: L<perlre/"Special Backtracking Control Verbs">
 
 =back
 

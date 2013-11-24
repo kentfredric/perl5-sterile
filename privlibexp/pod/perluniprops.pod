@@ -3811,6 +3811,9 @@ stable.
  TX\p{_CombAbove}          (For internal use by Perl, not necessarily
                              stable) (= \p{Canonical_Combining_Class=
                              Above}) (349)
+ T \p{_Perl_Any_Folds}     (For internal use by Perl, not necessarily
+                             stable) Code points that particpate in
+                             some fold (2148)
 
 
 
@@ -3876,6 +3879,8 @@ through \p{} and \P{}>, like B<D> or B<S>.
 
    NAME                      INFO
 
+   _Perl_Any_Folds         (Perl extension).  Code points that
+                           particpate in some fold
    Age
    AHex                    ASCII_Hex_Digit
    All                     Any.  (Perl extension)

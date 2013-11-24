@@ -10,7 +10,7 @@
 package Data::Dumper;
 
 BEGIN {
-    $VERSION = '2.148'; # Don't forget to set version and release
+    $VERSION = '2.149'; # Don't forget to set version and release
 }               # date in POD below!
 
 #$| = 1;
@@ -718,7 +718,7 @@ sub qquote {
   local($_) = shift;
   s/([\\\"\@\$])/\\$1/g;
   my $bytes; { use bytes; $bytes = length }
-  s/([^\x00-\x7f])/'\x{'.sprintf("%x",ord($1)).'}'/ge if $bytes > length;
+  s/([[:^ascii:]])/'\x{'.sprintf("%x",ord($1)).'}'/ge if $bytes > length;
   return qq("$_") unless
     /[^ !"\#\$%&'()*+,\-.\/0-9:;<=>?\@A-Z[\\\]^_`a-z{|}~]/;  # fast exit
 
@@ -1400,7 +1400,7 @@ modify it under the same terms as Perl itself.
 
 =head1 VERSION
 
-Version 2.145  (March 15 2013))
+Version 2.149  (September 20 2013)
 
 =head1 SEE ALSO
 

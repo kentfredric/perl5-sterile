@@ -53,9 +53,9 @@ PERLVAR(I, scopestack_ix, I32)
 PERLVAR(I, scopestack_max, I32)
 
 PERLVAR(I, tmps_stack,	SV **)		/* mortals we've made */
-PERLVARI(I, tmps_ix,	I32,	-1)
-PERLVARI(I, tmps_floor,	I32,	-1)
-PERLVAR(I, tmps_max,	I32)
+PERLVARI(I, tmps_ix,	SSize_t,	-1)
+PERLVARI(I, tmps_floor,	SSize_t,	-1)
+PERLVAR(I, tmps_max,	SSize_t)
 
 PERLVARI(I, sub_generation, U32, 1)	/* incr to invalidate method cache */
 
@@ -739,7 +739,7 @@ PERLVAR(I, debug_pad,	struct perl_debug_pad)	/* always needed because of the re 
 /* Hook for File::Glob */
 PERLVARI(I, globhook,	globhook_t, NULL)
 
-/* The last unconditional member of the interpreter structure when 5.19.3 was
+/* The last unconditional member of the interpreter structure when 5.19.4 was
    released. The offset of the end of this is baked into a global variable in 
    any shared perl library which will allow a sanity test in future perl
    releases.  */
@@ -783,6 +783,8 @@ PERLVARA(I, op_exec_cnt, OP_max+2, UV)	/* Counts of executed OPs of the given ty
                                            profiling/debugging only. Works only if
                                            DEBUGGING is enabled, too. */
 #endif
+
+PERLVAR(I, random_state, PL_RANDOM_STATE_TYPE)
 
 /* If you are adding a U8 or U16, check to see if there are 'Space' comments
  * above on where there are gaps which currently will be structure padding.  */

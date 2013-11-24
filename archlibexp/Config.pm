@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use vars '%Config', '$VERSION';
 
-$VERSION = "5.019003";
+$VERSION = "5.019004";
 
 # Skip @Config::EXPORT because it only contains %Config, which we special
 # case below as it's not a function. @Config::EXPORT won't change in the
@@ -56,11 +56,11 @@ sub import {
     return;
 }
 
-die "$0: Perl lib version (5.19.3) doesn't match executable '$^X' version ($])"
+die "$0: Perl lib version (5.19.4) doesn't match executable '$^X' version ($])"
     unless $^V;
 
-$^V eq 5.19.3
-    or die sprintf "%s: Perl lib version (5.19.3) doesn't match executable '$^X' version (%vd)", $0, $^V;
+$^V eq 5.19.4
+    or die sprintf "%s: Perl lib version (5.19.4) doesn't match executable '$^X' version (%vd)", $0, $^V;
 
 
 sub FETCH {
@@ -84,7 +84,7 @@ sub AUTOLOAD {
 
 # tie returns the object, so the value returned to require will be true.
 tie %Config, 'Config', {
-    archlibexp => '/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/5.19.3/x86_64-linux',
+    archlibexp => '/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/5.19.4/x86_64-linux',
     archname => 'x86_64-linux',
     cc => 'cc',
     d_readlink => 'define',
@@ -100,12 +100,12 @@ tie %Config, 'Config', {
     osname => 'linux',
     osvers => '3.12.0-gentoo',
     path_sep => ':',
-    privlibexp => '/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/5.19.3',
-    scriptdir => '/home/kent/perl5/perlbrew/perls/5.19.3-pristine/bin',
-    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/site_perl/5.19.3/x86_64-linux',
-    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/site_perl/5.19.3',
+    privlibexp => '/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/5.19.4',
+    scriptdir => '/home/kent/perl5/perlbrew/perls/5.19.4-pristine/bin',
+    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/site_perl/5.19.4/x86_64-linux',
+    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/site_perl/5.19.4',
     so => 'so',
     useithreads => undef,
     usevendorprefix => undef,
-    version => '5.19.3',
+    version => '5.19.4',
 };

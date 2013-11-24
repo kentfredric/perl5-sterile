@@ -18,7 +18,7 @@ our @Overridable;
 my @Prepend_parent;
 my %Recognized_Att_Keys;
 
-our $VERSION = '6.72';
+our $VERSION = '6.76';
 $VERSION = eval $VERSION;  ## no critic [BuiltinFunctions::ProhibitStringyEval]
 
 # Emulate something resembling CVS $Revision$
@@ -197,7 +197,7 @@ sub prompt ($;$) {  ## no critic
     else {
         $ans = <STDIN>;
         if( defined $ans ) {
-            chomp $ans;
+            $ans =~ s{\015?\012$}{};
         }
         else { # user hit ctrl-D
             print "\n";
@@ -275,7 +275,7 @@ sub full_setup {
     INC INCLUDE_EXT LDFROM LIB LIBPERL_A LIBS LICENSE
     LINKTYPE MAKE MAKEAPERL MAKEFILE MAKEFILE_OLD MAN1PODS MAN3PODS MAP_TARGET
     META_ADD META_MERGE MIN_PERL_VERSION BUILD_REQUIRES CONFIGURE_REQUIRES
-    MYEXTLIB NAME NEEDS_LINKING NOECHO NO_META NO_MYMETA
+    MYEXTLIB NAME NEEDS_LINKING NOECHO NO_META NO_MYMETA NO_PACKLIST NO_PERLLOCAL
     NORECURS NO_VC OBJECT OPTIMIZE PERL_MALLOC_OK PERL PERLMAINCC PERLRUN
     PERLRUNINST PERL_CORE
     PERL_SRC PERM_DIR PERM_RW PERM_RWX
@@ -585,8 +585,9 @@ END
         }
         my @fm = grep /^FIRST_MAKEFILE=/, @ARGV;
         parse_args($self,@fm) if @fm;
-    } else {
-        parse_args($self,split(' ', $ENV{PERL_MM_OPT} || ''),@ARGV);
+    }
+    else {
+        parse_args($self, _shellwords($ENV{PERL_MM_OPT} || ''),@ARGV);
     }
 
 
@@ -799,6 +800,83 @@ END
     return @result;
 }
 
+# _shellwords and _parseline borrowed from Text::ParseWords
+sub _shellwords {
+    my (@lines) = @_;
+    my @allwords;
+
+    foreach my $line (@lines) {
+      $line =~ s/^\s+//;
+      my @words = _parse_line('\s+', 0, $line);
+      pop @words if (@words and !defined $words[-1]);
+      return() unless (@words || !length($line));
+      push(@allwords, @words);
+    }
+    return(@allwords);
+}
+
+sub _parse_line {
+    my($delimiter, $keep, $line) = @_;
+    my($word, @pieces);
+
+    no warnings 'uninitialized';  # we will be testing undef strings
+
+    while (length($line)) {
+        # This pattern is optimised to be stack conservative on older perls.
+        # Do not refactor without being careful and testing it on very long strings.
+        # See Perl bug #42980 for an example of a stack busting input.
+        $line =~ s/^
+                    (?:
+                        # double quoted string
+                        (")                             # $quote
+                        ((?>[^\\"]*(?:\\.[^\\"]*)*))"   # $quoted
+        | # --OR--
+                        # singe quoted string
+                        (')                             # $quote
+                        ((?>[^\\']*(?:\\.[^\\']*)*))'   # $quoted
+                    |   # --OR--
+                        # unquoted string
+            (                               # $unquoted
+                            (?:\\.|[^\\"'])*?
+                        )
+                        # followed by
+            (                               # $delim
+                            \Z(?!\n)                    # EOL
+                        |   # --OR--
+                            (?-x:$delimiter)            # delimiter
+                        |   # --OR--
+                            (?!^)(?=["'])               # a quote
+                        )
+        )//xs or return;    # extended layout
+        my ($quote, $quoted, $unquoted, $delim) = (($1 ? ($1,$2) : ($3,$4)), $5, $6);
+
+
+  return() unless( defined($quote) || length($unquoted) || length($delim));
+
+        if ($keep) {
+      $quoted = "$quote$quoted$quote";
+  }
+        else {
+      $unquoted =~ s/\\(.)/$1/sg;
+      if (defined $quote) {
+    $quoted =~ s/\\(.)/$1/sg if ($quote eq '"');
+    #$quoted =~ s/\\([\\'])/$1/g if ( $PERL_SINGLE_QUOTE && $quote eq "'");
+            }
+  }
+        $word .= substr($line, 0, 0); # leave results tainted
+        $word .= defined $quote ? $quoted : $unquoted;
+
+        if (length($delim)) {
+            push(@pieces, $word);
+            push(@pieces, $delim) if ($keep eq 'delimiters');
+            undef $word;
+        }
+        if (!length($line)) {
+            push(@pieces, $word);
+  }
+    }
+    return(@pieces);
+}
 
 sub check_manifest {
     print "Checking if your kit is complete...\n";
@@ -1022,6 +1100,16 @@ sub skipcheck {
 
 sub flush {
     my $self = shift;
+
+    # This needs a bit more work for more wacky OSen
+    my $type = 'GNU-style';
+    if ( $self->os_flavor_is('Win32') ) {
+      my $make = $self->make;
+      $make = +( File::Spec->splitpath( $make ) )[-1];
+      $make =~ s!\.exe$!!i;
+      $type = $make . '-style';
+    }
+    print "Generating a $type Makefile\n";
 
     my $finalname = $self->{MAKEFILE};
     print "Writing $finalname for $self->{NAME}\n";
@@ -1665,6 +1753,18 @@ For example, version 1.04 of Foo::Bar becomes Foo-Bar-1.04.
 On some OS's where . has special meaning VERSION_SYM may be used in
 place of VERSION.
 
+=item DLEXT
+
+Specifies the extension of the module's loadable object. For example:
+
+  DLEXT => 'unusual_ext', # Default value is $Config{so}
+
+NOTE: When using this option to alter the extension of a module's
+loadable object, it is also necessary that the module's pm file
+specifies the same change:
+
+  local $DynaLoader::dl_dlext = 'unusual_ext';
+
 =item DL_FUNCS
 
 Hashref of symbol names for routines to be made available as universal
@@ -2128,6 +2228,18 @@ meta-data files during 'perl Makefile.PL'.
 
 Defaults to false.
 
+=item NO_PACKLIST
+
+When true, suppresses the writing of C<packlist> files for installs.
+
+Defaults to false.
+
+=item NO_PERLLOCAL
+
+When true, suppresses the appending of installations to C<perllocal>.
+
+Defaults to false.
+
 =item NO_VC
 
 In general, any generated Makefile checks for the current version of
@@ -2284,7 +2396,7 @@ is there for backwards compatibility (and it's somewhat DWIM).
 
 Hashref of .pm files and *.pl files to be installed.  e.g.
 
-  {'name_of_file.pm' => '$(INST_LIBDIR)/install_as.pm'}
+  {'name_of_file.pm' => '$(INST_LIB)/install_as.pm'}
 
 By default this will include *.pm and *.pl and the files found in
 the PMLIBDIRS directories.  Defining PM in the
@@ -2633,7 +2745,15 @@ Anything put here will be passed to MY::postamble() if you have one.
 
 =item test
 
+Specify the targets for testing.
+
   {TESTS => 't/*.t'}
+
+C<RECURSIVE_TEST_FILES> can be used to include all directories
+recursively under C<t> that contain C<.t> files. It will be ignored if
+you provide your own C<TESTS> attribute, defaults to false.
+
+  {RECURSIVE_TEST_FILES=>1}
 
 =item tool_autosplit
 
@@ -2921,8 +3041,10 @@ If no $default is provided an empty string will be used instead.
 =item PERL_MM_OPT
 
 Command line options used by C<MakeMaker-E<gt>new()>, and thus by
-C<WriteMakefile()>.  The string is split on whitespace, and the result
+C<WriteMakefile()>.  The string is split as the shell would, and the result
 is processed before any actual command line arguments are processed.
+
+  PERL_MM_OPT='CCFLAGS="-Wl,-rpath -Wl,/foo/bar/lib" LIBS="-lwibble -lwobble"'
 
 =item PERL_MM_USE_DEFAULT
 

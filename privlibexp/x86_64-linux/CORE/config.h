@@ -9,7 +9,7 @@
 
 /* Package name      : perl5
  * Source directory  : .
- * Configuration time: Sun Nov 24 19:33:49 NZDT 2013
+ * Configuration time: Sun Nov 24 19:40:17 NZDT 2013
  * Configured by     : kent
  * Target system     : linux katipo2 3.12.0-gentoo #54 smp wed nov 6 04:43:49 nzdt 2013 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
  */
@@ -892,6 +892,15 @@
 #define OSNAME "linux"		/**/
 #define OSVERS "3.12.0-gentoo"		/**/
 
+/* MULTIARCH:
+ *	This symbol, if defined, signifies that the build
+ *	process will produce some binary files that are going to be
+ *	used in a cross-platform environment.  This is the case for
+ *	example with the NeXT "fat" binaries that contain executables
+ *	for several CPUs.
+ */
+/*#define MULTIARCH		/ **/
+
 /* USE_CROSS_COMPILE:
  *	This symbol, if defined, indicates that Perl is being cross-compiled.
  */
@@ -903,15 +912,6 @@
 /*#define	USE_CROSS_COMPILE	/ **/
 #define	PERL_TARGETARCH	""	/**/
 #endif
-
-/* MULTIARCH:
- *	This symbol, if defined, signifies that the build
- *	process will produce some binary files that are going to be
- *	used in a cross-platform environment.  This is the case for
- *	example with the NeXT "fat" binaries that contain executables
- *	for several CPUs.
- */
-/*#define MULTIARCH		/ **/
 
 /* MEM_ALIGNBYTES:
  *	This symbol contains the number of bytes required to align a
@@ -934,8 +934,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/5.19.3/x86_64-linux"		/**/
-#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/5.19.3/x86_64-linux"		/**/
+#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/5.19.4/x86_64-linux"		/**/
+#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/5.19.4/x86_64-linux"		/**/
 
 /* ARCHNAME:
  *	This symbol holds a string representing the architecture name.
@@ -957,8 +957,8 @@
  *	This symbol, if defined, indicates that we'd like to relocate entries
  *	in @INC at run time based on the location of the perl binary.
  */
-#define BIN "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/bin"	/**/
-#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/bin"	/**/
+#define BIN "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/bin"	/**/
+#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/bin"	/**/
 #define PERL_RELOCATABLE_INC "undef" 		/**/
 
 /* INTSIZE:
@@ -3045,8 +3045,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/5.19.3"		/**/
-#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/5.19.3"		/**/
+#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/5.19.4"		/**/
+#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/5.19.4"		/**/
 
 /* CAN_PROTOTYPE:
  *	If defined, this macro indicates that the C compiler can handle
@@ -3112,9 +3112,9 @@
  *	function used to generate normalized random numbers.
  *	Values include 15, 16, 31, and 48.
  */
-#define Drand01()		drand48()		/**/
-#define Rand_seed_t		long		/**/
-#define seedDrand01(x)	srand48((Rand_seed_t)x)	/**/
+#define Drand01()		Perl_drand48()		/**/
+#define Rand_seed_t		U32		/**/
+#define seedDrand01(x)	Perl_drand48_init((Rand_seed_t)x)	/**/
 #define RANDBITS		48		/**/
 
 /* Select_fd_set_t:
@@ -3189,8 +3189,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/site_perl/5.19.3/x86_64-linux"		/**/
-#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/site_perl/5.19.3/x86_64-linux"		/**/
+#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/site_perl/5.19.4/x86_64-linux"		/**/
+#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/site_perl/5.19.4/x86_64-linux"		/**/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -3212,9 +3212,9 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/site_perl/5.19.3"		/**/
-#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/site_perl/5.19.3"		/**/
-#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.19.3-pristine/lib/site_perl"		/**/
+#define SITELIB "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/site_perl/5.19.4"		/**/
+#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/site_perl/5.19.4"		/**/
+#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.19.4-pristine/lib/site_perl"		/**/
 
 /* Size_t_size:
  *	This symbol holds the size of a Size_t in bytes.
@@ -3329,31 +3329,6 @@
  */
 /*#define PERL_VENDORLIB_EXP ""		/ **/
 /*#define PERL_VENDORLIB_STEM ""		/ **/
-
-/* VOIDFLAGS:
- *	This symbol indicates how much support of the void type is given by this
- *	compiler.  What various bits mean:
- *
- *	    1 = supports declaration of void
- *	    2 = supports arrays of pointers to functions returning void
- *	    4 = supports comparisons between pointers to void functions and
- *		    addresses of void functions
- *	    8 = supports declaration of generic void pointers
- *
- *	The package designer should define VOIDUSED to indicate the requirements
- *	of the package.  This can be done either by #defining VOIDUSED before
- *	including config.h, or by defining defvoidused in Myinit.U.  If the
- *	latter approach is taken, only those flags will be tested.  If the
- *	level of void support necessary is not present, defines void to int.
- */
-#ifndef VOIDUSED
-#define VOIDUSED 15
-#endif
-#define VOIDFLAGS 15
-#if (VOIDFLAGS & VOIDUSED) != VOIDUSED
-#define void int		/* is void to be avoided? */
-#define M_VOID			/* Xenix strikes again */
-#endif
 
 /* PERL_USE_DEVEL:
  *	This symbol, if defined, indicates that Perl was configured with
@@ -4188,8 +4163,10 @@
 #define USE_DYNAMIC_LOADING		/**/
 
 /* FFLUSH_NULL:
- *	This symbol, if defined, tells that fflush(NULL) does flush
- *	all pending stdio output.
+ *	This symbol, if defined, tells that fflush(NULL) correctly
+ *	flushes all pending stdio output without side effects. In
+ *	particular, on some platforms calling fflush(NULL) *still*
+ *	corrupts STDIN if it is a pipe.
  */
 /* FFLUSH_ALL:
  *	This symbol, if defined, tells that to flush
@@ -4611,7 +4588,7 @@
  *	script to make sure (one hopes) that it runs with perl and not
  *	some shell.
  */
-#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.19.3-pristine/bin/perl5.19.3"		/**/
+#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.19.4-pristine/bin/perl5.19.4"		/**/
 
 /* HAS_STDIO_STREAM_ARRAY:
  *	This symbol, if defined, tells that there is an array

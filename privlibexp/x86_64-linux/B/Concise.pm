@@ -14,7 +14,7 @@ use warnings; # uses #3 and #4, since warnings uses Carp
 
 use Exporter (); # use #5
 
-our $VERSION   = "0.98";
+our $VERSION   = "0.99";
 our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw( set_style set_style_standard add_callback
 		     concise_subref concise_cv concise_main
@@ -618,6 +618,8 @@ $priv{$_}{16} = "OURINTR" for qw(gvsv rv2sv rv2av rv2hv r2gv enteriter);
 $priv{$_}{8} = "LVSUB"
   for qw(rv2av rv2gv rv2hv padav padhv aelem helem aslice hslice
          av2arylen keys rkeys substr pos vec);
+$priv{$_}{4} = "SLICEWARN"
+  for qw(rv2hv rv2av kvhslice kvaslice padav padhv hslice aslice);
 @{$priv{$_}}{32,64} = qw(BOOL BOOL?) for qw(rv2hv padhv);
 $priv{substr}{16} = "REPL1ST";
 $priv{$_}{16} = "TARGMY"
@@ -631,7 +633,7 @@ $priv{$_}{16} = "TARGMY"
          link symlink mkdir rmdir wait waitpid system exec kill getppid
          getpgrp setpgrp getpriority setpriority time sleep);
 $priv{$_}{4} = "REVERSED" for qw(enteriter iter);
-@{$priv{const}}{2,4,8,16,64,128} = qw(NOVER SHORT STRICT ENTERED BARE FOLD);
+@{$priv{const}}{2,4,8,16,64} = qw(NOVER SHORT STRICT ENTERED BARE);
 $priv{$_}{64} = "LINENUM" for qw(flip flop);
 $priv{list}{64} = "GUESSED";
 $priv{delete}{64} = "SLICE";
@@ -704,7 +706,14 @@ sub concise_sv {
     $hr->{svaddr} = sprintf("%#x", $$sv);
     if ($hr->{svclass} eq "GV" && $sv->isGV_with_GP()) {
 	my $gv = $sv;
-	my $stash = $gv->STASH->NAME; if ($stash eq "main") {
+	my $stash = $gv->STASH;
+	if (class($stash) eq "SPECIAL") {
+	    $stash = "<none>";
+	}
+	else {
+	    $stash = $stash->NAME;
+	}
+	if ($stash eq "main") {
 	    $stash = "";
 	} else {
 	    $stash = $stash . "::";
@@ -907,6 +916,10 @@ sub concise_op {
     $h{flags} = op_flags($op->flags);
     $h{privval} = $op->private;
     $h{private} = private_flags($h{name}, $op->private);
+    if ($op->folded) {
+      $h{private} &&= "$h{private},";
+      $h{private} .= "FOLD";
+    }
     if ($op->can("hints")) {
       $h{hintsval} = $op->hints;
       $h{hints} = hints_flags($h{hintsval});

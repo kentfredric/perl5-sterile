@@ -133,10 +133,6 @@ Pops a long off the stack.
 #define POPu		((UV)SvUVx(POPs))
 #define POPl		((long)SvIVx(POPs))
 #define POPul		((unsigned long)SvIVx(POPs))
-#ifdef HAS_QUAD
-#define POPq		((Quad_t)SvIVx(POPs))
-#define POPuq		((Uquad_t)SvUVx(POPs))
-#endif
 
 #define TOPs		(*sp)
 #define TOPm1s		(*(sp-1))
@@ -148,15 +144,11 @@ Pops a long off the stack.
 #define TOPu		((UV)SvUV(TOPs))
 #define TOPl		((long)SvIV(TOPs))
 #define TOPul		((unsigned long)SvUV(TOPs))
-#ifdef HAS_QUAD
-#define TOPq		((Quad_t)SvIV(TOPs))
-#define TOPuq		((Uquad_t)SvUV(TOPs))
-#endif
 
 /* Go to some pains in the rare event that we must extend the stack. */
 
 /*
-=for apidoc Am|void|EXTEND|SP|int nitems
+=for apidoc Am|void|EXTEND|SP|SSize_t nitems
 Used to extend the argument stack for an XSUB's return values. Once
 used, guarantees that there is room for at least C<nitems> to be pushed
 onto the stack.
@@ -278,13 +270,13 @@ Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu> and C<PUSHu>.
 =cut
 */
 
-#define EXTEND(p,n)    (void)(UNLIKELY(PL_stack_max - p < (int)(n)) &&         \
-			    (sp = stack_grow(sp,p, (int) (n))))
+#define EXTEND(p,n)    (void)(UNLIKELY(PL_stack_max - p < (SSize_t)(n)) &&     \
+			    (sp = stack_grow(sp,p, (SSize_t) (n))))
 
 /* Same thing, but update mark register too. */
 #define MEXTEND(p,n)   STMT_START {if (UNLIKELY(PL_stack_max - p < (int)(n))) {\
                            const int markoff = mark - PL_stack_base;           \
-                           sp = stack_grow(sp,p,(int) (n));                    \
+                           sp = stack_grow(sp,p,(SSize_t) (n));                \
                            mark = PL_stack_base + markoff;                     \
                        } } STMT_END
 
@@ -333,12 +325,6 @@ Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu> and C<PUSHu>.
 #define dPOPiv		IV value = POPi
 #define dTOPuv		UV value = TOPu
 #define dPOPuv		UV value = POPu
-#ifdef HAS_QUAD
-#define dTOPqv		Quad_t value = TOPu
-#define dPOPqv		Quad_t value = POPu
-#define dTOPuqv		Uquad_t value = TOPuq
-#define dPOPuqv		Uquad_t value = POPuq
-#endif
 
 #define dPOPXssrl(X)	SV *right = POPs; SV *left = CAT2(X,s)
 #define dPOPXnnrl(X)	NV right = POPn; NV left = CAT2(X,n)
@@ -435,8 +421,8 @@ Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu> and C<PUSHu>.
                 (void)POPs; /* XXX ??? */                       \
             }                                                   \
             else if (gimme == G_ARRAY) {			\
-                int i;                                          \
-                I32 len;                                        \
+                SSize_t i;                                      \
+                SSize_t len;                                    \
                 assert(SvTYPE(tmpsv) == SVt_PVAV);              \
                 len = av_len((AV *)tmpsv) + 1;                  \
                 (void)POPs; /* get rid of the arg */            \

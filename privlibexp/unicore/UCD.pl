@@ -1892,6 +1892,10 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 # Keys are Perl extensions in loose form; values are each one's list of
 # aliases
 %Unicode::UCD::loose_perlprop_to_name = (
+'_perlanyfolds' => 
+[
+'_Perl_Any_Folds',
+],
 'all' => 
 [
 'Any',

@@ -478,7 +478,6 @@ union _xnvu {
 	U32 xlow;
 	U32 xhigh;
     }	    xpad_cop_seq;	/* used by pad.c for cop_sequence */
-    I32	    xbm_useful;
 };
 
 union _xivu {
@@ -528,13 +527,18 @@ struct xpvlv {
     _XPV_HEAD;
     union _xivu xiv_u;
     union _xnvu xnv_u;
-    STRLEN	xlv_targoff;
+    union {
+	STRLEN	xlvu_targoff;
+	SSize_t xlvu_stargoff;
+    } xlv_targoff_u;
     STRLEN	xlv_targlen;
     SV*		xlv_targ;
     char	xlv_type;	/* k=keys .=pos x=substr v=vec /=join/re
 				 * y=alem/helem/iter t=tie T=tied HE */
     char	xlv_flags;	/* 1 = negative offset  2 = negative len */
 };
+
+#define xlv_targoff xlv_targoff_u.xlvu_targoff
 
 struct xpvinvlist {
     _XPV_HEAD;
@@ -1076,27 +1080,30 @@ sv_force_normal does nothing.
 
 #if defined (DEBUGGING) && defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
 #  define SvVALID(sv)		({ const SV *const _svvalid = (const SV*)(sv); \
-				   if (SvFLAGS(_svvalid) & SVpbm_VALID)	\
+				   if (SvFLAGS(_svvalid) & SVpbm_VALID && !SvSCREAM(_svvalid)) \
 				       assert(!isGV_with_GP(_svvalid));	\
 				   (SvFLAGS(_svvalid) & SVpbm_VALID);	\
 				})
 #  define SvVALID_on(sv)	({ SV *const _svvalid = MUTABLE_SV(sv);	\
 				   assert(!isGV_with_GP(_svvalid));	\
+				   assert(!SvSCREAM(_svvalid));		\
 				   (SvFLAGS(_svvalid) |= SVpbm_VALID);	\
 				})
 #  define SvVALID_off(sv)	({ SV *const _svvalid = MUTABLE_SV(sv);	\
 				   assert(!isGV_with_GP(_svvalid));	\
+				   assert(!SvSCREAM(_svvalid));		\
 				   (SvFLAGS(_svvalid) &= ~SVpbm_VALID);	\
 				})
 
 #  define SvTAIL(sv)	({ const SV *const _svtail = (const SV *)(sv);	\
-			    assert(SvTYPE(_svtail) != SVt_PVAV);		\
-			    assert(SvTYPE(_svtail) != SVt_PVHV);		\
+			    assert(SvTYPE(_svtail) != SVt_PVAV);	\
+			    assert(SvTYPE(_svtail) != SVt_PVHV);	\
+			    assert(!SvSCREAM(_svtail));			\
 			    (SvFLAGS(sv) & (SVpbm_TAIL|SVpbm_VALID))	\
 				== (SVpbm_TAIL|SVpbm_VALID);		\
 			})
 #else
-#  define SvVALID(sv)		(SvFLAGS(sv) & SVpbm_VALID)
+#  define SvVALID(sv)		((SvFLAGS(sv) & SVpbm_VALID) && !SvSCREAM(sv))
 #  define SvVALID_on(sv)	(SvFLAGS(sv) |= SVpbm_VALID)
 #  define SvVALID_off(sv)	(SvFLAGS(sv) &= ~SVpbm_VALID)
 #  define SvTAIL(sv)	    ((SvFLAGS(sv) & (SVpbm_TAIL|SVpbm_VALID))	\
@@ -1383,13 +1390,13 @@ sv_force_normal does nothing.
 #if defined (DEBUGGING) && defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
 #  define BmUSEFUL(sv)							\
 	(*({ SV *const _bmuseful = MUTABLE_SV(sv);			\
-	    assert(SvTYPE(_bmuseful) == SVt_PVMG);			\
+	    assert(SvTYPE(_bmuseful) >= SVt_PVIV);			\
 	    assert(SvVALID(_bmuseful));					\
-	    assert(!SvNOK(_bmuseful));					\
-	    &(((XPVMG*) SvANY(_bmuseful))->xnv_u.xbm_useful);		\
+	    assert(!SvIOK(_bmuseful));					\
+	    &(((XPVIV*) SvANY(_bmuseful))->xiv_u.xivu_iv);              \
 	 }))
 #else
-#  define BmUSEFUL(sv)		((XPVMG*) SvANY(sv))->xnv_u.xbm_useful
+#  define BmUSEFUL(sv)          ((XPVIV*) SvANY(sv))->xiv_u.xivu_iv
 
 #endif
 
@@ -1403,6 +1410,7 @@ sv_force_normal does nothing.
 #define LvTYPE(sv)	((XPVLV*)  SvANY(sv))->xlv_type
 #define LvTARG(sv)	((XPVLV*)  SvANY(sv))->xlv_targ
 #define LvTARGOFF(sv)	((XPVLV*)  SvANY(sv))->xlv_targoff
+#define LvSTARGOFF(sv)	((XPVLV*)  SvANY(sv))->xlv_targoff_u.xlvu_stargoff
 #define LvTARGLEN(sv)	((XPVLV*)  SvANY(sv))->xlv_targlen
 #define LvFLAGS(sv)	((XPVLV*)  SvANY(sv))->xlv_flags
 
@@ -1970,12 +1978,11 @@ mg.c:1024: warning: left-hand operand of comma expression has no effect
 #define sv_catpvn_nomg_maybeutf8(dsv, sstr, slen, is_utf8) \
 	sv_catpvn_flags(dsv, sstr, slen, (is_utf8)?SV_CATUTF8:SV_CATBYTES)
 
-#ifdef PERL_CORE
+#if defined(PERL_CORE) || defined(PERL_EXT)
 # define sv_or_pv_len_utf8(sv, pv, bytelen)	      \
     (SvGAMAGIC(sv)				       \
 	? utf8_length((U8 *)(pv), (U8 *)(pv)+(bytelen))	\
 	: sv_len_utf8(sv))
-# define sv_or_pv_pos_u2b(sv,s,p,lp) S_sv_or_pv_pos_u2b(aTHX_ sv,s,p,lp)
 #endif
 
 /*

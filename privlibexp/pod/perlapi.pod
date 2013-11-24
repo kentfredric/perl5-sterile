@@ -201,7 +201,7 @@ is returned.  Perl equivalent: C<my $elem = delete($myarray[$idx]);> for the
 non-C<G_DISCARD> version and a void-context C<delete($myarray[$idx]);> for the
 C<G_DISCARD> version.
 
-	SV*	av_delete(AV *av, I32 key, I32 flags)
+	SV*	av_delete(AV *av, SSize_t key, I32 flags)
 
 =for hackers
 Found in file av.c
@@ -212,11 +212,11 @@ X<av_exists>
 Returns true if the element indexed by C<key> has been initialized.
 
 This relies on the fact that uninitialized array elements are set to
-C<&PL_sv_undef>.
+NULL.
 
 Perl equivalent: C<exists($myarray[$key])>.
 
-	bool	av_exists(AV *av, I32 key)
+	bool	av_exists(AV *av, SSize_t key)
 
 =for hackers
 Found in file av.c
@@ -227,7 +227,7 @@ X<av_extend>
 Pre-extend an array.  The C<key> is the index to which the array should be
 extended.
 
-	void	av_extend(AV *av, I32 key)
+	void	av_extend(AV *av, SSize_t key)
 
 =for hackers
 Found in file av.c
@@ -245,7 +245,7 @@ more information on how to use this function on tied arrays.
 
 The rough perl equivalent is C<$myarray[$idx]>.
 
-	SV**	av_fetch(AV *av, I32 key, I32 lval)
+	SV**	av_fetch(AV *av, SSize_t key, I32 lval)
 
 =for hackers
 Found in file av.c
@@ -258,11 +258,11 @@ Perl's C<$#array = $fill;>.
 
 The number of elements in the an array will be C<fill + 1> after
 av_fill() returns.  If the array was previously shorter, then the
-additional elements appended are set to C<PL_sv_undef>.  If the array
+additional elements appended are set to NULL.  If the array
 was longer, then the excess elements are freed.  C<av_fill(av, -1)> is
 the same as C<av_clear(av)>.
 
-	void	av_fill(AV *av, I32 fill)
+	void	av_fill(AV *av, SSize_t fill)
 
 =for hackers
 Found in file av.c
@@ -274,7 +274,7 @@ Same as L</av_top_index>.  Returns the highest index in the array.  Note that th
 return value is +1 what its name implies it returns; and hence differs in
 meaning from what the similarly named L</sv_len> returns.
 
-	I32	av_len(AV *av)
+	SSize_t	av_len(AV *av)
 
 =for hackers
 Found in file av.c
@@ -288,7 +288,7 @@ will have a reference count of 1.
 
 Perl equivalent: C<my @new_array = ($scalar1, $scalar2, $scalar3...);>
 
-	AV*	av_make(I32 size, SV **strp)
+	AV*	av_make(SSize_t size, SV **strp)
 
 =for hackers
 Found in file av.c
@@ -353,7 +353,7 @@ Approximate Perl equivalent: C<$myarray[$key] = $val;>.
 See L<perlguts/"Understanding the Magic of Tied Hashes and Arrays"> for
 more information on how to use this function on tied arrays.
 
-	SV**	av_store(AV *av, I32 key, SV *val)
+	SV**	av_store(AV *av, SSize_t key, SV *val)
 
 =for hackers
 Found in file av.c
@@ -378,7 +378,7 @@ The Perl equivalent for this is C<$#myarray>.
 
 (A slightly shorter form is C<av_tindex>.)
 
-	I32	av_top_index(AV *av)
+	SSize_t	av_top_index(AV *av)
 
 =for hackers
 Found in file av.c
@@ -404,7 +404,7 @@ must then use C<av_store> to assign values to these new elements.
 
 Perl equivalent: C<unshift @myarray, ( (undef) x $n );>
 
-	void	av_unshift(AV *av, I32 num)
+	void	av_unshift(AV *av, SSize_t num)
 
 =for hackers
 Found in file av.c
@@ -2240,7 +2240,7 @@ using C<is_utf8_string()> to determine if it is Unicode.
 
 If PERL_PV_ESCAPE_ALL is set then all input chars will be output
 using C<\x01F1> style escapes, otherwise if PERL_PV_ESCAPE_NONASCII is set, only
-chars above 127 will be escaped using this style; otherwise, only chars above
+non-ASCII chars will be escaped using this style; otherwise, only chars above
 255 will be so escaped; other non printable chars will use octal or
 common escaped patterns like C<\n>. Otherwise, if PERL_PV_ESCAPE_NOBACKSLASH
 then all chars below 255 will be treated as printable and
@@ -2296,6 +2296,31 @@ Returns a pointer to the prettified text as held by dsv.
 
 =for hackers
 Found in file dump.c
+
+
+=back
+
+=head1 Functions in file inline.h
+
+
+=over 8
+
+=item is_safe_syscall
+X<is_safe_syscall>
+
+Test that the given C<pv> doesn't contain any internal NUL characters.
+If it does, set C<errno> to ENOENT, optionally warn, and return FALSE.
+
+Return TRUE if the name is safe.
+
+Used by the IS_SAFE_SYSCALL() macro.
+
+	bool	is_safe_syscall(const char *pv, STRLEN len,
+		                const char *what,
+		                const char *op_name)
+
+=for hackers
+Found in file inline.h
 
 
 =back
@@ -5504,6 +5529,43 @@ need the wrapper function - usually this is a direct call to C<sprintf>.
 =for hackers
 Found in file util.c
 
+=item my_strlcat
+X<my_strlcat>
+
+The C library C<strlcat> if available, or a Perl implementation of it.
+This operates on C NUL-terminated strings.
+
+C<my_strlcat()> appends string C<src> to the end of C<dst>.  It will append at
+most S<C<size - strlen(dst) - 1>> characters.  It will then NUL-terminate,
+unless C<size> is 0 or the original C<dst> string was longer than C<size> (in
+practice this should not happen as it means that either C<size> is incorrect or
+that C<dst> is not a proper NUL-terminated string).
+
+Note that C<size> is the full size of the destination buffer and
+the result is guaranteed to be NUL-terminated if there is room.  Note that room
+for the NUL should be included in C<size>.
+
+	Size_t	my_strlcat(char *dst, const char *src,
+		           Size_t size)
+
+=for hackers
+Found in file util.c
+
+=item my_strlcpy
+X<my_strlcpy>
+
+The C library C<strlcpy> if available, or a Perl implementation of it.
+This operates on C NUL-terminated strings.
+
+C<my_strlcpy()> copies up to S<C<size - 1>> characters from the string C<src>
+to C<dst>, NUL-terminating the result if C<size> is not 0.
+
+	Size_t	my_strlcpy(char *dst, const char *src,
+		           Size_t size)
+
+=for hackers
+Found in file util.c
+
 =item my_vsnprintf
 X<my_vsnprintf>
 
@@ -7576,7 +7638,7 @@ Used to extend the argument stack for an XSUB's return values. Once
 used, guarantees that there is room for at least C<nitems> to be pushed
 onto the stack.
 
-	void	EXTEND(SP, int nitems)
+	void	EXTEND(SP, SSize_t nitems)
 
 =for hackers
 Found in file pp.h
@@ -11937,24 +11999,11 @@ Found in file utf8.c
 =item utf8n_to_uvchr
 X<utf8n_to_uvchr>
 
-Returns the native character value of the first character in the string
-C<s>
-which is assumed to be in UTF-8 encoding; C<retlen> will be set to the
-length, in bytes, of that character.
-
-C<length> and C<flags> are the same as L</utf8n_to_uvuni>().
-
-	UV	utf8n_to_uvchr(const U8 *s, STRLEN curlen,
-		               STRLEN *retlen, U32 flags)
-
-=for hackers
-Found in file utf8.c
-
-=item utf8n_to_uvuni
-X<utf8n_to_uvuni>
+THIS FUNCTION SHOULD BE USED IN ONLY VERY SPECIALIZED CIRCUMSTANCES.
+Most code should use L</utf8_to_uvchr_buf>() rather than call this directly.
 
 Bottom level UTF-8 decode routine.
-Returns the code point value of the first character in the string C<s>,
+Returns the native code point value of the first character in the string C<s>,
 which is assumed to be in UTF-8 (or UTF-EBCDIC) encoding, and no longer than
 C<curlen> bytes; C<*retlen> (if C<retlen> isn't NULL) will be set to
 the length, in bytes, of that character.
@@ -12023,7 +12072,24 @@ All other code points corresponding to Unicode characters, including private
 use and those yet to be assigned, are never considered malformed and never
 warn.
 
-Most code should use L</utf8_to_uvchr_buf>() rather than call this directly.
+	UV	utf8n_to_uvchr(const U8 *s, STRLEN curlen,
+		               STRLEN *retlen, U32 flags)
+
+=for hackers
+Found in file utf8.c
+
+=item utf8n_to_uvuni
+X<utf8n_to_uvuni>
+
+Instead use L</utf8_to_uvchr_buf>, or rarely, L</utf8n_to_uvchr>.
+
+This function was useful for code that wanted to handle both EBCDIC and
+ASCII platforms with Unicode properties, but starting in Perl v5.20, the
+distinctions between the platforms have mostly been made invisible to most
+code, so this function is quite unlikely to be what you want.  If you do need
+this precise functionality, use instead
+C<L<NATIVE_TO_UNI(utf8_to_uvchr_buf(...))|/utf8_to_uvchr_buf>>
+or C<L<NATIVE_TO_UNI(utf8n_to_uvchr(...))|/utf8n_to_uvchr>>.
 
 	UV	utf8n_to_uvuni(const U8 *s, STRLEN curlen,
 		               STRLEN *retlen, U32 flags)
@@ -12115,7 +12181,7 @@ NULL) to -1.  If those warnings are off, the computed value if well-defined (or
 the Unicode REPLACEMENT CHARACTER, if not) is silently returned, and C<*retlen>
 is set (if C<retlen> isn't NULL) so that (S<C<s> + C<*retlen>>) is the
 next possible position in C<s> that could begin a non-malformed character.
-See L</utf8n_to_uvuni> for details on when the REPLACEMENT CHARACTER is returned.
+See L</utf8n_to_uvchr> for details on when the REPLACEMENT CHARACTER is returned.
 
 	UV	utf8_to_uvchr(const U8 *s, STRLEN *retlen)
 
@@ -12135,7 +12201,7 @@ NULL) to -1.  If those warnings are off, the computed value, if well-defined
 (or the Unicode REPLACEMENT CHARACTER if not), is silently returned, and
 C<*retlen> is set (if C<retlen> isn't NULL) so that (S<C<s> + C<*retlen>>) is
 the next possible position in C<s> that could begin a non-malformed character.
-See L</utf8n_to_uvuni> for details on when the REPLACEMENT CHARACTER is
+See L</utf8n_to_uvchr> for details on when the REPLACEMENT CHARACTER is
 returned.
 
 	UV	utf8_to_uvchr_buf(const U8 *s, const U8 *send,
@@ -12157,12 +12223,11 @@ Returns the Unicode code point of the first character in the string C<s>
 which is assumed to be in UTF-8 encoding; C<retlen> will be set to the
 length, in bytes, of that character.
 
-This function should only be used when the returned UV is considered
-an index into the Unicode semantic tables (e.g. swashes).
-
 Some, but not all, UTF-8 malformations are detected, and in fact, some
 malformed input could cause reading beyond the end of the input buffer, which
-is why this function is deprecated.  Use L</utf8_to_uvuni_buf> instead.
+is one reason why this function is deprecated.  The other is that only in
+extremely limited circumstances should the Unicode versus native code point be
+of any interest to you.  See L</utf8_to_uvuni_buf> for alternatives.
 
 If C<s> points to one of the detected malformations, and UTF8 warnings are
 enabled, zero is returned and C<*retlen> is set (if C<retlen> doesn't point to
@@ -12170,7 +12235,7 @@ NULL) to -1.  If those warnings are off, the computed value if well-defined (or
 the Unicode REPLACEMENT CHARACTER, if not) is silently returned, and C<*retlen>
 is set (if C<retlen> isn't NULL) so that (S<C<s> + C<*retlen>>) is the
 next possible position in C<s> that could begin a non-malformed character.
-See L</utf8n_to_uvuni> for details on when the REPLACEMENT CHARACTER is returned.
+See L</utf8n_to_uvchr> for details on when the REPLACEMENT CHARACTER is returned.
 
 	UV	utf8_to_uvuni(const U8 *s, STRLEN *retlen)
 
@@ -12180,12 +12245,20 @@ Found in file utf8.c
 =item utf8_to_uvuni_buf
 X<utf8_to_uvuni_buf>
 
-Returns the Unicode code point of the first character in the string C<s> which
+
+DEPRECATED!  It is planned to remove this function from a
+future release of Perl.  Do not use it for new code; remove it from
+existing code.
+
+
+Only in very rare circumstances should code need to be dealing in Unicode
+(as opposed to native) code points.  In those few cases, use
+C<L<NATIVE_TO_UNI(utf8_to_uvchr_buf(...))|/utf8_to_uvchr_buf>> instead.
+
+Returns the Unicode (not-native) code point of the first character in the
+string C<s> which
 is assumed to be in UTF-8 encoding; C<send> points to 1 beyond the end of C<s>.
 C<retlen> will be set to the length, in bytes, of that character.
-
-This function should only be used when the returned UV is considered
-an index into the Unicode semantic tables (e.g. swashes).
 
 If C<s> does not point to a well-formed UTF-8 character and UTF8 warnings are
 enabled, zero is returned and C<*retlen> is set (if C<retlen> isn't
@@ -12193,7 +12266,7 @@ NULL) to -1.  If those warnings are off, the computed value if well-defined (or
 the Unicode REPLACEMENT CHARACTER, if not) is silently returned, and C<*retlen>
 is set (if C<retlen> isn't NULL) so that (S<C<s> + C<*retlen>>) is the
 next possible position in C<s> that could begin a non-malformed character.
-See L</utf8n_to_uvuni> for details on when the REPLACEMENT CHARACTER is returned.
+See L</utf8n_to_uvchr> for details on when the REPLACEMENT CHARACTER is returned.
 
 	UV	utf8_to_uvuni_buf(const U8 *s, const U8 *send,
 		                  STRLEN *retlen)
@@ -12204,7 +12277,7 @@ Found in file utf8.c
 =item uvchr_to_utf8
 X<uvchr_to_utf8>
 
-Adds the UTF-8 representation of the Native code point C<uv> to the end
+Adds the UTF-8 representation of the native code point C<uv> to the end
 of the string C<d>; C<d> should have at least C<UTF8_MAXBYTES+1> free
 bytes available. The return value is the pointer to the byte after the
 end of the new character. In other words,
@@ -12215,36 +12288,31 @@ is the recommended wide native character-aware way of saying
 
     *(d++) = uv;
 
+This function accepts any UV as input.  To forbid or warn on non-Unicode code
+points, or those that may be problematic, see L</uvchr_to_utf8_flags>.
+
 	U8*	uvchr_to_utf8(U8 *d, UV uv)
 
 =for hackers
 Found in file utf8.c
 
-=item uvuni_to_utf8_flags
-X<uvuni_to_utf8_flags>
+=item uvchr_to_utf8_flags
+X<uvchr_to_utf8_flags>
 
-Adds the UTF-8 representation of the Unicode code point C<uv> to the end
+Adds the UTF-8 representation of the native code point C<uv> to the end
 of the string C<d>; C<d> should have at least C<UTF8_MAXBYTES+1> free
 bytes available. The return value is the pointer to the byte after the
 end of the new character. In other words,
 
-    d = uvuni_to_utf8_flags(d, uv, flags);
+    d = uvchr_to_utf8_flags(d, uv, flags);
 
 or, in most cases,
 
-    d = uvuni_to_utf8(d, uv);
+    d = uvchr_to_utf8_flags(d, uv, 0);
 
-(which is equivalent to)
-
-    d = uvuni_to_utf8_flags(d, uv, 0);
-
-This is the recommended Unicode-aware way of saying
+This is the Unicode-aware way of saying
 
     *(d++) = uv;
-
-where uv is a code point expressed in Latin-1 or above, not the platform's
-native character set.  B<Almost all code should instead use L</uvchr_to_utf8>
-or L</uvchr_to_utf8_flags>>.
 
 This function will convert to UTF-8 (and not warn) even code points that aren't
 legal Unicode or are problematic, unless C<flags> contains one or more of the
@@ -12261,13 +12329,48 @@ UNICODE_WARN_SUPER and UNICODE_DISALLOW_SUPER flags, affect the handling of
 code points that are
 above the Unicode maximum of 0x10FFFF.  Code points above 0x7FFF_FFFF (which are
 even less portable) can be warned and/or disallowed even if other above-Unicode
-code points are accepted by the UNICODE_WARN_FE_FF and UNICODE_DISALLOW_FE_FF
+code points are accepted, by the UNICODE_WARN_FE_FF and UNICODE_DISALLOW_FE_FF
 flags.
 
 And finally, the flag UNICODE_WARN_ILLEGAL_INTERCHANGE selects all four of the
 above WARN flags; and UNICODE_DISALLOW_ILLEGAL_INTERCHANGE selects all four
 DISALLOW flags.
 
+	U8*	uvchr_to_utf8_flags(U8 *d, UV uv, UV flags)
+
+=for hackers
+Found in file utf8.c
+
+=item uvoffuni_to_utf8_flags
+X<uvoffuni_to_utf8_flags>
+
+THIS FUNCTION SHOULD BE USED IN ONLY VERY SPECIALIZED CIRCUMSTANCES.
+Instead, B<Almost all code should use L</uvchr_to_utf8> or
+L</uvchr_to_utf8_flags>>.
+
+This function is like them, but the input is a strict Unicode
+(as opposed to native) code point.  Only in very rare circumstances should code
+not be using the native code point.
+
+For details, see the description for L</uvchr_to_utf8_flags>>.
+
+	U8*	uvoffuni_to_utf8_flags(U8 *d, UV uv, UV flags)
+
+=for hackers
+Found in file utf8.c
+
+=item uvuni_to_utf8_flags
+X<uvuni_to_utf8_flags>
+
+Instead you almost certainly want to use L</uvchr_to_utf8> or
+L</uvchr_to_utf8_flags>>.
+
+This function is a deprecated synonym for L</uvoffuni_to_utf8_flags>,
+which itself, while not deprecated, should be used only in isolated
+circumstances.  These functions were useful for code that wanted to handle
+both EBCDIC and ASCII platforms with Unicode properties, but starting in Perl
+v5.20, the distinctions between the platforms have mostly been made invisible
+to most code, so this function is quite unlikely to be what you want.
 
 	U8*	uvuni_to_utf8_flags(U8 *d, UV uv, UV flags)
 
@@ -13283,12 +13386,6 @@ X<my_stat>
 =item my_strftime
 X<my_strftime>
 
-=item my_strlcat
-X<my_strlcat>
-
-=item my_strlcpy
-X<my_strlcpy>
-
 =item newANONATTRSUB
 X<newANONATTRSUB>
 
@@ -13798,9 +13895,6 @@ X<utf16_to_utf8>
 
 =item utf16_to_utf8_reversed
 X<utf16_to_utf8_reversed>
-
-=item uvchr_to_utf8_flags
-X<uvchr_to_utf8_flags>
 
 =item uvuni_to_utf8
 X<uvuni_to_utf8>

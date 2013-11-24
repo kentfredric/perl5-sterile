@@ -22,11 +22,6 @@
 #define USE_STDIO
 #endif /* PERL_FOR_X2P */
 
-#ifdef VOIDUSED
-#   undef VOIDUSED
-#endif
-#define VOIDUSED 1
-
 #ifdef PERL_MICRO
 #   include "uconfig.h"
 #else
@@ -112,6 +107,11 @@
 #   ifndef BSDish
 #       define BSDish
 #   endif
+#endif
+
+/* Microsoft Visual C++ 6.0 needs special treatment in numerous places */
+#if defined(WIN32) && defined(_MSC_VER) && _MSC_VER >= 1200 && _MSC_VER < 1300
+#  define USING_MSVC6
 #endif
 
 #undef START_EXTERN_C
@@ -474,7 +474,7 @@ struct op *Perl_op asm(stringify(OP_IN_REGISTER));
 #   define STMT_END	)
 # else
    /* Now which other defined()s do we need here ??? */
-#  if (VOIDFLAGS) && (defined(sun) || defined(__sun__)) && !defined(__GNUC__)
+#  if (defined(sun) || defined(__sun__)) && !defined(__GNUC__)
 #   define STMT_START	if (1)
 #   define STMT_END	else (void)0
 #  else
@@ -739,11 +739,11 @@ struct op *Perl_op asm(stringify(OP_IN_REGISTER));
 #   undef _SC_ARG_MAX /* Symbian has _SC_ARG_MAX but no sysconf() */
 #endif
 
-#if defined(HAS_SYSCALL) && !defined(HAS_SYSCALL_PROTO) && !defined(PERL_MICRO)
+#if defined(HAS_SYSCALL) && !defined(HAS_SYSCALL_PROTO)
 EXTERN_C int syscall(int, ...);
 #endif
 
-#if defined(HAS_USLEEP) && !defined(HAS_USLEEP_PROTO) && !defined(PERL_MICRO)
+#if defined(HAS_USLEEP) && !defined(HAS_USLEEP_PROTO)
 EXTERN_C int usleep(unsigned int);
 #endif
 
@@ -1168,12 +1168,6 @@ EXTERN_C char *crypt(const char *, const char *);
 #   define SS_IVCHAN  		SS$_IVCHAN
 #   define SS_NORMAL  		SS$_NORMAL
 #else
-#   define SETERRNO(errcode,vmserrcode) (errno = (errcode))
-#   define dSAVEDERRNO    int saved_errno
-#   define dSAVE_ERRNO    int saved_errno = errno
-#   define SAVE_ERRNO     (saved_errno = errno)
-#   define RESTORE_ERRNO  (errno = saved_errno)
-
 #   define LIB_INVARG 		0
 #   define RMS_DIR    		0
 #   define RMS_FAC    		0
@@ -1186,6 +1180,31 @@ EXTERN_C char *crypt(const char *, const char *);
 #   define SS_DEVOFFLINE	0
 #   define SS_IVCHAN  		0
 #   define SS_NORMAL  		0
+#endif
+
+#ifdef WIN32
+#   define dSAVEDERRNO  int saved_errno; DWORD saved_win32_errno
+#   define dSAVE_ERRNO  int saved_errno = errno; DWORD saved_win32_errno = GetLastError()
+#   define SAVE_ERRNO   ( saved_errno = errno, saved_win32_errno = GetLastError() )
+#   define RESTORE_ERRNO ( errno = saved_errno, SetLastError(saved_win32_errno) )
+#endif
+
+#ifdef OS2
+#   define dSAVEDERRNO  int saved_errno; unsigned long saved_os2_errno
+#   define dSAVE_ERRNO  int saved_errno = errno; unsigned long saved_os2_errno = Perl_rc
+#   define SAVE_ERRNO   ( saved_errno = errno, saved_os2_errno = Perl_rc )
+#   define RESTORE_ERRNO ( errno = saved_errno, Perl_rc = saved_os2_errno )
+#endif
+
+#ifndef SETERRNO
+#   define SETERRNO(errcode,vmserrcode) (errno = (errcode))
+#endif
+
+#ifndef dSAVEDERRNO
+#   define dSAVEDERRNO    int saved_errno
+#   define dSAVE_ERRNO    int saved_errno = errno
+#   define SAVE_ERRNO     (saved_errno = errno)
+#   define RESTORE_ERRNO  (errno = saved_errno)
 #endif
 
 #define ERRSV GvSVn(PL_errgv)
@@ -1306,12 +1325,6 @@ EXTERN_C char *crypt(const char *, const char *);
 #   endif
 #endif
 
-#ifdef PERL_MICRO
-#   ifndef DIR
-#      define DIR void
-#   endif
-#endif
-
 #ifdef FPUTS_BOTCH
 /* work around botch in SunOS 4.0.1 and 4.0.2 */
 #   ifndef fputs
@@ -1325,7 +1338,7 @@ EXTERN_C char *crypt(const char *, const char *);
  * in the face of half-implementations.)
  */
 
-#if defined(I_SYSMODE) && !defined(PERL_MICRO)
+#if defined(I_SYSMODE)
 #include <sys/mode.h>
 #endif
 
@@ -1597,16 +1610,17 @@ typedef UVTYPE UV;
 #  else
 #    undef IV_IS_QUAD
 #    undef UV_IS_QUAD
+#if !defined(PERL_CORE) || defined(USING_MSVC6)
+/* We think that removing this decade-old undef this will cause too much
+   breakage on CPAN for too little gain. (See RT #119753)
+   However, we do need HAS_QUAD in the core for use by the drand48 code,
+   but not for Win32 VC6 because it has poor __int64 support. */
 #    undef HAS_QUAD
+#endif
 #  endif
 #endif
 
-#ifndef HAS_QUAD
-# undef PERL_NEED_MY_HTOLE64
-# undef PERL_NEED_MY_LETOH64
-# undef PERL_NEED_MY_HTOBE64
-# undef PERL_NEED_MY_BETOH64
-#endif
+#define SSize_t_MAX (SSize_t)(~(size_t)0 >> 1)
 
 #define IV_DIG (BIT_DIGITS(IVSIZE * 8))
 #define UV_DIG (BIT_DIGITS(UVSIZE * 8))
@@ -1921,7 +1935,7 @@ EXTERN_C long double modfl(long double, long double *);
 #    define Perl_fp_class_zero(x)	(Perl_fp_class(x)==FP_CLASS_NZERO||Perl_fp_class(x)==FP_CLASS_PZERO)
 #endif
 
-#if !defined(Perl_fp_class) && defined(HAS_FP_CLASS) && !defined(PERL_MICRO)
+#if !defined(Perl_fp_class) && defined(HAS_FP_CLASS)
 #    include <math.h>
 #    if !defined(FP_SNAN) && defined(I_FP_CLASS)
 #        include <fp_class.h>
@@ -4284,7 +4298,6 @@ EXTCONST  unsigned char PL_fold_latin1[] = {
 	248-32,	249-32,	250-32,	251-32,	252-32,	253-32,	254-32,
 	255 /* y with diaeresis */
 };
-#endif  /* !EBCDIC, but still in DOINIT */
 
 /* If these tables are accessed through ebcdic, the access will be converted to
  * latin1 first */
@@ -4359,13 +4372,14 @@ EXTCONST  unsigned char PL_mod_latin1_uc[] = {
 	240-32,	241-32,	242-32,	243-32,	244-32,	245-32,	246-32,	247,
 	248-32,	249-32,	250-32,	251-32,	252-32,	253-32,	254-32,	255
 };
+#endif  /* !EBCDIC, but still in DOINIT */
 #else	/* ! DOINIT */
-#ifndef EBCDIC
+#   ifndef EBCDIC
 EXTCONST unsigned char PL_fold[];
 EXTCONST unsigned char PL_fold_latin1[];
-#endif
 EXTCONST unsigned char PL_mod_latin1_uc[];
 EXTCONST unsigned char PL_latin1_lc[];
+#   endif
 #endif
 
 #ifndef PERL_GLOBAL_STRUCT /* or perlvars.h */
@@ -5668,6 +5682,12 @@ extern void moncontrol(int);
 #else
 #  define do_aexec(really, mark,sp)	do_aexec5(really, mark, sp, 0, 0)
 #endif
+
+/* check embedded \0 characters in pathnames passed to syscalls,
+   but allow one ending \0 */
+#define IS_SAFE_SYSCALL(p, len, what, op_name) (S_is_safe_syscall(aTHX_ (p), (len), (what), (op_name)))
+
+#define IS_SAFE_PATHNAME(p, len, op_name) IS_SAFE_SYSCALL((p), (len), "pathname", (op_name))
 
 #if defined(OEMVS)
 #define NO_ENV_ARRAY_IN_MAIN

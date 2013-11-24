@@ -64,7 +64,7 @@
 #define SAVEt_SAVESWITCHSTACK	39
 #define SAVEt_SHARED_PVREF	40
 #define SAVEt_SPTR		41
-/*	UNUSED			42 */
+#define SAVEt_STRLEN		42
 #define SAVEt_SV		43
 #define SAVEt_SVREF		44
 #define SAVEt_VPTR		45
@@ -123,7 +123,7 @@
 
 #define dSS_ADD \
     I32 ix = PL_savestack_ix;     \
-    ANY *ssp = &PL_savestack[ix];
+    ANY *ssp = &PL_savestack[ix]
 
 #define SS_ADD_END(need) \
     assert((need) <= SS_MAXPUSH);                               \
@@ -186,7 +186,8 @@ scope has the given name. Name must be a literal string.
 =cut
 */
 
-#define SAVETMPS save_int((int*)&PL_tmps_floor), PL_tmps_floor = PL_tmps_ix
+#define SAVETMPS Perl_save_strlen(aTHX_ (STRLEN *)&PL_tmps_floor), \
+		 PL_tmps_floor = PL_tmps_ix
 #define FREETMPS if (PL_tmps_ix > PL_tmps_floor) free_tmps()
 
 #ifdef DEBUGGING
@@ -253,7 +254,7 @@ scope has the given name. Name must be a literal string.
 #define SAVEHDELETE(h,s) \
 	  save_hdelete(MUTABLE_HV(h), (s))
 #define SAVEADELETE(a,k) \
-	  save_adelete(MUTABLE_AV(a), (I32)(k))
+	  save_adelete(MUTABLE_AV(a), (SSize_t)(k))
 #define SAVEDESTRUCTOR(f,p) \
 	  save_destructor((DESTRUCTORFUNC_NOCONTEXT_t)(f), (void*)(p))
 

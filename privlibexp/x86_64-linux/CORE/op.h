@@ -143,6 +143,7 @@ Deprecated.  Use C<GIMME_V> instead.
 				    - After ck_glob, use Perl glob function
 			         */
                                 /*  On OP_PADRANGE, push @_ */
+                                /*  On OP_DUMP, has no label */
 
 /* old names; don't use in new code, but don't break them, either */
 #define OPf_LIST	OPf_WANT_LIST
@@ -201,6 +202,32 @@ Deprecated.  Use C<GIMME_V> instead.
 #define OPpDEREF_HV		64	/*   Want ref to HV. */
 #define OPpDEREF_SV		(32|64)	/*   Want ref to SV. */
 
+/* OP_ENTERSUB and OP_RV2CV flags
+
+Flags are set on entersub and rv2cv in three phases:
+  parser  - the parser passes the flag to the op constructor
+  check   - the check routine called by the op constructor sets the flag
+  context - application of scalar/ref/lvalue context applies the flag
+
+In the third stage, an entersub op might turn into an rv2cv op (undef &foo,
+\&foo, lock &foo, exists &foo, defined &foo).  The two places where that
+happens (op_lvalue_flags and doref in op.c) need to make sure the flags do
+not conflict.  Flags applied in the context phase are only set when there
+is no conversion of op type.
+
+  bit  entersub flag       phase   rv2cv flag             phase
+  ---  -------------       -----   ----------             -----
+    1  OPpENTERSUB_INARGS  context OPpMAY_RETURN_CONSTANT context
+    2  HINT_STRICT_REFS    check   HINT_STRICT_REFS       check
+    4  OPpENTERSUB_HASTARG check
+    8                              OPpENTERSUB_AMPER      parser
+   16  OPpENTERSUB_DB      check
+   32  OPpDEREF_AV         context
+   64  OPpDEREF_HV         context
+  128  OPpLVAL_INTRO       context OPpENTERSUB_NOPAREN    parser
+
+*/
+
   /* OP_ENTERSUB only */
 #define OPpENTERSUB_DB		16	/* Debug subroutine. */
 #define OPpENTERSUB_HASTARG	4	/* Called from OP tree. */
@@ -220,6 +247,8 @@ Deprecated.  Use C<GIMME_V> instead.
 #define OPpEARLY_CV		32	/* foo() called before sub foo was parsed */
   /* OP_?ELEM only */
 #define OPpLVAL_DEFER		16	/* Defer creation of array/hash elem */
+  /* OP_RV2[AH]V OP_KV[AH]SLICE OP_[AH]SLICE */
+#define OPpSLICEWARNING		4	/* warn about %hash{$scalar} */
   /* OP_RV2[SAH]V, OP_GVSV, OP_ENTERITER only */
 #define OPpOUR_INTRO		16	/* Variable was in an our() */
   /* OP_RV2[AGH]V, OP_PAD[AH]V, OP_[AH]ELEM, OP_[AH]SLICE OP_AV2ARYLEN,
@@ -259,8 +288,6 @@ Deprecated.  Use C<GIMME_V> instead.
 #define	OPpCONST_STRICT		8	/* bareword subject to strict 'subs' */
 #define OPpCONST_ENTERED	16	/* Has been entered as symbol. */
 #define OPpCONST_BARE		64	/* Was a bare word (filehandle?). */
-/* Replaced by op_folded in perl itself, still used by B/B::Concise etc. */
-#define OPpCONST_FOLDED		128	/* Result of constant folding */
 
 /* Private for OP_FLIP/FLOP */
 #define OPpFLIP_LINENUM		64	/* Range arg potentially a line num. */
@@ -829,7 +856,7 @@ preprocessing token; the type of I<arg> depends on I<which>.
 #define CALL_BLOCK_HOOKS(which, arg) \
     STMT_START { \
 	if (PL_blockhooks) { \
-	    I32 i; \
+	    SSize_t i; \
 	    for (i = av_len(PL_blockhooks); i >= 0; i--) { \
 		SV *sv = AvARRAY(PL_blockhooks)[i]; \
 		BHK *hk; \

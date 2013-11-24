@@ -81,6 +81,7 @@ struct mro_meta {
     U32     pkg_gen;         /* Bumps when local methods/@ISA change */
     const struct mro_alg *mro_which; /* which mro alg is in use? */
     HV      *isa;            /* Everything this class @ISA */
+    HV      *super;          /* SUPER method cache */
     U32     destroy_gen;     /* Generation number of DESTROY cache */
 };
 
@@ -112,7 +113,6 @@ struct xpvhv_aux {
  */
     I32		xhv_name_count;
     struct mro_meta *xhv_mro_meta;
-    HV *	xhv_super;	/* SUPER method cache */
 #ifdef PERL_HASH_RANDOMIZE_KEYS
     U32         xhv_rand;       /* random value for hash traversal */
     U32         xhv_last_rand;  /* last random value for hash traversal,
@@ -367,7 +367,9 @@ C<SV*>.
 				 ((HeKLEN(he) == HEf_SVKEY) ?		\
 				  HeKEY_sv(he) :			\
 				  newSVpvn_flags(HeKEY(he),		\
-						 HeKLEN(he), SVs_TEMP)) : \
+                                                 HeKLEN(he),            \
+                                                 SVs_TEMP |             \
+                                      ( HeKUTF8(he) ? SVf_UTF8 : 0 ))) : \
 				 &PL_sv_undef)
 #define HeSVKEY_set(he,sv)	((HeKLEN(he) = HEf_SVKEY), (HeKEY_sv(he) = sv))
 

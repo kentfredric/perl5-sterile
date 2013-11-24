@@ -4,7 +4,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.98';
+our $VERSION = '0.98_06';
 $VERSION = eval $VERSION;    ## no critic (BuiltinFunctions::ProhibitStringyEval)
 
 BEGIN {
@@ -915,7 +915,7 @@ sub _is_dualvar {
 
     no warnings 'numeric';
     my $numval = $val + 0;
-    return $numval != 0 and $numval ne $val ? 1 : 0;
+    return ($numval != 0 and $numval ne $val ? 1 : 0);
 }
 
 =item B<is_eq>

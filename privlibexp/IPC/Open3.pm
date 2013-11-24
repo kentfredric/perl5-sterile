@@ -9,7 +9,7 @@ require Exporter;
 use Carp;
 use Symbol qw(gensym qualify);
 
-$VERSION	= '1.15';
+$VERSION	= '1.16';
 @ISA		= qw(Exporter);
 @EXPORT		= qw(open3);
 
@@ -185,6 +185,10 @@ sub _open3 {
     # it's too ugly to use @_ throughout to make perl do it for us
     # tchrist 5-Mar-00
 
+    # Historically, open3(undef...) has silently worked, so keep
+    # it working.
+    splice @_, 0, 1, undef if \$_[0] == \undef;
+    splice @_, 1, 1, undef if \$_[1] == \undef;
     unless (eval  {
 	$_[0] = gensym unless defined $_[0] && length $_[0];
 	$_[1] = gensym unless defined $_[1] && length $_[1];

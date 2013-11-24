@@ -15,7 +15,7 @@ use ExtUtils::MakeMaker qw($Verbose neatvalue);
 
 # If we make $VERSION an our variable parse_version() breaks
 use vars qw($VERSION);
-$VERSION = '6.72';
+$VERSION = '6.76';
 $VERSION = eval $VERSION;  ## no critic [BuiltinFunctions::ProhibitStringyEval]
 
 require ExtUtils::MM_Any;
@@ -471,7 +471,7 @@ PERL_ARCHIVE_AFTER = $self->{PERL_ARCHIVE_AFTER}
 
 TO_INST_PM = ".$self->wraplist(sort keys %{$self->{PM}})."
 
-PM_TO_BLIB = ".$self->wraplist(%{$self->{PM}})."
+PM_TO_BLIB = ".$self->wraplist(map { ($_ => $self->{PM}->{$_}) } sort keys %{$self->{PM}})."
 ";
 
     join('',@m);
@@ -583,7 +583,6 @@ sub init_dist {
 
     ($self->{DISTNAME} = $self->{NAME}) =~ s{::}{-}g unless $self->{DISTNAME};
     $self->{DISTVNAME} ||= $self->{DISTNAME}.'-'.$self->{VERSION};
-
 }
 
 =item dist (o)
@@ -601,6 +600,9 @@ sub dist {
     my($self, %attribs) = @_;
 
     my $make = '';
+    if ( $attribs{SUFFIX} && $attribs{SUFFIX} !~ m!^\.! ) {
+      $attribs{SUFFIX} = '.' . $attribs{SUFFIX};
+    }
     foreach my $key (qw(
             TAR TARFLAGS ZIP ZIPFLAGS COMPRESS SUFFIX SHAR
             PREOP POSTOP TO_UNIX
@@ -2057,9 +2059,15 @@ doc__install : doc_site_install
 
 pure_perl_install :: all
 	$(NOECHO) $(MOD_INSTALL) \
-		read }.$self->catfile('$(PERL_ARCHLIB)','auto','$(FULLEXT)','.packlist').q{ \
+};
+
+    push @m,
+q{		read }.$self->catfile('$(PERL_ARCHLIB)','auto','$(FULLEXT)','.packlist').q{ \
 		write }.$self->catfile('$(DESTINSTALLARCHLIB)','auto','$(FULLEXT)','.packlist').q{ \
-		$(INST_LIB) $(DESTINSTALLPRIVLIB) \
+} unless $self->{NO_PACKLIST};
+
+    push @m,
+q{		$(INST_LIB) $(DESTINSTALLPRIVLIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLARCHLIB) \
 		$(INST_BIN) $(DESTINSTALLBIN) \
 		$(INST_SCRIPT) $(DESTINSTALLSCRIPT) \
@@ -2071,9 +2079,14 @@ pure_perl_install :: all
 
 pure_site_install :: all
 	$(NOECHO) $(MOD_INSTALL) \
-		read }.$self->catfile('$(SITEARCHEXP)','auto','$(FULLEXT)','.packlist').q{ \
+};
+    push @m,
+q{		read }.$self->catfile('$(SITEARCHEXP)','auto','$(FULLEXT)','.packlist').q{ \
 		write }.$self->catfile('$(DESTINSTALLSITEARCH)','auto','$(FULLEXT)','.packlist').q{ \
-		$(INST_LIB) $(DESTINSTALLSITELIB) \
+} unless $self->{NO_PACKLIST};
+
+    push @m,
+q{		$(INST_LIB) $(DESTINSTALLSITELIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLSITEARCH) \
 		$(INST_BIN) $(DESTINSTALLSITEBIN) \
 		$(INST_SCRIPT) $(DESTINSTALLSITESCRIPT) \
@@ -2084,15 +2097,35 @@ pure_site_install :: all
 
 pure_vendor_install :: all
 	$(NOECHO) $(MOD_INSTALL) \
-		read }.$self->catfile('$(VENDORARCHEXP)','auto','$(FULLEXT)','.packlist').q{ \
+};
+    push @m,
+q{		read }.$self->catfile('$(VENDORARCHEXP)','auto','$(FULLEXT)','.packlist').q{ \
 		write }.$self->catfile('$(DESTINSTALLVENDORARCH)','auto','$(FULLEXT)','.packlist').q{ \
-		$(INST_LIB) $(DESTINSTALLVENDORLIB) \
+} unless $self->{NO_PACKLIST};
+
+    push @m,
+q{		$(INST_LIB) $(DESTINSTALLVENDORLIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLVENDORARCH) \
 		$(INST_BIN) $(DESTINSTALLVENDORBIN) \
 		$(INST_SCRIPT) $(DESTINSTALLVENDORSCRIPT) \
 		$(INST_MAN1DIR) $(DESTINSTALLVENDORMAN1DIR) \
 		$(INST_MAN3DIR) $(DESTINSTALLVENDORMAN3DIR)
 
+};
+
+    push @m, q{
+doc_perl_install :: all
+	$(NOECHO) $(NOOP)
+
+doc_site_install :: all
+	$(NOECHO) $(NOOP)
+
+doc_vendor_install :: all
+	$(NOECHO) $(NOOP)
+
+} if $self->{NO_PERLLOCAL};
+
+    push @m, q{
 doc_perl_install :: all
 	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
 	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
@@ -2126,7 +2159,7 @@ doc_vendor_install :: all
 		EXE_FILES "$(EXE_FILES)" \
 		>> }.$self->catfile('$(DESTINSTALLARCHLIB)','perllocal.pod').q{
 
-};
+} unless $self->{NO_PERLLOCAL};
 
     push @m, q{
 uninstall :: uninstall_from_$(INSTALLDIRS)dirs
@@ -2522,8 +2555,12 @@ $(OBJECT) : $(FIRST_MAKEFILE)
 
     my $newer_than_target = $Is{VMS} ? '$(MMS$SOURCE_LIST)' : '$?';
     my $mpl_args = join " ", map qq["$_"], @ARGV;
-
-    $m .= sprintf <<'MAKE_FRAG', $newer_than_target, $mpl_args;
+    my $cross = '';
+    if (defined $::Cross::platform) {
+        # Inherited from win32/buildext.pl
+        $cross = "-MCross=$::Cross::platform ";
+    }
+    $m .= sprintf <<'MAKE_FRAG', $newer_than_target, $cross, $mpl_args;
 # We take a very conservative approach here, but it's worth it.
 # We move Makefile to Makefile.old here to avoid gnu make looping.
 $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
@@ -2532,7 +2569,7 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 	-$(NOECHO) $(RM_F) $(MAKEFILE_OLD)
 	-$(NOECHO) $(MV)   $(FIRST_MAKEFILE) $(MAKEFILE_OLD)
 	- $(MAKE) $(USEMAKEFILE) $(MAKEFILE_OLD) clean $(DEV_NULL)
-	$(PERLRUN) Makefile.PL %s
+	$(PERLRUN) %sMakefile.PL %s
 	$(NOECHO) $(ECHO) "==> Your Makefile has been rebuilt. <=="
 	$(NOECHO) $(ECHO) "==> Please rerun the $(MAKE) command.  <=="
 	$(FALSE)
@@ -2645,15 +2682,11 @@ sub parse_version {
         next if $inpod || /^\s*#/;
         chop;
         next if /^\s*(if|unless|elsif)/;
-        s{\;\s*(?<![\\\$])\#.+?$}{}g;
         if ( m{^ \s* package \s+ \w[\w\:\']* \s+ (v?[0-9._]+) \s* ;  }x ) {
             local $^W = 0;
             $result = $1;
         }
-        elsif ( m{(?<!\\) ([\$*]) (([\w\:\']*) \bVERSION)\b .* [!><=][!><=]}x ) {
-            next;
-        }
-        elsif ( m{(?<!\\) ([\$*]) (([\w\:\']*) \bVERSION)\b .* =}x ) {
+        elsif ( m{(?<!\\) ([\$*]) (([\w\:\']*) \bVERSION)\b .* (?<![<>=!])\=[^=]}x ) {
 			$result = $self->get_version($parsefile, $1, $2);
         }
         else {
@@ -2805,7 +2838,8 @@ pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 pm_to_blib({\@ARGV}, '$autodir', q[\$(PM_FILTER)], '\$(PERM_DIR)')
 CODE
 
-    my @cmds = $self->split_command($pm_to_blib, %{$self->{PM}});
+    my @cmds = $self->split_command($pm_to_blib,
+                  map { ($_, $self->{PM}->{$_}) } sort keys %{$self->{PM}});
 
     $r .= join '', map { "\t\$(NOECHO) $_\n" } @cmds;
     $r .= qq{\t\$(NOECHO) \$(TOUCH) pm_to_blib\n};
@@ -3345,7 +3379,10 @@ sub test {
 
     my($self, %attribs) = @_;
     my $tests = $attribs{TESTS} || '';
-    if (!$tests && -d 't') {
+    if (!$tests && -d 't' && defined $attribs{RECURSIVE_TEST_FILES}) {
+        $tests = $self->find_tests_recursive;
+    }
+    elsif (!$tests && -d 't') {
         $tests = $self->find_tests;
     }
     # note: 'test.pl' name is also hardcoded in init_dirscan()
