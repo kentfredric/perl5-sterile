@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use vars '%Config', '$VERSION';
 
-$VERSION = "5.018001";
+$VERSION = "5.018002";
 
 # Skip @Config::EXPORT because it only contains %Config, which we special
 # case below as it's not a function. @Config::EXPORT won't change in the
@@ -56,11 +56,11 @@ sub import {
     return;
 }
 
-die "Perl lib version (5.18.1) doesn't match executable '$0' version ($])"
+die "Perl lib version (5.18.2) doesn't match executable '$0' version ($])"
     unless $^V;
 
-$^V eq 5.18.1
-    or die "Perl lib version (5.18.1) doesn't match executable '$0' version (" .
+$^V eq 5.18.2
+    or die "Perl lib version (5.18.2) doesn't match executable '$0' version (" .
 	sprintf("v%vd",$^V) . ")";
 
 
@@ -85,7 +85,7 @@ sub AUTOLOAD {
 
 # tie returns the object, so the value returned to require will be true.
 tie %Config, 'Config', {
-    archlibexp => '/home/kent/perl5/perlbrew/perls/5.18.1-pristine/lib/5.18.1/x86_64-linux',
+    archlibexp => '/home/kent/perl5/perlbrew/perls/5.18.2-pristine/lib/5.18.2/x86_64-linux',
     archname => 'x86_64-linux',
     cc => 'cc',
     d_readlink => 'define',
@@ -99,14 +99,14 @@ tie %Config, 'Config', {
     ldlibpthname => 'LD_LIBRARY_PATH',
     libpth => '/lib/../lib64 /usr/lib/../lib64 /lib /usr/lib /lib64 /usr/lib64',
     osname => 'linux',
-    osvers => '3.12.0-gentoo',
+    osvers => '3.14.0-gentoo',
     path_sep => ':',
-    privlibexp => '/home/kent/perl5/perlbrew/perls/5.18.1-pristine/lib/5.18.1',
-    scriptdir => '/home/kent/perl5/perlbrew/perls/5.18.1-pristine/bin',
-    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.18.1-pristine/lib/site_perl/5.18.1/x86_64-linux',
-    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.18.1-pristine/lib/site_perl/5.18.1',
+    privlibexp => '/home/kent/perl5/perlbrew/perls/5.18.2-pristine/lib/5.18.2',
+    scriptdir => '/home/kent/perl5/perlbrew/perls/5.18.2-pristine/bin',
+    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.18.2-pristine/lib/site_perl/5.18.2/x86_64-linux',
+    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.18.2-pristine/lib/site_perl/5.18.2',
     so => 'so',
     useithreads => undef,
     usevendorprefix => undef,
-    version => '5.18.1',
+    version => '5.18.2',
 };

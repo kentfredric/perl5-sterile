@@ -6823,8 +6823,9 @@ PerlIO_apply_layers(f,mode,layers), PerlIO_binmode(f,ptype,imode,layers),
 
 =item SUPER QUICK PATCH GUIDE
 
-Check out the source repository, Make your change, Test your change, Commit
-your change, Send your change to perlbug, Thank you
+Check out the source repository, Ensure you're following the latest advice,
+Make your change, Test your change, Commit your change, Send your change to
+perlbug, Thank you, Next time
 
 =item BUG REPORTING
 
@@ -6879,10 +6880,8 @@ F<t/op>, Everything else
 
 =item Special C<make test> targets
 
-test_porting, coretest, test.deparse, test.taintwarn, minitest,
-test.valgrind check.valgrind utest.valgrind ucheck.valgrind, test.torture
-torturetest, utest ucheck test.utf8 check.utf8, minitest.utf16 test.utf16,
-test_harness, test-notty test_notty
+test_porting, minitest, test.valgrind check.valgrind, test_harness,
+test-notty test_notty
 
 =item Parallel tests
 
@@ -7378,13 +7377,11 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.18.1
+=head2 perldelta - what is new for perl v5.18.2
 
 =over 4
 
 =item DESCRIPTION
-
-=item Incompatible Changes
 
 =item Modules and Pragmata
 
@@ -7394,13 +7391,11 @@ B<-i>, B<-V>
 
 =back
 
-=item Platform Support
+=item Documentation
 
 =over 4
 
-=item Platform-Specific Notes
-
-AIX, MidnightBSD
+=item Changes to Existing Documentation
 
 =back
 
@@ -7414,7 +7409,39 @@ AIX, MidnightBSD
 
 =back
 
-=head2 perl5181delta, perldelta - what is new for perl v5.18.1
+=head2 perl5182delta, perldelta - what is new for perl v5.18.2
+
+=over 4
+
+=item DESCRIPTION
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Selected Bug Fixes
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5181delta - what is new for perl v5.18.1
 
 =over 4
 
@@ -13079,7 +13106,16 @@ Steve Hay E<lt>steve.m.hay@googlemail.comE<gt>
 
 =back
 
+=head2 perlrepository - Links to current information on the Perl source
+repository
+
+=over 4
+
+=item DESCRIPTION
+
 =head1 PRAGMA DOCUMENTATION
+
+=back
 
 =head2 arybase - Set indexing base via $[
 
@@ -29884,15 +29920,17 @@ platform
 
 C<first_release( MODULE )>, C<first_release_by_date( MODULE )>,
 C<find_modules( REGEX, [ LIST OF PERLS ] )>, C<find_version( PERL_VERSION
-)>, C<is_deprecated( MODULE, PERL_VERSION )>, C<deprecated_in( MODULE )>,
+)>, C<is_core( MODULE, [ MODULE_VERSION, [ PERL_VERSION ] ] )>,
+C<is_deprecated( MODULE, PERL_VERSION )>, C<deprecated_in( MODULE )>,
 C<removed_from( MODULE )>, C<removed_from_by_date( MODULE )>,
 C<changes_between( PERL_VERSION, PERL_VERSION )>
 
 =item DATA STRUCTURES
 
-C<%Module::CoreList::version>, C<%Module::CoreList::released>,
-C<%Module::CoreList::families>, C<%Module::CoreList::deprecated>,
-C<%Module::CoreList::upstream>, C<%Module::CoreList::bug_tracker>
+C<%Module::CoreList::version>, C<%Module::CoreList::delta>,
+C<%Module::CoreList::released>, C<%Module::CoreList::families>,
+C<%Module::CoreList::deprecated>, C<%Module::CoreList::upstream>,
+C<%Module::CoreList::bug_tracker>
 
 =item CAVEATS
 
