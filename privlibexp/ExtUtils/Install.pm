@@ -38,11 +38,11 @@ ExtUtils::Install - install files from here to there
 
 =head1 VERSION
 
-1.63
+1.67
 
 =cut
 
-$VERSION = '1.63';  # <-- do not forget to update the POD section just above this line!
+$VERSION = '1.67';  # <-- do not forget to update the POD section just above this line!
 $VERSION = eval $VERSION;
 
 =pod
@@ -255,7 +255,14 @@ On failure throws a fatal error.
 sub _unlink_or_rename { #XXX OS-SPECIFIC
     my ( $file, $tryhard, $installing )= @_;
 
-    _chmod( 0666, $file );
+    # this chmod was originally unconditional. However, its not needed on
+    # POSIXy systems since permission to unlink a file is specified by the
+    # directory rather than the file; and in fact it screwed up hard- and
+    # symlinked files. Keep it for other platforms in case its still
+    # needed there.
+    if ($^O =~ /^(dos|os2|MSWin32|VMS)$/) {
+        _chmod( 0666, $file );
+    }
     my $unlink_count = 0;
     while (unlink $file) { $unlink_count++; }
     return $file if $unlink_count > 0;

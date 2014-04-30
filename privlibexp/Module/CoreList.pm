@@ -4,7 +4,7 @@ use vars qw/$VERSION %released %version %families %upstream
 	    %bug_tracker %deprecated %delta/;
 use Module::CoreList::TieHashDelta;
 use version;
-$VERSION = '3.09';
+$VERSION = '3.10';
 
 my $dumpinc = 0;
 sub import {
@@ -247,6 +247,7 @@ sub changes_between {
     5.019008 => '2014-01-20',
     5.019009 => '2014-02-20',
     5.01901  => '2014-03-20',
+    5.019011 => '2014-04-20',
   );
 
 for my $version ( sort { $a <=> $b } keys %released ) {
@@ -9710,6 +9711,54 @@ for my $version ( sort { $a <=> $b } keys %released ) {
         removed => {
         }
     },
+    5.019011 => {
+        delta_from => 5.01901,
+        changed => {
+            'CPAN'                  => '2.05',
+            'CPAN::Distribution'    => '2.02',
+            'CPAN::FirstTime'       => '5.5306',
+            'CPAN::Shell'           => '5.5004',
+            'Carp'                  => '1.3301',
+            'Carp::Heavy'           => '1.3301',
+            'Config'                => '5.019011',
+            'ExtUtils::Command::MM' => '6.94',
+            'ExtUtils::Install'     => '1.67',
+            'ExtUtils::Liblist'     => '6.94',
+            'ExtUtils::Liblist::Kid'=> '6.94',
+            'ExtUtils::MM'          => '6.94',
+            'ExtUtils::MM_AIX'      => '6.94',
+            'ExtUtils::MM_Any'      => '6.94',
+            'ExtUtils::MM_BeOS'     => '6.94',
+            'ExtUtils::MM_Cygwin'   => '6.94',
+            'ExtUtils::MM_DOS'      => '6.94',
+            'ExtUtils::MM_Darwin'   => '6.94',
+            'ExtUtils::MM_MacOS'    => '6.94',
+            'ExtUtils::MM_NW5'      => '6.94',
+            'ExtUtils::MM_OS2'      => '6.94',
+            'ExtUtils::MM_QNX'      => '6.94',
+            'ExtUtils::MM_UWIN'     => '6.94',
+            'ExtUtils::MM_Unix'     => '6.94',
+            'ExtUtils::MM_VMS'      => '6.94',
+            'ExtUtils::MM_VOS'      => '6.94',
+            'ExtUtils::MM_Win32'    => '6.94',
+            'ExtUtils::MM_Win95'    => '6.94',
+            'ExtUtils::MY'          => '6.94',
+            'ExtUtils::MakeMaker'   => '6.94',
+            'ExtUtils::MakeMaker::Config'=> '6.94',
+            'ExtUtils::Mkbootstrap' => '6.94',
+            'ExtUtils::Mksymlists'  => '6.94',
+            'ExtUtils::testlib'     => '6.94',
+            'Module::CoreList'      => '3.10',
+            'Module::CoreList::TieHashDelta'=> '3.10',
+            'Module::CoreList::Utils'=> '3.10',
+            'PerlIO'                => '1.09',
+            'Storable'              => '2.49',
+            'Win32'                 => '0.49',
+            'experimental'          => '0.007',
+        },
+        removed => {
+        }
+    },
 );
 
 sub is_core
@@ -10092,6 +10141,13 @@ for my $version (sort { $a <=> $b } keys %delta) {
     },
     5.01901 => {
         delta_from => 5.019009,
+        changed => {
+        },
+        removed => {
+        }
+    },
+    5.019011 => {
+        delta_from => 5.019010,
         changed => {
         },
         removed => {
@@ -10509,6 +10565,7 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'autodie::skip'         => 'cpan',
     'encoding'              => 'cpan',
     'encoding::warnings'    => 'cpan',
+    'experimental'          => 'cpan',
     'inc::latest'           => 'cpan',
     'parent'                => 'cpan',
     'perlfaq'               => 'cpan',
@@ -10878,16 +10935,16 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'TAP::Parser::SourceHandler::RawTAP'=> 'http://rt.cpan.org/Public/Dist/Display.html?Name=Test-Harness',
     'TAP::Parser::YAMLish::Reader'=> 'http://rt.cpan.org/Public/Dist/Display.html?Name=Test-Harness',
     'TAP::Parser::YAMLish::Writer'=> 'http://rt.cpan.org/Public/Dist/Display.html?Name=Test-Harness',
-    'Term::ANSIColor'       => undef,
+    'Term::ANSIColor'       => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Term-ANSIColor',
     'Term::Cap'             => undef,
     'Test'                  => undef,
-    'Test::Builder'         => 'http://github.com/schwern/test-more/issues/',
-    'Test::Builder::Module' => 'http://github.com/schwern/test-more/issues/',
+    'Test::Builder'         => 'http://github.com/Test-More/test-more/issues/',
+    'Test::Builder::Module' => 'http://github.com/Test-More/test-more/issues/',
     'Test::Builder::Tester' => 'http://github.com/schwern/test-more/issues',
     'Test::Builder::Tester::Color'=> 'http://github.com/schwern/test-more/issues',
     'Test::Harness'         => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Test-Harness',
-    'Test::More'            => 'http://github.com/schwern/test-more/issues/',
-    'Test::Simple'          => 'http://github.com/schwern/test-more/issues/',
+    'Test::More'            => 'http://github.com/Test-More/test-more/issues/',
+    'Test::Simple'          => 'http://github.com/Test-More/test-more/issues/',
     'Text::Balanced'        => undef,
     'Text::ParseWords'      => undef,
     'Text::Tabs'            => undef,
@@ -10917,6 +10974,7 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'autodie::skip'         => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=autodie',
     'encoding'              => undef,
     'encoding::warnings'    => undef,
+    'experimental'          => 'http://rt.cpan.org/Public/Dist/Display.html?Name=experimental',
     'inc::latest'           => undef,
     'parent'                => undef,
     'perlfaq'               => 'https://github.com/perl-doc-cats/perlfaq/issues',

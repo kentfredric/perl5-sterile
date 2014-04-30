@@ -110,7 +110,7 @@ PERLVAR(I, mainstack,	AV *)		/* the stack when nothing funny is
 /* memory management */
 PERLVAR(I, sv_count,	IV)		/* how many SV* are currently allocated */
 PERLVAR(I, sv_objcount,	IV)		/* DEPRECATED AND UNMAINTAINED.
-                                         * Will be removed in Perl 5.20.
+                                         * Will be removed in Perl 5.22.
                                          * Used to be: how many objects are currently allocated. */
 
 PERLVAR(I, sv_root,	SV *)		/* storage for SVs belonging to interp */
@@ -736,7 +736,7 @@ PERLVAR(I, debug_pad,	struct perl_debug_pad)	/* always needed because of the re 
 /* Hook for File::Glob */
 PERLVARI(I, globhook,	globhook_t, NULL)
 
-/* The last unconditional member of the interpreter structure when 5.19.10 was
+/* The last unconditional member of the interpreter structure when 5.19.11 was
    released. The offset of the end of this is baked into a global variable in 
    any shared perl library which will allow a sanity test in future perl
    releases.  */

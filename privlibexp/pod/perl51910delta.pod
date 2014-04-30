@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-perldelta - what is new for perl v5.19.10
+perl51910delta - what is new for perl v5.19.10
 
 =head1 DESCRIPTION
 

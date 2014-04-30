@@ -922,7 +922,7 @@ to return a defined value when the pattern was compiled or executed with
 the C</p> modifier.  In Perl v5.20, the C</p> modifier does nothing, so
 C<${^PREMATCH}> does the same thing as C<$PREMATCH>.
 
-This variable was added in Perl v5.10.0
+This variable was added in Perl v5.10.0.
 
 This variable is read-only and dynamically-scoped.
 
@@ -1764,6 +1764,10 @@ of the C<open()> operator.  Assignment to C<$!> is similarly ephemeral.
 It can be used immediately before invoking the C<die()> operator,
 to set the exit value, or to inspect the system error string
 corresponding to error I<n>, or to restore C<$!> to a meaningful state.
+
+Note that when stringified, the text is always returned as if both
+S<L<C<"use locale">|perllocale>> and S<L<C<"use bytes">|bytes>> are in
+effect.  This is likely to change in v5.22.
 
 Mnemonic: What just went bang?
 

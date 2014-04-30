@@ -130,6 +130,10 @@ Allows you to write your script in non-ascii or non-utf8
 
 Warn on implicit encoding conversions
 
+=item experimental
+
+Experimental features made easy
+
 =item feature
 
 Enable new features
