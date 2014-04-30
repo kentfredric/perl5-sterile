@@ -6,7 +6,8 @@
 # !!!!!!!   INTERNAL PERL USE ONLY   !!!!!!!
 # This file is for internal use by core Perl only.  The format and even the
 # name or existence of this file are subject to change without notice.  Don't
-# use it directly.
+# use it directly.  Use Unicode::UCD to access the Unicode character data
+# base.
 
 
 # This file is for the use of Unicode::UCD
@@ -1884,11 +1885,6 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 'isc' => 'isc',
 'isocomment' => 'isc',
 'lc' => 'lc',
-'legacycasefolding' => 'legacycasefolding',
-'legacylowercasemapping' => 'legacylowercasemapping',
-'legacyperldecimaldigit' => 'legacyperldecimaldigit',
-'legacytitlecasemapping' => 'legacytitlecasemapping',
-'legacyuppercasemapping' => 'legacyuppercasemapping',
 'lowercasemapping' => 'lc',
 'na' => 'na',
 'na1' => 'na1',
@@ -1918,8 +1914,6 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 %Unicode::UCD::loose_perlprop_to_name = (
 'all' => 
 [
-'Any',
-'Any',
 'All',
 ],
 'alnum' => 
@@ -1938,7 +1932,7 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 [
 'Any',
 'Any',
-'All',
+'Unicode',
 ],
 'ascii' => 
 [
@@ -2081,6 +2075,12 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 [
 'Title',
 'Titlecase',
+],
+'unicode' => 
+[
+'Any',
+'Any',
+'Unicode',
 ],
 'upper' => 
 [
@@ -2436,31 +2436,6 @@ $Unicode::UCD::HANGUL_COUNT = 11172;
 [
 'lc',
 'Lowercase_Mapping',
-],
-'legacycasefolding' => 
-[
-'Legacy_Case_Folding',
-'Legacy_Case_Folding',
-],
-'legacylowercasemapping' => 
-[
-'Legacy_Lowercase_Mapping',
-'Legacy_Lowercase_Mapping',
-],
-'legacyperldecimaldigit' => 
-[
-'Legacy_Perl_Decimal_Digit',
-'Legacy_Perl_Decimal_Digit',
-],
-'legacytitlecasemapping' => 
-[
-'Legacy_Titlecase_Mapping',
-'Legacy_Titlecase_Mapping',
-],
-'legacyuppercasemapping' => 
-[
-'Legacy_Uppercase_Mapping',
-'Legacy_Uppercase_Mapping',
 ],
 'loe' => 
 [

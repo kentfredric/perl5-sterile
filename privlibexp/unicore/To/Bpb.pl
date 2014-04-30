@@ -5,7 +5,8 @@
 # !!!!!!!   INTERNAL PERL USE ONLY   !!!!!!!
 # This file is for internal use by core Perl only.  The format and even the
 # name or existence of this file are subject to change without notice.  Don't
-# use it directly.
+# use it directly.  Use Unicode::UCD to access the Unicode character data
+# base.
 
 
 
@@ -16,16 +17,16 @@ $utf8::SwashInfo{'ToBpb'}{'format'} = 'x'; # non-negative hex whole number; a co
 $utf8::SwashInfo{'ToBpb'}{'missing'} = ''; # code point maps to the null string
 
 return <<'END';
-0028		0029
-0029		0028
-005B		005D
-005D		005B
-007B		007D
-007D		007B
-0F3A		0F3B
-0F3B		0F3A
-0F3C		0F3D
-0F3D		0F3C
+28		0029
+29		0028
+5B		005D
+5D		005B
+7B		007D
+7D		007B
+F3A		0F3B
+F3B		0F3A
+F3C		0F3D
+F3D		0F3C
 169B		169C
 169C		169B
 2045		2046

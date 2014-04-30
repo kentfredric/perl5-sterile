@@ -9,7 +9,7 @@
 
 /* Package name      : perl5
  * Source directory  : .
- * Configuration time: Wed Apr 30 22:43:28 NZST 2014
+ * Configuration time: Wed Apr 30 22:52:40 NZST 2014
  * Configured by     : kent
  * Target system     : linux katipo2 3.14.0-gentoo #2 smp preempt tue apr 8 20:47:34 nzst 2014 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
  */
@@ -703,12 +703,6 @@
  */
 #define I_NETINET_IN	/**/
 
-/* I_SFIO:
- *	This symbol, if defined, indicates to the C program that it should
- *	include <sfio.h>.
- */
-/*#define	I_SFIO		/ **/
-
 /* I_STDDEF:
  *	This symbol, if defined, indicates that <stddef.h> exists and should
  *	be included.
@@ -892,15 +886,6 @@
 #define OSNAME "linux"		/**/
 #define OSVERS "3.14.0-gentoo"		/**/
 
-/* MULTIARCH:
- *	This symbol, if defined, signifies that the build
- *	process will produce some binary files that are going to be
- *	used in a cross-platform environment.  This is the case for
- *	example with the NeXT "fat" binaries that contain executables
- *	for several CPUs.
- */
-/*#define MULTIARCH		/ **/
-
 /* USE_CROSS_COMPILE:
  *	This symbol, if defined, indicates that Perl is being cross-compiled.
  */
@@ -912,6 +897,15 @@
 /*#define	USE_CROSS_COMPILE	/ **/
 #define	PERL_TARGETARCH	""	/**/
 #endif
+
+/* MULTIARCH:
+ *	This symbol, if defined, signifies that the build
+ *	process will produce some binary files that are going to be
+ *	used in a cross-platform environment.  This is the case for
+ *	example with the NeXT "fat" binaries that contain executables
+ *	for several CPUs.
+ */
+/*#define MULTIARCH		/ **/
 
 /* MEM_ALIGNBYTES:
  *	This symbol contains the number of bytes required to align a
@@ -934,8 +928,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/5.19.7/x86_64-linux"		/**/
-#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/5.19.7/x86_64-linux"		/**/
+#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/5.19.8/x86_64-linux"		/**/
+#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/5.19.8/x86_64-linux"		/**/
 
 /* ARCHNAME:
  *	This symbol holds a string representing the architecture name.
@@ -957,8 +951,8 @@
  *	This symbol, if defined, indicates that we'd like to relocate entries
  *	in @INC at run time based on the location of the perl binary.
  */
-#define BIN "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/bin"	/**/
-#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/bin"	/**/
+#define BIN "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/bin"	/**/
+#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/bin"	/**/
 #define PERL_RELOCATABLE_INC "undef" 		/**/
 
 /* INTSIZE:
@@ -993,7 +987,7 @@
  *	so the default case (for NeXT) is big endian to catch them.
  *	This might matter for NeXT 3.0.
  */
-#if defined(USE_CROSS_COMPILE) || defined(MULTIARCH)
+#if defined(MULTIARCH)
 #  ifdef __LITTLE_ENDIAN__
 #    if LONGSIZE == 4
 #      define BYTEORDER 0x1234
@@ -1072,9 +1066,9 @@
  *	This symbol is intended to be used along with CPPRUN in the same manner
  *	symbol CPPMINUS is used with CPPSTDIN. It contains either "-" or "".
  */
-#define CPPSTDIN "cc -E"
+#define CPPSTDIN "cc  -E"
 #define CPPMINUS "-"
-#define CPPRUN "cc -E"
+#define CPPRUN "cc  -E"
 #define CPPLAST "-"
 
 /* HAS_ACCESS:
@@ -3045,8 +3039,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/5.19.7"		/**/
-#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/5.19.7"		/**/
+#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/5.19.8"		/**/
+#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/5.19.8"		/**/
 
 /* CAN_PROTOTYPE:
  *	If defined, this macro indicates that the C compiler can handle
@@ -3189,8 +3183,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/site_perl/5.19.7/x86_64-linux"		/**/
-#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/site_perl/5.19.7/x86_64-linux"		/**/
+#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/site_perl/5.19.8/x86_64-linux"		/**/
+#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/site_perl/5.19.8/x86_64-linux"		/**/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -3212,9 +3206,9 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/site_perl/5.19.7"		/**/
-#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/site_perl/5.19.7"		/**/
-#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.19.7-pristine/lib/site_perl"		/**/
+#define SITELIB "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/site_perl/5.19.8"		/**/
+#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/site_perl/5.19.8"		/**/
+#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.19.8-pristine/lib/site_perl"		/**/
 
 /* Size_t_size:
  *	This symbol holds the size of a Size_t in bytes.
@@ -3891,12 +3885,6 @@
  *	available to set process title.
  */
 /*#define HAS_SETPROCTITLE		/ **/
-
-/* USE_SFIO:
- *	This symbol, if defined, indicates that sfio should
- *	be used.
- */
-/*#define	USE_SFIO		/ **/
 
 /* HAS_SIGNBIT:
  *	This symbol, if defined, indicates that the signbit routine is
@@ -4588,7 +4576,7 @@
  *	script to make sure (one hopes) that it runs with perl and not
  *	some shell.
  */
-#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.19.7-pristine/bin/perl5.19.7"		/**/
+#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.19.8-pristine/bin/perl5.19.8"		/**/
 
 /* HAS_STDIO_STREAM_ARRAY:
  *	This symbol, if defined, tells that there is an array

@@ -5,14 +5,22 @@
 # !!!!!!!   INTERNAL PERL USE ONLY   !!!!!!!
 # This file is for internal use by core Perl only.  The format and even the
 # name or existence of this file are subject to change without notice.  Don't
-# use it directly.
+# use it directly.  Use Unicode::UCD to access the Unicode character data
+# base.
 
 
 return <<'END';
-FF61	FFBE
-FFC2	FFC7
-FFCA	FFCF
-FFD2	FFD7
-FFDA	FFDC
-FFE8	FFEE
+V12
+65377
+65471
+65474
+65480
+65482
+65488
+65490
+65496
+65498
+65501
+65512
+65519
 END

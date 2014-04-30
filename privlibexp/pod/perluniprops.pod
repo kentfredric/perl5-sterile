@@ -288,10 +288,12 @@ stable.
  T \p{Age: 6.1}            \p{Age=V6_1} (732)
  T \p{Age: 6.2}            \p{Age=V6_2} (1)
  T \p{Age: 6.3}            \p{Age=V6_3} (5)
-   \p{Age: NA}             \p{Age=Unassigned} (864_343)
+   \p{Age: NA}             \p{Age=Unassigned} (864_343 plus all
+                             above-Unicode code points)
    \p{Age: Unassigned}     Code point's usage has not been assigned
                              in any Unicode release thus far. (Short:
-                             \p{Age=NA}) (864_343)
+                             \p{Age=NA}) (864_343 plus all above-
+                             Unicode code points)
    \p{Age: V1_1}           Code point's usage introduced in version
                              1.1 (33_979)
    \p{Age: V2_0}           Code point's usage was introduced in
@@ -343,12 +345,15 @@ stable.
                              Alchemical_Symbols}) (128)
  X \p{Alchemical_Symbols}  \p{Block=Alchemical_Symbols} (Short:
                              \p{InAlchemical}) (128)
-   \p{All}                 \p{Any} (1_114_112)
+   \p{All}                 All code points, including those above
+                             Unicode.  Same as qr/./s (1_114_112 plus
+                             all above-Unicode code points)
    \p{Alnum}               Alphabetic and (decimal) Numeric (102_619)
    \p{Alpha}               \p{Alphabetic=Y} (102_159)
    \p{Alpha: *}            \p{Alphabetic: *}
    \p{Alphabetic}          \p{Alpha} (= \p{Alphabetic=Y}) (102_159)
-   \p{Alphabetic: N*}      (Short: \p{Alpha=N}, \P{Alpha}) (1_011_953)
+   \p{Alphabetic: N*}      (Short: \p{Alpha=N}, \P{Alpha}) (1_011_953
+                             plus all above-Unicode code points)
    \p{Alphabetic: Y*}      (Short: \p{Alpha=Y}, \p{Alpha}) (102_159)
  X \p{Alphabetic_PF}       \p{Alphabetic_Presentation_Forms} (=
                              \p{Block=Alphabetic_Presentation_Forms})
@@ -364,7 +369,8 @@ stable.
                              \p{InAncientGreekMusic}) (80)
  X \p{Ancient_Greek_Numbers} \p{Block=Ancient_Greek_Numbers} (80)
  X \p{Ancient_Symbols}     \p{Block=Ancient_Symbols} (64)
-   \p{Any}                 [\x{0000}-\x{10FFFF}] (1_114_112)
+   \p{Any}                 All Unicode code points: [\x{0000}-
+                             \x{10FFFF}] (1_114_112)
    \p{Arab}                \p{Arabic} (= \p{Script=Arabic}) (NOT
                              \p{Block=Arabic}) (1236)
    \p{Arabic}              \p{Script=Arabic} (Short: \p{Arab}; NOT
@@ -407,7 +413,8 @@ stable.
    \p{ASCII}               \p{Block=Basic_Latin} [[:ASCII:]] (128)
    \p{ASCII_Hex_Digit}     \p{PosixXDigit} (= \p{ASCII_Hex_Digit=Y})
                              (22)
-   \p{ASCII_Hex_Digit: N*} (Short: \p{AHex=N}, \P{AHex}) (1_114_090)
+   \p{ASCII_Hex_Digit: N*} (Short: \p{AHex=N}, \P{AHex}) (1_114_090
+                             plus all above-Unicode code points)
    \p{ASCII_Hex_Digit: Y*} (Short: \p{AHex=Y}, \p{AHex}) (22)
    \p{Assigned}            All assigned code points (249_703)
    \p{Avestan}             \p{Script=Avestan} (Short: \p{Avst}; NOT
@@ -456,8 +463,10 @@ stable.
    \p{Bidi_Class: European_Terminator} (Short: \p{Bc=ET}) (87)
    \p{Bidi_Class: First_Strong_Isolate} (Short: \p{Bc=FSI}) (1)
    \p{Bidi_Class: FSI}     \p{Bidi_Class=First_Strong_Isolate} (1)
-   \p{Bidi_Class: L}       \p{Bidi_Class=Left_To_Right} (1_098_508)
-   \p{Bidi_Class: Left_To_Right} (Short: \p{Bc=L}) (1_098_508)
+   \p{Bidi_Class: L}       \p{Bidi_Class=Left_To_Right} (1_098_508
+                             plus all above-Unicode code points)
+   \p{Bidi_Class: Left_To_Right} (Short: \p{Bc=L}) (1_098_508 plus
+                             all above-Unicode code points)
    \p{Bidi_Class: Left_To_Right_Embedding} (Short: \p{Bc=LRE}) (1)
    \p{Bidi_Class: Left_To_Right_Isolate} (Short: \p{Bc=LRI}) (1)
    \p{Bidi_Class: Left_To_Right_Override} (Short: \p{Bc=LRO}) (1)
@@ -486,21 +495,25 @@ stable.
    \p{Bidi_Class: White_Space} (Short: \p{Bc=WS}) (17)
    \p{Bidi_Class: WS}      \p{Bidi_Class=White_Space} (17)
    \p{Bidi_Control}        \p{Bidi_Control=Y} (Short: \p{BidiC}) (12)
-   \p{Bidi_Control: N*}    (Short: \p{BidiC=N}, \P{BidiC}) (1_114_100)
+   \p{Bidi_Control: N*}    (Short: \p{BidiC=N}, \P{BidiC}) (1_114_100
+                             plus all above-Unicode code points)
    \p{Bidi_Control: Y*}    (Short: \p{BidiC=Y}, \p{BidiC}) (12)
    \p{Bidi_M}              \p{Bidi_Mirrored} (= \p{Bidi_Mirrored=Y})
                              (545)
    \p{Bidi_M: *}           \p{Bidi_Mirrored: *}
    \p{Bidi_Mirrored}       \p{Bidi_Mirrored=Y} (Short: \p{BidiM})
                              (545)
-   \p{Bidi_Mirrored: N*}   (Short: \p{BidiM=N}, \P{BidiM}) (1_113_567)
+   \p{Bidi_Mirrored: N*}   (Short: \p{BidiM=N}, \P{BidiM}) (1_113_567
+                             plus all above-Unicode code points)
    \p{Bidi_Mirrored: Y*}   (Short: \p{BidiM=Y}, \p{BidiM}) (545)
    \p{Bidi_Paired_Bracket_Type: C} \p{Bidi_Paired_Bracket_Type=Close}
                              (60)
    \p{Bidi_Paired_Bracket_Type: Close} (Short: \p{Bpt=C}) (60)
    \p{Bidi_Paired_Bracket_Type: N} \p{Bidi_Paired_Bracket_Type=None}
-                             (1_113_992)
-   \p{Bidi_Paired_Bracket_Type: None} (Short: \p{Bpt=N}) (1_113_992)
+                             (1_113_992 plus all above-Unicode code
+                             points)
+   \p{Bidi_Paired_Bracket_Type: None} (Short: \p{Bpt=N}) (1_113_992
+                             plus all above-Unicode code points)
    \p{Bidi_Paired_Bracket_Type: O} \p{Bidi_Paired_Bracket_Type=Open}
                              (60)
    \p{Bidi_Paired_Bracket_Type: Open} (Short: \p{Bpt=O}) (60)
@@ -946,13 +959,15 @@ stable.
    \p{Block: Myanmar_Ext_A} \p{Block=Myanmar_Extended_A} (32)
    \p{Block: Myanmar_Extended_A} (Short: \p{Blk=MyanmarExtA},
                              \p{InMyanmarExtA}) (32)
-   \p{Block: NB}           \p{Block=No_Block} (860_672)
+   \p{Block: NB}           \p{Block=No_Block} (860_672 plus all
+                             above-Unicode code points)
    \p{Block: New_Tai_Lue}  (Single: \p{InNewTaiLue}; NOT
                              \p{New_Tai_Lue} NOR \p{Is_New_Tai_Lue})
                              (96)
    \p{Block: NKo}          (Single: \p{InNKo}; NOT \p{Nko} NOR
                              \p{Is_NKo}) (64)
-   \p{Block: No_Block}     (Short: \p{Blk=NB}, \p{InNB}) (860_672)
+   \p{Block: No_Block}     (Short: \p{Blk=NB}, \p{InNB}) (860_672
+                             plus all above-Unicode code points)
    \p{Block: Number_Forms} (Single: \p{InNumberForms}) (64)
    \p{Block: OCR}          \p{Block=Optical_Character_Recognition}
                              (32)
@@ -1165,7 +1180,8 @@ stable.
  X \p{Byzantine_Musical_Symbols} \p{Block=Byzantine_Musical_Symbols}
                              (Short: \p{InByzantineMusic}) (256)
    \p{C}                   \p{Other} (= \p{General_Category=Other})
-                             (1_004_135)
+                             (1_004_135 plus all above-Unicode code
+                             points)
    \p{Cakm}                \p{Chakma} (= \p{Script=Chakma}) (NOT
                              \p{Block=Chakma}) (67)
    \p{Canadian_Aboriginal} \p{Script=Canadian_Aboriginal} (Short:
@@ -1175,7 +1191,8 @@ stable.
                              Unified_Canadian_Aboriginal_Syllabics})
                              (640)
  T \p{Canonical_Combining_Class: 0} \p{Canonical_Combining_Class=
-                             Not_Reordered} (1_113_459)
+                             Not_Reordered} (1_113_459 plus all
+                             above-Unicode code points)
  T \p{Canonical_Combining_Class: 1} \p{Canonical_Combining_Class=
                              Overlay} (26)
  T \p{Canonical_Combining_Class: 7} \p{Canonical_Combining_Class=
@@ -1378,9 +1395,11 @@ stable.
    \p{Canonical_Combining_Class: NK} \p{Canonical_Combining_Class=
                              Nukta} (13)
    \p{Canonical_Combining_Class: Not_Reordered} (Short: \p{Ccc=NR})
-                             (1_113_459)
+                             (1_113_459 plus all above-Unicode code
+                             points)
    \p{Canonical_Combining_Class: NR} \p{Canonical_Combining_Class=
-                             Not_Reordered} (1_113_459)
+                             Not_Reordered} (1_113_459 plus all
+                             above-Unicode code points)
    \p{Canonical_Combining_Class: Nukta} (Short: \p{Ccc=NK}) (13)
    \p{Canonical_Combining_Class: OV} \p{Canonical_Combining_Class=
                              Overlay} (26)
@@ -1398,10 +1417,12 @@ stable.
    \p{Carian}              \p{Script=Carian} (Short: \p{Cari}; NOT
                              \p{Block=Carian}) (49)
    \p{Case_Ignorable}      \p{Case_Ignorable=Y} (Short: \p{CI}) (1806)
-   \p{Case_Ignorable: N*}  (Short: \p{CI=N}, \P{CI}) (1_112_306)
+   \p{Case_Ignorable: N*}  (Short: \p{CI=N}, \P{CI}) (1_112_306 plus
+                             all above-Unicode code points)
    \p{Case_Ignorable: Y*}  (Short: \p{CI=Y}, \p{CI}) (1806)
    \p{Cased}               \p{Cased=Y} (3448)
-   \p{Cased: N*}           (Single: \P{Cased}) (1_110_664)
+   \p{Cased: N*}           (Single: \P{Cased}) (1_110_664 plus all
+                             above-Unicode code points)
    \p{Cased: Y*}           (Single: \p{Cased}) (3448)
    \p{Cased_Letter}        \p{General_Category=Cased_Letter} (Short:
                              \p{LC}) (3223)
@@ -1420,35 +1441,41 @@ stable.
    \p{Changes_When_Casefolded} \p{Changes_When_Casefolded=Y} (Short:
                              \p{CWCF}) (1107)
    \p{Changes_When_Casefolded: N*} (Short: \p{CWCF=N}, \P{CWCF})
-                             (1_113_005)
+                             (1_113_005 plus all above-Unicode code
+                             points)
    \p{Changes_When_Casefolded: Y*} (Short: \p{CWCF=Y}, \p{CWCF})
                              (1107)
    \p{Changes_When_Casemapped} \p{Changes_When_Casemapped=Y} (Short:
                              \p{CWCM}) (2138)
    \p{Changes_When_Casemapped: N*} (Short: \p{CWCM=N}, \P{CWCM})
-                             (1_111_974)
+                             (1_111_974 plus all above-Unicode code
+                             points)
    \p{Changes_When_Casemapped: Y*} (Short: \p{CWCM=Y}, \p{CWCM})
                              (2138)
    \p{Changes_When_Lowercased} \p{Changes_When_Lowercased=Y} (Short:
                              \p{CWL}) (1043)
    \p{Changes_When_Lowercased: N*} (Short: \p{CWL=N}, \P{CWL})
-                             (1_113_069)
+                             (1_113_069 plus all above-Unicode code
+                             points)
    \p{Changes_When_Lowercased: Y*} (Short: \p{CWL=Y}, \p{CWL}) (1043)
    \p{Changes_When_NFKC_Casefolded} \p{Changes_When_NFKC_Casefolded=
                              Y} (Short: \p{CWKCF}) (9946)
    \p{Changes_When_NFKC_Casefolded: N*} (Short: \p{CWKCF=N},
-                             \P{CWKCF}) (1_104_166)
+                             \P{CWKCF}) (1_104_166 plus all above-
+                             Unicode code points)
    \p{Changes_When_NFKC_Casefolded: Y*} (Short: \p{CWKCF=Y},
                              \p{CWKCF}) (9946)
    \p{Changes_When_Titlecased} \p{Changes_When_Titlecased=Y} (Short:
                              \p{CWT}) (1099)
    \p{Changes_When_Titlecased: N*} (Short: \p{CWT=N}, \P{CWT})
-                             (1_113_013)
+                             (1_113_013 plus all above-Unicode code
+                             points)
    \p{Changes_When_Titlecased: Y*} (Short: \p{CWT=Y}, \p{CWT}) (1099)
    \p{Changes_When_Uppercased} \p{Changes_When_Uppercased=Y} (Short:
                              \p{CWU}) (1126)
    \p{Changes_When_Uppercased: N*} (Short: \p{CWU=N}, \P{CWU})
-                             (1_112_986)
+                             (1_112_986 plus all above-Unicode code
+                             points)
    \p{Changes_When_Uppercased: Y*} (Short: \p{CWU=Y}, \p{CWU}) (1126)
    \p{Cher}                \p{Cherokee} (= \p{Script=Cherokee}) (NOT
                              \p{Block=Cherokee}) (85)
@@ -1526,7 +1553,8 @@ stable.
    \p{Close_Punctuation}   \p{General_Category=Close_Punctuation}
                              (Short: \p{Pe}) (73)
    \p{Cn}                  \p{Unassigned} (= \p{General_Category=
-                             Unassigned}) (864_409)
+                             Unassigned}) (864_409 plus all above-
+                             Unicode code points)
    \p{Cntrl}               \p{General_Category=Control} Control
                              characters (Short: \p{Cc}) (65)
    \p{Co}                  \p{Private_Use} (= \p{General_Category=
@@ -1561,7 +1589,8 @@ stable.
                              Hangul_Compatibility_Jamo}) (96)
    \p{Composition_Exclusion} \p{Composition_Exclusion=Y} (Short:
                              \p{CE}) (81)
-   \p{Composition_Exclusion: N*} (Short: \p{CE=N}, \P{CE}) (1_114_031)
+   \p{Composition_Exclusion: N*} (Short: \p{CE=N}, \P{CE}) (1_114_031
+                             plus all above-Unicode code points)
    \p{Composition_Exclusion: Y*} (Short: \p{CE=Y}, \p{CE}) (81)
    \p{Connector_Punctuation} \p{General_Category=
                              Connector_Punctuation} (Short: \p{Pc})
@@ -1631,7 +1660,8 @@ stable.
    \p{Cyrl}                \p{Cyrillic} (= \p{Script=Cyrillic}) (NOT
                              \p{Block=Cyrillic}) (417)
    \p{Dash}                \p{Dash=Y} (27)
-   \p{Dash: N*}            (Single: \P{Dash}) (1_114_085)
+   \p{Dash: N*}            (Single: \P{Dash}) (1_114_085 plus all
+                             above-Unicode code points)
    \p{Dash: Y*}            (Single: \p{Dash}) (27)
    \p{Dash_Punctuation}    \p{General_Category=Dash_Punctuation}
                              (Short: \p{Pd}) (23)
@@ -1664,7 +1694,8 @@ stable.
    \p{Decomposition_Type: Non_Canonical} Union of all non-canonical
                              decompositions (Short: \p{Dt=NonCanon})
                              (Perl extension) (3655)
-   \p{Decomposition_Type: None} (Short: \p{Dt=None}) (1_097_232)
+   \p{Decomposition_Type: None} (Short: \p{Dt=None}) (1_097_232 plus
+                             all above-Unicode code points)
    \p{Decomposition_Type: Small} (Short: \p{Dt=Sml}) (26)
    \p{Decomposition_Type: Sml} \p{Decomposition_Type=Small} (26)
    \p{Decomposition_Type: Sqr} \p{Decomposition_Type=Square} (284)
@@ -1678,13 +1709,15 @@ stable.
    \p{Default_Ignorable_Code_Point} \p{Default_Ignorable_Code_Point=
                              Y} (Short: \p{DI}) (4169)
    \p{Default_Ignorable_Code_Point: N*} (Short: \p{DI=N}, \P{DI})
-                             (1_109_943)
+                             (1_109_943 plus all above-Unicode code
+                             points)
    \p{Default_Ignorable_Code_Point: Y*} (Short: \p{DI=Y}, \p{DI})
                              (4169)
    \p{Dep}                 \p{Deprecated} (= \p{Deprecated=Y}) (111)
    \p{Dep: *}              \p{Deprecated: *}
    \p{Deprecated}          \p{Deprecated=Y} (Short: \p{Dep}) (111)
-   \p{Deprecated: N*}      (Short: \p{Dep=N}, \P{Dep}) (1_114_001)
+   \p{Deprecated: N*}      (Short: \p{Dep=N}, \P{Dep}) (1_114_001
+                             plus all above-Unicode code points)
    \p{Deprecated: Y*}      (Short: \p{Dep=Y}, \p{Dep}) (111)
    \p{Deseret}             \p{Script=Deseret} (Short: \p{Dsrt}) (80)
    \p{Deva}                \p{Devanagari} (= \p{Script=Devanagari})
@@ -1702,7 +1735,8 @@ stable.
    \p{Dia}                 \p{Diacritic} (= \p{Diacritic=Y}) (693)
    \p{Dia: *}              \p{Diacritic: *}
    \p{Diacritic}           \p{Diacritic=Y} (Short: \p{Dia}) (693)
-   \p{Diacritic: N*}       (Short: \p{Dia=N}, \P{Dia}) (1_113_419)
+   \p{Diacritic: N*}       (Short: \p{Dia=N}, \P{Dia}) (1_113_419
+                             plus all above-Unicode code points)
    \p{Diacritic: Y*}       (Short: \p{Dia=Y}, \p{Dia}) (693)
  X \p{Diacriticals}        \p{Combining_Diacritical_Marks} (=
                              \p{Block=Combining_Diacritical_Marks})
@@ -1733,10 +1767,12 @@ stable.
    \p{East_Asian_Width: Fullwidth} (Short: \p{Ea=F}) (104)
    \p{East_Asian_Width: H} \p{East_Asian_Width=Halfwidth} (123)
    \p{East_Asian_Width: Halfwidth} (Short: \p{Ea=H}) (123)
-   \p{East_Asian_Width: N} \p{East_Asian_Width=Neutral} (801_894)
+   \p{East_Asian_Width: N} \p{East_Asian_Width=Neutral} (801_894 plus
+                             all above-Unicode code points)
    \p{East_Asian_Width: Na} \p{East_Asian_Width=Narrow} (111)
    \p{East_Asian_Width: Narrow} (Short: \p{Ea=Na}) (111)
-   \p{East_Asian_Width: Neutral} (Short: \p{Ea=N}) (801_894)
+   \p{East_Asian_Width: Neutral} (Short: \p{Ea=N}) (801_894 plus all
+                             above-Unicode code points)
    \p{East_Asian_Width: W} \p{East_Asian_Width=Wide} (173_134)
    \p{East_Asian_Width: Wide} (Short: \p{Ea=W}) (173_134)
    \p{Egyp}                \p{Egyptian_Hieroglyphs} (= \p{Script=
@@ -1789,7 +1825,8 @@ stable.
    \p{Ext}                 \p{Extender} (= \p{Extender=Y}) (31)
    \p{Ext: *}              \p{Extender: *}
    \p{Extender}            \p{Extender=Y} (Short: \p{Ext}) (31)
-   \p{Extender: N*}        (Short: \p{Ext=N}, \P{Ext}) (1_114_081)
+   \p{Extender: N*}        (Short: \p{Ext=N}, \P{Ext}) (1_114_081
+                             plus all above-Unicode code points)
    \p{Extender: Y*}        (Short: \p{Ext=Y}, \p{Ext}) (31)
    \p{Final_Punctuation}   \p{General_Category=Final_Punctuation}
                              (Short: \p{Pf}) (10)
@@ -1798,19 +1835,22 @@ stable.
    \p{Full_Composition_Exclusion} \p{Full_Composition_Exclusion=Y}
                              (Short: \p{CompEx}) (1120)
    \p{Full_Composition_Exclusion: N*} (Short: \p{CompEx=N},
-                             \P{CompEx}) (1_112_992)
+                             \P{CompEx}) (1_112_992 plus all above-
+                             Unicode code points)
    \p{Full_Composition_Exclusion: Y*} (Short: \p{CompEx=Y},
                              \p{CompEx}) (1120)
    \p{Gc: *}               \p{General_Category: *}
    \p{GCB: *}              \p{Grapheme_Cluster_Break: *}
-   \p{General_Category: C} \p{General_Category=Other} (1_004_135)
+   \p{General_Category: C} \p{General_Category=Other} (1_004_135 plus
+                             all above-Unicode code points)
    \p{General_Category: Cased_Letter} [\p{Ll}\p{Lu}\p{Lt}] (Short:
                              \p{Gc=LC}, \p{LC}) (3223)
    \p{General_Category: Cc} \p{General_Category=Control} (65)
    \p{General_Category: Cf} \p{General_Category=Format} (145)
    \p{General_Category: Close_Punctuation} (Short: \p{Gc=Pe}, \p{Pe})
                              (73)
-   \p{General_Category: Cn} \p{General_Category=Unassigned} (864_409)
+   \p{General_Category: Cn} \p{General_Category=Unassigned} (864_409
+                             plus all above-Unicode code points)
    \p{General_Category: Cntrl} \p{General_Category=Control} (65)
    \p{General_Category: Co} \p{General_Category=Private_Use} (137_468)
    \p{General_Category: Combining_Mark} \p{General_Category=Mark}
@@ -1876,7 +1916,8 @@ stable.
    \p{General_Category: Number} (Short: \p{Gc=N}, \p{N}) (1148)
    \p{General_Category: Open_Punctuation} (Short: \p{Gc=Ps}, \p{Ps})
                              (74)
-   \p{General_Category: Other} (Short: \p{Gc=C}, \p{C}) (1_004_135)
+   \p{General_Category: Other} (Short: \p{Gc=C}, \p{C}) (1_004_135
+                             plus all above-Unicode code points)
    \p{General_Category: Other_Letter} (Short: \p{Gc=Lo}, \p{Lo})
                              (97_553)
    \p{General_Category: Other_Number} (Short: \p{Gc=No}, \p{No}) (464)
@@ -1917,7 +1958,8 @@ stable.
    \p{General_Category: Titlecase_Letter} (Short: \p{Gc=Lt}, \p{Lt};
                              /i= General_Category=Cased_Letter) (31)
    \p{General_Category: Unassigned} (Short: \p{Gc=Cn}, \p{Cn})
-                             (864_409)
+                             (864_409 plus all above-Unicode code
+                             points)
    \p{General_Category: Uppercase_Letter} (Short: \p{Gc=Lu}, \p{Lu};
                              /i= General_Category=Cased_Letter) (1441)
    \p{General_Category: Z} \p{General_Category=Separator} (19)
@@ -1954,7 +1996,8 @@ stable.
    \p{Grapheme_Base}       \p{Grapheme_Base=Y} (Short: \p{GrBase})
                              (108_659)
    \p{Grapheme_Base: N*}   (Short: \p{GrBase=N}, \P{GrBase})
-                             (1_005_453)
+                             (1_005_453 plus all above-Unicode code
+                             points)
    \p{Grapheme_Base: Y*}   (Short: \p{GrBase=Y}, \p{GrBase}) (108_659)
    \p{Grapheme_Cluster_Break: CN} \p{Grapheme_Cluster_Break=Control}
                              (6025)
@@ -1967,7 +2010,8 @@ stable.
    \p{Grapheme_Cluster_Break: LF} (Short: \p{GCB=LF}) (1)
    \p{Grapheme_Cluster_Break: LV} (Short: \p{GCB=LV}) (399)
    \p{Grapheme_Cluster_Break: LVT} (Short: \p{GCB=LVT}) (10_773)
-   \p{Grapheme_Cluster_Break: Other} (Short: \p{GCB=XX}) (1_094_922)
+   \p{Grapheme_Cluster_Break: Other} (Short: \p{GCB=XX}) (1_094_922
+                             plus all above-Unicode code points)
    \p{Grapheme_Cluster_Break: PP} \p{Grapheme_Cluster_Break=Prepend}
                              (0)
    \p{Grapheme_Cluster_Break: Prepend} (Short: \p{GCB=PP}) (0)
@@ -1981,10 +2025,12 @@ stable.
    \p{Grapheme_Cluster_Break: T} (Short: \p{GCB=T}) (137)
    \p{Grapheme_Cluster_Break: V} (Short: \p{GCB=V}) (95)
    \p{Grapheme_Cluster_Break: XX} \p{Grapheme_Cluster_Break=Other}
-                             (1_094_922)
+                             (1_094_922 plus all above-Unicode code
+                             points)
    \p{Grapheme_Extend}     \p{Grapheme_Extend=Y} (Short: \p{GrExt})
                              (1318)
-   \p{Grapheme_Extend: N*} (Short: \p{GrExt=N}, \P{GrExt}) (1_112_794)
+   \p{Grapheme_Extend: N*} (Short: \p{GrExt=N}, \P{GrExt}) (1_112_794
+                             plus all above-Unicode code points)
    \p{Grapheme_Extend: Y*} (Short: \p{GrExt=Y}, \p{GrExt}) (1318)
    \p{Greek}               \p{Script=Greek} (Short: \p{Grek}; NOT
                              \p{Greek_And_Coptic}) (511)
@@ -2036,9 +2082,11 @@ stable.
    \p{Hangul_Syllable_Type: LVT_Syllable} (Short: \p{Hst=LVT})
                              (10_773)
    \p{Hangul_Syllable_Type: NA} \p{Hangul_Syllable_Type=
-                             Not_Applicable} (1_102_583)
+                             Not_Applicable} (1_102_583 plus all
+                             above-Unicode code points)
    \p{Hangul_Syllable_Type: Not_Applicable} (Short: \p{Hst=NA})
-                             (1_102_583)
+                             (1_102_583 plus all above-Unicode code
+                             points)
    \p{Hangul_Syllable_Type: T} \p{Hangul_Syllable_Type=Trailing_Jamo}
                              (137)
    \p{Hangul_Syllable_Type: Trailing_Jamo} (Short: \p{Hst=T}) (137)
@@ -2059,7 +2107,8 @@ stable.
    \p{Hex}                 \p{XDigit} (= \p{Hex_Digit=Y}) (44)
    \p{Hex: *}              \p{Hex_Digit: *}
    \p{Hex_Digit}           \p{XDigit} (= \p{Hex_Digit=Y}) (44)
-   \p{Hex_Digit: N*}       (Short: \p{Hex=N}, \P{Hex}) (1_114_068)
+   \p{Hex_Digit: N*}       (Short: \p{Hex=N}, \P{Hex}) (1_114_068
+                             plus all above-Unicode code points)
    \p{Hex_Digit: Y*}       (Short: \p{Hex=Y}, \p{Hex}) (44)
  X \p{High_Private_Use_Surrogates} \p{Block=
                              High_Private_Use_Surrogates} (Short:
@@ -2077,17 +2126,20 @@ stable.
  D \p{Hyphen}              \p{Hyphen=Y} (11)
  D \p{Hyphen: N*}          Supplanted by Line_Break property values;
                              see www.unicode.org/reports/tr14
-                             (Single: \P{Hyphen}) (1_114_101)
+                             (Single: \P{Hyphen}) (1_114_101 plus all
+                             above-Unicode code points)
  D \p{Hyphen: Y*}          Supplanted by Line_Break property values;
                              see www.unicode.org/reports/tr14
                              (Single: \p{Hyphen}) (11)
    \p{ID_Continue}         \p{ID_Continue=Y} (Short: \p{IDC}; NOT
                              \p{Ideographic_Description_Characters})
                              (103_355)
-   \p{ID_Continue: N*}     (Short: \p{IDC=N}, \P{IDC}) (1_010_757)
+   \p{ID_Continue: N*}     (Short: \p{IDC=N}, \P{IDC}) (1_010_757
+                             plus all above-Unicode code points)
    \p{ID_Continue: Y*}     (Short: \p{IDC=Y}, \p{IDC}) (103_355)
    \p{ID_Start}            \p{ID_Start=Y} (Short: \p{IDS}) (101_240)
-   \p{ID_Start: N*}        (Short: \p{IDS=N}, \P{IDS}) (1_012_872)
+   \p{ID_Start: N*}        (Short: \p{IDS=N}, \P{IDS}) (1_012_872
+                             plus all above-Unicode code points)
    \p{ID_Start: Y*}        (Short: \p{IDS=Y}, \p{IDS}) (101_240)
    \p{IDC}                 \p{ID_Continue} (= \p{ID_Continue=Y}) (NOT
                              \p{Ideographic_Description_Characters})
@@ -2098,7 +2150,8 @@ stable.
    \p{Ideo: *}             \p{Ideographic: *}
    \p{Ideographic}         \p{Ideographic=Y} (Short: \p{Ideo})
                              (75_633)
-   \p{Ideographic: N*}     (Short: \p{Ideo=N}, \P{Ideo}) (1_038_479)
+   \p{Ideographic: N*}     (Short: \p{Ideo=N}, \P{Ideo}) (1_038_479
+                             plus all above-Unicode code points)
    \p{Ideographic: Y*}     (Short: \p{Ideo=Y}, \p{Ideo}) (75_633)
  X \p{Ideographic_Description_Characters} \p{Block=
                              Ideographic_Description_Characters}
@@ -2108,12 +2161,14 @@ stable.
    \p{IDS_Binary_Operator} \p{IDS_Binary_Operator=Y} (Short:
                              \p{IDSB}) (10)
    \p{IDS_Binary_Operator: N*} (Short: \p{IDSB=N}, \P{IDSB})
-                             (1_114_102)
+                             (1_114_102 plus all above-Unicode code
+                             points)
    \p{IDS_Binary_Operator: Y*} (Short: \p{IDSB=Y}, \p{IDSB}) (10)
    \p{IDS_Trinary_Operator} \p{IDS_Trinary_Operator=Y} (Short:
                              \p{IDST}) (2)
    \p{IDS_Trinary_Operator: N*} (Short: \p{IDST=N}, \P{IDST})
-                             (1_114_110)
+                             (1_114_110 plus all above-Unicode code
+                             points)
    \p{IDS_Trinary_Operator: Y*} (Short: \p{IDST=Y}, \p{IDST}) (2)
    \p{IDSB}                \p{IDS_Binary_Operator} (=
                              \p{IDS_Binary_Operator=Y}) (10)
@@ -2163,7 +2218,8 @@ stable.
    \p{Join_C}              \p{Join_Control} (= \p{Join_Control=Y}) (2)
    \p{Join_C: *}           \p{Join_Control: *}
    \p{Join_Control}        \p{Join_Control=Y} (Short: \p{JoinC}) (2)
-   \p{Join_Control: N*}    (Short: \p{JoinC=N}, \P{JoinC}) (1_114_110)
+   \p{Join_Control: N*}    (Short: \p{JoinC=N}, \P{JoinC}) (1_114_110
+                             plus all above-Unicode code points)
    \p{Join_Control: Y*}    (Short: \p{JoinC=Y}, \p{JoinC}) (2)
    \p{Joining_Group: Ain}  (Short: \p{Jg=Ain}) (7)
    \p{Joining_Group: Alaph} (Short: \p{Jg=Alaph}) (1)
@@ -2197,7 +2253,8 @@ stable.
    \p{Joining_Group: Meem} (Short: \p{Jg=Meem}) (4)
    \p{Joining_Group: Mim}  (Short: \p{Jg=Mim}) (1)
    \p{Joining_Group: No_Joining_Group} (Short: \p{Jg=NoJoiningGroup})
-                             (1_113_870)
+                             (1_113_870 plus all above-Unicode code
+                             points)
    \p{Joining_Group: Noon} (Short: \p{Jg=Noon}) (8)
    \p{Joining_Group: Nun}  (Short: \p{Jg=Nun}) (1)
    \p{Joining_Group: Nya}  (Short: \p{Jg=Nya}) (1)
@@ -2234,12 +2291,14 @@ stable.
    \p{Joining_Type: Join_Causing} (Short: \p{Jt=C}) (4)
    \p{Joining_Type: L}     \p{Joining_Type=Left_Joining} (1)
    \p{Joining_Type: Left_Joining} (Short: \p{Jt=L}) (1)
-   \p{Joining_Type: Non_Joining} (Short: \p{Jt=U}) (1_112_211)
+   \p{Joining_Type: Non_Joining} (Short: \p{Jt=U}) (1_112_211 plus
+                             all above-Unicode code points)
    \p{Joining_Type: R}     \p{Joining_Type=Right_Joining} (82)
    \p{Joining_Type: Right_Joining} (Short: \p{Jt=R}) (82)
    \p{Joining_Type: T}     \p{Joining_Type=Transparent} (1425)
    \p{Joining_Type: Transparent} (Short: \p{Jt=T}) (1425)
-   \p{Joining_Type: U}     \p{Joining_Type=Non_Joining} (1_112_211)
+   \p{Joining_Type: U}     \p{Joining_Type=Non_Joining} (1_112_211
+                             plus all above-Unicode code points)
    \p{Jt: *}               \p{Joining_Type: *}
    \p{Kaithi}              \p{Script=Kaithi} (Short: \p{Kthi}; NOT
                              \p{Block=Kaithi}) (66)
@@ -2413,10 +2472,12 @@ stable.
                              and therefore shouldn't be the basis for
                              line breaking (Short: \p{Lb=SG}) (2048)
    \p{Line_Break: SY}      \p{Line_Break=Break_Symbols} (1)
-   \p{Line_Break: Unknown} (Short: \p{Lb=XX}) (918_311)
+   \p{Line_Break: Unknown} (Short: \p{Lb=XX}) (918_311 plus all
+                             above-Unicode code points)
    \p{Line_Break: WJ}      \p{Line_Break=Word_Joiner} (2)
    \p{Line_Break: Word_Joiner} (Short: \p{Lb=WJ}) (2)
-   \p{Line_Break: XX}      \p{Line_Break=Unknown} (918_311)
+   \p{Line_Break: XX}      \p{Line_Break=Unknown} (918_311 plus all
+                             above-Unicode code points)
    \p{Line_Break: ZW}      \p{Line_Break=ZWSpace} (1)
    \p{Line_Break: ZWSpace} (Short: \p{Lb=ZW}) (1)
    \p{Line_Separator}      \p{General_Category=Line_Separator}
@@ -2440,7 +2501,8 @@ stable.
    \p{Logical_Order_Exception} \p{Logical_Order_Exception=Y} (Short:
                              \p{LOE}) (15)
    \p{Logical_Order_Exception: N*} (Short: \p{LOE=N}, \P{LOE})
-                             (1_114_097)
+                             (1_114_097 plus all above-Unicode code
+                             points)
    \p{Logical_Order_Exception: Y*} (Short: \p{LOE=Y}, \p{LOE}) (15)
  X \p{Low_Surrogates}      \p{Block=Low_Surrogates} (1024)
    \p{Lower}               \p{Lowercase=Y} (/i= Cased=Yes) (1934)
@@ -2448,7 +2510,8 @@ stable.
    \p{Lowercase}           \p{Lower} (= \p{Lowercase=Y}) (/i= Cased=
                              Yes) (1934)
    \p{Lowercase: N*}       (Short: \p{Lower=N}, \P{Lower}; /i= Cased=
-                             No) (1_112_178)
+                             No) (1_112_178 plus all above-Unicode
+                             code points)
    \p{Lowercase: Y*}       (Short: \p{Lower=Y}, \p{Lower}; /i= Cased=
                              Yes) (1934)
    \p{Lowercase_Letter}    \p{General_Category=Lowercase_Letter}
@@ -2484,7 +2547,8 @@ stable.
    \p{Mark}                \p{General_Category=Mark} (Short: \p{M})
                              (1645)
    \p{Math}                \p{Math=Y} (2310)
-   \p{Math: N*}            (Single: \P{Math}) (1_111_802)
+   \p{Math: N*}            (Single: \P{Math}) (1_111_802 plus all
+                             above-Unicode code points)
    \p{Math: Y*}            (Single: \p{Math}) (2310)
  X \p{Math_Alphanum}       \p{Mathematical_Alphanumeric_Symbols} (=
                              \p{Block=
@@ -2589,7 +2653,8 @@ stable.
    \p{N}                   \p{Number} (= \p{General_Category=Number})
                              (1148)
  X \p{NB}                  \p{No_Block} (= \p{Block=No_Block})
-                             (860_672)
+                             (860_672 plus all above-Unicode code
+                             points)
    \p{NChar}               \p{Noncharacter_Code_Point} (=
                              \p{Noncharacter_Code_Point=Y}) (66)
    \p{NChar: *}            \p{Noncharacter_Code_Point: *}
@@ -2608,10 +2673,12 @@ stable.
                              (1120)
    \p{NFC_Quick_Check: Y}  \p{NFC_Quick_Check=Yes} (NOT
                              \p{NFC_Quick_Check} NOR \p{NFC_QC})
-                             (1_112_888)
+                             (1_112_888 plus all above-Unicode code
+                             points)
    \p{NFC_Quick_Check: Yes} (Short: \p{NFCQC=Y}; NOT
                              \p{NFC_Quick_Check} NOR \p{NFC_QC})
-                             (1_112_888)
+                             (1_112_888 plus all above-Unicode code
+                             points)
    \p{NFD_QC: *}           \p{NFD_Quick_Check: *}
    \p{NFD_Quick_Check: N}  \p{NFD_Quick_Check=No} (NOT
                              \P{NFD_Quick_Check} NOR \P{NFD_QC})
@@ -2621,10 +2688,12 @@ stable.
                              (13_225)
    \p{NFD_Quick_Check: Y}  \p{NFD_Quick_Check=Yes} (NOT
                              \p{NFD_Quick_Check} NOR \p{NFD_QC})
-                             (1_100_887)
+                             (1_100_887 plus all above-Unicode code
+                             points)
    \p{NFD_Quick_Check: Yes} (Short: \p{NFDQC=Y}; NOT
                              \p{NFD_Quick_Check} NOR \p{NFD_QC})
-                             (1_100_887)
+                             (1_100_887 plus all above-Unicode code
+                             points)
    \p{NFKC_QC: *}          \p{NFKC_Quick_Check: *}
    \p{NFKC_Quick_Check: M} \p{NFKC_Quick_Check=Maybe} (104)
    \p{NFKC_Quick_Check: Maybe} (Short: \p{NFKCQC=M}) (104)
@@ -2636,10 +2705,12 @@ stable.
                              (4787)
    \p{NFKC_Quick_Check: Y} \p{NFKC_Quick_Check=Yes} (NOT
                              \p{NFKC_Quick_Check} NOR \p{NFKC_QC})
-                             (1_109_221)
+                             (1_109_221 plus all above-Unicode code
+                             points)
    \p{NFKC_Quick_Check: Yes} (Short: \p{NFKCQC=Y}; NOT
                              \p{NFKC_Quick_Check} NOR \p{NFKC_QC})
-                             (1_109_221)
+                             (1_109_221 plus all above-Unicode code
+                             points)
    \p{NFKD_QC: *}          \p{NFKD_Quick_Check: *}
    \p{NFKD_Quick_Check: N} \p{NFKD_Quick_Check=No} (NOT
                              \P{NFKD_Quick_Check} NOR \P{NFKD_QC})
@@ -2649,10 +2720,12 @@ stable.
                              (16_880)
    \p{NFKD_Quick_Check: Y} \p{NFKD_Quick_Check=Yes} (NOT
                              \p{NFKD_Quick_Check} NOR \p{NFKD_QC})
-                             (1_097_232)
+                             (1_097_232 plus all above-Unicode code
+                             points)
    \p{NFKD_Quick_Check: Yes} (Short: \p{NFKDQC=Y}; NOT
                              \p{NFKD_Quick_Check} NOR \p{NFKD_QC})
-                             (1_097_232)
+                             (1_097_232 plus all above-Unicode code
+                             points)
    \p{Nko}                 \p{Script=Nko} (NOT \p{NKo}) (59)
    \p{Nkoo}                \p{Nko} (= \p{Script=Nko}) (NOT \p{NKo})
                              (59)
@@ -2661,11 +2734,13 @@ stable.
    \p{No}                  \p{Other_Number} (= \p{General_Category=
                              Other_Number}) (464)
  X \p{No_Block}            \p{Block=No_Block} (Short: \p{InNB})
-                             (860_672)
+                             (860_672 plus all above-Unicode code
+                             points)
    \p{Noncharacter_Code_Point} \p{Noncharacter_Code_Point=Y} (Short:
                              \p{NChar}) (66)
    \p{Noncharacter_Code_Point: N*} (Short: \p{NChar=N}, \P{NChar})
-                             (1_114_046)
+                             (1_114_046 plus all above-Unicode code
+                             points)
    \p{Noncharacter_Code_Point: Y*} (Short: \p{NChar=Y}, \p{NChar})
                              (66)
    \p{Nonspacing_Mark}     \p{General_Category=Nonspacing_Mark}
@@ -2678,7 +2753,8 @@ stable.
    \p{Numeric_Type: Decimal} (Short: \p{Nt=De}) (460)
    \p{Numeric_Type: Di}    \p{Numeric_Type=Digit} (128)
    \p{Numeric_Type: Digit} (Short: \p{Nt=Di}) (128)
-   \p{Numeric_Type: None}  (Short: \p{Nt=None}) (1_112_883)
+   \p{Numeric_Type: None}  (Short: \p{Nt=None}) (1_112_883 plus all
+                             above-Unicode code points)
    \p{Numeric_Type: Nu}    \p{Numeric_Type=Numeric} (641)
    \p{Numeric_Type: Numeric} (Short: \p{Nt=Nu}) (641)
  T \p{Numeric_Value: -1/2} (Short: \p{Nv=-1/2}) (1)
@@ -2799,7 +2875,8 @@ stable.
                              (2)
  T \p{Numeric_Value: 1000000000000} (= 1.0e+12) (Short: \p{Nv=
                              1000000000000}) (1)
-   \p{Numeric_Value: NaN}  (Short: \p{Nv=NaN}) (1_112_883)
+   \p{Numeric_Value: NaN}  (Short: \p{Nv=NaN}) (1_112_883 plus all
+                             above-Unicode code points)
    \p{Nv: *}               \p{Numeric_Value: *}
  X \p{OCR}                 \p{Optical_Character_Recognition} (=
                              \p{Block=Optical_Character_Recognition})
@@ -2834,7 +2911,8 @@ stable.
    \p{Osmanya}             \p{Script=Osmanya} (Short: \p{Osma}; NOT
                              \p{Block=Osmanya}) (40)
    \p{Other}               \p{General_Category=Other} (Short: \p{C})
-                             (1_004_135)
+                             (1_004_135 plus all above-Unicode code
+                             points)
    \p{Other_Letter}        \p{General_Category=Other_Letter} (Short:
                              \p{Lo}) (97_553)
    \p{Other_Number}        \p{General_Category=Other_Number} (Short:
@@ -2857,12 +2935,14 @@ stable.
    \p{Pattern_Syntax}      \p{Pattern_Syntax=Y} (Short: \p{PatSyn})
                              (2760)
    \p{Pattern_Syntax: N*}  (Short: \p{PatSyn=N}, \P{PatSyn})
-                             (1_111_352)
+                             (1_111_352 plus all above-Unicode code
+                             points)
    \p{Pattern_Syntax: Y*}  (Short: \p{PatSyn=Y}, \p{PatSyn}) (2760)
    \p{Pattern_White_Space} \p{Pattern_White_Space=Y} (Short:
                              \p{PatWS}) (11)
    \p{Pattern_White_Space: N*} (Short: \p{PatWS=N}, \P{PatWS})
-                             (1_114_101)
+                             (1_114_101 plus all above-Unicode code
+                             points)
    \p{Pattern_White_Space: Y*} (Short: \p{PatWS=Y}, \p{PatWS}) (11)
    \p{Pc}                  \p{Connector_Punctuation} (=
                              \p{General_Category=
@@ -2979,7 +3059,8 @@ stable.
                              6.3 or earlier (Short: \p{In=6.3}) (Perl
                              extension) (249_769)
    \p{Present_In: Unassigned} \p{Age=Unassigned} (Short: \p{In=
-                             Unassigned}) (Perl extension) (864_343)
+                             Unassigned}) (Perl extension) (864_343
+                             plus all above-Unicode code points)
    \p{Print}               Characters that are graphical plus space
                              characters (but no controls) (247_588)
    \p{Private_Use}         \p{General_Category=Private_Use} (Short:
@@ -3009,10 +3090,12 @@ stable.
    \p{QMark: *}            \p{Quotation_Mark: *}
    \p{Quotation_Mark}      \p{Quotation_Mark=Y} (Short: \p{QMark})
                              (29)
-   \p{Quotation_Mark: N*}  (Short: \p{QMark=N}, \P{QMark}) (1_114_083)
+   \p{Quotation_Mark: N*}  (Short: \p{QMark=N}, \P{QMark}) (1_114_083
+                             plus all above-Unicode code points)
    \p{Quotation_Mark: Y*}  (Short: \p{QMark=Y}, \p{QMark}) (29)
    \p{Radical}             \p{Radical=Y} (329)
-   \p{Radical: N*}         (Single: \P{Radical}) (1_113_783)
+   \p{Radical: N*}         (Single: \P{Radical}) (1_113_783 plus all
+                             above-Unicode code points)
    \p{Radical: Y*}         (Single: \p{Radical}) (329)
    \p{Rejang}              \p{Script=Rejang} (Short: \p{Rjng}; NOT
                              \p{Block=Rejang}) (37)
@@ -3243,7 +3326,8 @@ stable.
    \p{Script: Tifinagh}    (Short: \p{Sc=Tfng}, \p{Tfng}) (59)
    \p{Script: Ugar}        \p{Script=Ugaritic} (31)
    \p{Script: Ugaritic}    (Short: \p{Sc=Ugar}, \p{Ugar}) (31)
-   \p{Script: Unknown}     (Short: \p{Sc=Zzzz}, \p{Zzzz}) (1_003_925)
+   \p{Script: Unknown}     (Short: \p{Sc=Zzzz}, \p{Zzzz}) (1_003_925
+                             plus all above-Unicode code points)
    \p{Script: Vai}         (Short: \p{Sc=Vai}, \p{Vai}) (300)
    \p{Script: Vaii}        \p{Script=Vai} (300)
    \p{Script: Xpeo}        \p{Script=Old_Persian} (50)
@@ -3252,7 +3336,8 @@ stable.
    \p{Script: Yiii}        \p{Script=Yi} (1220)
    \p{Script: Zinh}        \p{Script=Inherited} (523)
    \p{Script: Zyyy}        \p{Script=Common} (6418)
-   \p{Script: Zzzz}        \p{Script=Unknown} (1_003_925)
+   \p{Script: Zzzz}        \p{Script=Unknown} (1_003_925 plus all
+                             above-Unicode code points)
    \p{Script_Extensions: Arab} \p{Script_Extensions=Arabic} (1263)
    \p{Script_Extensions: Arabic} (Short: \p{Scx=Arab}) (1263)
    \p{Script_Extensions: Armenian} (Short: \p{Scx=Armn}) (92)
@@ -3461,7 +3546,8 @@ stable.
    \p{Script_Extensions: Tifinagh} (Short: \p{Scx=Tfng}) (59)
    \p{Script_Extensions: Ugar} \p{Script_Extensions=Ugaritic} (31)
    \p{Script_Extensions: Ugaritic} (Short: \p{Scx=Ugar}) (31)
-   \p{Script_Extensions: Unknown} (Short: \p{Scx=Zzzz}) (1_003_925)
+   \p{Script_Extensions: Unknown} (Short: \p{Scx=Zzzz}) (1_003_925
+                             plus all above-Unicode code points)
    \p{Script_Extensions: Vai} (Short: \p{Scx=Vai}) (300)
    \p{Script_Extensions: Vaii} \p{Script_Extensions=Vai} (300)
    \p{Script_Extensions: Xpeo} \p{Script_Extensions=Old_Persian} (50)
@@ -3471,7 +3557,8 @@ stable.
    \p{Script_Extensions: Zinh} \p{Script_Extensions=Inherited} (459)
    \p{Script_Extensions: Zyyy} \p{Script_Extensions=Common} (6061)
    \p{Script_Extensions: Zzzz} \p{Script_Extensions=Unknown}
-                             (1_003_925)
+                             (1_003_925 plus all above-Unicode code
+                             points)
    \p{Scx: *}              \p{Script_Extensions: *}
    \p{SD}                  \p{Soft_Dotted} (= \p{Soft_Dotted=Y}) (46)
    \p{SD: *}               \p{Soft_Dotted: *}
@@ -3491,7 +3578,8 @@ stable.
    \p{Sentence_Break: NU}  \p{Sentence_Break=Numeric} (452)
    \p{Sentence_Break: Numeric} (Short: \p{SB=NU}) (452)
    \p{Sentence_Break: OLetter} (Short: \p{SB=LE}) (97_841)
-   \p{Sentence_Break: Other} (Short: \p{SB=XX}) (1_010_264)
+   \p{Sentence_Break: Other} (Short: \p{SB=XX}) (1_010_264 plus all
+                             above-Unicode code points)
    \p{Sentence_Break: SC}  \p{Sentence_Break=SContinue} (26)
    \p{Sentence_Break: SContinue} (Short: \p{SB=SC}) (26)
    \p{Sentence_Break: SE}  \p{Sentence_Break=Sep} (3)
@@ -3501,7 +3589,8 @@ stable.
    \p{Sentence_Break: STerm} (Short: \p{SB=ST}) (80)
    \p{Sentence_Break: UP}  \p{Sentence_Break=Upper} (1514)
    \p{Sentence_Break: Upper} (Short: \p{SB=UP}) (1514)
-   \p{Sentence_Break: XX}  \p{Sentence_Break=Other} (1_010_264)
+   \p{Sentence_Break: XX}  \p{Sentence_Break=Other} (1_010_264 plus
+                             all above-Unicode code points)
    \p{Separator}           \p{General_Category=Separator} (Short:
                              \p{Z}) (19)
    \p{Sharada}             \p{Script=Sharada} (Short: \p{Shrd}; NOT
@@ -3526,7 +3615,8 @@ stable.
    \p{So}                  \p{Other_Symbol} (= \p{General_Category=
                              Other_Symbol}) (4404)
    \p{Soft_Dotted}         \p{Soft_Dotted=Y} (Short: \p{SD}) (46)
-   \p{Soft_Dotted: N*}     (Short: \p{SD=N}, \P{SD}) (1_114_066)
+   \p{Soft_Dotted: N*}     (Short: \p{SD=N}, \P{SD}) (1_114_066 plus
+                             all above-Unicode code points)
    \p{Soft_Dotted: Y*}     (Short: \p{SD=Y}, \p{SD}) (46)
    \p{Sora}                \p{Sora_Sompeng} (= \p{Script=
                              Sora_Sompeng}) (NOT \p{Block=
@@ -3545,7 +3635,8 @@ stable.
                              (Short: \p{InModifierLetters}) (80)
  X \p{Specials}            \p{Block=Specials} (16)
    \p{STerm}               \p{STerm=Y} (83)
-   \p{STerm: N*}           (Single: \P{STerm}) (1_114_029)
+   \p{STerm: N*}           (Single: \P{STerm}) (1_114_029 plus all
+                             above-Unicode code points)
    \p{STerm: Y*}           (Single: \p{STerm}) (83)
    \p{Sund}                \p{Sundanese} (= \p{Script=Sundanese})
                              (NOT \p{Block=Sundanese}) (72)
@@ -3648,7 +3739,8 @@ stable.
    \p{Terminal_Punctuation} \p{Terminal_Punctuation=Y} (Short:
                              \p{Term}) (176)
    \p{Terminal_Punctuation: N*} (Short: \p{Term=N}, \P{Term})
-                             (1_113_936)
+                             (1_113_936 plus all above-Unicode code
+                             points)
    \p{Terminal_Punctuation: Y*} (Short: \p{Term=Y}, \p{Term}) (176)
    \p{Tfng}                \p{Tifinagh} (= \p{Script=Tifinagh}) (NOT
                              \p{Block=Tifinagh}) (59)
@@ -3691,7 +3783,9 @@ stable.
                              \p{Unified_Ideograph=Y}) (74_617)
    \p{UIdeo: *}            \p{Unified_Ideograph: *}
    \p{Unassigned}          \p{General_Category=Unassigned} (Short:
-                             \p{Cn}) (864_409)
+                             \p{Cn}) (864_409 plus all above-Unicode
+                             code points)
+   \p{Unicode}             \p{Any} (1_114_112)
  X \p{Unified_Canadian_Aboriginal_Syllabics} \p{Block=
                              Unified_Canadian_Aboriginal_Syllabics}
                              (Short: \p{InUCAS}) (640)
@@ -3701,16 +3795,19 @@ stable.
    \p{Unified_Ideograph}   \p{Unified_Ideograph=Y} (Short: \p{UIdeo})
                              (74_617)
    \p{Unified_Ideograph: N*} (Short: \p{UIdeo=N}, \P{UIdeo})
-                             (1_039_495)
+                             (1_039_495 plus all above-Unicode code
+                             points)
    \p{Unified_Ideograph: Y*} (Short: \p{UIdeo=Y}, \p{UIdeo}) (74_617)
    \p{Unknown}             \p{Script=Unknown} (Short: \p{Zzzz})
-                             (1_003_925)
+                             (1_003_925 plus all above-Unicode code
+                             points)
    \p{Upper}               \p{Uppercase=Y} (/i= Cased=Yes) (1483)
    \p{Upper: *}            \p{Uppercase: *}
    \p{Uppercase}           \p{Upper} (= \p{Uppercase=Y}) (/i= Cased=
                              Yes) (1483)
    \p{Uppercase: N*}       (Short: \p{Upper=N}, \P{Upper}; /i= Cased=
-                             No) (1_112_629)
+                             No) (1_112_629 plus all above-Unicode
+                             code points)
    \p{Uppercase: Y*}       (Short: \p{Upper=Y}, \p{Upper}; /i= Cased=
                              Yes) (1483)
    \p{Uppercase_Letter}    \p{General_Category=Uppercase_Letter}
@@ -3721,7 +3818,8 @@ stable.
                              Vai}) (300)
    \p{Variation_Selector}  \p{Variation_Selector=Y} (Short: \p{VS};
                              NOT \p{Variation_Selectors}) (259)
-   \p{Variation_Selector: N*} (Short: \p{VS=N}, \P{VS}) (1_113_853)
+   \p{Variation_Selector: N*} (Short: \p{VS=N}, \P{VS}) (1_113_853
+                             plus all above-Unicode code points)
    \p{Variation_Selector: Y*} (Short: \p{VS=Y}, \p{VS}) (259)
  X \p{Variation_Selectors} \p{Block=Variation_Selectors} (Short:
                              \p{InVS}) (16)
@@ -3744,7 +3842,8 @@ stable.
    \p{WB: *}               \p{Word_Break: *}
    \p{White_Space}         \p{White_Space=Y} (Short: \p{WSpace}) (25)
    \p{White_Space: N*}     (Short: \p{Space=N}, \P{WSpace})
-                             (1_114_087)
+                             (1_114_087 plus all above-Unicode code
+                             points)
    \p{White_Space: Y*}     (Short: \p{Space=Y}, \p{WSpace}) (25)
    \p{Word}                \w, including beyond ASCII; = \p{Alnum} +
                              \pM + \p{Pc} (103_406)
@@ -3773,21 +3872,25 @@ stable.
    \p{Word_Break: NL}      \p{Word_Break=Newline} (5)
    \p{Word_Break: NU}      \p{Word_Break=Numeric} (451)
    \p{Word_Break: Numeric} (Short: \p{WB=NU}) (451)
-   \p{Word_Break: Other}   (Short: \p{WB=XX}) (1_086_543)
+   \p{Word_Break: Other}   (Short: \p{WB=XX}) (1_086_543 plus all
+                             above-Unicode code points)
    \p{Word_Break: Regional_Indicator} (Short: \p{WB=RI}) (26)
    \p{Word_Break: RI}      \p{Word_Break=Regional_Indicator} (26)
    \p{Word_Break: Single_Quote} (Short: \p{WB=SQ}) (1)
    \p{Word_Break: SQ}      \p{Word_Break=Single_Quote} (1)
-   \p{Word_Break: XX}      \p{Word_Break=Other} (1_086_543)
+   \p{Word_Break: XX}      \p{Word_Break=Other} (1_086_543 plus all
+                             above-Unicode code points)
    \p{WSpace}              \p{White_Space} (= \p{White_Space=Y}) (25)
    \p{WSpace: *}           \p{White_Space: *}
    \p{XDigit}              \p{Hex_Digit=Y} (Short: \p{Hex}) (44)
    \p{XID_Continue}        \p{XID_Continue=Y} (Short: \p{XIDC})
                              (103_336)
-   \p{XID_Continue: N*}    (Short: \p{XIDC=N}, \P{XIDC}) (1_010_776)
+   \p{XID_Continue: N*}    (Short: \p{XIDC=N}, \P{XIDC}) (1_010_776
+                             plus all above-Unicode code points)
    \p{XID_Continue: Y*}    (Short: \p{XIDC=Y}, \p{XIDC}) (103_336)
    \p{XID_Start}           \p{XID_Start=Y} (Short: \p{XIDS}) (101_217)
-   \p{XID_Start: N*}       (Short: \p{XIDS=N}, \P{XIDS}) (1_012_895)
+   \p{XID_Start: N*}       (Short: \p{XIDS=N}, \P{XIDS}) (1_012_895
+                             plus all above-Unicode code points)
    \p{XID_Start: Y*}       (Short: \p{XIDS=Y}, \p{XIDS}) (101_217)
    \p{XIDC}                \p{XID_Continue} (= \p{XID_Continue=Y})
                              (103_336)
@@ -3839,7 +3942,8 @@ stable.
                              (17)
    \p{Zyyy}                \p{Common} (= \p{Script=Common}) (6418)
    \p{Zzzz}                \p{Unknown} (= \p{Script=Unknown})
-                             (1_003_925)
+                             (1_003_925 plus all above-Unicode code
+                             points)
  TX\p{_CanonDCIJ}          (For internal use by Perl, not necessarily
                              stable) (= \p{Soft_Dotted=Y}) (46)
  TX\p{_Case_Ignorable}     (For internal use by Perl, not necessarily
@@ -3912,12 +4016,15 @@ through \p{} and \P{}>, like B<D> or B<S>.
 
    Age
    AHex                    ASCII_Hex_Digit
-   All                     Any.  (Perl extension)
+   All                     (Perl extension).  All code points,
+                           including those above Unicode.  Same as
+                           qr/./s
    Alnum                   (Perl extension).  Alphabetic and
                            (decimal) Numeric
    Alpha                   Alphabetic
    Alphabetic              (Short: Alpha)
-   Any                     (Perl extension).  [\x{0000}-\x{10FFFF}]
+   Any                     (Perl extension).  All Unicode code
+                           points: [\x{0000}-\x{10FFFF}]
    ASCII                   Block=ASCII.  (Perl extension).
                            [[:ASCII:]]
    ASCII_Hex_Digit         (Short: AHex)
@@ -4117,6 +4224,7 @@ through \p{} and \P{}>, like B<D> or B<S>.
    Titlecase_Mapping       (Short: tc)
    Uc                      Uppercase_Mapping
    UIdeo                   Unified_Ideograph
+   Unicode                 Any.  (Perl extension)
    Unicode_1_Name          (Short: na1)
    Unified_Ideograph       (Short: UIdeo)
    Upper                   Uppercase

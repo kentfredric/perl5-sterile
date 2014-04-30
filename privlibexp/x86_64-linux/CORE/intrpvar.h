@@ -183,7 +183,7 @@ The input record separator - C<$/> in Perl space.
 
 =for apidoc mn|GV*|PL_last_in_gv
 
-The GV which was last used for a filehandle input operation. (C<< <FH> >>)
+The GV which was last used for a filehandle input operation.  (C<< <FH> >>)
 
 =for apidoc mn|GV*|PL_ofsgv
 
@@ -596,7 +596,6 @@ PERLVAR(I, utf8_charname_continue, SV *)
 
 PERLVARA(I, utf8_swash_ptrs, POSIX_SWASH_COUNT, SV *)
 PERLVARA(I, Posix_ptrs, POSIX_CC_COUNT, SV *)
-PERLVARA(I, L1Posix_ptrs, POSIX_CC_COUNT, SV *)
 PERLVARA(I, XPosix_ptrs, POSIX_CC_COUNT, SV *)
 
 PERLVAR(I, last_swash_hv, HV *)
@@ -735,7 +734,7 @@ PERLVAR(I, debug_pad,	struct perl_debug_pad)	/* always needed because of the re 
 /* Hook for File::Glob */
 PERLVARI(I, globhook,	globhook_t, NULL)
 
-/* The last unconditional member of the interpreter structure when 5.19.7 was
+/* The last unconditional member of the interpreter structure when 5.19.8 was
    released. The offset of the end of this is baked into a global variable in 
    any shared perl library which will allow a sanity test in future perl
    releases.  */

@@ -1550,12 +1550,6 @@ C<do BLOCK> does I<not> count as a loop, so the loop control statements
 C<next>, C<last>, or C<redo> cannot be used to leave or restart the block.
 See L<perlsyn> for alternative strategies.
 
-=item do SUBROUTINE(LIST)
-X<do>
-
-This form of subroutine call is deprecated.  SUBROUTINE can be a bareword
-or scalar variable.
-
 =item do EXPR
 X<do>
 
@@ -7889,8 +7883,7 @@ on this.
 Note that C<sysopen> depends on the fdopen() C library function.
 On many Unix systems, fdopen() is known to fail when file descriptors
 exceed a certain value, typically 255.  If you need more file
-descriptors than that, consider rebuilding Perl to use the C<sfio>
-library, or perhaps using the POSIX::open() function.
+descriptors than that, consider using the POSIX::open() function.
 
 See L<perlopentut> for a kinder, gentler explanation of opening files.
 
@@ -9201,8 +9194,6 @@ This method keyword is documented in L<perlobj/"Destructors">.
 
 =item gt
 
-=item if
-
 =item le
 
 =item lt
@@ -9244,6 +9235,8 @@ This keyword is documented in L<perlsub/"Autoloading">.
 =item for
 
 =item foreach
+
+=item if
 
 =item unless
 

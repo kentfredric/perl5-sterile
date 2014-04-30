@@ -25,10 +25,11 @@
 =head1 Handy Values
 
 =for apidoc AmU||Nullch
-Null character pointer. (No longer available when C<PERL_CORE> is defined.)
+Null character pointer.  (No longer available when C<PERL_CORE> is
+defined.)
 
 =for apidoc AmU||Nullsv
-Null SV pointer. (No longer available when C<PERL_CORE> is defined.)
+Null SV pointer.  (No longer available when C<PERL_CORE> is defined.)
 
 =cut
 */
@@ -269,6 +270,16 @@ typedef U64TYPE U64;
 
 #define Ctl(ch) ((ch) & 037)
 
+/* This is a helper macro to avoid preprocessor issues, expanding to an
+ * assert followed by a comma under DEBUGGING (hence the comma operator).  If
+ * we didn't do this, we would get a comma with nothing before it when not
+ * DEBUGGING */
+#ifdef DEBUGGING
+#   define __ASSERT_(statement)  assert(statement),
+#else
+#   define __ASSERT_(statement)
+#endif
+
 /*
 =head1 SV-Body Allocation
 
@@ -420,12 +431,12 @@ the second, C<s2>.  Returns true or false.
 
 =for apidoc Am|bool|strnNE|char* s1|char* s2|STRLEN len
 Test two strings to see if they are different.  The C<len> parameter
-indicates the number of bytes to compare.  Returns true or false. (A
+indicates the number of bytes to compare.  Returns true or false.  (A
 wrapper for C<strncmp>).
 
 =for apidoc Am|bool|strnEQ|char* s1|char* s2|STRLEN len
 Test two strings to see if they are equal.  The C<len> parameter indicates
-the number of bytes to compare.  Returns true or false. (A wrapper for
+the number of bytes to compare.  Returns true or false.  (A wrapper for
 C<strncmp>).
 
 =cut
@@ -1553,11 +1564,22 @@ typedef U32 line_t;
 	} \
 	return a;
 
-/* Converts a hex digit in a string to its numeric value, advancing the
- * pointer.  The input must be known to be 0-9, A-F, or a-f.  In both ASCII and
- * EBCDIC the last 4 bits of the digits are 0-9; and the last 4 bits of A-F and
- * a-f are 1-6, so adding 9 yields 10-15 */
-#define READ_XDIGIT(s)  (0xf & (isDIGIT(*(s)) ? (*(s)++) : (*(s)++ + 9)))
+/* Converts a character known to represent a hexadecimal digit (0-9, A-F, or
+ * a-f) to its numeric value.  READ_XDIGIT's argument is a string pointer,
+ * which is advanced.  The input is validated only by an assert() in DEBUGGING
+ * builds.  In both ASCII and EBCDIC the last 4 bits of the digits are 0-9; and
+ * the last 4 bits of A-F and a-f are 1-6, so adding 9 yields 10-15 */
+#define XDIGIT_VALUE(c) (__ASSERT_(isXDIGIT(c)) (0xf & (isDIGIT(c)        \
+                                                        ? (c)             \
+                                                        : ((c) + 9))))
+#define READ_XDIGIT(s)  (__ASSERT_(isXDIGIT(*s)) (0xf & (isDIGIT(*(s))     \
+                                                        ? (*(s)++)         \
+                                                        : (*(s)++ + 9))))
+
+/* Converts a character known to represent an octal digit (0-7) to its numeric
+ * value.  The input is validated only by an assert() in DEBUGGING builds.  In
+ * both ASCII and EBCDIC the last 3 bits of the octal digits range from 0-7. */
+#define OCTAL_VALUE(c) (__ASSERT_(isOCTAL(c)) (7 & (c)))
 
 /*
 =head1 Memory Management
@@ -1607,7 +1629,8 @@ source, C<dest> is the destination, C<nitems> is the number of items, and
 C<type> is the type.  Can do overlapping moves.  See also C<Copy>.
 
 =for apidoc Am|void *|MoveD|void* src|void* dest|int nitems|type
-Like C<Move> but returns dest. Useful for encouraging compilers to tail-call
+Like C<Move> but returns dest.  Useful
+for encouraging compilers to tail-call
 optimise.
 
 =for apidoc Am|void|Copy|void* src|void* dest|int nitems|type
@@ -1617,7 +1640,8 @@ C<type> is the type.  May fail on overlapping copies.  See also C<Move>.
 
 =for apidoc Am|void *|CopyD|void* src|void* dest|int nitems|type
 
-Like C<Copy> but returns dest. Useful for encouraging compilers to tail-call
+Like C<Copy> but returns dest.  Useful
+for encouraging compilers to tail-call
 optimise.
 
 =for apidoc Am|void|Zero|void* dest|int nitems|type
@@ -1627,7 +1651,8 @@ destination, C<nitems> is the number of items, and C<type> is the type.
 
 =for apidoc Am|void *|ZeroD|void* dest|int nitems|type
 
-Like C<Zero> but returns dest. Useful for encouraging compilers to tail-call
+Like C<Zero> but returns dest.  Useful
+for encouraging compilers to tail-call
 optimise.
 
 =for apidoc Am|void|StructCopy|type *src|type *dest|type

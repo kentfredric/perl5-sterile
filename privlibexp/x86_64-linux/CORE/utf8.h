@@ -364,16 +364,6 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
               I8_TO_NATIVE_UTF8((translate_function(c) & UTF_CONTINUATION_MASK) \
                                  | UTF_CONTINUATION_MARK)
 
-/* This is another helper macro to avoid preprocessor issues, expanding to an
- * assert followed by a comma under DEBUGGING (hence the comma operator).  If
- * we didn't do this, we would get a comma with nothing before it when not
- * DEBUGGING */
-#ifdef DEBUGGING
-#   define __ASSERT_(statement)  assert(statement),
-#else
-#   define __ASSERT_(statement)
-#endif
-
 /* The next two macros should not be used.  They were designed to be usable as
  * the case label of a switch statement, but this doesn't work for EBCDIC.  Use
  * regen/unicode_constants.pl instead */
@@ -457,7 +447,9 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
 #define UTF8_WARN_SUPER		        0x0400	/* points above the legal max */
 
 /* Code points which never were part of the original UTF-8 standard, the first
- * byte of which is a FE or FF on ASCII platforms. */
+ * byte of which is a FE or FF on ASCII platforms. If the first byte is FF, it
+ * will overflow a 32-bit word.  If the first byte is FE, it will overflow a
+ * signed 32-bit word. */
 #define UTF8_DISALLOW_FE_FF		0x0800
 #define UTF8_WARN_FE_FF		        0x1000
 

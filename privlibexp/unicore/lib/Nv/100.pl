@@ -5,28 +5,50 @@
 # !!!!!!!   INTERNAL PERL USE ONLY   !!!!!!!
 # This file is for internal use by core Perl only.  The format and even the
 # name or existence of this file are subject to change without notice.  Don't
-# use it directly.
+# use it directly.  Use Unicode::UCD to access the Unicode character data
+# base.
 
 
 return <<'END';
-0BF1		
-0D71		
-137B		
-216D		
-217D		
-4F70		
-767E		
-964C		
-10119		
-1014B		
-10152		
-1016A		
-103D5		
-1085D		
-10919		
-10A46		
-10B5E		
-10B7E		
-10E72		
-11064		
+V40
+3057
+3058
+3441
+3442
+4987
+4988
+8557
+8558
+8573
+8574
+20336
+20337
+30334
+30335
+38476
+38477
+65817
+65818
+65867
+65868
+65874
+65875
+65898
+65899
+66517
+66518
+67677
+67678
+67865
+67866
+68166
+68167
+68446
+68447
+68478
+68479
+69234
+69235
+69732
+69733
 END

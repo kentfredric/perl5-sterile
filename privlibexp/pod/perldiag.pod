@@ -1426,12 +1426,9 @@ This subroutine cannot be called.
 (F) You had a (sub-)template that ends with a '/'.  There must be
 another template code following the slash.  See L<perlfunc/pack>.
 
-=item Code point 0x%X is not Unicode, all \p{} matches fail; all \P{} matches 
-succeed
-
 =item Code point 0x%X is not Unicode, may not be portable
 
-(S utf8, non_unicode) You had a code point above the Unicode maximum
+(S non_unicode) You had a code point above the Unicode maximum
 of U+10FFFF.
 
 Perl allows strings to contain a superset of Unicode code points, up
@@ -1440,27 +1437,6 @@ but these may not be accepted by other languages/systems.  At one time,
 it was legal in some standards to have code points up to 0x7FFF_FFFF,
 but not higher.  Code points above 0xFFFF_FFFF require larger than a
 32 bit word.
-
-None of the Unicode or Perl-defined properties will match a non-Unicode
-code point.  For example,
-
-    chr(0x7FF_FFFF) =~ /\p{Any}/
-
-will not match, because the code point is not in Unicode.  But
-
-    chr(0x7FF_FFFF) =~ /\P{Any}/
-
-will match.
-
-This may be counterintuitive at times, as both these fail:
-
- chr(0x110000) =~ /\p{ASCII_Hex_Digit=True}/      # Fails.
- chr(0x110000) =~ /\p{ASCII_Hex_Digit=False}/     # Also fails!
-
-and both these succeed:
-
- chr(0x110000) =~ /\P{ASCII_Hex_Digit=True}/      # Succeeds.
- chr(0x110000) =~ /\P{ASCII_Hex_Digit=False}/     # Also succeeds!
 
 =item %s: Command not found
 
@@ -1577,6 +1553,10 @@ valid magic number.
 (F) You had an unpack template indicating a counted-length string, but
 you have also specified an explicit size for the string.  See
 L<perlfunc/pack>.
+
+=for comment
+The following are used in lib/diagnostics.t for testing two =items that
+share the same description.  Changes here need to be propagated to there
 
 =item Deep recursion on anonymous subroutine
 
@@ -1780,6 +1760,14 @@ already been freed.
 
 (W unpack) You have applied the same modifier more than once after a
 type in a pack template.  See L<perlfunc/pack>.
+
+=item each on reference is experimental
+
+(S experimental::autoderef) C<each> with a scalar argument is experimental
+and may change or be removed in a future Perl version.  If you want to
+take the risk of using this feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
 
 =item elseif should be elsif
 
@@ -2532,10 +2520,11 @@ L<perlfunc/sprintf>.
 =item Invalid escape in the specified encoding in regex; marked by
 S<<-- HERE> in m/%s/
 
-(W regexp) The numeric escape (for example C<\xHH>) of value < 256
+(W regexp)(F) The numeric escape (for example C<\xHH>) of value < 256
 didn't correspond to a single character through the conversion
 from the encoding specified by the encoding pragma.
-The escape was replaced with REPLACEMENT CHARACTER (U+FFFD) instead.
+The escape was replaced with REPLACEMENT CHARACTER (U+FFFD)
+instead, except within S<C<(?[   ])>>, where it is a fatal error.
 The S<<-- HERE> shows whereabouts in the regular expression the
 escape was discovered.
 
@@ -2711,6 +2700,14 @@ line.  See L<perlrun> for more details.
 =item Junk on end of regexp in regex m/%s/
 
 (P) The regular expression parser is confused.
+
+=item keys on reference is experimental
+
+(S experimental::autoderef) C<keys> with a scalar argument is experimental
+and may change or be removed in a future Perl version.  If you want to
+take the risk of using this feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
 
 =item Label not found for "last %s"
 
@@ -2916,6 +2913,37 @@ rules and perl was unable to guess how to make more progress.
 (F) Perl thought it was reading UTF-16 encoded character data but while
 doing it Perl met a malformed Unicode surrogate.
 
+=item Matched non-Unicode code point 0x%X against Unicode property; may
+not be portable
+
+(S non_unicode) Perl allows strings to contain a superset of
+Unicode code points; each code point may be as large as what is storable
+in an unsigned integer on your system, but these may not be accepted by
+other languages/systems.  This message occurs when you matched a string
+containing such a code point against a regular expression pattern, and
+the code point was matched against a Unicode property, C<\p{...}> or
+C<\P{...}>.  Unicode properties are only defined on Unicode code points,
+so the result of this match is undefined by Unicode, but Perl (starting
+in v5.20) treats non-Unicode code points as if they were typical
+unassigned Unicode ones, and matched this one accordingly.  Whether a
+given property matches these code points or not is specified in
+L<perluniprops/Properties accessible through \p{} and \P{}>.
+
+This message is suppressed (unless it has been made fatal) if it is
+immaterial to the results of the match if the code point is Unicode or
+not.  For example, the property C<\p{ASCII_Hex_Digit}> only can match
+the 22 characters C<[0-9A-Fa-f]>, so obviously all other code points,
+Unicode or not, won't match it.  (And C<\P{ASCII_Hex_Digit}> will match
+every code point except these 22.)
+
+Getting this message indicates that the outcome of the match arguably
+should have been the opposite of what actually happened.  If you think
+that is the case, you may wish to make the C<non_unicode> warnings
+category fatal; if you agree with Perl's decision, you may wish to turn
+off this category.
+
+See L<perlunicode/Beyond Unicode code points> for more information.
+
 =item %s matches null string many times in regex; marked by S<<-- HERE> in
 m/%s/
 
@@ -3113,13 +3141,28 @@ can happen if you are trying to open a pipe to a command that takes a
 list of arguments, but have forgotten to specify a piped open mode.
 See L<perlfunc/open> for details.
 
+=item mprotect for COW string %p %u failed with %d
+
+(S) You compiled perl with B<-D>PERL_DEBUG_READONLY_COW (see
+L<perlguts/"Copy on Write">), but a shared string buffer
+could not be made read-only.
+
 =item mprotect for %p %u failed with %d
+
+(S) You compiled perl with B<-D>PERL_DEBUG_READONLY_OPS (see L<perlhacktips>),
+but an op tree could not be made read-only.
+
+=item mprotect RW for COW string %p %u failed with %d
+
+(S) You compiled perl with B<-D>PERL_DEBUG_READONLY_COW (see
+L<perlguts/"Copy on Write">), but a read-only shared string
+buffer could not be made mutable.
 
 =item mprotect RW for %p %u failed with %d
 
 (S) You compiled perl with B<-D>PERL_DEBUG_READONLY_OPS (see
-L<perlhacktips>), but an op tree could not be made read-only, or a
-read-only op tree could not be made mutable before freeing the ops.
+L<perlhacktips>), but a read-only op tree could not be made
+mutable before freeing the ops.
 
 =item msg%s not implemented
 
@@ -3661,9 +3704,9 @@ the C<fallback> overloading key is specified to be true.  See L<overload>.
 
 =item Operation "%s" returns its argument for non-Unicode code point 0x%X
 
-(S utf8, non_unicode) You performed an operation requiring Unicode
-semantics on a code point that is not in Unicode, so what it should do
-is not defined.  Perl has chosen to have it do nothing, and warn you.
+(S non_unicode) You performed an operation requiring Unicode semantics
+on a code point that is not in Unicode, so what it should do is not
+defined.  Perl has chosen to have it do nothing, and warn you.
 
 If the operation shown is "ToFold", it means that case-insensitive
 matching in a regular expression was done on the code point.
@@ -3673,12 +3716,12 @@ C<no warnings 'non_unicode';>.
 
 =item Operation "%s" returns its argument for UTF-16 surrogate U+%X
 
-(S utf8, surrogate) You performed an operation requiring Unicode
-semantics on a Unicode surrogate.  Unicode frowns upon the use of
-surrogates for anything but storing strings in UTF-16, but semantics
-are (reluctantly) defined for the surrogates, and they are to do
-nothing for this operation.  Because the use of surrogates can be
-dangerous, Perl warns.
+(S surrogate) You performed an operation requiring Unicode
+semantics on a Unicode surrogate.  Unicode frowns upon the use
+of surrogates for anything but storing strings in UTF-16, but
+semantics are (reluctantly) defined for the surrogates, and
+they are to do nothing for this operation.  Because the use of
+surrogates can be dangerous, Perl warns.
 
 If the operation shown is "ToFold", it means that case-insensitive
 matching in a regular expression was done on the code point.
@@ -4168,7 +4211,15 @@ fine from VMS' perspective, it's probably not what you intended.
 
 (F) The unpack format P must have an explicit size, not "*".
 
-=item POSIX class [:%s:] unknown in regex; marked by S<<-- HERE> in m/%s/
+=item pop on reference is experimental
+
+(S experimental::autoderef) C<pop> with a scalar argument is experimental
+and may change or be removed in a future Perl version.  If you want to
+take the risk of using this feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
+
+=item POSIX class [:%s:] unknown in regex; marked by S<< <-- HERE in m/%s/ >>
 
 (F) The class in the character class [: :] syntax is unknown.  The S<<-- HERE>
 shows whereabouts in the regular expression the problem was discovered.
@@ -4426,7 +4477,15 @@ is true for "LATIN SMALL LETTER Y WITH DIAERESIS", but since the upper
 case of that character is not in Latin1, in that locale it doesn't
 change when upper cased.
 
-=item Quantifier follows nothing in regex; marked by S<<-- HERE> in m/%s/
+=item push on reference is experimental
+
+(S experimental::autoderef) C<push> with a scalar argument is experimental
+and may change or be removed in a future Perl version.  If you want to
+take the risk of using this feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
+
+=item Quantifier follows nothing in regex; marked by S<< <-- HERE in m/%s/ >>
 
 (F) You started a regular expression with a quantifier.  Backslash it if
 you meant it literally.  The S<<-- HERE> shows whereabouts in the regular
@@ -4882,6 +4941,14 @@ didn't think so.
 forget to check the return value of your socket() call?  See
 L<perlfunc/setsockopt>.
 
+=item shift on reference is experimental
+
+(S experimental::autoderef) C<shift> with a scalar argument is experimental
+and may change or be removed in a future Perl version.  If you want to
+take the risk of using this feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
+
 =item shm%s not implemented
 
 (F) You don't have System V shared memory IPC on your system.
@@ -4965,6 +5032,15 @@ the array passed to splice().  Splicing will instead commence at the
 end of the array, rather than past it.  If this isn't what you want,
 try explicitly pre-extending the array by assigning $#array = $offset.
 See L<perlfunc/splice>.
+
+=item splice on reference is experimental
+
+(S experimental::autoderef) C<splice> with a scalar argument
+is experimental and may change or be removed in a future
+Perl version.  If you want to take the risk of using this
+feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
 
 =item Split loop
 
@@ -5566,7 +5642,7 @@ with the characters in the Lao and Thai scripts.
 
 =item Unicode non-character U+%X is illegal for open interchange
 
-(S utf8, nonchar) Certain codepoints, such as U+FFFE and U+FFFF, are
+(S nonchar) Certain codepoints, such as U+FFFE and U+FFFF, are
 defined by the Unicode standard to be non-characters.  Those are
 legal codepoints, but are reserved for internal use; so, applications
 shouldn't attempt to exchange them.  If you know what you are doing
@@ -5574,7 +5650,7 @@ you can turn off this warning by C<no warnings 'nonchar';>.
 
 =item Unicode surrogate U+%X is illegal in UTF-8
 
-(S utf8, surrogate) You had a UTF-16 surrogate in a context where they are
+(S surrogate) You had a UTF-16 surrogate in a context where they are
 not considered acceptable.  These code points, between U+D800 and
 U+DFFF (inclusive), are used by Unicode only for UTF-16.  However, Perl
 internally allows all unsigned integer code points (up to the size limit
@@ -5782,6 +5858,15 @@ on your system.
 (F) You specified an illegal option to Perl.  Don't do that.  (If you
 think you didn't do that, check the #! line to see if it's supplying the
 bad switch on your behalf.)
+
+=item unshift on reference is experimental
+
+(S experimental::autoderef) C<unshift> with a scalar argument
+is experimental and may change or be removed in a future
+Perl version.  If you want to take the risk of using this
+feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
 
 =item Unsuccessful %s on filename containing newline
 
@@ -6303,7 +6388,7 @@ modified string is usually not particularly useful.)
 
 =item UTF-16 surrogate U+%X
 
-(S utf8, surrogate) You had a UTF-16 surrogate in a context where they are
+(S surrogate) You had a UTF-16 surrogate in a context where they are
 not considered acceptable.  These code points, between U+D800 and
 U+DFFF (inclusive), are used by Unicode only for UTF-16.  However, Perl
 internally allows all unsigned integer code points (up to the size limit
@@ -6327,6 +6412,15 @@ C<defined> operator.
 %ENV element from a CLI symbol table, and found a resultant string
 longer than 1024 characters.  The return value has been truncated to
 1024 characters.
+
+=item values on reference is experimental
+
+(S experimental::autoderef) C<values> with a scalar argument
+is experimental and may change or be removed in a future
+Perl version.  If you want to take the risk of using this
+feature, simply disable this warning:
+
+    no warnings "experimental::autoderef";
 
 =item Variable "%s" is not available
 

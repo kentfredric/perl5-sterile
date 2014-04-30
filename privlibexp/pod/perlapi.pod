@@ -66,7 +66,7 @@ X<GIMME_V>
 
 The XSUB-writer's equivalent to Perl's C<wantarray>.  Returns C<G_VOID>,
 C<G_SCALAR> or C<G_ARRAY> for void, scalar or list context,
-respectively. See L<perlcall> for a usage example.
+respectively.  See L<perlcall> for a usage example.
 
 	U32	GIMME_V
 
@@ -340,7 +340,7 @@ X<av_store>
 Stores an SV in an array.  The array index is specified as C<key>.  The
 return value will be NULL if the operation failed or if the value did not
 need to be actually stored within the array (as in the case of tied
-arrays). Otherwise, it can be dereferenced
+arrays).  Otherwise, it can be dereferenced
 to get the C<SV*> that was stored
 there (= C<val>)).
 
@@ -414,7 +414,7 @@ X<get_av>
 
 Returns the AV of the specified Perl global or package array with the given
 name (so it won't work on lexical variables).  C<flags> are passed 
-to C<gv_fetchpv>. If C<GV_ADD> is set and the
+to C<gv_fetchpv>.  If C<GV_ADD> is set and the
 Perl variable does not exist then it will be created.  If C<flags> is zero
 and the variable does not exist then NULL is returned.
 
@@ -442,11 +442,11 @@ Found in file av.h
 =item sortsv
 X<sortsv>
 
-Sort an array. Here is an example:
+Sort an array.  Here is an example:
 
     sortsv(AvARRAY(av), av_top_index(av)+1, Perl_sv_cmp_locale);
 
-Currently this always uses mergesort. See sortsv_flags for a more
+Currently this always uses mergesort.  See sortsv_flags for a more
 flexible routine.
 
 	void	sortsv(SV** array, size_t num_elts,
@@ -477,7 +477,8 @@ Found in file pp_sort.c
 X<call_argv>
 
 Performs a callback to the specified named and package-scoped Perl subroutine 
-with C<argv> (a NULL-terminated array of strings) as arguments. See L<perlcall>.
+with C<argv> (a NULL-terminated array of strings) as arguments.  See
+L<perlcall>.
 
 Approximate Perl equivalent: C<&{"$sub_name"}(@$argv)>.
 
@@ -552,8 +553,8 @@ Found in file perl.c
 =item eval_sv
 X<eval_sv>
 
-Tells Perl to C<eval> the string in the SV. It supports the same flags
-as C<call_sv>, with the obvious exception of G_EVAL. See L<perlcall>.
+Tells Perl to C<eval> the string in the SV.  It supports the same flags
+as C<call_sv>, with the obvious exception of G_EVAL.  See L<perlcall>.
 
 NOTE: the perl_ form of this function is deprecated.
 
@@ -1234,7 +1235,7 @@ removed without notice.
 
 
 Temporarily disable an entry in this BHK structure, by clearing the
-appropriate flag. I<which> is a preprocessor token indicating which
+appropriate flag.  I<which> is a preprocessor token indicating which
 entry to disable.
 
 	void	BhkDISABLE(BHK *hk, which)
@@ -1251,7 +1252,7 @@ removed without notice.
 
 
 Re-enable an entry in this BHK structure, by setting the appropriate
-flag. I<which> is a preprocessor token indicating which entry to enable.
+flag.  I<which> is a preprocessor token indicating which entry to enable.
 This will assert (under -DDEBUGGING) if the entry doesn't contain a valid
 pointer.
 
@@ -1269,7 +1270,7 @@ removed without notice.
 
 
 Set an entry in the BHK structure, and set the flags to indicate it is
-valid. I<which> is a preprocessing token indicating which entry to set.
+valid.  I<which> is a preprocessing token indicating which entry to set.
 The type of I<ptr> depends on the entry.
 
 	void	BhkENTRY_set(BHK *hk, which, void *ptr)
@@ -1286,7 +1287,7 @@ removed without notice.
 
 
 Register a set of hooks to be called when the Perl lexical scope changes
-at compile time. See L<perlguts/"Compile-time scope hooks">.
+at compile time.  See L<perlguts/"Compile-time scope hooks">.
 
 NOTE: this function must be explicitly called as Perl_blockhook_register with an aTHX_ parameter.
 
@@ -1690,7 +1691,7 @@ Found in file cop.h
 =item custom_op_register
 X<custom_op_register>
 
-Register a custom op. See L<perlguts/"Custom Operators">.
+Register a custom op.  See L<perlguts/"Custom Operators">.
 
 NOTE: this function must be explicitly called as Perl_custom_op_register with an aTHX_ parameter.
 
@@ -1704,9 +1705,10 @@ Found in file op.c
 =item custom_op_xop
 X<custom_op_xop>
 
-Return the XOP structure for a given custom op. This macro should be
+Return the XOP structure for a given custom op.  This macro should be
 considered internal to OP_NAME and the other access macros: use them instead.
-This macro does call a function. Prior to 5.19.7, this was implemented as a
+This macro does call a function.  Prior
+to 5.19.8, this was implemented as a
 function.
 
 NOTE: this function must be explicitly called as Perl_custom_op_xop with an aTHX_ parameter.
@@ -1739,10 +1741,11 @@ Found in file op.h
 =item XopENTRY
 X<XopENTRY>
 
-Return a member of the XOP structure. I<which> is a cpp token indicating
-which entry to return. If the member is not set this will return a
-default value. The return type depends on I<which>. This macro evaluates its
-arguments more than once. If you are using C<Perl_custom_op_xop> to retreive a
+Return a member of the XOP structure.  I<which> is a cpp token
+indicating which entry to return.  If the member is not set
+this will return a default value.  The return type depends
+on I<which>.  This macro evaluates its arguments more than
+once.  If you are using C<Perl_custom_op_xop> to retreive a
 C<XOP *> from a C<OP *>, use the more efficient L</XopENTRYCUSTOM> instead.
 
 		XopENTRY(XOP *xop, which)
@@ -1754,7 +1757,7 @@ Found in file op.h
 X<XopENTRYCUSTOM>
 
 Exactly like C<XopENTRY(XopENTRY(Perl_custom_op_xop(aTHX_ o), which)> but more
-efficient. The I<which> parameter is identical to L</XopENTRY>.
+efficient.  The I<which> parameter is identical to L</XopENTRY>.
 
 		XopENTRYCUSTOM(const OP *o, which)
 
@@ -1764,9 +1767,10 @@ Found in file op.h
 =item XopENTRY_set
 X<XopENTRY_set>
 
-Set a member of the XOP structure. I<which> is a cpp token indicating
-which entry to set. See L<perlguts/"Custom Operators"> for details about
-the available members and how they are used. This macro evaluates its argument
+Set a member of the XOP structure.  I<which> is a cpp token
+indicating which entry to set.  See L<perlguts/"Custom Operators">
+for details about the available members and how
+they are used.  This macro evaluates its argument
 more than once.
 
 	void	XopENTRY_set(XOP *xop, which, value)
@@ -1794,7 +1798,7 @@ Found in file op.h
 =item CvSTASH
 X<CvSTASH>
 
-Returns the stash of the CV. A stash is the symbol table hash, containing
+Returns the stash of the CV.  A stash is the symbol table hash, containing
 the package-scoped variables in the package where the subroutine was defined.
 For more information, see L<perlguts>.
 
@@ -1822,7 +1826,7 @@ Found in file perl.c
 X<get_cvn_flags>
 
 Returns the CV of the specified Perl subroutine.  C<flags> are passed to
-C<gv_fetchpvn_flags>. If C<GV_ADD> is set and the Perl subroutine does not
+C<gv_fetchpvn_flags>.  If C<GV_ADD> is set and the Perl subroutine does not
 exist then it will be declared (which has the same effect as saying
 C<sub name;>).  If C<GV_ADD> is not set and the subroutine does not exist
 then NULL is returned.
@@ -1834,6 +1838,57 @@ NOTE: the perl_ form of this function is deprecated.
 
 =for hackers
 Found in file perl.c
+
+
+=back
+
+=head1 Debugging Utilities
+
+=over 8
+
+=item dump_all
+X<dump_all>
+
+Dumps the entire optree of the current program starting at C<PL_main_root> to 
+C<STDERR>.  Also dumps the optrees for all visible subroutines in
+C<PL_defstash>.
+
+	void	dump_all()
+
+=for hackers
+Found in file dump.c
+
+=item dump_packsubs
+X<dump_packsubs>
+
+Dumps the optrees for all visible subroutines in C<stash>.
+
+	void	dump_packsubs(const HV* stash)
+
+=for hackers
+Found in file dump.c
+
+=item op_dump
+X<op_dump>
+
+Dumps the optree starting at OP C<o> to C<STDERR>.
+
+	void	op_dump(const OP *o)
+
+=for hackers
+Found in file dump.c
+
+=item sv_dump
+X<sv_dump>
+
+Dumps the contents of an SV to the C<STDERR> filehandle.
+
+For an example of its output, see L<Devel::Peek>.
+
+	void	sv_dump(SV* sv)
+
+=for hackers
+Found in file dump.c
 
 
 =back
@@ -1859,7 +1914,7 @@ Found in file pad.c
 =item cv_undef
 X<cv_undef>
 
-Clear out all the active components of a CV. This can happen either
+Clear out all the active components of a CV.  This can happen either
 by an explicit C<undef &foo>, or by the reference count going to zero.
 In the former case, we keep the CvOUTSIDE pointer, so that any anonymous
 children can still follow the full lexical scope chain.
@@ -1910,7 +1965,8 @@ Loads the module whose name is pointed to by the string part of name.
 Note that the actual module name, not its filename, should be given.
 Eg, "Foo::Bar" instead of "Foo/Bar.pm".  flags can be any of
 PERL_LOADMOD_DENY, PERL_LOADMOD_NOIMPORT, or PERL_LOADMOD_IMPORT_OPS
-(or 0 for no flags). ver, if specified and not NULL, provides version semantics
+(or 0 for no flags).  ver, if specified
+and not NULL, provides version semantics
 similar to C<use Foo::Bar VERSION>.  The optional trailing SV*
 arguments can be used to specify arguments to the module's import()
 method, similar to C<use Foo::Bar VERSION LIST>.  They must be
@@ -2258,18 +2314,19 @@ If PERL_PV_ESCAPE_ALL is set then all input chars will be output
 using C<\x01F1> style escapes, otherwise if PERL_PV_ESCAPE_NONASCII is set, only
 non-ASCII chars will be escaped using this style; otherwise, only chars above
 255 will be so escaped; other non printable chars will use octal or
-common escaped patterns like C<\n>. Otherwise, if PERL_PV_ESCAPE_NOBACKSLASH
+common escaped patterns like C<\n>.
+Otherwise, if PERL_PV_ESCAPE_NOBACKSLASH
 then all chars below 255 will be treated as printable and
 will be output as literals.
 
 If PERL_PV_ESCAPE_FIRSTCHAR is set then only the first char of the
-string will be escaped, regardless of max. If the output is to be in hex,
+string will be escaped, regardless of max.  If the output is to be in hex,
 then it will be returned as a plain hex
-sequence. Thus the output will either be a single char,
+sequence.  Thus the output will either be a single char,
 an octal escape sequence, a special escape like C<\n> or a hex value.
 
 If PERL_PV_ESCAPE_RE is set then the escape char used will be a '%' and
-not a '\\'. This is because regexes very often contain backslashed
+not a '\\'.  This is because regexes very often contain backslashed
 sequences, whereas '%' is not a particularly common character in patterns.
 
 Returns a pointer to the escaped text as held by dsv.
@@ -2289,16 +2346,16 @@ Converts a string into something presentable, handling escaping via
 pv_escape() and supporting quoting and ellipses.
 
 If the PERL_PV_PRETTY_QUOTE flag is set then the result will be 
-double quoted with any double quotes in the string escaped. Otherwise
+double quoted with any double quotes in the string escaped.  Otherwise
 if the PERL_PV_PRETTY_LTGT flag is set then the result be wrapped in
 angle brackets. 
 
 If the PERL_PV_PRETTY_ELLIPSES flag is set and not all characters in
 string were output then an ellipsis C<...> will be appended to the
-string. Note that this happens AFTER it has been quoted.
+string.  Note that this happens AFTER it has been quoted.
 
 If start_color is non-null then it will be inserted after the opening
-quote (if there is one) but before the escaped text. If end_color
+quote (if there is one) but before the escaped text.  If end_color
 is non-null then it will be inserted after the escaped text but before
 any quotes or ellipses.
 
@@ -2349,7 +2406,7 @@ Found in file inline.h
 =item custom_op_desc
 X<custom_op_desc>
 
-Return the description of a given custom op. This was once used by the
+Return the description of a given custom op.  This was once used by the
 OP_DESC macro, but is no longer: it has only been kept for
 compatibility, and should not be used.
 
@@ -2361,7 +2418,7 @@ Found in file mathoms.c
 =item custom_op_name
 X<custom_op_name>
 
-Return the name for a given custom op. This was once used by the OP_NAME
+Return the name for a given custom op.  This was once used by the OP_NAME
 macro, but is no longer: it has only been kept for compatibility, and
 should not be used.
 
@@ -2383,8 +2440,9 @@ Found in file mathoms.c
 =item pack_cat
 X<pack_cat>
 
-The engine implementing pack() Perl function. Note: parameters next_in_list and
-flags are not used. This call should not be used; use packlist instead.
+The engine implementing pack() Perl function.  Note: parameters
+next_in_list and flags are not used.  This call should not be used; use
+packlist instead.
 
 	void	pack_cat(SV *cat, const char *pat,
 		         const char *patend, SV **beglist,
@@ -2423,7 +2481,7 @@ Found in file mathoms.c
 =item sv_2pv_nolen
 X<sv_2pv_nolen>
 
-Like C<sv_2pv()>, but doesn't return the length too. You should usually
+Like C<sv_2pv()>, but doesn't return the length too.  You should usually
 use the macro wrapper C<SvPV_nolen(sv)> instead.
 
 	char*	sv_2pv_nolen(SV* sv)
@@ -2457,7 +2515,7 @@ X<sv_force_normal>
 
 Undo various types of fakery on an SV: if the PV is a shared string, make
 a private copy; if we're a ref, stop refing; if we're a glob, downgrade to
-an xpvmg. See also C<sv_force_normal_flags>.
+an xpvmg.  See also C<sv_force_normal_flags>.
 
 	void	sv_force_normal(SV *sv)
 
@@ -2468,7 +2526,7 @@ Found in file mathoms.c
 X<sv_iv>
 
 A private implementation of the C<SvIVx> macro for compilers which can't
-cope with complex macro expressions. Always use the macro instead.
+cope with complex macro expressions.  Always use the macro instead.
 
 	IV	sv_iv(SV* sv)
 
@@ -2507,7 +2565,7 @@ Found in file mathoms.c
 X<sv_nv>
 
 A private implementation of the C<SvNVx> macro for compilers which can't
-cope with complex macro expressions. Always use the macro instead.
+cope with complex macro expressions.  Always use the macro instead.
 
 	NV	sv_nv(SV* sv)
 
@@ -2538,7 +2596,7 @@ Found in file mathoms.c
 X<sv_pvbyten>
 
 A private implementation of the C<SvPVbyte> macro for compilers
-which can't cope with complex macro expressions. Always use the macro
+which can't cope with complex macro expressions.  Always use the macro
 instead.
 
 	char*	sv_pvbyten(SV *sv, STRLEN *lp)
@@ -2550,7 +2608,7 @@ Found in file mathoms.c
 X<sv_pvn>
 
 A private implementation of the C<SvPV> macro for compilers which can't
-cope with complex macro expressions. Always use the macro instead.
+cope with complex macro expressions.  Always use the macro instead.
 
 	char*	sv_pvn(SV *sv, STRLEN *lp)
 
@@ -2571,7 +2629,7 @@ Found in file mathoms.c
 X<sv_pvutf8n>
 
 A private implementation of the C<SvPVutf8> macro for compilers
-which can't cope with complex macro expressions. Always use the macro
+which can't cope with complex macro expressions.  Always use the macro
 instead.
 
 	char*	sv_pvutf8n(SV *sv, STRLEN *lp)
@@ -2582,7 +2640,7 @@ Found in file mathoms.c
 =item sv_taint
 X<sv_taint>
 
-Taint an SV. Use C<SvTAINTED_on> instead.
+Taint an SV.  Use C<SvTAINTED_on> instead.
 
 	void	sv_taint(SV* sv)
 
@@ -2605,9 +2663,9 @@ Found in file mathoms.c
 =item sv_usepvn
 X<sv_usepvn>
 
-Tells an SV to use C<ptr> to find its string value. Implemented by
+Tells an SV to use C<ptr> to find its string value.  Implemented by
 calling C<sv_usepvn_flags> with C<flags> of 0, hence does not handle 'set'
-magic. See C<sv_usepvn_flags>.
+magic.  See C<sv_usepvn_flags>.
 
 	void	sv_usepvn(SV* sv, char* ptr, STRLEN len)
 
@@ -2628,7 +2686,7 @@ Found in file mathoms.c
 X<sv_uv>
 
 A private implementation of the C<SvUVx> macro for compilers which can't
-cope with complex macro expressions. Always use the macro instead.
+cope with complex macro expressions.  Always use the macro instead.
 
 	UV	sv_uv(SV* sv)
 
@@ -2638,8 +2696,9 @@ Found in file mathoms.c
 =item unpack_str
 X<unpack_str>
 
-The engine implementing unpack() Perl function. Note: parameters strbeg, new_s
-and ocnt are not used. This call should not be used, use unpackstring instead.
+The engine implementing unpack() Perl function.  Note: parameters strbeg,
+new_s and ocnt are not used.  This call should not be used, use
+unpackstring instead.
 
 	I32	unpack_str(const char *pat, const char *patend,
 		           const char *s, const char *strbeg,
@@ -2698,7 +2757,7 @@ Found in file op.c
 X<PERL_SYS_INIT>
 
 Provides system-specific tune up of the C runtime environment necessary to
-run Perl interpreters. This should be called only once, before creating
+run Perl interpreters.  This should be called only once, before creating
 any Perl interpreters.
 
 	void	PERL_SYS_INIT(int *argc, char*** argv)
@@ -2710,7 +2769,7 @@ Found in file perl.h
 X<PERL_SYS_INIT3>
 
 Provides system-specific tune up of the C runtime environment necessary to
-run Perl interpreters. This should be called only once, before creating
+run Perl interpreters.  This should be called only once, before creating
 any Perl interpreters.
 
 	void	PERL_SYS_INIT3(int *argc, char*** argv,
@@ -2723,7 +2782,7 @@ Found in file perl.h
 X<PERL_SYS_TERM>
 
 Provides system-specific clean up of the C runtime environment after
-running Perl interpreters. This should be called only once, after
+running Perl interpreters.  This should be called only once, after
 freeing any remaining Perl interpreters.
 
 	void	PERL_SYS_TERM()
@@ -2742,17 +2801,17 @@ Found in file perl.h
 =item caller_cx
 X<caller_cx>
 
-The XSUB-writer's equivalent of L<caller()|perlfunc/caller>. The
+The XSUB-writer's equivalent of L<caller()|perlfunc/caller>.  The
 returned C<PERL_CONTEXT> structure can be interrogated to find all the
-information returned to Perl by C<caller>. Note that XSUBs don't get a
+information returned to Perl by C<caller>.  Note that XSUBs don't get a
 stack frame, so C<caller_cx(0, NULL)> will return information for the
 immediately-surrounding Perl code.
 
 This function skips over the automatic calls to C<&DB::sub> made on the
-behalf of the debugger. If the stack frame requested was a sub called by
+behalf of the debugger.  If the stack frame requested was a sub called by
 C<DB::sub>, the return value will be the frame for the call to
 C<DB::sub>, since that has the correct line number/etc. for the call
-site. If I<dbcxp> is non-C<NULL>, it will be set to a pointer to the
+site.  If I<dbcxp> is non-C<NULL>, it will be set to a pointer to the
 frame for the sub call itself.
 
 	const PERL_CONTEXT * caller_cx(
@@ -2769,8 +2828,8 @@ X<find_runcv>
 Locate the CV corresponding to the currently executing sub or eval.
 If db_seqp is non_null, skip CVs that are in the DB package and populate
 *db_seqp with the cop sequence number at the point that the DB:: code was
-entered. (allows debuggers to eval in the scope of the breakpoint rather
-than in the scope of the debugger itself).
+entered.  (This allows debuggers to eval in the scope of the breakpoint
+rather than in the scope of the debugger itself.)
 
 	CV*	find_runcv(U32 *db_seqp)
 
@@ -2805,7 +2864,7 @@ The engine implementing the unpack() Perl function.
 Using the template pat..patend, this function unpacks the string
 s..strend into a number of mortal SVs, which it pushes onto the perl
 argument (@_) stack (so you will need to issue a C<PUTBACK> before and
-C<SPAGAIN> after the call to this function). It returns the number of
+C<SPAGAIN> after the call to this function).  It returns the number of
 pushed elements.
 
 The strend and patend pointers should point to the byte following the last
@@ -2835,7 +2894,7 @@ Found in file pp_pack.c
 X<setdefout>
 
 Sets PL_defoutgv, the default file handle for output, to the passed in
-typeglob. As PL_defoutgv "owns" a reference on its typeglob, the reference
+typeglob.  As PL_defoutgv "owns" a reference on its typeglob, the reference
 count of the passed in typeglob is increased by one, and the reference count
 of the typeglob that PL_defoutgv points to is decreased by one.
 
@@ -2892,6 +2951,165 @@ This is a synonym for (! foldEQ_locale())
 
 =for hackers
 Found in file util.h
+
+
+=back
+
+=head1 Functions in file vutil.c
+
+
+=over 8
+
+=item new_version
+X<new_version>
+
+Returns a new version object based on the passed in SV:
+
+    SV *sv = new_version(SV *ver);
+
+Does not alter the passed in ver SV.  See "upg_version" if you
+want to upgrade the SV.
+
+	SV*	new_version(SV *ver)
+
+=for hackers
+Found in file vutil.c
+
+=item prescan_version
+X<prescan_version>
+
+Validate that a given string can be parsed as a version object, but doesn't
+actually perform the parsing.  Can use either strict or lax validation rules.
+Can optionally set a number of hint variables to save the parsing code
+some time when tokenizing.
+
+	const char* prescan_version(const char *s, bool strict,
+	                            const char** errstr,
+	                            bool *sqv,
+	                            int *ssaw_decimal,
+	                            int *swidth, bool *salpha)
+
+=for hackers
+Found in file vutil.c
+
+=item scan_version
+X<scan_version>
+
+Returns a pointer to the next character after the parsed
+version string, as well as upgrading the passed in SV to
+an RV.
+
+Function must be called with an already existing SV like
+
+    sv = newSV(0);
+    s = scan_version(s, SV *sv, bool qv);
+
+Performs some preprocessing to the string to ensure that
+it has the correct characteristics of a version.  Flags the
+object if it contains an underscore (which denotes this
+is an alpha version).  The boolean qv denotes that the version
+should be interpreted as if it had multiple decimals, even if
+it doesn't.
+
+	const char* scan_version(const char *s, SV *rv, bool qv)
+
+=for hackers
+Found in file vutil.c
+
+=item upg_version
+X<upg_version>
+
+In-place upgrade of the supplied SV to a version object.
+
+    SV *sv = upg_version(SV *sv, bool qv);
+
+Returns a pointer to the upgraded SV.  Set the boolean qv if you want
+to force this SV to be interpreted as an "extended" version.
+
+	SV*	upg_version(SV *ver, bool qv)
+
+=for hackers
+Found in file vutil.c
+
+=item vcmp
+X<vcmp>
+
+Version object aware cmp.  Both operands must already have been 
+converted into version objects.
+
+	int	vcmp(SV *lhv, SV *rhv)
+
+=for hackers
+Found in file vutil.c
+
+=item vnormal
+X<vnormal>
+
+Accepts a version object and returns the normalized string
+representation.  Call like:
+
+    sv = vnormal(rv);
+
+NOTE: you can pass either the object directly or the SV
+contained within the RV.
+
+The SV returned has a refcount of 1.
+
+	SV*	vnormal(SV *vs)
+
+=for hackers
+Found in file vutil.c
+
+=item vnumify
+X<vnumify>
+
+Accepts a version object and returns the normalized floating
+point representation.  Call like:
+
+    sv = vnumify(rv);
+
+NOTE: you can pass either the object directly or the SV
+contained within the RV.
+
+The SV returned has a refcount of 1.
+
+	SV*	vnumify(SV *vs)
+
+=for hackers
+Found in file vutil.c
+
+=item vstringify
+X<vstringify>
+
+In order to maintain maximum compatibility with earlier versions
+of Perl, this function will return either the floating point
+notation or the multiple dotted notation, depending on whether
+the original version contained 1 or more dots, respectively.
+
+The SV returned has a refcount of 1.
+
+	SV*	vstringify(SV *vs)
+
+=for hackers
+Found in file vutil.c
+
+=item vverify
+X<vverify>
+
+Validates that the SV contains valid internal structure for a version object.
+It may be passed either the version object (RV) or the hash itself (HV).  If
+the structure is valid, it returns the HV.  If the structure is invalid,
+it returns NULL.
+
+    SV *hv = vverify(sv);
+
+Note that it only confirms the bare minimum structure (so as not to get
+confused by derived classes which may contain additional hash entries):
+
+	SV*	vverify(SV *vs)
+
+=for hackers
+Found in file vutil.c
 
 
 =back
@@ -3350,7 +3568,8 @@ Found in file av.h
 =item Nullch
 X<Nullch>
 
-Null character pointer. (No longer available when C<PERL_CORE> is defined.)
+Null character pointer.  (No longer available when C<PERL_CORE> is
+defined.)
 
 =for hackers
 Found in file handy.h
@@ -3378,7 +3597,7 @@ Found in file hv.h
 =item Nullsv
 X<Nullsv>
 
-Null SV pointer. (No longer available when C<PERL_CORE> is defined.)
+Null SV pointer.  (No longer available when C<PERL_CORE> is defined.)
 
 =for hackers
 Found in file handy.h
@@ -3415,7 +3634,8 @@ NOTE: this function is experimental and may change or be
 removed without notice.
 
 
-Save a label into a C<cop_hints_hash>. You need to set flags to C<SVf_UTF8>
+Save a label into a C<cop_hints_hash>.
+You need to set flags to C<SVf_UTF8>
 for a utf-8 label.
 
 	void	cop_store_label(COP *const cop,
@@ -3429,7 +3649,7 @@ Found in file hv.c
 X<get_hv>
 
 Returns the HV of the specified Perl hash.  C<flags> are passed to
-C<gv_fetchpv>. If C<GV_ADD> is set and the
+C<gv_fetchpv>.  If C<GV_ADD> is set and the
 Perl variable does not exist then it will be created.  If C<flags> is zero
 and the variable does not exist then NULL is returned.
 
@@ -3445,7 +3665,7 @@ X<HEf_SVKEY>
 
 This flag, used in the length slot of hash entries and magic structures,
 specifies the structure contains an C<SV*> pointer where a C<char*> pointer
-is to be expected. (For information only--not to be used).
+is to be expected.  (For information only--not to be used).
 
 =for hackers
 Found in file hv.h
@@ -3463,7 +3683,7 @@ Found in file hv.h
 =item HeKEY
 X<HeKEY>
 
-Returns the actual pointer stored in the key slot of the hash entry. The
+Returns the actual pointer stored in the key slot of the hash entry.  The
 pointer may be either C<char*> or C<SV*>, depending on the value of
 C<HeKLEN()>.  Can be assigned to.  The C<HePV()> or C<HeSVKEY()> macros are
 usually preferable for finding the value of a key.
@@ -3478,7 +3698,7 @@ X<HeKLEN>
 
 If this is negative, and amounts to C<HEf_SVKEY>, it indicates the entry
 holds an C<SV*> key.  Otherwise, holds the actual length of the key.  Can
-be assigned to. The C<HePV()> macro is usually preferable for finding key
+be assigned to.  The C<HePV()> macro is usually preferable for finding key
 lengths.
 
 	STRLEN	HeKLEN(HE* he)
@@ -3496,8 +3716,8 @@ not care about what the length of the key is, you may use the global
 variable C<PL_na>, though this is rather less efficient than using a local
 variable.  Remember though, that hash keys in perl are free to contain
 embedded nulls, so using C<strlen()> or similar is not a good way to find
-the length of hash keys. This is very similar to the C<SvPV()> macro
-described elsewhere in this document. See also C<HeUTF8>.
+the length of hash keys.  This is very similar to the C<SvPV()> macro
+described elsewhere in this document.  See also C<HeUTF8>.
 
 If you are using C<HePV> to get values to pass to C<newSVpvn()> to create a
 new SV, you should consider using C<newSVhek(HeKEY_hek(he))> as it is more
@@ -3559,7 +3779,8 @@ Found in file hv.h
 =item HeVAL
 X<HeVAL>
 
-Returns the value slot (type C<SV*>) stored in the hash entry. Can be assigned
+Returns the value slot (type C<SV*>)
+stored in the hash entry.  Can be assigned
 to.
 
   SV *foo= HeVAL(hv);
@@ -3574,10 +3795,10 @@ Found in file hv.h
 =item HvENAME
 X<HvENAME>
 
-Returns the effective name of a stash, or NULL if there is none. The
+Returns the effective name of a stash, or NULL if there is none.  The
 effective name represents a location in the symbol table where this stash
-resides. It is updated automatically when packages are aliased or deleted.
-A stash that is no longer in the symbol table has no effective name. This
+resides.  It is updated automatically when packages are aliased or deleted.
+A stash that is no longer in the symbol table has no effective name.  This
 name is preferable to C<HvNAME> for use in MRO linearisations and isa
 caches.
 
@@ -3801,13 +4022,15 @@ Found in file hv.c
 =item hv_fill
 X<hv_fill>
 
-Returns the number of hash buckets that happen to be in use. This function is
+Returns the number of hash buckets that
+happen to be in use.  This function is
 wrapped by the macro C<HvFILL>.
 
 Previously this value was always stored in the HV structure, which created an
 overhead on every hash (and pretty much every object) for something that was
-rarely used. Now we calculate it on demand the first time that it is needed,
-and cache it if that calculation is going to be costly to repeat. The cached
+rarely used.  Now we calculate it on demand the first
+time that it is needed, and cache it if that calculation
+is going to be costly to repeat.  The cached
 value is updated by insertions and deletions, but (currently) discarded if
 the hash is split.
 
@@ -3896,7 +4119,7 @@ removed without notice.
 Returns entries from a hash iterator.  See C<hv_iterinit> and C<hv_iternext>.
 The C<flags> value will normally be zero; if HV_ITERNEXT_WANTPLACEHOLDERS is
 set the placeholders keys (for restricted hashes) will be returned in addition
-to normal keys. By default placeholders are automatically skipped over.
+to normal keys.  By default placeholders are automatically skipped over.
 Currently a placeholder is implemented with a value that is
 C<&PL_sv_placeholder>.  Note that the implementation of placeholders and
 restricted hashes may change, and the implementation currently is
@@ -3931,7 +4154,8 @@ Found in file hv.c
 =item hv_scalar
 X<hv_scalar>
 
-Evaluates the hash in scalar context and returns the result. Handles magic when the hash is tied.
+Evaluates the hash in scalar context and returns the result.  Handles magic
+when the hash is tied.
 
 	SV*	hv_scalar(HV *hv)
 
@@ -4949,7 +5173,7 @@ Found in file mg.c
 X<mg_get>
 
 Do magic before a value is retrieved from the SV.  The type of SV must
-be >= SVt_PVMG. See C<sv_magic>.
+be >= SVt_PVMG.  See C<sv_magic>.
 
 	int	mg_get(SV* sv)
 
@@ -5118,7 +5342,8 @@ Found in file handy.h
 =item CopyD
 X<CopyD>
 
-Like C<Copy> but returns dest. Useful for encouraging compilers to tail-call
+Like C<Copy> but returns dest.  Useful
+for encouraging compilers to tail-call
 optimise.
 
 	void *	CopyD(void* src, void* dest, int nitems, type)
@@ -5141,7 +5366,8 @@ Found in file handy.h
 =item MoveD
 X<MoveD>
 
-Like C<Move> but returns dest. Useful for encouraging compilers to tail-call
+Like C<Move> but returns dest.  Useful
+for encouraging compilers to tail-call
 optimise.
 
 	void *	MoveD(void* src, void* dest, int nitems, type)
@@ -5275,9 +5501,9 @@ Found in file handy.h
 =item savepv
 X<savepv>
 
-Perl's version of C<strdup()>. Returns a pointer to a newly allocated
-string which is a duplicate of C<pv>. The size of the string is
-determined by C<strlen()>. The memory allocated for the new string can
+Perl's version of C<strdup()>.  Returns a pointer to a newly allocated
+string which is a duplicate of C<pv>.  The size of the string is
+determined by C<strlen()>.  The memory allocated for the new string can
 be freed with the C<Safefree()> function.
 
 On some platforms, Windows for example, all allocated memory owned by a thread
@@ -5292,9 +5518,10 @@ Found in file util.c
 =item savepvn
 X<savepvn>
 
-Perl's version of what C<strndup()> would be if it existed. Returns a
+Perl's version of what C<strndup()> would be if it existed.  Returns a
 pointer to a newly allocated string which is a duplicate of the first
-C<len> bytes from C<pv>, plus a trailing NUL byte. The memory allocated for
+C<len> bytes from C<pv>, plus a trailing
+NUL byte.  The memory allocated for
 the new string can be freed with the C<Safefree()> function.
 
 On some platforms, Windows for example, all allocated memory owned by a thread
@@ -5331,7 +5558,7 @@ Found in file util.c
 X<savesharedpvn>
 
 A version of C<savepvn()> which allocates the duplicate string in memory
-which is shared between threads. (With the specific difference that a NULL
+which is shared between threads.  (With the specific difference that a NULL
 pointer is not acceptable)
 
 	char*	savesharedpvn(const char *const pv,
@@ -5401,7 +5628,8 @@ Found in file handy.h
 =item ZeroD
 X<ZeroD>
 
-Like C<Zero> but returns dest. Useful for encouraging compilers to tail-call
+Like C<Zero> but returns dest.  Useful
+for encouraging compilers to tail-call
 optimise.
 
 	void *	ZeroD(void* dest, int nitems, type)
@@ -5561,7 +5789,7 @@ Found in file util.c
 X<my_sprintf>
 
 The C library C<sprintf>, wrapped if necessary, to ensure that it will return
-the length of the string written to the buffer. Only rare pre-ANSI systems
+the length of the string written to the buffer.  Only rare pre-ANSI systems
 need the wrapper function - usually this is a direct call to C<sprintf>.
 
 	int	my_sprintf(char *buffer, const char *pat, ...)
@@ -5621,38 +5849,6 @@ C<sv_vcatpvf> instead, or getting C<vsnprintf>.
 =for hackers
 Found in file util.c
 
-=item new_version
-X<new_version>
-
-Returns a new version object based on the passed in SV:
-
-    SV *sv = new_version(SV *ver);
-
-Does not alter the passed in ver SV.  See "upg_version" if you
-want to upgrade the SV.
-
-	SV*	new_version(SV *ver)
-
-=for hackers
-Found in file util.c
-
-=item prescan_version
-X<prescan_version>
-
-Validate that a given string can be parsed as a version object, but doesn't
-actually perform the parsing.  Can use either strict or lax validation rules.
-Can optionally set a number of hint variables to save the parsing code
-some time when tokenizing.
-
-	const char* prescan_version(const char *s, bool strict,
-	                            const char** errstr,
-	                            bool *sqv,
-	                            int *ssaw_decimal,
-	                            int *swidth, bool *salpha)
-
-=for hackers
-Found in file util.c
-
 =item READ_XDIGIT
 X<READ_XDIGIT>
 
@@ -5663,30 +5859,6 @@ Behaviour is only well defined when isXDIGIT(*str) is true.
 
 =for hackers
 Found in file handy.h
-
-=item scan_version
-X<scan_version>
-
-Returns a pointer to the next character after the parsed
-version string, as well as upgrading the passed in SV to
-an RV.
-
-Function must be called with an already existing SV like
-
-    sv = newSV(0);
-    s = scan_version(s, SV *sv, bool qv);
-
-Performs some preprocessing to the string to ensure that
-it has the correct characteristics of a version.  Flags the
-object if it contains an underscore (which denotes this
-is an alpha version).  The boolean qv denotes that the version
-should be interpreted as if it had multiple decimals, even if
-it doesn't.
-
-	const char* scan_version(const char *s, SV *rv, bool qv)
-
-=for hackers
-Found in file util.c
 
 =item strEQ
 X<strEQ>
@@ -5757,7 +5929,7 @@ Found in file handy.h
 X<strnEQ>
 
 Test two strings to see if they are equal.  The C<len> parameter indicates
-the number of bytes to compare.  Returns true or false. (A wrapper for
+the number of bytes to compare.  Returns true or false.  (A wrapper for
 C<strncmp>).
 
 	bool	strnEQ(char* s1, char* s2, STRLEN len)
@@ -5769,7 +5941,7 @@ Found in file handy.h
 X<strnNE>
 
 Test two strings to see if they are different.  The C<len> parameter
-indicates the number of bytes to compare.  Returns true or false. (A
+indicates the number of bytes to compare.  Returns true or false.  (A
 wrapper for C<strncmp>).
 
 	bool	strnNE(char* s1, char* s2, STRLEN len)
@@ -5794,37 +5966,12 @@ Found in file util.c
 X<sv_nosharing>
 
 Dummy routine which "shares" an SV when there is no sharing module present.
-Or "locks" it. Or "unlocks" it. In other words, ignores its single SV argument.
+Or "locks" it.  Or "unlocks" it.  In other
+words, ignores its single SV argument.
 Exists to avoid test for a NULL function pointer and because it could
 potentially warn under some level of strict-ness.
 
 	void	sv_nosharing(SV *sv)
-
-=for hackers
-Found in file util.c
-
-=item upg_version
-X<upg_version>
-
-In-place upgrade of the supplied SV to a version object.
-
-    SV *sv = upg_version(SV *sv, bool qv);
-
-Returns a pointer to the upgraded SV.  Set the boolean qv if you want
-to force this SV to be interpreted as an "extended" version.
-
-	SV*	upg_version(SV *ver, bool qv)
-
-=for hackers
-Found in file util.c
-
-=item vcmp
-X<vcmp>
-
-Version object aware cmp.  Both operands must already have been 
-converted into version objects.
-
-	int	vcmp(SV *lhv, SV *rhv)
 
 =for hackers
 Found in file util.c
@@ -5843,75 +5990,6 @@ During global destruction a single SV may be shared between uses of
 this function.
 
 	SV *	vmess(const char *pat, va_list *args)
-
-=for hackers
-Found in file util.c
-
-=item vnormal
-X<vnormal>
-
-Accepts a version object and returns the normalized string
-representation.  Call like:
-
-    sv = vnormal(rv);
-
-NOTE: you can pass either the object directly or the SV
-contained within the RV.
-
-The SV returned has a refcount of 1.
-
-	SV*	vnormal(SV *vs)
-
-=for hackers
-Found in file util.c
-
-=item vnumify
-X<vnumify>
-
-Accepts a version object and returns the normalized floating
-point representation.  Call like:
-
-    sv = vnumify(rv);
-
-NOTE: you can pass either the object directly or the SV
-contained within the RV.
-
-The SV returned has a refcount of 1.
-
-	SV*	vnumify(SV *vs)
-
-=for hackers
-Found in file util.c
-
-=item vstringify
-X<vstringify>
-
-In order to maintain maximum compatibility with earlier versions
-of Perl, this function will return either the floating point
-notation or the multiple dotted notation, depending on whether
-the original version contained 1 or more dots, respectively.
-
-The SV returned has a refcount of 1.
-
-	SV*	vstringify(SV *vs)
-
-=for hackers
-Found in file util.c
-
-=item vverify
-X<vverify>
-
-Validates that the SV contains valid internal structure for a version object.
-It may be passed either the version object (RV) or the hash itself (HV).  If
-the structure is valid, it returns the HV.  If the structure is invalid,
-it returns NULL.
-
-    SV *hv = vverify(sv);
-
-Note that it only confirms the bare minimum structure (so as not to get
-confused by derived classes which may contain additional hash entries):
-
-	SV*	vverify(SV *vs)
 
 =for hackers
 Found in file util.c
@@ -5995,7 +6073,7 @@ Found in file mro.c
 =item dMULTICALL
 X<dMULTICALL>
 
-Declare local variables for a multicall. See L<perlcall/LIGHTWEIGHT CALLBACKS>.
+Declare local variables for a multicall.  See L<perlcall/LIGHTWEIGHT CALLBACKS>.
 
 		dMULTICALL;
 
@@ -6005,7 +6083,7 @@ Found in file cop.h
 =item MULTICALL
 X<MULTICALL>
 
-Make a lightweight callback. See L<perlcall/LIGHTWEIGHT CALLBACKS>.
+Make a lightweight callback.  See L<perlcall/LIGHTWEIGHT CALLBACKS>.
 
 		MULTICALL;
 
@@ -6055,13 +6133,13 @@ On return I<*len> is set to the length of the scanned string,
 and I<*flags> gives output flags.
 
 If the value is <= C<UV_MAX> it is returned as a UV, the output flags are clear,
-and nothing is written to I<*result>. If the value is > UV_MAX C<grok_bin>
+and nothing is written to I<*result>.  If the value is > UV_MAX C<grok_bin>
 returns UV_MAX, sets C<PERL_SCAN_GREATER_THAN_UV_MAX> in the output flags,
 and writes the value to I<*result> (or the value is discarded if I<result>
 is NULL).
 
 The binary number may optionally be prefixed with "0b" or "b" unless
-C<PERL_SCAN_DISALLOW_PREFIX> is set in I<*flags> on entry. If
+C<PERL_SCAN_DISALLOW_PREFIX> is set in I<*flags> on entry.  If
 C<PERL_SCAN_ALLOW_UNDERSCORES> is set in I<*flags> then the binary
 number may use '_' characters to separate digits.
 
@@ -6085,13 +6163,13 @@ On return I<*len> is set to the length of the scanned string,
 and I<*flags> gives output flags.
 
 If the value is <= UV_MAX it is returned as a UV, the output flags are clear,
-and nothing is written to I<*result>. If the value is > UV_MAX C<grok_hex>
+and nothing is written to I<*result>.  If the value is > UV_MAX C<grok_hex>
 returns UV_MAX, sets C<PERL_SCAN_GREATER_THAN_UV_MAX> in the output flags,
 and writes the value to I<*result> (or the value is discarded if I<result>
 is NULL).
 
 The hex number may optionally be prefixed with "0x" or "x" unless
-C<PERL_SCAN_DISALLOW_PREFIX> is set in I<*flags> on entry. If
+C<PERL_SCAN_DISALLOW_PREFIX> is set in I<*flags> on entry.  If
 C<PERL_SCAN_ALLOW_UNDERSCORES> is set in I<*flags> then the hex
 number may use '_' characters to separate digits.
 
@@ -6153,7 +6231,7 @@ On return I<*len> is set to the length of the scanned string,
 and I<*flags> gives output flags.
 
 If the value is <= UV_MAX it is returned as a UV, the output flags are clear,
-and nothing is written to I<*result>. If the value is > UV_MAX C<grok_oct>
+and nothing is written to I<*result>.  If the value is > UV_MAX C<grok_oct>
 returns UV_MAX, sets C<PERL_SCAN_GREATER_THAN_UV_MAX> in the output flags,
 and writes the value to I<*result> (or the value is discarded if I<result>
 is NULL).
@@ -6203,7 +6281,7 @@ Found in file numeric.c
 =item scan_bin
 X<scan_bin>
 
-For backwards compatibility. Use C<grok_bin> instead.
+For backwards compatibility.  Use C<grok_bin> instead.
 
 	NV	scan_bin(const char* start, STRLEN len,
 		         STRLEN* retlen)
@@ -6214,7 +6292,7 @@ Found in file numeric.c
 =item scan_hex
 X<scan_hex>
 
-For backwards compatibility. Use C<grok_hex> instead.
+For backwards compatibility.  Use C<grok_hex> instead.
 
 	NV	scan_hex(const char* start, STRLEN len,
 		         STRLEN* retlen)
@@ -6225,7 +6303,7 @@ Found in file numeric.c
 =item scan_oct
 X<scan_oct>
 
-For backwards compatibility. Use C<grok_oct> instead.
+For backwards compatibility.  Use C<grok_oct> instead.
 
 	NV	scan_oct(const char* start, STRLEN len,
 		         STRLEN* retlen)
@@ -6698,7 +6776,7 @@ Found in file op.c
 =item cv_const_sv
 X<cv_const_sv>
 
-If C<cv> is a constant sub eligible for inlining. returns the constant
+If C<cv> is a constant sub eligible for inlining, returns the constant
 value returned by the sub.  Otherwise, returns NULL.
 
 Constant subs can be created with C<newCONSTSUB> or as described in
@@ -6778,9 +6856,9 @@ Found in file op.c
 X<LINKLIST>
 
 Given the root of an optree, link the tree in execution order using the
-C<op_next> pointers and return the first op executed. If this has
+C<op_next> pointers and return the first op executed.  If this has
 already been done, it will not be redone, and C<< o->op_next >> will be
-returned. If C<< o->op_next >> is not already set, I<o> should be at
+returned.  If C<< o->op_next >> is not already set, I<o> should be at
 least an C<UNOP>.
 
 	OP*	LINKLIST(OP *o)
@@ -6863,10 +6941,10 @@ Found in file op.c
 X<OP_CLASS>
 
 Return the class of the provided OP: that is, which of the *OP
-structures it uses. For core ops this currently gets the information out
+structures it uses.  For core ops this currently gets the information out
 of PL_opargs, which does not always accurately reflect the type used.
 For custom ops the type is returned from the registration, and it is up
-to the registree to ensure it is accurate. The value returned will be
+to the registree to ensure it is accurate.  The value returned will be
 one of the OA_* constants from op.h.
 
 	U32	OP_CLASS(OP *o)
@@ -6887,7 +6965,7 @@ Found in file op.h
 =item op_linklist
 X<op_linklist>
 
-This function is the implementation of the L</LINKLIST> macro. It should
+This function is the implementation of the L</LINKLIST> macro.  It should
 not be called directly.
 
 	OP*	op_linklist(OP *o)
@@ -6910,7 +6988,7 @@ because it has no op type of its own (it is signalled by a flag on
 the lvalue op).
 
 This function detects things that can't be modified, such as C<$x+1>, and
-generates errors for them. For example, C<$x+1 = 2> would cause it to be
+generates errors for them.  For example, C<$x+1 = 2> would cause it to be
 called with an op of type OP_ADD and a C<type> argument of OP_SASSIGN.
 
 It also flags things that need to behave specially in an lvalue context,
@@ -6924,7 +7002,7 @@ Found in file op.c
 =item OP_NAME
 X<OP_NAME>
 
-Return the name of the provided OP. For core ops this looks up the name
+Return the name of the provided OP.  For core ops this looks up the name
 from the op_type; for custom ops from the op_ppaddr.
 
 	const char * OP_NAME(OP *o)
@@ -7094,9 +7172,9 @@ sometimes hijacked to store the generation number during compilation.
 
 If PADNAME_OUTER (SvFAKE) is set on the
 name SV, then that slot in the frame AV is
-a REFCNT'ed reference to a lexical from "outside". In this case,
+a REFCNT'ed reference to a lexical from "outside".  In this case,
 the name SV does not use xlow and xhigh to store a cop_seq range, since it is
-in scope throughout. Instead xhigh stores some flags containing info about
+in scope throughout.  Instead xhigh stores some flags containing info about
 the real lexical (is it declared in an anon, and is it capable of being
 instantiated multiple times?), and for fake ANONs, xlow contains the index
 within the parent's pad where the lexical's value is stored, to make
@@ -7561,7 +7639,7 @@ Found in file intrpvar.h
 =item SvRX
 X<SvRX>
 
-Convenience macro to get the REGEXP from a SV. This is approximately
+Convenience macro to get the REGEXP from a SV.  This is approximately
 equivalent to the following snippet:
 
     if (SvMAGICAL(sv))
@@ -7686,7 +7764,7 @@ Found in file pp.h
 =item EXTEND
 X<EXTEND>
 
-Used to extend the argument stack for an XSUB's return values. Once
+Used to extend the argument stack for an XSUB's return values.  Once
 used, guarantees that there is room for at least C<nitems> to be pushed
 onto the stack.
 
@@ -8299,7 +8377,8 @@ typeglob has been assigned.  Assigning to it again will stop it from being
 a typeglob.  SVt_PVLV represents a scalar that delegates to another scalar
 behind the scenes.  It is used, e.g., for the return value of C<substr> and
 for tied hash and array elements.  It can hold any scalar value, including
-a typeglob. SVt_REGEXP is for regular expressions.  SVt_INVLIST is for Perl
+a typeglob.  SVt_REGEXP is for regular
+expressions.  SVt_INVLIST is for Perl
 core internal use only.
 
 SVt_PVMG represents a "normal" scalar (not a typeglob, regular expression,
@@ -8471,7 +8550,7 @@ A specialised variant of C<croak()> for emitting the usage message for xsubs
     croak_xs_usage(cv, "eee_yow");
 
 works out the package name and subroutine name from C<cv>, and then calls
-C<croak()>. Hence if C<cv> is C<&ouch::awk>, it would call C<croak> as:
+C<croak()>.  Hence if C<cv> is C<&ouch::awk>, it would call C<croak> as:
 
     Perl_croak(aTHX_ "Usage: %"SVf"::%"SVf"(%s)", "ouch" "awk", "eee_yow");
 
@@ -8485,7 +8564,7 @@ Found in file universal.c
 X<get_sv>
 
 Returns the SV of the specified Perl scalar.  C<flags> are passed to
-C<gv_fetchpv>. If C<GV_ADD> is set and the
+C<gv_fetchpv>.  If C<GV_ADD> is set and the
 Perl variable does not exist then it will be created.  If C<flags> is zero
 and the variable does not exist then NULL is returned.
 
@@ -8595,7 +8674,8 @@ X<SvGROW>
 Expands the character buffer in the SV so that it has room for the
 indicated number of bytes (remember to reserve space for an extra trailing
 NUL character).  Calls C<sv_grow> to perform the expansion if necessary.
-Returns a pointer to the character buffer. SV must be of type >= SVt_PV. One
+Returns a pointer to the character
+buffer.  SV must be of type >= SVt_PV.  One
 alternative is to call C<sv_grow> if you are not sure of the type of SV.
 
 	char *	SvGROW(SV* sv, STRLEN len)
@@ -8939,7 +9019,7 @@ Found in file sv.h
 =item SvOK
 X<SvOK>
 
-Returns a U32 value indicating whether the value is defined. This is
+Returns a U32 value indicating whether the value is defined.  This is
 only meaningful for scalars.
 
 	U32	SvOK(SV* sv)
@@ -9051,7 +9131,7 @@ C<SvPVx> for a version which guarantees to evaluate sv only once.
 Note that there is no guarantee that the return value of C<SvPV()> is
 equal to C<SvPVX(sv)>, or that C<SvPVX(sv)> contains valid data, or that
 successive calls to C<SvPV(sv)> will return the same pointer value each
-time. This is due to the way that things like overloading and
+time.  This is due to the way that things like overloading and
 Copy-On-Write are handled.  In these cases, the return value may point to
 a temporary buffer or similar.  If you absolutely need the SvPVX field to
 be valid (for example, if you intend to write to it), then see
@@ -9174,7 +9254,8 @@ Found in file sv.h
 X<SvPVX>
 
 Returns a pointer to the physical string in the SV.  The SV must contain a
-string. Prior to 5.9.3 it is not safe to execute this macro unless the SV's
+string.  Prior to 5.9.3 it is not safe
+to execute this macro unless the SV's
 type >= SVt_PV.
 
 This is also used to store the name of an autoloaded subroutine in an XS
@@ -9205,7 +9286,7 @@ only a string (C<SvPOK_only>), by hook or by crook.  You need force if you are
 going to update the C<SvPVX> directly.  Processes get magic.
 
 Note that coercing an arbitrary scalar into a plain PV will potentially
-strip useful data from it. For example if the SV was C<SvROK>, then the
+strip useful data from it.  For example if the SV was C<SvROK>, then the
 referent will have its reference count decremented, and the SV itself may
 be converted to an C<SvPOK> scalar with a string buffer containing a value
 such as C<"ARRAY(0x1234)">.
@@ -9283,7 +9364,7 @@ Found in file sv.h
 =item SvREFCNT_dec
 X<SvREFCNT_dec>
 
-Decrements the reference count of the given SV. I<sv> may be NULL.
+Decrements the reference count of the given SV.  I<sv> may be NULL.
 
 	void	SvREFCNT_dec(SV* sv)
 
@@ -9499,7 +9580,7 @@ X<SvTAINTED_off>
 Untaints an SV.  Be I<very> careful with this routine, as it short-circuits
 some of Perl's fundamental security features.  XS module authors should not
 use this function unless they fully understand all the implications of
-unconditionally untainting the value. Untainting should be done in the
+unconditionally untainting the value.  Untainting should be done in the
 standard perl fashion, via a carefully crafted regexp, rather than directly
 untainting variables.
 
@@ -10624,6 +10705,10 @@ the C<flags> parameter gets passed to C<sv_unref_flags()>
 when unreffing.  C<sv_force_normal> calls this function
 with flags set to 0.
 
+This function is expected to be used to signal to perl that this SV is
+about to be written to, and any extra book-keeping needs to be taken care
+of.  Hence, it croaks on read-only values.
+
 	void	sv_force_normal_flags(SV *const sv,
 		                      const U32 flags)
 
@@ -11707,12 +11792,14 @@ Found in file sv.c
 X<bytes_cmp_utf8>
 
 Compares the sequence of characters (stored as octets) in C<b>, C<blen> with the
-sequence of characters (stored as UTF-8) in C<u>, C<ulen>. Returns 0 if they are
+sequence of characters (stored as UTF-8)
+in C<u>, C<ulen>.  Returns 0 if they are
 equal, -1 or -2 if the first string is less than the second string, +1 or +2
 if the first string is greater than the second string.
 
 -1 or +1 is returned if the shorter string was identical to the start of the
-longer string. -2 or +2 is returned if the was a difference between characters
+longer string.  -2 or +2 is returned if
+there was a difference between characters
 within the strings.
 
 	int	bytes_cmp_utf8(const U8 *b, STRLEN blen,
@@ -11733,7 +11820,7 @@ Converts a string C<s> of length C<len> from UTF-8 into native byte encoding.
 Unlike L</utf8_to_bytes> but like L</bytes_to_utf8>, returns a pointer to
 the newly-created string, and updates C<len> to contain the new
 length.  Returns the original string if no conversion occurs, C<len>
-is unchanged. Do nothing if C<is_utf8> points to 0. Sets C<is_utf8> to
+is unchanged.  Do nothing if C<is_utf8> points to 0.  Sets C<is_utf8> to
 0 if C<s> is converted or consisted entirely of characters that are invariant
 in utf8 (i.e., US-ASCII on non-EBCDIC machines).
 
@@ -12144,7 +12231,8 @@ The UTF-8 encoding on ASCII platforms for these large code points begins with a
 byte containing 0xFE or 0xFF.  The UTF8_DISALLOW_FE_FF flag will cause them to
 be treated as malformations, while allowing smaller above-Unicode code points.
 (Of course UTF8_DISALLOW_SUPER will treat all above-Unicode code points,
-including these, as malformations.) Similarly, UTF8_WARN_FE_FF acts just like
+including these, as malformations.)
+Similarly, UTF8_WARN_FE_FF acts just like
 the other WARN flags, but applies just to these code points.
 
 All other code points corresponding to Unicode characters, including private
@@ -12358,8 +12446,8 @@ X<uvchr_to_utf8>
 
 Adds the UTF-8 representation of the native code point C<uv> to the end
 of the string C<d>; C<d> should have at least C<UTF8_MAXBYTES+1> free
-bytes available. The return value is the pointer to the byte after the
-end of the new character. In other words,
+bytes available.  The return value is the pointer to the byte after the
+end of the new character.  In other words,
 
     d = uvchr_to_utf8(d, uv);
 
@@ -12380,8 +12468,8 @@ X<uvchr_to_utf8_flags>
 
 Adds the UTF-8 representation of the native code point C<uv> to the end
 of the string C<d>; C<d> should have at least C<UTF8_MAXBYTES+1> free
-bytes available. The return value is the pointer to the byte after the
-end of the new character. In other words,
+bytes available.  The return value is the pointer to the byte after the
+end of the new character.  In other words,
 
     d = uvchr_to_utf8_flags(d, uv, flags);
 
@@ -12522,8 +12610,8 @@ Found in file XSUB.h
 =item dUNDERBAR
 X<dUNDERBAR>
 
-Sets up any variable needed by the C<UNDERBAR> macro. It used to define
-C<padoff_du>, but it is currently a noop. However, it is strongly advised
+Sets up any variable needed by the C<UNDERBAR> macro.  It used to define
+C<padoff_du>, but it is currently a noop.  However, it is strongly advised
 to still use it for ensuring past and future compatibility.
 
 		dUNDERBAR;
@@ -12589,7 +12677,7 @@ Found in file XSUB.h
 X<RETVAL>
 
 Variable which is setup by C<xsubpp> to hold the return value for an 
-XSUB. This is always the proper type for the XSUB. See 
+XSUB.  This is always the proper type for the XSUB.  See 
 L<perlxs/"The RETVAL Variable">.
 
 	(whatever)	RETVAL
@@ -12622,7 +12710,7 @@ Found in file XSUB.h
 =item UNDERBAR
 X<UNDERBAR>
 
-The SV* corresponding to the $_ variable. Works even if there
+The SV* corresponding to the $_ variable.  Works even if there
 is a lexical $_ in scope.
 
 =for hackers
@@ -12632,7 +12720,7 @@ Found in file XSUB.h
 X<XS>
 
 Macro to declare an XSUB and its C parameter list.  This is handled by
-C<xsubpp>. It is the same as using the more explicit XS_EXTERNAL macro.
+C<xsubpp>.  It is the same as using the more explicit XS_EXTERNAL macro.
 
 =for hackers
 Found in file XSUB.h
@@ -12724,7 +12812,7 @@ Found in file util.c
 X<croak_no_modify>
 
 Exactly equivalent to C<Perl_croak(aTHX_ "%s", PL_no_modify)>, but generates
-terser object code than using C<Perl_croak>. Less code used on exception code
+terser object code than using C<Perl_croak>.  Less code used on exception code
 paths reduces CPU cache pressure.
 
 	void	croak_no_modify()
@@ -12874,13 +12962,14 @@ Found in file util.c
 =head1 Undocumented functions
 
 The following functions have been flagged as part of the public API,
-but are currently undocumented. Use them at your own risk, as the
+but are currently undocumented.  Use them at your own risk, as the
 interfaces are subject to change.  Functions that are not listed in this
 document are not intended for public use, and should NOT be used under any
 circumstances.
 
 If you use one of the undocumented functions below, you may wish to consider
-creating and submitting documentation for it. If your patch is accepted, this
+creating and submitting documentation
+for it.  If your patch is accepted, this
 will indicate that the interface is stable (unless it is explicitly marked
 otherwise).
 
@@ -13135,9 +13224,6 @@ X<dounwind>
 =item dowantarray
 X<dowantarray>
 
-=item dump_all
-X<dump_all>
-
 =item dump_eval
 X<dump_eval>
 
@@ -13149,9 +13235,6 @@ X<dump_indent>
 
 =item dump_mstats
 X<dump_mstats>
-
-=item dump_packsubs
-X<dump_packsubs>
 
 =item dump_sub
 X<dump_sub>
@@ -13332,12 +13415,6 @@ X<hv_riter_set>
 
 =item init_global_struct
 X<init_global_struct>
-
-=item init_i18nl10n
-X<init_i18nl10n>
-
-=item init_i18nl14n
-X<init_i18nl14n>
 
 =item init_stacks
 X<init_stacks>
@@ -13522,23 +13599,11 @@ X<newSVREF>
 =item newSVpvf_nocontext
 X<newSVpvf_nocontext>
 
-=item new_collate
-X<new_collate>
-
-=item new_ctype
-X<new_ctype>
-
-=item new_numeric
-X<new_numeric>
-
 =item new_stackinfo
 X<new_stackinfo>
 
 =item ninstr
 X<ninstr>
-
-=item op_dump
-X<op_dump>
 
 =item op_free
 X<op_free>
@@ -13902,9 +13967,6 @@ X<sv_catpvf_mg_nocontext>
 
 =item sv_catpvf_nocontext
 X<sv_catpvf_nocontext>
-
-=item sv_dump
-X<sv_dump>
 
 =item sv_dup
 X<sv_dup>

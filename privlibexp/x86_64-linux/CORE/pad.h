@@ -143,14 +143,14 @@ typedef enum {
 #  define ASSERT_CURPAD_LEGAL(label) \
     pad_peg(label); \
     if (PL_comppad ? (AvARRAY(PL_comppad) != PL_curpad) : (PL_curpad != 0))  \
-	Perl_croak(aTHX_ "panic: illegal pad in %s: 0x%"UVxf"[0x%"UVxf"]",\
+	Perl_croak(aTHX_ "panic: illegal pad in %s: 0x%" UVxf "[0x%" UVxf "]",\
 	    label, PTR2UV(PL_comppad), PTR2UV(PL_curpad));
 
 
 #  define ASSERT_CURPAD_ACTIVE(label) \
     pad_peg(label); \
     if (!PL_comppad || (AvARRAY(PL_comppad) != PL_curpad))		  \
-	Perl_croak(aTHX_ "panic: invalid pad in %s: 0x%"UVxf"[0x%"UVxf"]",\
+	Perl_croak(aTHX_ "panic: invalid pad in %s: 0x%" UVxf "[0x%" UVxf "]",\
 	    label, PTR2UV(PL_comppad), PTR2UV(PL_curpad));
 #else
 #  define ASSERT_CURPAD_LEGAL(label)
@@ -168,7 +168,8 @@ Save a pad slot (used to restore after an iteration)
 
 XXX DAPM it would make more sense to make the arg a PADOFFSET
 =for apidoc m|void|SAVECLEARSV	|SV **svp
-Clear the pointed to pad value on scope exit. (i.e. the runtime action of 'my')
+Clear the pointed to pad value on scope exit.  (i.e. the runtime action of
+'my')
 
 =for apidoc m|void|SAVECOMPPAD
 save PL_comppad and PL_curpad
@@ -255,7 +256,7 @@ Get the value from slot C<po> in the base (DEPTH=1) pad of a padlist
 
 =for apidoc m|void|PAD_SET_CUR	|PADLIST padlist|I32 n
 Set the current pad to be pad C<n> in the padlist, saving
-the previous current pad. NB currently this macro expands to a string too
+the previous current pad.  NB currently this macro expands to a string too
 long for some compilers, so it's best to replace it with
 
     SAVECOMPPAD();
@@ -324,7 +325,7 @@ Restore the old pad saved into the local variable opad by PAD_SAVE_LOCAL()
 	PL_comppad = (PAD*) (PadlistARRAY(padlist)[nth]);	\
 	PL_curpad = AvARRAY(PL_comppad);			\
 	DEBUG_Xv(PerlIO_printf(Perl_debug_log,			\
-	      "Pad 0x%"UVxf"[0x%"UVxf"] set_cur    depth=%d\n",	\
+	      "Pad 0x%" UVxf "[0x%" UVxf "] set_cur    depth=%d\n",	\
 	      PTR2UV(PL_comppad), PTR2UV(PL_curpad), (int)(nth)));
 
 
@@ -342,7 +343,7 @@ Restore the old pad saved into the local variable opad by PAD_SAVE_LOCAL()
 	PL_comppad = (npad);					\
 	PL_curpad =  PL_comppad ? AvARRAY(PL_comppad) : NULL;	\
 	DEBUG_Xv(PerlIO_printf(Perl_debug_log,			\
-	      "Pad 0x%"UVxf"[0x%"UVxf"] save_local\n",		\
+	      "Pad 0x%" UVxf "[0x%" UVxf "] save_local\n",		\
 	      PTR2UV(PL_comppad), PTR2UV(PL_curpad)));
 
 #define PAD_RESTORE_LOCAL(opad) \
@@ -350,7 +351,7 @@ Restore the old pad saved into the local variable opad by PAD_SAVE_LOCAL()
 	PL_comppad = opad;						\
 	PL_curpad =  PL_comppad ? AvARRAY(PL_comppad) : NULL;	\
 	DEBUG_Xv(PerlIO_printf(Perl_debug_log,			\
-	      "Pad 0x%"UVxf"[0x%"UVxf"] restore_local\n",	\
+	      "Pad 0x%" UVxf "[0x%" UVxf "] restore_local\n",	\
 	      PTR2UV(PL_comppad), PTR2UV(PL_curpad)));
 
 
@@ -372,15 +373,15 @@ context block structure (can be used as an lvalue).
 /*
 =for apidoc m|U32|PAD_COMPNAME_FLAGS|PADOFFSET po
 Return the flags for the current compiling pad name
-at offset C<po>. Assumes a valid slot entry.
+at offset C<po>.  Assumes a valid slot entry.
 
 =for apidoc m|char *|PAD_COMPNAME_PV|PADOFFSET po
 Return the name of the current compiling pad name
-at offset C<po>. Assumes a valid slot entry.
+at offset C<po>.  Assumes a valid slot entry.
 
 =for apidoc m|HV *|PAD_COMPNAME_TYPE|PADOFFSET po
 Return the type (stash) of the current compiling pad name at offset
-C<po>. Must be a valid name. Returns null if not typed.
+C<po>.  Must be a valid name.  Returns null if not typed.
 
 =for apidoc m|HV *|PAD_COMPNAME_OURSTASH|PADOFFSET po
 Return the stash associated with an C<our> variable.
@@ -388,7 +389,7 @@ Assumes the slot entry is a valid C<our> lexical.
 
 =for apidoc m|STRLEN|PAD_COMPNAME_GEN|PADOFFSET po
 The generation number of the name at offset C<po> in the current
-compiling pad (lvalue). Note that C<SvUVX> is hijacked for this purpose.
+compiling pad (lvalue).  Note that C<SvUVX> is hijacked for this purpose.
 
 =for apidoc m|STRLEN|PAD_COMPNAME_GEN_set|PADOFFSET po|int gen
 Sets the generation number of the name at offset C<po> in the current

@@ -5,7 +5,8 @@
 # !!!!!!!   INTERNAL PERL USE ONLY   !!!!!!!
 # This file is for internal use by core Perl only.  The format and even the
 # name or existence of this file are subject to change without notice.  Don't
-# use it directly.
+# use it directly.  Use Unicode::UCD to access the Unicode character data
+# base.
 
 
 
@@ -16,16 +17,16 @@ $utf8::SwashInfo{'ToBpt'}{'format'} = 's'; # string
 $utf8::SwashInfo{'ToBpt'}{'missing'} = 'n';
 
 return <<'END';
-0028		o
-0029		c
-005B		o
-005D		c
-007B		o
-007D		c
-0F3A		o
-0F3B		c
-0F3C		o
-0F3D		c
+28		o
+29		c
+5B		o
+5D		c
+7B		o
+7D		c
+F3A		o
+F3B		c
+F3C		o
+F3D		c
 169B		o
 169C		c
 2045		o

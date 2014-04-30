@@ -333,6 +333,10 @@ Generates cross reference reports for Perl programs
 
 Benchmark running times of Perl code
 
+=item C<IO::Socket::IP>
+
+Family-neutral IP socket supporting both IPv4 and IPv6
+
 =item C<Socket>
 
 Networking constants and support functions

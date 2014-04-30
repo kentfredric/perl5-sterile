@@ -513,6 +513,7 @@ the strings?).
  Ricardo  5.18.1-RC2    2013-Aug-03
  Ricardo  5.18.1-RC3    2013-Aug-08
  Ricardo  5.18.1        2013-Aug-12
+ Ricardo  5.18.2        2014-Jan-06
 
  Ricardo   5.19.0       2013-May-20     The 5.19 development track
  David G   5.19.1       2013-Jun-21
@@ -522,6 +523,7 @@ the strings?).
  Steve     5.19.5       2013-Oct-20
  BinGOs    5.19.6       2013-Nov-20
  Abigail   5.19.7       2013-Dec-20
+ Ricardo   5.19.8       2014-Jan-20
 
 =head2 SELECTED RELEASE SIZES
 

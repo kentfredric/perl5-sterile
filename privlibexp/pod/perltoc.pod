@@ -2141,17 +2141,16 @@ X<cryptography> X<passwd> X<encrypt>, dbmclose HASH X<dbmclose>, dbmopen
 HASH,DBNAME,MASK X<dbmopen> X<dbm> X<ndbm> X<sdbm> X<gdbm>, defined EXPR
 X<defined> X<undef> X<undefined>, defined, delete EXPR X<delete>, die LIST
 X<die> X<throw> X<exception> X<raise> X<$@> X<abort>, do BLOCK X<do>
-X<block>, do SUBROUTINE(LIST) X<do>, do EXPR X<do>, dump LABEL X<dump>
-X<core> X<undump>, dump EXPR, dump, each HASH X<each> X<hash, iterator>,
-each ARRAY X<array, iterator>, each EXPR, eof FILEHANDLE X<eof> X<end of
-file> X<end-of-file>, eof (), eof, eval EXPR X<eval> X<try> X<catch>
-X<evaluate> X<parse> X<execute> X<error, handling> X<exception, handling>,
-eval BLOCK, eval, evalbytes EXPR X<evalbytes>, evalbytes, exec LIST X<exec>
-X<execute>, exec PROGRAM LIST, exists EXPR X<exists> X<autovivification>,
-exit EXPR X<exit> X<terminate> X<abort>, exit, exp EXPR X<exp>
-X<exponential> X<antilog> X<antilogarithm> X<e>, exp, fc EXPR X<fc>
-X<foldcase> X<casefold> X<fold-case> X<case-fold>, fc, fcntl
-FILEHANDLE,FUNCTION,SCALAR X<fcntl>, __FILE__ X<__FILE__>, fileno
+X<block>, do EXPR X<do>, dump LABEL X<dump> X<core> X<undump>, dump EXPR,
+dump, each HASH X<each> X<hash, iterator>, each ARRAY X<array, iterator>,
+each EXPR, eof FILEHANDLE X<eof> X<end of file> X<end-of-file>, eof (),
+eof, eval EXPR X<eval> X<try> X<catch> X<evaluate> X<parse> X<execute>
+X<error, handling> X<exception, handling>, eval BLOCK, eval, evalbytes EXPR
+X<evalbytes>, evalbytes, exec LIST X<exec> X<execute>, exec PROGRAM LIST,
+exists EXPR X<exists> X<autovivification>, exit EXPR X<exit> X<terminate>
+X<abort>, exit, exp EXPR X<exp> X<exponential> X<antilog> X<antilogarithm>
+X<e>, exp, fc EXPR X<fc> X<foldcase> X<casefold> X<fold-case> X<case-fold>,
+fc, fcntl FILEHANDLE,FUNCTION,SCALAR X<fcntl>, __FILE__ X<__FILE__>, fileno
 FILEHANDLE X<fileno>, flock FILEHANDLE,OPERATION X<flock> X<lock>
 X<locking>, fork X<fork> X<child> X<parent>, format X<format>, formline
 PICTURE,LIST X<formline>, getc FILEHANDLE X<getc> X<getchar> X<character>
@@ -2280,8 +2279,8 @@ FILEHANDLE X<write>, write EXPR, write, y///
 =item Non-function Keywords by Cross-reference
 
 __DATA__, __END__, BEGIN, CHECK, END, INIT, UNITCHECK, DESTROY, and, cmp,
-eq, ge, gt, if, le, lt, ne, not, or, x, xor, AUTOLOAD, else, elseif, elsif,
-for, foreach, unless, until, while, default, given, when
+eq, ge, gt, le, lt, ne, not, or, x, xor, AUTOLOAD, else, elseif, elsif,
+for, foreach, if, unless, until, while, default, given, when
 
 =back
 
@@ -2577,7 +2576,7 @@ X<warning, reporting> X<warning, registering>
 
 =item Calling the Debugger
 
-perl -d program_name, perl -d -e 0, perl -d:Ptkdb program_name, perl -dt
+perl -d program_name, perl -d -e 0, perl -d:ptkdb program_name, perl -dt
 threaded_program_name
 
 =item Debugger Commands
@@ -2933,8 +2932,8 @@ effect .., otherwise .., [1], [2]
 
 [1], [2], [3], [4], [5], [6], If the C</a> modifier, is in effect ..,
 otherwise .., For code points above 255 .., For code points below 256 ..,
-if locale rules are in effect .., if Unicode rules are in effect ..,
-otherwise ..
+if locale rules are in effect .., C<word>, C<ascii>, C<blank>, if Unicode
+rules are in effect .., otherwise ..
 
 =back
 
@@ -3613,7 +3612,7 @@ Symbian, NetBSD, FreeBSD, Debian GNU/kFreeBSD, Haiku, Irix (6.5. What
 else?), OpenBSD, Dragonfly BSD, Midnight BSD, QNX Neutrino RTOS (6.5.0),
 MirOS BSD, Stratus OpenVOS (17.0 or later), time_t issues that may or may
 not be fixed, Symbian (Series 60 v3, 3.2 and 5 - what else?), Stratus VOS /
-OpenVOS, AIX
+OpenVOS, AIX, FreeMINT
 
 =item EOL Platforms 
 
@@ -3815,10 +3814,10 @@ LC_NUMERIC, LC_TIME, LANG
 
 =item Important Caveats
 
-Safest if you "use feature 'unicode_strings'", Input and Output Layers,
-C<use utf8> still needed to enable UTF-8/UTF-EBCDIC in scripts, BOM-marked
-scripts and UTF-16 scripts autodetected, C<use encoding> needed to upgrade
-non-Latin-1 byte strings
+Safest if you C<use feature 'unicode_strings'>, Input and Output Layers,
+C<use utf8> still needed to enable UTF-8/UTF-EBCDIC in scripts,
+C<BOM>-marked scripts and UTF-16 scripts autodetected, C<use encoding>
+needed to upgrade non-Latin-1 byte strings
 
 =item Byte and Character Semantics
 
@@ -3832,8 +3831,8 @@ Non_Canonical}>>    (Short: C<\p{Dt=NonCanon}>), B<C<\p{Graph}>>,
 B<C<\p{HorizSpace}>>, B<C<\p{In=*}>>, B<C<\p{PerlSpace}>>,
 B<C<\p{PerlWord}>>, B<C<\p{Posix...}>>, B<C<\p{Present_In: *}>>    (Short:
 C<\p{In=*}>), B<C<\p{Print}>>, B<C<\p{SpacePerl}>>, B<C<\p{Title}>> and 
-B<C<\p{Titlecase}>>, B<C<\p{VertSpace}>>, B<C<\p{Word}>>,
-B<C<\p{XPosix...}>>
+B<C<\p{Titlecase}>>, B<C<\p{Unicode}>>, B<C<\p{VertSpace}>>,
+B<C<\p{Word}>>, B<C<\p{XPosix...}>>
 
 =item User-Defined Character Properties
 
@@ -3844,8 +3843,8 @@ B<C<\p{XPosix...}>>
 =item Unicode Regular Expression Support Level
 
 [1], [2], [3], [4], [5], Regular expression look-ahead, CPAN module
-L<Unicode::Regex::Set>, L</"User-Defined Character Properties">, [6], [7],
-[8], [9], [10]
+C<L<Unicode::Regex::Set>>, L</"User-Defined Character Properties">, [6],
+[7], [8], [9], [10]
 
 =item Unicode Encodings
 
@@ -4266,8 +4265,8 @@ AnyDBM_File, App::Cpan, App::Prove, App::Prove::State,
 App::Prove::State::Result, App::Prove::State::Result::Test, Archive::Tar,
 Archive::Tar::File, Attribute::Handlers, AutoLoader, AutoSplit, B,
 B::Concise, B::Debug, B::Deparse, B::Showlex, B::Terse, B::Xref, Benchmark,
-C<Socket>, CGI, CGI::Apache, CGI::Carp, CGI::Cookie, CGI::Fast,
-CGI::Pretty, CGI::Push, CGI::Switch, CGI::Util, CORE, CPAN,
+C<IO::Socket::IP>, C<Socket>, CGI, CGI::Apache, CGI::Carp, CGI::Cookie,
+CGI::Fast, CGI::Pretty, CGI::Push, CGI::Switch, CGI::Util, CORE, CPAN,
 CPAN::API::HOWTO, CPAN::Debug, CPAN::Distroprefs, CPAN::FirstTime,
 CPAN::HandleConfig, CPAN::Kwalify, CPAN::Meta, CPAN::Meta::Converter,
 CPAN::Meta::Feature, CPAN::Meta::History, CPAN::Meta::Prereqs,
@@ -5369,6 +5368,10 @@ GV_ADDMULTI, GV_ADDWARN
 
 =item Double-Typed SVs
 
+=item Read-Only Values
+
+=item Copy on Write
+
 =item Magic Variables
 
 =item Assigning Magic
@@ -5404,10 +5407,6 @@ save_hptr(HV **hptr)>
 
 =item Calling Perl Routines from within C Programs
 
-=item Memory Allocation
-
-=item PerlIO
-
 =item Putting a C value on Perl stack
 
 =item Scratchpads
@@ -5415,6 +5414,20 @@ save_hptr(HV **hptr)>
 =item Scratchpads and recursion
 
 =back
+
+=item Memory Allocation
+
+=over 4
+
+=item Allocation
+
+=item Reallocation
+
+=item Moving
+
+=back
+
+=item PerlIO
 
 =item Compiled code
 
@@ -5846,6 +5859,11 @@ X<XopFLAGS>
 
 CvSTASH X<CvSTASH>, get_cv X<get_cv>, get_cvn_flags X<get_cvn_flags>
 
+=item Debugging Utilities
+
+dump_all X<dump_all>, dump_packsubs X<dump_packsubs>, op_dump X<op_dump>,
+sv_dump X<sv_dump>
+
 =item Embedding Functions
 
 cv_clone X<cv_clone>, cv_undef X<cv_undef>, find_rundefsv X<find_rundefsv>,
@@ -5909,6 +5927,13 @@ ibcmp_utf8 X<ibcmp_utf8>
 =item Functions in file util.h
 
 ibcmp X<ibcmp>, ibcmp_locale X<ibcmp_locale>
+
+=item Functions in file vutil.c
+
+new_version X<new_version>, prescan_version X<prescan_version>,
+scan_version X<scan_version>, upg_version X<upg_version>, vcmp X<vcmp>,
+vnormal X<vnormal>, vnumify X<vnumify>, vstringify X<vstringify>, vverify
+X<vverify>
 
 =item Global Variables
 
@@ -6001,14 +6026,10 @@ fbm_compile X<fbm_compile>, fbm_instr X<fbm_instr>, foldEQ X<foldEQ>,
 foldEQ_locale X<foldEQ_locale>, form X<form>, getcwd_sv X<getcwd_sv>, mess
 X<mess>, mess_sv X<mess_sv>, my_snprintf X<my_snprintf>, my_sprintf
 X<my_sprintf>, my_strlcat X<my_strlcat>, my_strlcpy X<my_strlcpy>,
-my_vsnprintf X<my_vsnprintf>, new_version X<new_version>, prescan_version
-X<prescan_version>, READ_XDIGIT X<READ_XDIGIT>, scan_version
-X<scan_version>, strEQ X<strEQ>, strGE X<strGE>, strGT X<strGT>, strLE
-X<strLE>, strLT X<strLT>, strNE X<strNE>, strnEQ X<strnEQ>, strnNE
-X<strnNE>, sv_destroyable X<sv_destroyable>, sv_nosharing X<sv_nosharing>,
-upg_version X<upg_version>, vcmp X<vcmp>, vmess X<vmess>, vnormal
-X<vnormal>, vnumify X<vnumify>, vstringify X<vstringify>, vverify
-X<vverify>
+my_vsnprintf X<my_vsnprintf>, READ_XDIGIT X<READ_XDIGIT>, strEQ X<strEQ>,
+strGE X<strGE>, strGT X<strGT>, strLE X<strLE>, strLT X<strLT>, strNE
+X<strNE>, strnEQ X<strnEQ>, strnNE X<strnNE>, sv_destroyable
+X<sv_destroyable>, sv_nosharing X<sv_nosharing>, vmess X<vmess>
 
 =item MRO Functions
 
@@ -6286,12 +6307,11 @@ X<do_open>, do_open9 X<do_open9>, do_openn X<do_openn>, do_pmop_dump
 X<do_pmop_dump>, do_spawn X<do_spawn>, do_spawn_nowait X<do_spawn_nowait>,
 do_sprintf X<do_sprintf>, do_sv_dump X<do_sv_dump>, doing_taint
 X<doing_taint>, doref X<doref>, dounwind X<dounwind>, dowantarray
-X<dowantarray>, dump_all X<dump_all>, dump_eval X<dump_eval>, dump_form
-X<dump_form>, dump_indent X<dump_indent>, dump_mstats X<dump_mstats>,
-dump_packsubs X<dump_packsubs>, dump_sub X<dump_sub>, dump_vindent
-X<dump_vindent>, filter_add X<filter_add>, filter_del X<filter_del>,
-filter_read X<filter_read>, foldEQ_latin1 X<foldEQ_latin1>, form_nocontext
-X<form_nocontext>, fp_dup X<fp_dup>, fprintf_nocontext
+X<dowantarray>, dump_eval X<dump_eval>, dump_form X<dump_form>, dump_indent
+X<dump_indent>, dump_mstats X<dump_mstats>, dump_sub X<dump_sub>,
+dump_vindent X<dump_vindent>, filter_add X<filter_add>, filter_del
+X<filter_del>, filter_read X<filter_read>, foldEQ_latin1 X<foldEQ_latin1>,
+form_nocontext X<form_nocontext>, fp_dup X<fp_dup>, fprintf_nocontext
 X<fprintf_nocontext>, free_global_struct X<free_global_struct>, free_tmps
 X<free_tmps>, get_context X<get_context>, get_mstats X<get_mstats>,
 get_op_descs X<get_op_descs>, get_op_names X<get_op_names>, get_ppaddr
@@ -6313,9 +6333,8 @@ X<hv_eiter_set>, hv_free_ent X<hv_free_ent>, hv_ksplit X<hv_ksplit>,
 hv_name_set X<hv_name_set>, hv_placeholders_get X<hv_placeholders_get>,
 hv_placeholders_set X<hv_placeholders_set>, hv_rand_set X<hv_rand_set>,
 hv_riter_p X<hv_riter_p>, hv_riter_set X<hv_riter_set>, init_global_struct
-X<init_global_struct>, init_i18nl10n X<init_i18nl10n>, init_i18nl14n
-X<init_i18nl14n>, init_stacks X<init_stacks>, init_tm X<init_tm>, instr
-X<instr>, is_lvalue_sub X<is_lvalue_sub>, leave_scope X<leave_scope>,
+X<init_global_struct>, init_stacks X<init_stacks>, init_tm X<init_tm>,
+instr X<instr>, is_lvalue_sub X<is_lvalue_sub>, leave_scope X<leave_scope>,
 load_module_nocontext X<load_module_nocontext>, magic_dump X<magic_dump>,
 malloc X<malloc>, markstack_grow X<markstack_grow>, mess_nocontext
 X<mess_nocontext>, mfree X<mfree>, mg_dup X<mg_dup>, mg_size X<mg_size>,
@@ -6336,25 +6355,23 @@ newCVREF X<newCVREF>, newFORM X<newFORM>, newGVREF X<newGVREF>, newGVgen
 X<newGVgen>, newGVgen_flags X<newGVgen_flags>, newHVREF X<newHVREF>,
 newHVhv X<newHVhv>, newIO X<newIO>, newMYSUB X<newMYSUB>, newPROG
 X<newPROG>, newRV X<newRV>, newSUB X<newSUB>, newSVREF X<newSVREF>,
-newSVpvf_nocontext X<newSVpvf_nocontext>, new_collate X<new_collate>,
-new_ctype X<new_ctype>, new_numeric X<new_numeric>, new_stackinfo
-X<new_stackinfo>, ninstr X<ninstr>, op_dump X<op_dump>, op_free X<op_free>,
-op_null X<op_null>, op_refcnt_lock X<op_refcnt_lock>, op_refcnt_unlock
-X<op_refcnt_unlock>, parser_dup X<parser_dup>, perl_alloc_using
-X<perl_alloc_using>, perl_clone_using X<perl_clone_using>, pmop_dump
-X<pmop_dump>, pop_scope X<pop_scope>, pregcomp X<pregcomp>, pregexec
-X<pregexec>, pregfree X<pregfree>, pregfree2 X<pregfree2>, printf_nocontext
-X<printf_nocontext>, ptr_table_fetch X<ptr_table_fetch>, ptr_table_free
-X<ptr_table_free>, ptr_table_new X<ptr_table_new>, ptr_table_split
-X<ptr_table_split>, ptr_table_store X<ptr_table_store>, push_scope
-X<push_scope>, re_compile X<re_compile>, re_dup_guts X<re_dup_guts>,
-re_intuit_start X<re_intuit_start>, re_intuit_string X<re_intuit_string>,
-realloc X<realloc>, reentrant_free X<reentrant_free>, reentrant_init
-X<reentrant_init>, reentrant_retry X<reentrant_retry>, reentrant_size
-X<reentrant_size>, ref X<ref>, reg_named_buff_all X<reg_named_buff_all>,
-reg_named_buff_exists X<reg_named_buff_exists>, reg_named_buff_fetch
-X<reg_named_buff_fetch>, reg_named_buff_firstkey
-X<reg_named_buff_firstkey>, reg_named_buff_nextkey
+newSVpvf_nocontext X<newSVpvf_nocontext>, new_stackinfo X<new_stackinfo>,
+ninstr X<ninstr>, op_free X<op_free>, op_null X<op_null>, op_refcnt_lock
+X<op_refcnt_lock>, op_refcnt_unlock X<op_refcnt_unlock>, parser_dup
+X<parser_dup>, perl_alloc_using X<perl_alloc_using>, perl_clone_using
+X<perl_clone_using>, pmop_dump X<pmop_dump>, pop_scope X<pop_scope>,
+pregcomp X<pregcomp>, pregexec X<pregexec>, pregfree X<pregfree>, pregfree2
+X<pregfree2>, printf_nocontext X<printf_nocontext>, ptr_table_fetch
+X<ptr_table_fetch>, ptr_table_free X<ptr_table_free>, ptr_table_new
+X<ptr_table_new>, ptr_table_split X<ptr_table_split>, ptr_table_store
+X<ptr_table_store>, push_scope X<push_scope>, re_compile X<re_compile>,
+re_dup_guts X<re_dup_guts>, re_intuit_start X<re_intuit_start>,
+re_intuit_string X<re_intuit_string>, realloc X<realloc>, reentrant_free
+X<reentrant_free>, reentrant_init X<reentrant_init>, reentrant_retry
+X<reentrant_retry>, reentrant_size X<reentrant_size>, ref X<ref>,
+reg_named_buff_all X<reg_named_buff_all>, reg_named_buff_exists
+X<reg_named_buff_exists>, reg_named_buff_fetch X<reg_named_buff_fetch>,
+reg_named_buff_firstkey X<reg_named_buff_firstkey>, reg_named_buff_nextkey
 X<reg_named_buff_nextkey>, reg_named_buff_scalar X<reg_named_buff_scalar>,
 regclass_swash X<regclass_swash>, regdump X<regdump>, regdupe_internal
 X<regdupe_internal>, regexec_flags X<regexec_flags>, regfree_internal
@@ -6392,20 +6409,20 @@ si_dup X<si_dup>, ss_dup X<ss_dup>, stack_grow X<stack_grow>,
 start_subparse X<start_subparse>, str_to_version X<str_to_version>, sv_2iv
 X<sv_2iv>, sv_2pv X<sv_2pv>, sv_2uv X<sv_2uv>, sv_catpvf_mg_nocontext
 X<sv_catpvf_mg_nocontext>, sv_catpvf_nocontext X<sv_catpvf_nocontext>,
-sv_dump X<sv_dump>, sv_dup X<sv_dup>, sv_dup_inc X<sv_dup_inc>, sv_peek
-X<sv_peek>, sv_pvn_nomg X<sv_pvn_nomg>, sv_setpvf_mg_nocontext
-X<sv_setpvf_mg_nocontext>, sv_setpvf_nocontext X<sv_setpvf_nocontext>,
-swash_fetch X<swash_fetch>, swash_init X<swash_init>, sys_init X<sys_init>,
-sys_init3 X<sys_init3>, sys_intern_clear X<sys_intern_clear>,
-sys_intern_dup X<sys_intern_dup>, sys_intern_init X<sys_intern_init>,
-sys_term X<sys_term>, taint_env X<taint_env>, taint_proper X<taint_proper>,
-tmps_grow X<tmps_grow>, unlnk X<unlnk>, unsharepvn X<unsharepvn>,
-utf16_to_utf8 X<utf16_to_utf8>, utf16_to_utf8_reversed
-X<utf16_to_utf8_reversed>, uvuni_to_utf8 X<uvuni_to_utf8>, vdeb X<vdeb>,
-vform X<vform>, vload_module X<vload_module>, vnewSVpvf X<vnewSVpvf>,
-vwarner X<vwarner>, warn_nocontext X<warn_nocontext>, warner X<warner>,
-warner_nocontext X<warner_nocontext>, whichsig X<whichsig>, whichsig_pv
-X<whichsig_pv>, whichsig_pvn X<whichsig_pvn>, whichsig_sv X<whichsig_sv>
+sv_dup X<sv_dup>, sv_dup_inc X<sv_dup_inc>, sv_peek X<sv_peek>, sv_pvn_nomg
+X<sv_pvn_nomg>, sv_setpvf_mg_nocontext X<sv_setpvf_mg_nocontext>,
+sv_setpvf_nocontext X<sv_setpvf_nocontext>, swash_fetch X<swash_fetch>,
+swash_init X<swash_init>, sys_init X<sys_init>, sys_init3 X<sys_init3>,
+sys_intern_clear X<sys_intern_clear>, sys_intern_dup X<sys_intern_dup>,
+sys_intern_init X<sys_intern_init>, sys_term X<sys_term>, taint_env
+X<taint_env>, taint_proper X<taint_proper>, tmps_grow X<tmps_grow>, unlnk
+X<unlnk>, unsharepvn X<unsharepvn>, utf16_to_utf8 X<utf16_to_utf8>,
+utf16_to_utf8_reversed X<utf16_to_utf8_reversed>, uvuni_to_utf8
+X<uvuni_to_utf8>, vdeb X<vdeb>, vform X<vform>, vload_module
+X<vload_module>, vnewSVpvf X<vnewSVpvf>, vwarner X<vwarner>, warn_nocontext
+X<warn_nocontext>, warner X<warner>, warner_nocontext X<warner_nocontext>,
+whichsig X<whichsig>, whichsig_pv X<whichsig_pv>, whichsig_pvn
+X<whichsig_pvn>, whichsig_sv X<whichsig_sv>
 
 =item AUTHORS
 
@@ -6538,18 +6555,17 @@ _invlist_contains_cp X<_invlist_contains_cp>, _invlist_contents
 X<_invlist_contents>, _invlist_dump X<_invlist_dump>, _invlist_intersection
 X<_invlist_intersection>, _invlist_intersection_maybe_complement_2nd
 X<_invlist_intersection_maybe_complement_2nd>, _invlist_invert
-X<_invlist_invert>, _invlist_invert_prop X<_invlist_invert_prop>,
-_invlist_len X<_invlist_len>, _invlist_populate_swatch
+X<_invlist_invert>, _invlist_len X<_invlist_len>, _invlist_populate_swatch
 X<_invlist_populate_swatch>, _invlist_search X<_invlist_search>,
 _invlist_subtract X<_invlist_subtract>, _invlist_union X<_invlist_union>,
 _invlist_union_maybe_complement_2nd X<_invlist_union_maybe_complement_2nd>,
-_new_invlist X<_new_invlist>, _swash_inversion_hash
-X<_swash_inversion_hash>, _swash_to_invlist X<_swash_to_invlist>,
-_to_fold_latin1 X<_to_fold_latin1>, _to_upper_title_latin1
-X<_to_upper_title_latin1>, aassign_common_vars X<aassign_common_vars>,
-add_cp_to_invlist X<add_cp_to_invlist>, addmad X<addmad>,
-alloc_maybe_populate_EXACT X<alloc_maybe_populate_EXACT>, allocmy
-X<allocmy>, amagic_is_enabled X<amagic_is_enabled>, append_madprops
+_new_invlist X<_new_invlist>, _setup_canned_invlist
+X<_setup_canned_invlist>, _swash_inversion_hash X<_swash_inversion_hash>,
+_swash_to_invlist X<_swash_to_invlist>, _to_fold_latin1 X<_to_fold_latin1>,
+_to_upper_title_latin1 X<_to_upper_title_latin1>, aassign_common_vars
+X<aassign_common_vars>, add_cp_to_invlist X<add_cp_to_invlist>, addmad
+X<addmad>, alloc_maybe_populate_EXACT X<alloc_maybe_populate_EXACT>,
+allocmy X<allocmy>, amagic_is_enabled X<amagic_is_enabled>, append_madprops
 X<append_madprops>, apply X<apply>, av_extend_guts X<av_extend_guts>,
 av_reify X<av_reify>, bind_match X<bind_match>, block_end X<block_end>,
 block_start X<block_start>, boot_core_PerlIO X<boot_core_PerlIO>,
@@ -6648,9 +6664,9 @@ X<mg_find_mglob>, mode_from_discipline X<mode_from_discipline>, more_bodies
 X<more_bodies>, mro_meta_dup X<mro_meta_dup>, mro_meta_init
 X<mro_meta_init>, my_attrs X<my_attrs>, my_clearenv X<my_clearenv>,
 my_lstat_flags X<my_lstat_flags>, my_stat_flags X<my_stat_flags>, my_unexec
-X<my_unexec>, newATTRSUB_flags X<newATTRSUB_flags>, newGP X<newGP>,
-newMADPROP X<newMADPROP>, newMADsv X<newMADsv>, newSTUB X<newSTUB>,
-newSVavdefelem X<newSVavdefelem>, newTOKEN X<newTOKEN>, newXS_len_flags
+X<my_unexec>, newATTRSUB_x X<newATTRSUB_x>, newGP X<newGP>, newMADPROP
+X<newMADPROP>, newMADsv X<newMADsv>, newSTUB X<newSTUB>, newSVavdefelem
+X<newSVavdefelem>, newTOKEN X<newTOKEN>, newXS_len_flags
 X<newXS_len_flags>, new_warnings_bitfield X<new_warnings_bitfield>,
 nextargv X<nextargv>, oopsAV X<oopsAV>, oopsHV X<oopsHV>, op_clear
 X<op_clear>, op_const_sv X<op_const_sv>, op_getmad X<op_getmad>,
@@ -6681,9 +6697,9 @@ X<set_caret_X>, sighandler X<sighandler>, softref2xv X<softref2xv>,
 ssc_add_range X<ssc_add_range>, ssc_clear_locale X<ssc_clear_locale>,
 ssc_cp_and X<ssc_cp_and>, ssc_intersection X<ssc_intersection>, ssc_union
 X<ssc_union>, sub_crush_depth X<sub_crush_depth>, sv_add_backref
-X<sv_add_backref>, sv_catxmlpv X<sv_catxmlpv>, sv_catxmlpvn
-X<sv_catxmlpvn>, sv_catxmlsv X<sv_catxmlsv>, sv_del_backref
-X<sv_del_backref>, sv_free2 X<sv_free2>, sv_kill_backrefs
+X<sv_add_backref>, sv_buf_to_ro X<sv_buf_to_ro>, sv_catxmlpv
+X<sv_catxmlpv>, sv_catxmlpvn X<sv_catxmlpvn>, sv_catxmlsv X<sv_catxmlsv>,
+sv_del_backref X<sv_del_backref>, sv_free2 X<sv_free2>, sv_kill_backrefs
 X<sv_kill_backrefs>, sv_len_utf8_nomg X<sv_len_utf8_nomg>,
 sv_magicext_mglob X<sv_magicext_mglob>, sv_mortalcopy_flags
 X<sv_mortalcopy_flags>, sv_or_pv_pos_u2b X<sv_or_pv_pos_u2b>, sv_resetpvn
@@ -6779,17 +6795,17 @@ C implementations, Perl implementations
 
 =item DESCRIPTION
 
-1. USE_STDIO, 2. USE_SFIO, 3. USE_PERLIO, B<PerlIO_stdin()>,
-B<PerlIO_stdout()>, B<PerlIO_stderr()>, B<PerlIO_open(path, mode)>,
-B<PerlIO_fdopen(fd,mode)>, B<PerlIO_reopen(path,mode,f)>,
-B<PerlIO_printf(f,fmt,...)>, B<PerlIO_vprintf(f,fmt,a)>,
-B<PerlIO_stdoutf(fmt,...)>, B<PerlIO_read(f,buf,count)>,
-B<PerlIO_write(f,buf,count)>, B<PerlIO_close(f)>, B<PerlIO_puts(f,s)>,
-B<PerlIO_putc(f,c)>, B<PerlIO_ungetc(f,c)>, B<PerlIO_getc(f)>,
-B<PerlIO_eof(f)>, B<PerlIO_error(f)>, B<PerlIO_fileno(f)>,
-B<PerlIO_clearerr(f)>, B<PerlIO_flush(f)>, B<PerlIO_seek(f,offset,whence)>,
-B<PerlIO_tell(f)>, B<PerlIO_getpos(f,p)>, B<PerlIO_setpos(f,p)>,
-B<PerlIO_rewind(f)>, B<PerlIO_tmpfile()>, B<PerlIO_setlinebuf(f)>
+1. USE_STDIO, 2. USE_PERLIO, B<PerlIO_stdin()>, B<PerlIO_stdout()>,
+B<PerlIO_stderr()>, B<PerlIO_open(path, mode)>, B<PerlIO_fdopen(fd,mode)>,
+B<PerlIO_reopen(path,mode,f)>, B<PerlIO_printf(f,fmt,...)>,
+B<PerlIO_vprintf(f,fmt,a)>, B<PerlIO_stdoutf(fmt,...)>,
+B<PerlIO_read(f,buf,count)>, B<PerlIO_write(f,buf,count)>,
+B<PerlIO_close(f)>, B<PerlIO_puts(f,s)>, B<PerlIO_putc(f,c)>,
+B<PerlIO_ungetc(f,c)>, B<PerlIO_getc(f)>, B<PerlIO_eof(f)>,
+B<PerlIO_error(f)>, B<PerlIO_fileno(f)>, B<PerlIO_clearerr(f)>,
+B<PerlIO_flush(f)>, B<PerlIO_seek(f,offset,whence)>, B<PerlIO_tell(f)>,
+B<PerlIO_getpos(f,p)>, B<PerlIO_setpos(f,p)>, B<PerlIO_rewind(f)>,
+B<PerlIO_tmpfile()>, B<PerlIO_setlinebuf(f)>
 
 =over 4
 
@@ -7329,9 +7345,10 @@ L<http://www.perlmonks.org/>, L<http://stackoverflow.com/>
 =item OPTIONS
 
 B<-h>, B<-D>, B<-t>, B<-u>, B<-m> I<module>, B<-l>, B<-F>, B<-f>
-I<perlfunc>, B<-q> I<perlfaq-search-regexp>, B<-v> I<perlvar>, B<-T>, B<-d>
-I<destination-filename>, B<-o> I<output-formatname>, B<-M> I<module-name>,
-B<-w> I<option:value> or B<-w> I<option>, B<-X>, B<-L> I<language_code>,
+I<perlfunc>, B<-q> I<perlfaq-search-regexp>, B<-a> I<perlapifunc>, B<-v>
+I<perlvar>, B<-T>, B<-d> I<destination-filename>, B<-o>
+I<output-formatname>, B<-M> I<module-name>, B<-w> I<option:value> or B<-w>
+I<option>, B<-X>, B<-L> I<language_code>,
 B<PageName|ModuleName|ProgramName|URL>, B<-n> I<some-formatter>, B<-r>,
 B<-i>, B<-V>
 
@@ -7377,7 +7394,7 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.19.7
+=head2 perldelta - what is new for perl v5.19.8
 
 =over 4
 
@@ -7387,7 +7404,7 @@ B<-i>, B<-V>
 
 =over 4
 
-=item Postfix syntax for maximum array index
+=item New C<\p{Unicode}> regular expression pattern property
 
 =back
 
@@ -7395,7 +7412,12 @@ B<-i>, B<-V>
 
 =over 4
 
-=item Data::Dumper's output may change
+=item C<do> can no longer be used to call subroutines
+
+=item C<\p{}>, C<\P{}> matching has changed for non-Unicode code
+points.
+
+=item C<\p{All}> has been expanded to match all possible code points
 
 =back
 
@@ -7403,7 +7425,7 @@ B<-i>, B<-V>
 
 =over 4
 
-=item C<< CGI.pm >>
+=item Module removals
 
 =back
 
@@ -7411,23 +7433,25 @@ B<-i>, B<-V>
 
 =over 4
 
+=item New Modules and Pragmata
+
 =item Updated Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item Changes to Existing Documentation
 
 =back
 
 =item Diagnostics
 
-=over 4
-
-=item New Diagnostics
-
-=item Changes to Existing Diagnostics
-
-=back
-
 =item Utility Changes
 
-=item Testing
+=item Configuration and Compilation
 
 =item Platform Support
 
@@ -7435,11 +7459,14 @@ B<-i>, B<-V>
 
 =item Platform-Specific Notes
 
-Windows
+Cygwin
 
 =back
 
 =item Internal Changes
+
+newATTRSUB is now a macro, Changes in warnings raised by
+C<utf8n_to_uvchr()>
 
 =item Selected Bug Fixes
 
@@ -7451,7 +7478,91 @@ Windows
 
 =back
 
-=head2 perl5197delta, perldelta - what is new for perl v5.19.7
+=head2 perl5198delta, perldelta - what is new for perl v5.19.8
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=over 4
+
+=item New C<\p{Unicode}> regular expression pattern property
+
+=back
+
+=item Incompatible Changes
+
+=over 4
+
+=item C<do> can no longer be used to call subroutines
+
+=item C<\p{}>, C<\P{}> matching has changed for non-Unicode code
+points.
+
+=item C<\p{All}> has been expanded to match all possible code points
+
+=back
+
+=item Deprecations
+
+=over 4
+
+=item Module removals
+
+=back
+
+=item Modules and Pragmata
+
+=over 4
+
+=item New Modules and Pragmata
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Diagnostics
+
+=item Utility Changes
+
+=item Configuration and Compilation
+
+=item Platform Support
+
+=over 4
+
+=item Platform-Specific Notes
+
+Cygwin
+
+=back
+
+=item Internal Changes
+
+newATTRSUB is now a macro, Changes in warnings raised by
+C<utf8n_to_uvchr()>
+
+=item Selected Bug Fixes
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5197delta - what is new for perl v5.19.7
 
 =over 4
 
@@ -18249,35 +18360,34 @@ C<d_setnent>, C<d_setnetent_r>, C<d_setpent>, C<d_setpgid>, C<d_setpgrp>,
 C<d_setpgrp2>, C<d_setprior>, C<d_setproctitle>, C<d_setprotoent_r>,
 C<d_setpwent>, C<d_setpwent_r>, C<d_setregid>, C<d_setresgid>,
 C<d_setresuid>, C<d_setreuid>, C<d_setrgid>, C<d_setruid>, C<d_setsent>,
-C<d_setservent_r>, C<d_setsid>, C<d_setvbuf>, C<d_sfio>, C<d_shm>,
-C<d_shmat>, C<d_shmatprototype>, C<d_shmctl>, C<d_shmdt>, C<d_shmget>,
-C<d_sigaction>, C<d_signbit>, C<d_sigprocmask>, C<d_sigsetjmp>,
-C<d_sin6_scope_id>, C<d_sitearch>, C<d_snprintf>, C<d_sockaddr_in6>,
-C<d_sockaddr_sa_len>, C<d_sockatmark>, C<d_sockatmarkproto>, C<d_socket>,
-C<d_socklen_t>, C<d_sockpair>, C<d_socks5_init>,
-C<d_sprintf_returns_strlen>, C<d_sqrtl>, C<d_srand48_r>, C<d_srandom_r>,
-C<d_sresgproto>, C<d_sresuproto>, C<d_statblks>, C<d_statfs_f_flags>,
-C<d_statfs_s>, C<d_static_inline>, C<d_statvfs>, C<d_stdio_cnt_lval>,
-C<d_stdio_ptr_lval>, C<d_stdio_ptr_lval_nochange_cnt>,
-C<d_stdio_ptr_lval_sets_cnt>, C<d_stdio_stream_array>, C<d_stdiobase>,
-C<d_stdstdio>, C<d_strchr>, C<d_strcoll>, C<d_strctcpy>, C<d_strerrm>,
-C<d_strerror>, C<d_strerror_r>, C<d_strftime>, C<d_strlcat>, C<d_strlcpy>,
-C<d_strtod>, C<d_strtol>, C<d_strtold>, C<d_strtoll>, C<d_strtoq>,
-C<d_strtoul>, C<d_strtoull>, C<d_strtouq>, C<d_strxfrm>, C<d_suidsafe>,
-C<d_symlink>, C<d_syscall>, C<d_syscallproto>, C<d_sysconf>,
-C<d_sysernlst>, C<d_syserrlst>, C<d_system>, C<d_tcgetpgrp>,
-C<d_tcsetpgrp>, C<d_telldir>, C<d_telldirproto>, C<d_time>, C<d_timegm>,
-C<d_times>, C<d_tm_tm_gmtoff>, C<d_tm_tm_zone>, C<d_tmpnam_r>,
-C<d_truncate>, C<d_ttyname_r>, C<d_tzname>, C<d_u32align>, C<d_ualarm>,
-C<d_umask>, C<d_uname>, C<d_union_semun>, C<d_unordered>, C<d_unsetenv>,
-C<d_usleep>, C<d_usleepproto>, C<d_ustat>, C<d_vendorarch>, C<d_vendorbin>,
-C<d_vendorlib>, C<d_vendorscript>, C<d_vfork>, C<d_void_closedir>,
-C<d_voidsig>, C<d_voidtty>, C<d_volatile>, C<d_vprintf>, C<d_vsnprintf>,
-C<d_wait4>, C<d_waitpid>, C<d_wcstombs>, C<d_wctomb>, C<d_writev>,
-C<d_xenix>, C<date>, C<db_hashtype>, C<db_prefixtype>, C<db_version_major>,
-C<db_version_minor>, C<db_version_patch>, C<direntrytype>, C<dlext>,
-C<dlsrc>, C<doublesize>, C<drand01>, C<drand48_r_proto>, C<dtrace>,
-C<dynamic_ext>
+C<d_setservent_r>, C<d_setsid>, C<d_setvbuf>, C<d_shm>, C<d_shmat>,
+C<d_shmatprototype>, C<d_shmctl>, C<d_shmdt>, C<d_shmget>, C<d_sigaction>,
+C<d_signbit>, C<d_sigprocmask>, C<d_sigsetjmp>, C<d_sin6_scope_id>,
+C<d_sitearch>, C<d_snprintf>, C<d_sockaddr_in6>, C<d_sockaddr_sa_len>,
+C<d_sockatmark>, C<d_sockatmarkproto>, C<d_socket>, C<d_socklen_t>,
+C<d_sockpair>, C<d_socks5_init>, C<d_sprintf_returns_strlen>, C<d_sqrtl>,
+C<d_srand48_r>, C<d_srandom_r>, C<d_sresgproto>, C<d_sresuproto>,
+C<d_statblks>, C<d_statfs_f_flags>, C<d_statfs_s>, C<d_static_inline>,
+C<d_statvfs>, C<d_stdio_cnt_lval>, C<d_stdio_ptr_lval>,
+C<d_stdio_ptr_lval_nochange_cnt>, C<d_stdio_ptr_lval_sets_cnt>,
+C<d_stdio_stream_array>, C<d_stdiobase>, C<d_stdstdio>, C<d_strchr>,
+C<d_strcoll>, C<d_strctcpy>, C<d_strerrm>, C<d_strerror>, C<d_strerror_r>,
+C<d_strftime>, C<d_strlcat>, C<d_strlcpy>, C<d_strtod>, C<d_strtol>,
+C<d_strtold>, C<d_strtoll>, C<d_strtoq>, C<d_strtoul>, C<d_strtoull>,
+C<d_strtouq>, C<d_strxfrm>, C<d_suidsafe>, C<d_symlink>, C<d_syscall>,
+C<d_syscallproto>, C<d_sysconf>, C<d_sysernlst>, C<d_syserrlst>,
+C<d_system>, C<d_tcgetpgrp>, C<d_tcsetpgrp>, C<d_telldir>,
+C<d_telldirproto>, C<d_time>, C<d_timegm>, C<d_times>, C<d_tm_tm_gmtoff>,
+C<d_tm_tm_zone>, C<d_tmpnam_r>, C<d_truncate>, C<d_ttyname_r>, C<d_tzname>,
+C<d_u32align>, C<d_ualarm>, C<d_umask>, C<d_uname>, C<d_union_semun>,
+C<d_unordered>, C<d_unsetenv>, C<d_usleep>, C<d_usleepproto>, C<d_ustat>,
+C<d_vendorarch>, C<d_vendorbin>, C<d_vendorlib>, C<d_vendorscript>,
+C<d_vfork>, C<d_void_closedir>, C<d_voidsig>, C<d_voidtty>, C<d_volatile>,
+C<d_vprintf>, C<d_vsnprintf>, C<d_wait4>, C<d_waitpid>, C<d_wcstombs>,
+C<d_wctomb>, C<d_writev>, C<d_xenix>, C<date>, C<db_hashtype>,
+C<db_prefixtype>, C<db_version_major>, C<db_version_minor>,
+C<db_version_patch>, C<direntrytype>, C<dlext>, C<dlsrc>, C<doublesize>,
+C<drand01>, C<drand48_r_proto>, C<dtrace>, C<dynamic_ext>
 
 =over 4
 
@@ -18340,13 +18450,13 @@ C<i_gdbmndbm>, C<i_grp>, C<i_ieeefp>, C<i_inttypes>, C<i_langinfo>,
 C<i_libutil>, C<i_limits>, C<i_locale>, C<i_machcthr>, C<i_malloc>,
 C<i_mallocmalloc>, C<i_math>, C<i_memory>, C<i_mntent>, C<i_ndbm>,
 C<i_netdb>, C<i_neterrno>, C<i_netinettcp>, C<i_niin>, C<i_poll>,
-C<i_prot>, C<i_pthread>, C<i_pwd>, C<i_rpcsvcdbm>, C<i_sfio>, C<i_sgtty>,
-C<i_shadow>, C<i_socks>, C<i_stdarg>, C<i_stdbool>, C<i_stddef>,
-C<i_stdlib>, C<i_string>, C<i_sunmath>, C<i_sysaccess>, C<i_sysdir>,
-C<i_sysfile>, C<i_sysfilio>, C<i_sysin>, C<i_sysioctl>, C<i_syslog>,
-C<i_sysmman>, C<i_sysmode>, C<i_sysmount>, C<i_sysndir>, C<i_sysparam>,
-C<i_syspoll>, C<i_sysresrc>, C<i_syssecrt>, C<i_sysselct>, C<i_syssockio>,
-C<i_sysstat>, C<i_sysstatfs>, C<i_sysstatvfs>, C<i_systime>, C<i_systimek>,
+C<i_prot>, C<i_pthread>, C<i_pwd>, C<i_rpcsvcdbm>, C<i_sgtty>, C<i_shadow>,
+C<i_socks>, C<i_stdarg>, C<i_stdbool>, C<i_stddef>, C<i_stdlib>,
+C<i_string>, C<i_sunmath>, C<i_sysaccess>, C<i_sysdir>, C<i_sysfile>,
+C<i_sysfilio>, C<i_sysin>, C<i_sysioctl>, C<i_syslog>, C<i_sysmman>,
+C<i_sysmode>, C<i_sysmount>, C<i_sysndir>, C<i_sysparam>, C<i_syspoll>,
+C<i_sysresrc>, C<i_syssecrt>, C<i_sysselct>, C<i_syssockio>, C<i_sysstat>,
+C<i_sysstatfs>, C<i_sysstatvfs>, C<i_systime>, C<i_systimek>,
 C<i_systimes>, C<i_systypes>, C<i_sysuio>, C<i_sysun>, C<i_sysutsname>,
 C<i_sysvfs>, C<i_syswait>, C<i_termio>, C<i_termios>, C<i_time>,
 C<i_unistd>, C<i_ustat>, C<i_utime>, C<i_values>, C<i_varargs>,
@@ -18511,7 +18621,7 @@ C<usefaststdio>, C<useithreads>, C<usekernprocpathname>, C<uselargefiles>,
 C<uselongdouble>, C<usemallocwrap>, C<usemorebits>, C<usemultiplicity>,
 C<usemymalloc>, C<usenm>, C<usensgetexecutablepath>, C<useopcode>,
 C<useperlio>, C<useposix>, C<usereentrant>, C<userelocatableinc>,
-C<usesfio>, C<useshrplib>, C<usesitecustomize>, C<usesocks>, C<usethreads>,
+C<useshrplib>, C<usesitecustomize>, C<usesocks>, C<usethreads>,
 C<usevendorprefix>, C<useversionedarchname>, C<usevfork>, C<usrinc>,
 C<uuname>, C<uvoformat>, C<uvsize>, C<uvtype>, C<uvuformat>, C<uvxformat>,
 C<uvXUformat>
@@ -21075,10 +21185,11 @@ NAME, NEEDS_LINKING, NOECHO, NORECURS, NO_META, NO_MYMETA, NO_PACKLIST,
 NO_PERLLOCAL, NO_VC, OBJECT, OPTIMIZE, PERL, PERL_CORE, PERLMAINCC,
 PERL_ARCHLIB, PERL_LIB, PERL_MALLOC_OK, PERLPREFIX, PERLRUN, PERLRUNINST,
 PERL_SRC, PERM_DIR, PERM_RW, PERM_RWX, PL_FILES, PM, PMLIBDIRS, PM_FILTER,
-POLLUTE, PPM_INSTALL_EXEC, PPM_INSTALL_SCRIPT, PREFIX, PREREQ_FATAL,
-PREREQ_PM, PREREQ_PRINT, PRINT_PREREQ, SITEPREFIX, SIGN, SKIP,
-TEST_REQUIRES, TYPEMAPS, VENDORPREFIX, VERBINST, VERSION, VERSION_FROM,
-VERSION_SYM, XS, XSOPT, XSPROTOARG, XS_VERSION
+POLLUTE, PPM_INSTALL_EXEC, PPM_INSTALL_SCRIPT, PPM_UNINSTALL_EXEC,
+PPM_UNINSTALL_SCRIPT, PREFIX, PREREQ_FATAL, PREREQ_PM, PREREQ_PRINT,
+PRINT_PREREQ, SITEPREFIX, SIGN, SKIP, TEST_REQUIRES, TYPEMAPS,
+VENDORPREFIX, VERBINST, VERSION, VERSION_FROM, VERSION_SYM, XS, XSOPT,
+XSPROTOARG, XS_VERSION
 
 =item Additional lowercase attributes
 
@@ -24323,6 +24434,138 @@ sockaddr (), sockport (), sockhost (), peeraddr (), peerport (), peerhost
 
 =back
 
+=head2 IO::Socket::IP, C<IO::Socket::IP> - Family-neutral IP socket
+supporting both IPv4 and IPv6
+
+=over 4
+
+=item SYNOPSIS
+
+=item DESCRIPTION
+
+=item REPLACING C<IO::Socket> DEFAULT BEHAVIOUR
+
+=back
+
+=over 4
+
+=item CONSTRUCTORS
+
+=back
+
+=over 4
+
+=item $sock = IO::Socket::IP->new( %args )
+
+PeerHost => STRING, PeerService => STRING, PeerAddr => STRING, PeerPort =>
+STRING, PeerAddrInfo => ARRAY, LocalHost => STRING, LocalService => STRING,
+LocalAddr => STRING, LocalPort => STRING, LocalAddrInfo => ARRAY, Family =>
+INT, Type => INT, Proto => STRING or INT, GetAddrInfoFlags => INT, Listen
+=> INT, ReuseAddr => BOOL, ReusePort => BOOL, Broadcast => BOOL, V6Only =>
+BOOL, MultiHomed, Blocking => BOOL
+
+=item $sock = IO::Socket::IP->new( $peeraddr )
+
+=back
+
+=over 4
+
+=item METHODS
+
+=back
+
+=over 4
+
+=item ( $host, $service ) = $sock->sockhost_service( $numeric )
+
+=back
+
+=over 4
+
+=item $addr = $sock->sockhost
+
+=item $port = $sock->sockport
+
+=item $host = $sock->sockhostname
+
+=item $service = $sock->sockservice
+
+=back
+
+=over 4
+
+=item $addr = $sock->sockaddr
+
+=back
+
+=over 4
+
+=item ( $host, $service ) = $sock->peerhost_service( $numeric )
+
+=back
+
+=over 4
+
+=item $addr = $sock->peerhost
+
+=item $port = $sock->peerport
+
+=item $host = $sock->peerhostname
+
+=item $service = $sock->peerservice
+
+=back
+
+=over 4
+
+=item $addr = $peer->peeraddr
+
+=back
+
+=over 4
+
+=item $inet = $sock->as_inet
+
+=back
+
+=over 4
+
+=item NON-BLOCKING
+
+=back
+
+=over 4
+
+=item C<PeerHost> AND C<LocalHost> PARSING
+
+=over 4
+
+=item ( $host, $port ) = IO::Socket::IP->split_addr( $addr )
+
+=back
+
+=back
+
+=over 4
+
+=item $addr = IO::Socket::IP->join_addr( $host, $port )
+
+=back
+
+=over 4
+
+=item C<IO::Socket::INET> INCOMPATIBILITES
+
+=back
+
+=over 4
+
+=item TODO
+
+=item AUTHOR
+
+=back
+
 =head2 IO::Socket::UNIX - Object interface for AF_UNIX domain sockets
 
 =over 4
@@ -25649,31 +25892,31 @@ speed, memory saving
 
 =over 4
 
-=item reduce BLOCK LIST
+=item $result = reduce { BLOCK } @list
 
-=item any BLOCK LIST
+=item $b = any { BLOCK } @list
 
-=item all BLOCK LIST
+=item $b = all { BLOCK } @list
 
-=item none BLOCK LIST
+=item $b = none { BLOCK } @list
 
-=item notall BLOCK LIST
+=item $b = notall { BLOCK } @list
 
-=item first BLOCK LIST
+=item $val = first { BLOCK } @list
 
-=item max LIST
+=item $num = max @list
 
-=item maxstr LIST
+=item $str = maxstr @list
 
-=item min LIST
+=item $num = min @list
 
-=item minstr LIST
+=item $str = minstr @list
 
-=item product LIST
+=item $num = product @list
 
-=item sum LIST
+=item $num_or_undef = sum @list
 
-=item sum0 LIST
+=item $num = sum0 @list
 
 =back
 
@@ -25685,17 +25928,23 @@ speed, memory saving
 
 =over 4
 
-=item pairgrep BLOCK KVLIST
+=item @kvlist = pairgrep { BLOCK } @kvlist
 
-=item pairfirst BLOCK KVLIST
+=item $count = pairgrep { BLOCK } @kvlist
 
-=item pairmap BLOCK KVLIST
+=item ( $key, $val ) = pairfirst { BLOCK } @kvlist
 
-=item pairs KVLIST
+=item $found = pairfirst { BLOCK } @kvlist
 
-=item pairkeys KVLIST
+=item @list = pairmap { BLOCK } @kvlist
 
-=item pairvalues KVLIST
+=item $count = pairmap { BLOCK } @kvlist
+
+=item @pairs = pairs @kvlist
+
+=item @keys = pairkeys @kvlist
+
+=item @values = pairvalues @kvlist
 
 =back
 
@@ -25707,7 +25956,7 @@ speed, memory saving
 
 =over 4
 
-=item shuffle LIST
+=item @values = shuffle @values
 
 =back
 
@@ -27719,8 +27968,6 @@ do_system
 
 oneliner
 
-_infer_xs_spec
-
 rscan_dir
 
 dist_dir
@@ -27907,7 +28154,21 @@ C<%Module::CoreList::Utils::utilities>
 
 =item DESCRIPTION
 
+=over 4
+
+=item Difference between C<load> and C<autoload>
+
+=back
+
+=item FUNCTIONS
+
+load, autoload, load_remote, autoload_remote
+
 =item Rules
+
+=item IMPORTS THE FUNCTIONS
+
+"load","autoload","load_remote","autoload_remote", 'all', '','none',undef
 
 =item Caveats
 
@@ -27946,9 +28207,9 @@ module, version, verbose, file, dir, version, uptodate
 =over 4
 
 =item $bool = can_load( modules => { NAME => VERSION [,NAME => VERSION] },
-[verbose => BOOL, nocache => BOOL] )
+[verbose => BOOL, nocache => BOOL, autoload => BOOL] )
 
-modules, verbose, nocache
+modules, verbose, nocache, autoload
 
 =back
 
@@ -28159,8 +28420,9 @@ requires_firewall HOST
 =item NetConfig VALUES
 
 nntp_hosts, snpp_hosts, pop3_hosts, smtp_hosts, ph_hosts, daytime_hosts,
-time_hosts, inet_domain, ftp_firewall, ftp_firewall_type, ftp_ext_passive,
-ftp_int_passive, local_netmask, test_hosts, test_exists
+time_hosts, inet_domain, ftp_firewall, ftp_firewall_type, 0Z<>, 1Z<>, 2Z<>,
+3Z<>, 4Z<>, 5Z<>, 6Z<>, 7Z<>, ftp_ext_passive, ftp_int_passive,
+local_netmask, test_hosts, test_exists
 
 =back
 
@@ -30493,33 +30755,47 @@ Memory, CPU, Snooping, Signals, State Changes
 
 =item DESCRIPTION
 
+=back
+
 =over 4
 
-=item blessed EXPR
+=item FUNCTIONS FOR REFERENCES
 
-=item dualvar NUM, STRING
+=over 4
 
-=item isdual EXPR
+=item $pkg = blessed( $ref )
 
-=item isvstring EXPR
+=item $addr = refaddr( $ref )
 
-=item looks_like_number EXPR
+=item $type = reftype( $ref )
 
-=item openhandle FH
+=item weaken( REF )
 
-=item readonly SCALAR
+=item unweaken( REF )
 
-=item refaddr EXPR
+=item $weak = isweak( $ref )
 
-=item reftype EXPR
+=back
 
-=item set_prototype CODEREF, PROTOTYPE
+=item OTHER FUNCTIONS
 
-=item tainted EXPR
+=over 4
 
-=item weaken REF
+=item $var = dualvar( $num, $string )
 
-=item isweak EXPR
+=item $dual = isdual( $var )
+
+=item $vstring = isvstring( $var )
+
+=item $isnum = looks_like_number( $var )
+
+=item $fh = openhandle( $fh )
+
+=item $ro = readonly( $var )
+
+=item $code = set_prototype( $code, $prototype )
+
+=item $t = tainted( $var )
 
 =back
 
