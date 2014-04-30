@@ -2537,33 +2537,6 @@ HISTORY, COPYRIGHT AND LICENSE, SEE ALSO
 
 =item DESCRIPTION
 
-=over 4
-
-=item Default Warnings and Optional Warnings
-
-=item What's wrong with B<-w> and C<$^W>
-
-=item Controlling Warnings from the Command Line
-
-B<-w> X<-w>, B<-W> X<-W>, B<-X> X<-X>
-
-=item Backward Compatibility
-
-=item Category Hierarchy
-X<warning, categories>
-
-=item Fatal Warnings
-X<warning, fatal>
-
-=item Reporting Warnings from a Module
-X<warning, reporting> X<warning, registering>
-
-=back
-
-=item SEE ALSO
-
-=item AUTHOR
-
 =back
 
 =head2 perldebug - Perl debugging
@@ -2823,8 +2796,9 @@ code })> X<(??{})> X<regex, postponed> X<regexp, postponed> X<regular
 expression, postponed>, C<(?I<PARNO>)> C<(?-I<PARNO>)> C<(?+I<PARNO>)>
 C<(?R)> C<(?0)> X<(?PARNO)> X<(?1)> X<(?R)> X<(?0)> X<(?-1)> X<(?+1)>
 X<(?-PARNO)> X<(?+PARNO)> X<regex, recursive> X<regexp, recursive>
-X<regular expression, recursive> X<regex, relative recursion>, C<(?&NAME)>
-X<(?&NAME)>, C<(?(condition)yes-pattern|no-pattern)> X<(?()>,
+X<regular expression, recursive> X<regex, relative recursion> X<GOSUB>
+X<GOSTART>, C<(?&NAME)> X<(?&NAME)>,
+C<(?(condition)yes-pattern|no-pattern)> X<(?()>,
 C<(?(condition)yes-pattern)>, (1) (2) .., (<NAME>) ('NAME'), (?=...)
 (?!...) (?<=...) (?<!...), (?{ CODE }), (R), (R1) (R2) .., (R&NAME),
 (DEFINE), C<< (?>pattern) >> X<backtrack> X<backtracking> X<atomic>
@@ -6077,7 +6051,8 @@ newCONSTSUB_flags X<newCONSTSUB_flags>, newXS X<newXS>, op_append_elem
 X<op_append_elem>, op_append_list X<op_append_list>, OP_CLASS X<OP_CLASS>,
 OP_DESC X<OP_DESC>, op_linklist X<op_linklist>, op_lvalue X<op_lvalue>,
 OP_NAME X<OP_NAME>, op_prepend_elem X<op_prepend_elem>, op_scope
-X<op_scope>, OP_TYPE_IS X<OP_TYPE_IS>, rv2cv_op_cv X<rv2cv_op_cv>
+X<op_scope>, OP_TYPE_IS X<OP_TYPE_IS>, OP_TYPE_IS_OR_WAS
+X<OP_TYPE_IS_OR_WAS>, rv2cv_op_cv X<rv2cv_op_cv>
 
 =item Pad Data Structures
 
@@ -6604,18 +6579,19 @@ delete_eval_scope X<delete_eval_scope>, die_unwind X<die_unwind>, do_aexec
 X<do_aexec>, do_aexec5 X<do_aexec5>, do_eof X<do_eof>, do_exec X<do_exec>,
 do_exec3 X<do_exec3>, do_execfree X<do_execfree>, do_ipcctl X<do_ipcctl>,
 do_ipcget X<do_ipcget>, do_msgrcv X<do_msgrcv>, do_msgsnd X<do_msgsnd>,
-do_ncmp X<do_ncmp>, do_op_xmldump X<do_op_xmldump>, do_pmop_xmldump
-X<do_pmop_xmldump>, do_print X<do_print>, do_readline X<do_readline>,
-do_seek X<do_seek>, do_semop X<do_semop>, do_shmio X<do_shmio>, do_sysseek
-X<do_sysseek>, do_tell X<do_tell>, do_trans X<do_trans>, do_vecget
-X<do_vecget>, do_vecset X<do_vecset>, do_vop X<do_vop>, dofile X<dofile>,
-drand48_init_r X<drand48_init_r>, drand48_r X<drand48_r>, dump_all_perl
-X<dump_all_perl>, dump_packsubs_perl X<dump_packsubs_perl>, dump_sub_perl
-X<dump_sub_perl>, dump_sv_child X<dump_sv_child>, emulate_cop_io
-X<emulate_cop_io>, feature_is_enabled X<feature_is_enabled>,
-find_lexical_cv X<find_lexical_cv>, find_runcv_where X<find_runcv_where>,
-find_rundefsv2 X<find_rundefsv2>, find_script X<find_script>,
-free_tied_hv_pool X<free_tied_hv_pool>, get_and_check_backslash_N_name
+do_ncmp X<do_ncmp>, do_op_xmldump X<do_op_xmldump>, do_open6 X<do_open6>,
+do_open_raw X<do_open_raw>, do_pmop_xmldump X<do_pmop_xmldump>, do_print
+X<do_print>, do_readline X<do_readline>, do_seek X<do_seek>, do_semop
+X<do_semop>, do_shmio X<do_shmio>, do_sysseek X<do_sysseek>, do_tell
+X<do_tell>, do_trans X<do_trans>, do_vecget X<do_vecget>, do_vecset
+X<do_vecset>, do_vop X<do_vop>, dofile X<dofile>, drand48_init_r
+X<drand48_init_r>, drand48_r X<drand48_r>, dump_all_perl X<dump_all_perl>,
+dump_packsubs_perl X<dump_packsubs_perl>, dump_sub_perl X<dump_sub_perl>,
+dump_sv_child X<dump_sv_child>, emulate_cop_io X<emulate_cop_io>,
+feature_is_enabled X<feature_is_enabled>, find_lexical_cv
+X<find_lexical_cv>, find_runcv_where X<find_runcv_where>, find_rundefsv2
+X<find_rundefsv2>, find_script X<find_script>, free_tied_hv_pool
+X<free_tied_hv_pool>, get_and_check_backslash_N_name
 X<get_and_check_backslash_N_name>, get_db_sub X<get_db_sub>, get_debug_opts
 X<get_debug_opts>, get_hash_seed X<get_hash_seed>, get_invlist_iter_addr
 X<get_invlist_iter_addr>, get_invlist_offset_addr
@@ -7403,42 +7379,19 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.19.9
+=head2 perldelta - what is new for perl v5.19.10
 
 =over 4
 
 =item DESCRIPTION
 
-=item Core Enhancements
-
-=over 4
-
-=item UTF-8 locales now supported better under C<S<use locale>>
-
-=item C<S<use locale>> now compiles on systems without locale ability
-
-=item PERL_DEBUG_READONLY_COW
-
-=item C<-DL> runtime option now added for tracing locale setting
-
-=item Subroutine signatures
-
-=item More locale initialization fallback options
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item Tainting happens under more circumstances; now conforms to
-documentation
-
-=item Quote-like escape changes
-
-=back
-
 =item Deprecations
+
+=over 4
+
+=item Discouraged features
+
+=back
 
 =item Performance Enhancements
 
@@ -7462,37 +7415,27 @@ documentation
 
 =over 4
 
-=item New Diagnostics
+=item Changes to Existing Diagnostics
 
 =back
 
 =item Configuration and Compilation
 
+=item Testing
+
 =item Platform Support
 
 =over 4
 
-=item New Platforms
-
-Android
-
 =item Platform-Specific Notes
 
-VMS, Cygwin
+Linux, Mac OS, Win32
 
 =back
 
 =item Internal Changes
 
-Regexp Engine Changes That Affect The Pluggable Regex Engine Interface
-
 =item Selected Bug Fixes
-
-=item Known Problems
-
-=item Errata From Previous Releases
-
-perl5180delta.pod
 
 =item Acknowledgements
 
@@ -7502,7 +7445,73 @@ perl5180delta.pod
 
 =back
 
-=head2 perl5199delta, perldelta - what is new for perl v5.19.9
+=head2 perl51910delta, perldelta - what is new for perl v5.19.10
+
+=over 4
+
+=item DESCRIPTION
+
+=item Deprecations
+
+=over 4
+
+=item Discouraged features
+
+=back
+
+=item Performance Enhancements
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Diagnostics
+
+=over 4
+
+=item Changes to Existing Diagnostics
+
+=back
+
+=item Configuration and Compilation
+
+=item Testing
+
+=item Platform Support
+
+=over 4
+
+=item Platform-Specific Notes
+
+Linux, Mac OS, Win32
+
+=back
+
+=item Internal Changes
+
+=item Selected Bug Fixes
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5199delta - what is new for perl v5.19.9
 
 =over 4
 
@@ -15151,6 +15160,8 @@ C<strict refs>, C<strict vars>, C<strict subs>
 
 =item VERSION
 
+=item WARNING
+
 =item SYNOPSIS
 
 =item DESCRIPTION
@@ -15461,6 +15472,31 @@ C<vmsish status>, C<vmsish exit>, C<vmsish time>, C<vmsish hushed>
 =item SYNOPSIS
 
 =item DESCRIPTION
+
+=over 4
+
+=item Default Warnings and Optional Warnings
+
+=item What's wrong with B<-w> and C<$^W>
+
+=item Controlling Warnings from the Command Line
+
+B<-w> X<-w>, B<-W> X<-W>, B<-X> X<-X>
+
+=item Backward Compatibility
+
+=item Category Hierarchy
+X<warning, categories>
+
+=item Fatal Warnings
+X<warning, fatal>
+
+=item Reporting Warnings from a Module
+X<warning, reporting> X<warning, registering>
+
+=back
+
+=item FUNCTIONS
 
 use warnings::register, warnings::enabled(), warnings::enabled($category),
 warnings::enabled($object), warnings::fatal_enabled(),
@@ -17424,7 +17460,8 @@ prerequisites_policy, randomize_urllist, recommends_policy, scan_cache,
 shell, show_unparsable_versions, show_upload_date, show_zero_versions,
 suggests_policy, tar_verbosity, term_is_latin, term_ornaments, test_report,
 perl5lib_verbosity, prefer_external_tar, trust_test_report_history,
-use_sqlite, version_timeout, yaml_load_code, yaml_module
+use_prompt_default, use_sqlite, version_timeout, yaml_load_code,
+yaml_module
 
 =over 4
 
@@ -17485,6 +17522,8 @@ _validate($schema_name, $data, $file, $doc), yaml($schema_name)
 =item load_yaml_string
 
 =item load_json_string
+
+=item load_string
 
 =item save
 
@@ -26238,7 +26277,9 @@ B<Relationship between code sets>, B<Non-ASCII characters not supported>
 
 =item VERSION 3.31  (planned 2014-06-01; sbeck)
 
-=item VERSION 3.30  (planned 2014-03-01; sbeck)
+=item VERSION 3.30  (2014-03-04; sbeck)
+
+B<alias_code remove date set>, B<Bug fixes>
 
 =item VERSION 3.29  (2014-01-27; sbeck)
 
@@ -29362,6 +29403,8 @@ string, regexp, subroutine, array ref
 =item load_yaml_string
 
 =item load_json_string
+
+=item load_string
 
 =item yaml_backend
 

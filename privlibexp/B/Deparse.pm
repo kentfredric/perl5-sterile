@@ -20,7 +20,7 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
          CVf_METHOD CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED);
-$VERSION = '1.25';
+$VERSION = '1.26';
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -316,6 +316,9 @@ BEGIN {
 
 
 
+BEGIN { for (qw[ const stringify rv2sv list glob pushmark null]) {
+    eval "sub OP_\U$_ () { " . opnumber($_) . "}"
+}}
 
 # _pessimise_walk(): recursively walk the optree of a sub,
 # possibly undoing optimisations along the way.
@@ -345,6 +348,7 @@ sub _pessimise_walk {
 	    # the original gv[_].
 
 	    $B::overlay->{$$op} = {
+		    type => OP_PUSHMARK,
 		    name => 'pushmark',
 		    private => ($op->private & OPpLVAL_INTRO),
 		    next    => ($op->flags & OPf_SPECIAL)
@@ -3208,9 +3212,12 @@ sub pp_leavetry {
     return "eval {\n\t" . $self->pp_leave(@_) . "\n\b}";
 }
 
-BEGIN { for (qw[ const stringify rv2sv list glob ]) {
-    eval "sub OP_\U$_ () { " . opnumber($_) . "}"
-}}
+sub _op_is_or_was {
+  my ($op, $expect_type) = @_;
+  my $type = $op->type;
+  return($type == $expect_type
+         || ($type == OP_NULL && $op->targ == $expect_type));
+}
 
 sub pp_null {
     my $self = shift;
@@ -3218,7 +3225,10 @@ sub pp_null {
     if (class($op) eq "OP") {
 	# old value is lost
 	return $self->{'ex_const'} if $op->targ == OP_CONST;
-    } elsif ($op->first->name eq "pushmark") {
+    } elsif ($op->first->name eq 'pushmark'
+             or $op->first->name eq 'null'
+                && $op->first->targ == OP_PUSHMARK
+                && _op_is_or_was($op, OP_LIST)) {
 	return $self->pp_list($op, $cx);
     } elsif ($op->first->name eq "enter") {
 	return $self->pp_leave($op, $cx);
@@ -3322,7 +3332,9 @@ sub pp_aelemfast_lex {
     my($op, $cx) = @_;
     my $name = $self->padname($op->targ);
     $name =~ s/^@/\$/;
-    return $name . "[" .  ($op->private + $self->{'arybase'}) . "]";
+    my $i = $op->private;
+    $i -= 256 if $i > 127;
+    return $name . "[" .  ($i + $self->{'arybase'}) . "]";
 }
 
 sub pp_aelemfast {
@@ -3334,7 +3346,9 @@ sub pp_aelemfast {
     my $gv = $self->gv_or_padgv($op);
     my($name,$quoted) = $self->stash_variable_name('@',$gv);
     $name = $quoted ? "$name->" : '$' . $name;
-    return $name . "[" .  ($op->private + $self->{'arybase'}) . "]";
+    my $i = $op->private;
+    $i -= 256 if $i > 127;
+    return $name . "[" .  ($i + $self->{'arybase'}) . "]";
 }
 
 sub rv2x {
@@ -3388,7 +3402,7 @@ sub pp_av2arylen {
 sub pp_rv2cv {
     my ($self, $op, $cx) = @_;
     if (!null($op->first) && $op->first->name eq 'null' &&
-	$op->first->targ eq OP_LIST)
+	$op->first->targ == OP_LIST)
     {
 	return $self->rv2x($op->first->first->sibling, $cx, "&")
     }
@@ -4634,7 +4648,7 @@ sub pure_string {
     }
     elsif ($type eq 'join') {
 	my $join_op = $op->first->sibling;  # Skip pushmark
-	return 0 unless $join_op->name eq 'null' && $join_op->targ eq OP_RV2SV;
+	return 0 unless $join_op->name eq 'null' && $join_op->targ == OP_RV2SV;
 
 	my $gvop = $join_op->first;
 	return 0 unless $gvop->name eq 'gvsv';
@@ -5322,7 +5336,7 @@ parameter twice:
 	warnings => [FATAL => qw/void io/],
     );
 
-See L<perllexwarn> for more information about lexical warnings.
+See L<warnings> for more information about lexical warnings.
 
 =item hint_bits
 

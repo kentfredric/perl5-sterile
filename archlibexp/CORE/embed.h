@@ -874,7 +874,7 @@
 #define reg_numbered_buff_store(a,b,c)	Perl_reg_numbered_buff_store(aTHX_ a,b,c)
 #define reg_qr_package(a)	Perl_reg_qr_package(aTHX_ a)
 #define reg_temp_copy(a,b)	Perl_reg_temp_copy(aTHX_ a,b)
-#define regprop(a,b,c)		Perl_regprop(aTHX_ a,b,c)
+#define regprop(a,b,c,d)	Perl_regprop(aTHX_ a,b,c,d)
 #define report_uninit(a)	Perl_report_uninit(aTHX_ a)
 #define sv_magicext_mglob(a)	Perl_sv_magicext_mglob(aTHX_ a)
 #define validate_proto(a,b,c)	Perl_validate_proto(aTHX_ a,b,c)
@@ -1101,6 +1101,8 @@
 #define do_eof(a)		Perl_do_eof(aTHX_ a)
 #define do_execfree()		Perl_do_execfree(aTHX)
 #define do_ncmp(a,b)		Perl_do_ncmp(aTHX_ a,b)
+#define do_open6(a,b,c,d,e,f)	Perl_do_open6(aTHX_ a,b,c,d,e,f)
+#define do_open_raw(a,b,c,d,e)	Perl_do_open_raw(aTHX_ a,b,c,d,e)
 #define do_print(a,b)		Perl_do_print(aTHX_ a,b)
 #define do_readline()		Perl_do_readline(aTHX)
 #define do_seek(a,b,c)		Perl_do_seek(aTHX_ a,b,c)
@@ -1383,6 +1385,8 @@
 #  if defined(PERL_IN_DOIO_C)
 #define exec_failed(a,b,c)	S_exec_failed(aTHX_ a,b,c)
 #define ingroup(a,b)		S_ingroup(aTHX_ a,b)
+#define openn_cleanup(a,b,c,d,e,f,g,h,i,j,k,l)	S_openn_cleanup(aTHX_ a,b,c,d,e,f,g,h,i,j,k,l)
+#define openn_setup(a,b,c,d,e,f)	S_openn_setup(aTHX_ a,b,c,d,e,f)
 #  endif
 #  if defined(PERL_IN_DOOP_C)
 #define do_trans_complex(a)	S_do_trans_complex(aTHX_ a)
@@ -1413,6 +1417,7 @@
 #define hfreeentries(a)		S_hfreeentries(aTHX_ a)
 #define hsplit(a,b,c)		S_hsplit(aTHX_ a,b,c)
 #define hv_auxinit(a)		S_hv_auxinit(aTHX_ a)
+#define hv_auxinit_internal	S_hv_auxinit_internal
 #define hv_delete_common(a,b,c,d,e,f,g)	S_hv_delete_common(aTHX_ a,b,c,d,e,f,g)
 #define hv_free_ent_ret(a,b)	S_hv_free_ent_ret(aTHX_ a,b)
 #define hv_magic_check		S_hv_magic_check
@@ -1478,6 +1483,7 @@
 #define new_logop(a,b,c,d)	S_new_logop(aTHX_ a,b,c,d)
 #define no_bareword_allowed(a)	S_no_bareword_allowed(aTHX_ a)
 #define no_fh_allowed(a)	S_no_fh_allowed(aTHX_ a)
+#define null_listop_in_list_context(a)	S_null_listop_in_list_context(aTHX_ a)
 #define op_integerize(a)	S_op_integerize(aTHX_ a)
 #define op_std_init(a)		S_op_std_init(aTHX_ a)
 #define pmtrans(a,b,c)		S_pmtrans(aTHX_ a,b,c)

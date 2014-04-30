@@ -1927,7 +1927,7 @@ L<perlrecharclass/Extended Bracketed Character Classes>.
 
 (F) To use subroutine signatures, you must first enable them:
 
-    no warnings "experimental:signatures";
+    no warnings "experimental::signatures";
     use feature "signatures";
     sub foo ($left, $right) { ... }
 
@@ -3223,10 +3223,12 @@ local() if you want to localize a package variable.
 (W once) Typographical errors often show up as unique variable
 names.  If you had a good reason for having a unique name, then
 just mention it again somehow to suppress the message.  The C<our>
-declaration is provided for this purpose.
+declaration is also provided for this purpose.
 
-NOTE: This warning detects symbols that have been used only once
-so $c, @c, %c, *c, &c, sub c{}, c(), and c (the filehandle or
+NOTE: This warning detects package symbols that have been used only
+once. This means lexical variables will never trigger this warning.
+It also means that all of the package variables $c, @c, %c, as well
+as *c, &c, sub c{}, c(), and c (the filehandle or
 format) are considered the same; if a program uses $c only once
 but also uses any of the others it will not trigger this warning.
 Symbols beginning with an underscore and symbols using special
@@ -4993,7 +4995,7 @@ You are recommended to change your code to set C<$/> to C<undef> explicitly
 if you wish to slurp the file. In future versions of Perl assigning
 a reference to will throw a fatal error.
 
-=item Setting $/ to a %s reference is forbidden
+=item Setting $/ to %s reference is forbidden
 
 (F) You tried to assign a reference to a non integer to C<$/>.  In older
 Perls this would have behaved similarly to setting it to a reference to
@@ -6737,6 +6739,6 @@ shows whereabouts in the regular expression the problem was discovered.
 
 =head1 SEE ALSO
 
-L<warnings>, L<perllexwarn>, L<diagnostics>.
+L<warnings>, L<diagnostics>.
 
 =cut

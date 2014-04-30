@@ -187,6 +187,9 @@ the right column will give its longer, more descriptive name; and if the left
 column is the longest name, the right column will show any equivalent shortest
 name, in both single and compound forms if applicable.
 
+If braces are not needed to specify a property (e.g., C<\pL>), the left
+column contains both forms, with and without braces.
+
 The right column will also caution you if a property means something different
 than what might normally be expected.
 
@@ -1179,7 +1182,7 @@ stable.
                              Byzantine_Musical_Symbols}) (256)
  X \p{Byzantine_Musical_Symbols} \p{Block=Byzantine_Musical_Symbols}
                              (Short: \p{InByzantineMusic}) (256)
-   \p{C}                   \p{Other} (= \p{General_Category=Other})
+   \p{C} \pC               \p{Other} (= \p{General_Category=Other})
                              (1_004_135 plus all above-Unicode code
                              points)
    \p{Cakm}                \p{Chakma} (= \p{Script=Chakma}) (NOT
@@ -2338,7 +2341,7 @@ stable.
                              \p{Block=Kannada}) (86)
    \p{Kthi}                \p{Kaithi} (= \p{Script=Kaithi}) (NOT
                              \p{Block=Kaithi}) (66)
-   \p{L}                   \p{Letter} (= \p{General_Category=Letter})
+   \p{L} \pL               \p{Letter} (= \p{General_Category=Letter})
                              (101_013)
  X \p{L&}                  \p{Cased_Letter} (= \p{General_Category=
                              Cased_Letter}) (3223)
@@ -2532,7 +2535,7 @@ stable.
                              \p{Block=Lydian}) (27)
    \p{Lydian}              \p{Script=Lydian} (Short: \p{Lydi}; NOT
                              \p{Block=Lydian}) (27)
-   \p{M}                   \p{Mark} (= \p{General_Category=Mark})
+   \p{M} \pM               \p{Mark} (= \p{General_Category=Mark})
                              (1645)
  X \p{Mahjong}             \p{Mahjong_Tiles} (= \p{Block=
                              Mahjong_Tiles}) (48)
@@ -2650,7 +2653,7 @@ stable.
                              \p{InMyanmarExtA}) (32)
    \p{Mymr}                \p{Myanmar} (= \p{Script=Myanmar}) (NOT
                              \p{Block=Myanmar}) (188)
-   \p{N}                   \p{Number} (= \p{General_Category=Number})
+   \p{N} \pN               \p{Number} (= \p{General_Category=Number})
                              (1148)
  X \p{NB}                  \p{No_Block} (= \p{Block=No_Block})
                              (860_672 plus all above-Unicode code
@@ -2921,7 +2924,7 @@ stable.
                              (Short: \p{Po}) (434)
    \p{Other_Symbol}        \p{General_Category=Other_Symbol} (Short:
                              \p{So}) (4404)
-   \p{P}                   \p{Punct} (= \p{General_Category=
+   \p{P} \pP               \p{Punct} (= \p{General_Category=
                              Punctuation}) (NOT
                              \p{General_Punctuation}) (636)
    \p{Paragraph_Separator} \p{General_Category=Paragraph_Separator}
@@ -3109,7 +3112,7 @@ stable.
                              \p{Block=Runic}) (78)
    \p{Runr}                \p{Runic} (= \p{Script=Runic}) (NOT
                              \p{Block=Runic}) (78)
-   \p{S}                   \p{Symbol} (= \p{General_Category=Symbol})
+   \p{S} \pS               \p{Symbol} (= \p{General_Category=Symbol})
                              (5516)
    \p{Samaritan}           \p{Script=Samaritan} (Short: \p{Samr}; NOT
                              \p{Block=Samaritan}) (61)
@@ -3928,7 +3931,7 @@ stable.
                              Yijing_Hexagram_Symbols}) (64)
  X \p{Yijing_Hexagram_Symbols} \p{Block=Yijing_Hexagram_Symbols}
                              (Short: \p{InYijing}) (64)
-   \p{Z}                   \p{Separator} (= \p{General_Category=
+   \p{Z} \pZ               \p{Separator} (= \p{General_Category=
                              Separator}) (19)
    \p{Zinh}                \p{Inherited} (= \p{Script=Inherited})
                              (523)

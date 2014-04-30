@@ -57,7 +57,7 @@ Refetch the stack pointer.  Used after a callback.  See L<perlcall>.
 
 #define PUSHMARK(p)	\
 	STMT_START {					\
-	    if (++PL_markstack_ptr == PL_markstack_max)	\
+	    if (UNLIKELY(++PL_markstack_ptr == PL_markstack_max))	\
 	    markstack_grow();				\
 	    *PL_markstack_ptr = (I32)((p) - PL_stack_base);\
 	} STMT_END
@@ -400,12 +400,12 @@ Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu> and C<PUSHu>.
 /* do SvGETMAGIC on the stack args before checking for overload */
 
 #define tryAMAGICun_MG(method, flags) STMT_START { \
-	if ( (SvFLAGS(TOPs) & (SVf_ROK|SVs_GMG)) \
+	if ( UNLIKELY((SvFLAGS(TOPs) & (SVf_ROK|SVs_GMG))) \
 		&& Perl_try_amagic_un(aTHX_ method, flags)) \
 	    return NORMAL; \
     } STMT_END
 #define tryAMAGICbin_MG(method, flags) STMT_START { \
-	if ( ((SvFLAGS(TOPm1s)|SvFLAGS(TOPs)) & (SVf_ROK|SVs_GMG)) \
+	if ( UNLIKELY(((SvFLAGS(TOPm1s)|SvFLAGS(TOPs)) & (SVf_ROK|SVs_GMG))) \
 		&& Perl_try_amagic_bin(aTHX_ method, flags)) \
 	    return NORMAL; \
     } STMT_END
@@ -422,10 +422,11 @@ Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu> and C<PUSHu>.
 	SV *tmpsv;						\
 	SV *arg= *sp;						\
         int gimme = GIMME_V;                                    \
-	if (SvAMAGIC(arg) &&					\
+	if (UNLIKELY(SvAMAGIC(arg) &&				\
 	    (tmpsv = amagic_call(arg, &PL_sv_undef, meth,	\
 				 AMGf_want_list | AMGf_noright	\
-				|AMGf_unary))) {		\
+				|AMGf_unary))))                 \
+        {                                       		\
 	    SPAGAIN;						\
             if (gimme == G_VOID) {                              \
                 (void)POPs; /* XXX ??? */                       \
@@ -434,7 +435,7 @@ Does not use C<TARG>.  See also C<XPUSHu>, C<mPUSHu> and C<PUSHu>.
                 SSize_t i;                                      \
                 SSize_t len;                                    \
                 assert(SvTYPE(tmpsv) == SVt_PVAV);              \
-                len = av_len((AV *)tmpsv) + 1;                  \
+                len = av_tindex((AV *)tmpsv) + 1;               \
                 (void)POPs; /* get rid of the arg */            \
                 EXTEND(sp, len);                                \
                 for (i = 0; i < len; ++i)                       \

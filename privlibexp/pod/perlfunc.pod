@@ -1670,9 +1670,8 @@ reached the end as just described; it can be explicitly reset by calling
 C<keys> or C<values> on the hash or array.  If you add or delete a hash's
 elements while iterating over it, the effect on the iterator is
 unspecified; for example, entries may be skipped or duplicated--so don't
-do that.  Exception: In the current implementation, it is always safe to
-delete the item most recently returned by C<each()>, so the following code
-works properly:
+do that.  Exception: It is always safe to delete the item most recently
+returned by C<each()>, so the following code works properly:
 
         while (($key, $value) = each %hash) {
           print $key, "\n";
@@ -1834,7 +1833,7 @@ C<$@>.  Beware that using C<eval> neither silences Perl from printing
 warnings to STDERR, nor does it stuff the text of warning messages into C<$@>.
 To do either of those, you have to use the C<$SIG{__WARN__}> facility, or
 turn off warnings inside the BLOCK or EXPR using S<C<no warnings 'all'>>.
-See L</warn>, L<perlvar>, L<warnings> and L<perllexwarn>.
+See L</warn>, L<perlvar>, and L<warnings>.
 
 Note that, because C<eval> traps otherwise-fatal errors, it is useful for
 determining whether a particular feature (such as C<socket> or C<symlink>)
@@ -2685,13 +2684,15 @@ These routines are the same as their counterparts in the
 system C library.  In list context, the return values from the
 various get routines are as follows:
 
-    ($name,$passwd,$uid,$gid,
-       $quota,$comment,$gcos,$dir,$shell,$expire) = getpw*
-    ($name,$passwd,$gid,$members) = getgr*
-    ($name,$aliases,$addrtype,$length,@addrs) = gethost*
-    ($name,$aliases,$addrtype,$net) = getnet*
-    ($name,$aliases,$proto) = getproto*
-    ($name,$aliases,$port,$proto) = getserv*
+ # 0        1          2           3         4
+ ( $name,   $passwd,   $gid,       $members  ) = getgr*
+ ( $name,   $aliases,  $addrtype,  $net      ) = getnet*
+ ( $name,   $aliases,  $port,      $proto    ) = getserv*
+ ( $name,   $aliases,  $proto                ) = getproto*
+ ( $name,   $aliases,  $addrtype,  $length,  @addrs ) = gethost*
+ ( $name,   $passwd,   $uid,       $gid,     $quota,
+ $comment,  $gcos,     $dir,       $shell,   $expire ) = getpw*
+ # 5        6          7           8         9
 
 (If the entry doesn't exist you get an empty list.)
 
@@ -3216,9 +3217,10 @@ X<kill> X<signal>
 
 =for Pod::Functions send a signal to a process or process group
 
-Sends a signal to a list of processes.  Returns the number of
-processes successfully signaled (which is not necessarily the
-same as the number actually killed).
+Sends a signal to a list of processes.  Returns the number of arguments
+that were successfully used to signal (which is not necessarily the same
+as the number of processes actually killed, e.g. where a process group is
+killed).
 
     $cnt = kill 'HUP', $child1, $child2;
     kill 'KILL', @goners;
@@ -3327,20 +3329,20 @@ What gets returned depends on several factors:
 
 =item If C<use bytes> is in effect:
 
-The results follow ASCII semantics.  Only the characters C<A-Z> change,
+The results follow ASCII rules.  Only the characters C<A-Z> change,
 to C<a-z> respectively.
 
 =item Otherwise, if C<use locale> (but not C<use locale ':not_characters'>) is in effect:
 
 Respects current LC_CTYPE locale for code points < 256; and uses Unicode
-semantics for the remaining code points (this last can only happen if
+rules for the remaining code points (this last can only happen if
 the UTF8 flag is also set).  See L<perllocale>.
 
 Starting in v5.20, Perl wil use full Unicode rules if the locale is
 UTF-8.  Otherwise, there is a deficiency in this scheme, which is that
 case changes that cross the 255/256
 boundary are not well-defined.  For example, the lower case of LATIN CAPITAL
-LETTER SHARP S (U+1E9E) in Unicode semantics is U+00DF (on ASCII
+LETTER SHARP S (U+1E9E) in Unicode rules is U+00DF (on ASCII
 platforms).   But under C<use locale> (prior to v5.20 or not a UTF-8
 locale), the lower case of U+1E9E is
 itself, because 0xDF may not be LATIN SMALL LETTER SHARP S in the
@@ -3351,15 +3353,15 @@ many) where the 255/256 boundary would otherwise be crossed.
 
 =item Otherwise, If EXPR has the UTF8 flag set:
 
-Unicode semantics are used for the case change.
+Unicode rules are used for the case change.
 
 =item Otherwise, if C<use feature 'unicode_strings'> or C<use locale ':not_characters'> is in effect:
 
-Unicode semantics are used for the case change.
+Unicode rules are used for the case change.
 
 =item Otherwise:
 
-ASCII semantics are used for the case change.  The lowercase of any character
+ASCII rules are used for the case change.  The lowercase of any character
 outside the ASCII range is the character itself.
 
 =back

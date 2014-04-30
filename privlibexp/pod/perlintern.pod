@@ -1842,6 +1842,12 @@ X<do_ncmp>
 =item do_op_xmldump
 X<do_op_xmldump>
 
+=item do_open6
+X<do_open6>
+
+=item do_open_raw
+X<do_open_raw>
+
 =item do_pmop_xmldump
 X<do_pmop_xmldump>
 

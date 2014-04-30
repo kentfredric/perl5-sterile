@@ -76,6 +76,7 @@ PERLVAR(I, tainted,	bool)		/* using variables controlled by $< */
 PERLVAR(I, delaymagic,	U16)		/* ($<,$>) = ... */
 PERLVAR(I, localizing,	U8)		/* are we processing a local() list? */
 PERLVAR(I, in_eval,	U8)		/* trap "fatal" errors? */
+PERLVAR(I, defgv,	GV *)           /* the *_ glob */
 /*
 
 =for apidoc mn|bool|PL_dowarn
@@ -173,6 +174,7 @@ PERLVAR(I, statgv,	GV *)
 PERLVARI(I, statname,	SV *,	NULL)
 
 #ifdef HAS_TIMES
+/* Will be removed soon after v5.21.0. See RT #121351 */
 PERLVAR(I, timesbuf,	struct tms)
 #endif
 
@@ -349,7 +351,6 @@ PERLVAR(I, psig_pend, int *)		/* per-signal "count" of pending */
 /* shortcuts to various I/O objects */
 PERLVAR(I, stdingv,	GV *)		/*  *STDIN      */
 PERLVAR(I, stderrgv,	GV *)		/*  *STDERR     */
-PERLVAR(I, defgv,	GV *)
 PERLVAR(I, argvgv,	GV *)		/*  *ARGV       */
 PERLVAR(I, argvoutgv,	GV *)		/*  *ARGVOUT    */
 PERLVAR(I, argvout_stack, AV *)
@@ -735,7 +736,7 @@ PERLVAR(I, debug_pad,	struct perl_debug_pad)	/* always needed because of the re 
 /* Hook for File::Glob */
 PERLVARI(I, globhook,	globhook_t, NULL)
 
-/* The last unconditional member of the interpreter structure when 5.19.9 was
+/* The last unconditional member of the interpreter structure when 5.19.10 was
    released. The offset of the end of this is baked into a global variable in 
    any shared perl library which will allow a sanity test in future perl
    releases.  */

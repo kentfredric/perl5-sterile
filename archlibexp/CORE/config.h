@@ -9,7 +9,7 @@
 
 /* Package name      : perl5
  * Source directory  : .
- * Configuration time: Wed Apr 30 23:08:24 NZST 2014
+ * Configuration time: Wed Apr 30 23:24:50 NZST 2014
  * Configured by     : kent
  * Target system     : linux katipo2 3.14.0-gentoo #2 smp preempt tue apr 8 20:47:34 nzst 2014 x86_64 intel(r) core(tm) i5-2410m cpu @ 2.30ghz genuineintel gnulinux 
  */
@@ -866,18 +866,6 @@
 #define OSNAME "linux"		/**/
 #define OSVERS "3.14.0-gentoo"		/**/
 
-/* USE_CROSS_COMPILE:
- *	This symbol, if defined, indicates that Perl is being cross-compiled.
- */
-/* PERL_TARGETARCH:
- *	This symbol, if defined, indicates the target architecture
- *	Perl has been cross-compiled to.  Undefined if not a cross-compile.
- */
-#ifndef USE_CROSS_COMPILE
-/*#define	USE_CROSS_COMPILE	/ **/
-#define	PERL_TARGETARCH	""	/**/
-#endif
-
 /* MULTIARCH:
  *	This symbol, if defined, signifies that the build
  *	process will produce some binary files that are going to be
@@ -908,8 +896,8 @@
  *	This symbol contains the ~name expanded version of ARCHLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/5.19.9/x86_64-linux"		/**/
-#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/5.19.9/x86_64-linux"		/**/
+#define ARCHLIB "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/5.19.10/x86_64-linux"		/**/
+#define ARCHLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/5.19.10/x86_64-linux"		/**/
 
 /* ARCHNAME:
  *	This symbol holds a string representing the architecture name.
@@ -931,8 +919,8 @@
  *	This symbol, if defined, indicates that we'd like to relocate entries
  *	in @INC at run time based on the location of the perl binary.
  */
-#define BIN "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/bin"	/**/
-#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/bin"	/**/
+#define BIN "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/bin"	/**/
+#define BIN_EXP "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/bin"	/**/
 #define PERL_RELOCATABLE_INC "undef" 		/**/
 
 /* INTSIZE:
@@ -3019,8 +3007,8 @@
  *	This symbol contains the ~name expanded version of PRIVLIB, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/5.19.9"		/**/
-#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/5.19.9"		/**/
+#define PRIVLIB "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/5.19.10"		/**/
+#define PRIVLIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/5.19.10"		/**/
 
 /* CAN_PROTOTYPE:
  *	If defined, this macro indicates that the C compiler can handle
@@ -3163,8 +3151,8 @@
  *	This symbol contains the ~name expanded version of SITEARCH, to be used
  *	in programs that are not prepared to deal with ~ expansion at run-time.
  */
-#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/site_perl/5.19.9/x86_64-linux"		/**/
-#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/site_perl/5.19.9/x86_64-linux"		/**/
+#define SITEARCH "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/site_perl/5.19.10/x86_64-linux"		/**/
+#define SITEARCH_EXP "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/site_perl/5.19.10/x86_64-linux"		/**/
 
 /* SITELIB:
  *	This symbol contains the name of the private library for this package.
@@ -3186,9 +3174,9 @@
  *	removed.  The elements in inc_version_list (inc_version_list.U) can
  *	be tacked onto this variable to generate a list of directories to search.
  */
-#define SITELIB "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/site_perl/5.19.9"		/**/
-#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/site_perl/5.19.9"		/**/
-#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.19.9-pristine/lib/site_perl"		/**/
+#define SITELIB "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/site_perl/5.19.10"		/**/
+#define SITELIB_EXP "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/site_perl/5.19.10"		/**/
+#define SITELIB_STEM "/home/kent/perl5/perlbrew/perls/5.19.10-pristine/lib/site_perl"		/**/
 
 /* Size_t_size:
  *	This symbol holds the size of a Size_t in bytes.
@@ -3323,6 +3311,18 @@
 /*#define I_TERMIO		/ **/
 #define I_TERMIOS		/**/
 /*#define I_SGTTY		/ **/
+
+/* USE_CROSS_COMPILE:
+ *	This symbol, if defined, indicates that Perl is being cross-compiled.
+ */
+/* PERL_TARGETARCH:
+ *	This symbol, if defined, indicates the target architecture
+ *	Perl has been cross-compiled to.  Undefined if not a cross-compile.
+ */
+#ifndef USE_CROSS_COMPILE
+/*#define	USE_CROSS_COMPILE	/ **/
+#define	PERL_TARGETARCH	""	/**/
+#endif
 
 /* PERL_USE_DEVEL:
  *	This symbol, if defined, indicates that Perl was configured with
@@ -4576,7 +4576,7 @@
  *	script to make sure (one hopes) that it runs with perl and not
  *	some shell.
  */
-#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.19.9-pristine/bin/perl5.19.9"		/**/
+#define STARTPERL "#!/home/kent/perl5/perlbrew/perls/5.19.10-pristine/bin/perl5.19.10"		/**/
 
 /* HAS_STDIO_STREAM_ARRAY:
  *	This symbol, if defined, tells that there is an array

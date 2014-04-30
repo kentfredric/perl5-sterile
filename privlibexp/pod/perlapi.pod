@@ -1711,7 +1711,7 @@ X<custom_op_xop>
 Return the XOP structure for a given custom op.  This macro should be
 considered internal to OP_NAME and the other access macros: use them instead.
 This macro does call a function.  Prior
-to 5.19.9, this was implemented as a
+to 5.19.6, this was implemented as a
 function.
 
 NOTE: this function must be explicitly called as Perl_custom_op_xop with an aTHX_ parameter.
@@ -7089,9 +7089,31 @@ Found in file op.c
 =item OP_TYPE_IS
 X<OP_TYPE_IS>
 
-Returns true if the given OP is not NULL and if it is of the given
-type.
+Returns true if the given OP is not a NULL pointer
+and if it is of the given type.
+
+The negation of this macro, C<OP_TYPE_ISNT> is also available
+as well as C<OP_TYPE_IS_NN> and C<OP_TYPE_ISNT_NN> which elide
+the NULL pointer check.
+
 	bool	OP_TYPE_IS(OP *o, Optype type)
+
+=for hackers
+Found in file op.h
+
+=item OP_TYPE_IS_OR_WAS
+X<OP_TYPE_IS_OR_WAS>
+
+Returns true if the given OP is not a NULL pointer and
+if it is of the given type or used to be before being
+replaced by an OP of type OP_NULL.
+
+The negation of this macro, C<OP_TYPE_ISNT_AND_WASNT>
+is also available as well as C<OP_TYPE_IS_OR_WAS_NN>
+and C<OP_TYPE_ISNT_AND_WASNT_NN> which elide
+the NULL pointer check.
+
+	bool	OP_TYPE_IS_OR_WAS(OP *o, Optype type)
 
 =for hackers
 Found in file op.h

@@ -175,6 +175,7 @@
 #  define pTHX_7	8
 #  define pTHX_8	9
 #  define pTHX_9	10
+#  define pTHX_12	13
 #  if defined(DEBUGGING) && !defined(PERL_TRACK_MEMPOOL)
 #    define PERL_TRACK_MEMPOOL
 #  endif
@@ -384,6 +385,7 @@
 #  define pTHX_7	7
 #  define pTHX_8	8
 #  define pTHX_9	9
+#  define pTHX_12	12
 #endif
 
 #ifndef dVAR
@@ -3220,7 +3222,7 @@ typedef I32 (*filter_t) (pTHX_ int, SV *, int);
 		&& idx >= AvFILLp(PL_parser->rsfp_filters))
 #define PERL_FILTER_EXISTS(i) \
 	    (PL_parser && PL_parser->rsfp_filters \
-		&& (i) <= av_len(PL_parser->rsfp_filters))
+		&& (i) <= av_tindex(PL_parser->rsfp_filters))
 
 #if defined(_AIX) && !defined(_AIX43)
 #if defined(USE_REENTRANT) || defined(_REENTRANT) || defined(_THREAD_SAFE)
@@ -3485,11 +3487,11 @@ my_swap16(const U16 x) {
 #define U_32(n) ((n) < 0.0 ? ((n) < I32_MIN ? (UV) I32_MIN : (U32)(I32) (n)) \
                   : ((n) < U32_MAX_P1 ? (U32) (n) \
                      : ((n) > 0 ? U32_MAX : 0 /* NaN */)))
-#define I_V(n) ((n) < IV_MAX_P1 ? ((n) < IV_MIN ? IV_MIN : (IV) (n)) \
-                  : ((n) < UV_MAX_P1 ? (IV)(UV) (n) \
+#define I_V(n) (LIKELY((n) < IV_MAX_P1) ? (UNLIKELY((n) < IV_MIN) ? IV_MIN : (IV) (n)) \
+                  : (LIKELY((n) < UV_MAX_P1) ? (IV)(UV) (n) \
                      : ((n) > 0 ? (IV)UV_MAX : 0 /* NaN */)))
-#define U_V(n) ((n) < 0.0 ? ((n) < IV_MIN ? (UV) IV_MIN : (UV)(IV) (n)) \
-                  : ((n) < UV_MAX_P1 ? (UV) (n) \
+#define U_V(n) ((n) < 0.0 ? (UNLIKELY((n) < IV_MIN) ? (UV) IV_MIN : (UV)(IV) (n)) \
+                  : (LIKELY((n) < UV_MAX_P1) ? (UV) (n) \
                      : ((n) > 0 ? UV_MAX : 0 /* NaN */)))
 #endif
 
@@ -5459,7 +5461,7 @@ typedef struct am_table_short AMTS;
 
 #ifndef PERL_MICRO
 #	ifndef PERL_ASYNC_CHECK
-#		define PERL_ASYNC_CHECK() if (PL_sig_pending) PL_signalhook(aTHX)
+#		define PERL_ASYNC_CHECK() if (UNLIKELY(PL_sig_pending)) PL_signalhook(aTHX)
 #	endif
 #endif
 
