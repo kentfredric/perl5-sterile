@@ -805,26 +805,6 @@
  */
 /*#define I_SYS_WAIT	/ **/
 
-/* I_TERMIO:
- *	This symbol, if defined, indicates that the program should include
- *	<termio.h> rather than <sgtty.h>.  There are also differences in
- *	the ioctl() calls that depend on the value of this symbol.
- */
-/* I_TERMIOS:
- *	This symbol, if defined, indicates that the program should include
- *	the POSIX termios.h rather than sgtty.h or termio.h.
- *	There are also differences in the ioctl() calls that depend on the
- *	value of this symbol.
- */
-/* I_SGTTY:
- *	This symbol, if defined, indicates that the program should include
- *	<sgtty.h> rather than <termio.h>.  There are also differences in
- *	the ioctl() calls that depend on the value of this symbol.
- */
-/*#define I_TERMIO		/ **/
-/*#define I_TERMIOS		/ **/
-/*#define I_SGTTY		/ **/
-
 /* I_UNISTD:
  *	This symbol, if defined, indicates to the C program that it should
  *	include <unistd.h>.
@@ -3324,6 +3304,26 @@
 /*#define PERL_VENDORLIB_EXP ""		/ **/
 /*#define PERL_VENDORLIB_STEM ""		/ **/
 
+/* I_TERMIO:
+ *	This symbol, if defined, indicates that the program should include
+ *	<termio.h> rather than <sgtty.h>.  There are also differences in
+ *	the ioctl() calls that depend on the value of this symbol.
+ */
+/* I_TERMIOS:
+ *	This symbol, if defined, indicates that the program should include
+ *	the POSIX termios.h rather than sgtty.h or termio.h.
+ *	There are also differences in the ioctl() calls that depend on the
+ *	value of this symbol.
+ */
+/* I_SGTTY:
+ *	This symbol, if defined, indicates that the program should include
+ *	<sgtty.h> rather than <termio.h>.  There are also differences in
+ *	the ioctl() calls that depend on the value of this symbol.
+ */
+/*#define I_TERMIO		/ **/
+/*#define I_TERMIOS		/ **/
+/*#define I_SGTTY		/ **/
+
 /* PERL_USE_DEVEL:
  *	This symbol, if defined, indicates that Perl was configured with
  *	-Dusedevel, to enable development features.  This should not be
@@ -4718,6 +4718,6 @@
 #endif
 
 /* Generated from:
- * 4ce7b989417303946dd7101ed52557e157c57900e9dbff6b5799a7b6af48dbd3 config_h.SH
- * 71b0dcf437b30c409fc23b5c4c6ec2c988fc419295a650fe80f93a6d5fb0ff94 uconfig.sh
+ * cdad09dc550db3784fa27db0f3cc6e1c1644e496c430e464d143bc725c327a53 config_h.SH
+ * ac5e1b20c67628ee909f09737452ab1878a99053c728e3e7746c23c7b8a0d037 uconfig.sh
  * ex: set ro: */

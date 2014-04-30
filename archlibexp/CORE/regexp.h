@@ -36,13 +36,14 @@ struct regexp_engine;
 struct regexp;
 
 struct reg_substr_datum {
-    SSize_t min_offset;
-    SSize_t max_offset;
+    SSize_t min_offset; /* min pos (in chars) that substr must appear */
+    SSize_t max_offset  /* max pos (in chars) that substr must appear */;
     SV *substr;		/* non-utf8 variant */
     SV *utf8_substr;	/* utf8 variant */
-    SSize_t end_shift;
+    SSize_t end_shift;  /* how many fixed chars must end the string */
 };
 struct reg_substr_data {
+    U8      check_ix;   /* index into data[] of check substr */
     struct reg_substr_datum data[3];	/* Actual array */
 };
 
@@ -128,6 +129,7 @@ struct reg_code_block {
 	SSize_t suboffset; /* byte offset of subbeg from logical start of str */ \
 	SSize_t subcoffset; /* suboffset equiv, but in chars (for @-/@+) */ \
 	/* Information about the match that isn't often used */		\
+        SSize_t maxlen;        /* mininum possible number of chars in string to match */\
 	/* offset from wrapped to the start of precomp */		\
 	PERL_BITFIELD32 pre_prefix:4;					\
         /* original flags used to compile the pattern, may differ */    \
@@ -384,25 +386,21 @@ get_regex_charset_name(const U32 flags, STRLEN* const lenp)
     }
 }
 
-/* Anchor and GPOS related stuff */
-#define RXf_ANCH_BOL    	(1<<(RXf_BASE_SHIFT+0))
-#define RXf_ANCH_MBOL   	(1<<(RXf_BASE_SHIFT+1))
-#define RXf_ANCH_SBOL   	(1<<(RXf_BASE_SHIFT+2))
-#define RXf_ANCH_GPOS   	(1<<(RXf_BASE_SHIFT+3))
-#define RXf_GPOS_SEEN   	(1<<(RXf_BASE_SHIFT+4))
-#define RXf_GPOS_FLOAT  	(1<<(RXf_BASE_SHIFT+5))
-/* two bits here */
-#define RXf_ANCH        	(RXf_ANCH_BOL|RXf_ANCH_MBOL|RXf_ANCH_GPOS|RXf_ANCH_SBOL)
-#define RXf_GPOS_CHECK          (RXf_GPOS_SEEN|RXf_ANCH_GPOS)
-#define RXf_ANCH_SINGLE         (RXf_ANCH_SBOL|RXf_ANCH_GPOS)
+/* Do we have some sort of anchor? */
+#define RXf_IS_ANCHORED         (1<<(RXf_BASE_SHIFT+0))
+#define RXf_UNUSED1             (1<<(RXf_BASE_SHIFT+1))
+#define RXf_UNUSED2             (1<<(RXf_BASE_SHIFT+2))
+#define RXf_UNUSED3             (1<<(RXf_BASE_SHIFT+3))
+#define RXf_UNUSED4             (1<<(RXf_BASE_SHIFT+4))
+#define RXf_UNUSED5             (1<<(RXf_BASE_SHIFT+5))
 
 /* What we have seen */
 #define RXf_NO_INPLACE_SUBST    (1<<(RXf_BASE_SHIFT+6))
 #define RXf_EVAL_SEEN   	(1<<(RXf_BASE_SHIFT+7))
-#define RXf_CANY_SEEN   	(1<<(RXf_BASE_SHIFT+8))
+#define RXf_UNUSED8             (1<<(RXf_BASE_SHIFT+8))
 
 /* Special */
-#define RXf_NOSCAN      	(1<<(RXf_BASE_SHIFT+9))
+#define RXf_UNBOUNDED_QUANTIFIER_SEEN   (1<<(RXf_BASE_SHIFT+9))
 #define RXf_CHECK_ALL   	(1<<(RXf_BASE_SHIFT+10))
 
 /* UTF8 related */
@@ -438,7 +436,7 @@ get_regex_charset_name(const U32 flags, STRLEN* const lenp)
  *
  */
 
-#if NO_TAINT_SUPPORT
+#ifdef NO_TAINT_SUPPORT
 #   define RX_ISTAINTED(prog)    0
 #   define RX_TAINT_on(prog)     NOOP
 #   define RXp_MATCH_TAINTED(prog) 0

@@ -1404,7 +1404,12 @@ not reading from a record-oriented file (or your OS doesn't have
 record-oriented files), then you'll likely get a full chunk of data
 with every read.  If a record is larger than the record size you've
 set, you'll get the record back in pieces.  Trying to set the record
-size to zero or less will cause reading in the (rest of the) whole file.
+size to zero or less is deprecated and will cause $/ to have the value
+of "undef", which will cause reading in the (rest of the) whole file.
+
+As of 5.19.9 setting C<$/> to any other form of reference will throw a
+fatal exception. This is in preparation for supporting new ways to set
+C<$/> in the future.
 
 On VMS only, record reads bypass PerlIO layers and any associated
 buffering, so you must not mix record and non-record reads on the
@@ -2109,6 +2114,14 @@ were compiled.
 
 Save source code lines into C<@{"_<$filename"}>.
 
+=item 0x800
+
+When saving source, include evals that generate no subroutines.
+
+=item 0x1000
+
+When saving source, include source that did not compile.
+
 =back
 
 Some bits may be relevant at compile-time only, some at
@@ -2240,10 +2253,10 @@ The version + patchlevel / 1000 of the Perl interpreter.  This variable
 can be used to determine whether the Perl interpreter executing a
 script is in the right range of versions:
 
-    warn "No checksumming!\n" if $] < 3.019;
+    warn "No PerlIO!\n" if $] lt '5.008';
 
 The floating point representation can sometimes lead to inaccurate
-numeric comparisons.
+numeric comparisons, so string comparisons are recommended.
 
 See also the documentation of C<use VERSION> and C<require VERSION>
 for a convenient way to fail if the running Perl interpreter is too old.

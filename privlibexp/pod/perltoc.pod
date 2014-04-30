@@ -517,13 +517,13 @@ Many more features
 
 =item Class::Accessor
 
-=item Object::Tiny
+=item Class::Tiny
 
 =item Role::Tiny
 
 =item OO System Summary
 
-L<Moose>, L<Class::Accessor>, L<Object::Tiny>, L<Role::Tiny>
+L<Moose>, L<Class::Accessor>, L<Class::Tiny>, L<Role::Tiny>
 
 =item Other OO Systems
 
@@ -2035,6 +2035,8 @@ L<perldebguts>, undocumented, used internally by the L<overload> feature
 
 =over 4
 
+=item Signatures
+
 =item Private Variables via my()
 X<my> X<variable, lexical> X<lexical> X<lexical variable> X<scope, lexical>
 X<lexical scope> X<attributes, my>
@@ -2768,9 +2770,9 @@ $COMPILING, $^C X<$^C> X<$COMPILING>, $DEBUGGING, $^D X<$^D> X<$DEBUGGING>,
 ${^ENCODING} X<${^ENCODING}>, ${^GLOBAL_PHASE} X<${^GLOBAL_PHASE}>,
 CONSTRUCT, START, CHECK, INIT, RUN, END, DESTRUCT, $^H X<$^H>, %^H X<%^H>,
 ${^OPEN} X<${^OPEN}>, $PERLDB, $^P X<$^P> X<$PERLDB>, 0x01, 0x02, 0x04,
-0x08, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, ${^TAINT} X<${^TAINT}>,
-${^UNICODE} X<${^UNICODE}>, ${^UTF8CACHE} X<${^UTF8CACHE}>, ${^UTF8LOCALE}
-X<${^UTF8LOCALE}>
+0x08, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000, ${^TAINT}
+X<${^TAINT}>, ${^UNICODE} X<${^UNICODE}>, ${^UTF8CACHE} X<${^UTF8CACHE}>,
+${^UTF8LOCALE} X<${^UTF8LOCALE}>
 
 =item Deprecated and removed variables
 
@@ -3591,15 +3593,15 @@ portable
 dbmopen, dump, exec, exit, fcntl, flock, fork, getlogin, getpgrp, getppid,
 getpriority, getpwnam, getgrnam, getnetbyname, getpwuid, getgrgid,
 getnetbyaddr, getprotobynumber, getservbyport, getpwent, getgrent,
-gethostbyname, gethostent, getnetent, getprotoent, getservent, sethostent,
-setnetent, setprotoent, setservent, endpwent, endgrent, endhostent,
-endnetent, endprotoent, endservent, getsockopt SOCKET,LEVEL,OPTNAME, glob,
-gmtime, ioctl FILEHANDLE,FUNCTION,SCALAR, kill, link, localtime, lstat,
-msgctl, msgget, msgsnd, msgrcv, open, readlink, rename, rewinddir, select,
-semctl, semget, semop, setgrent, setpgrp, setpriority, setpwent,
-setsockopt, shmctl, shmget, shmread, shmwrite, sleep, sockatmark,
-socketpair, stat, symlink, syscall, sysopen, system, times, truncate,
-umask, utime, wait, waitpid
+gethostbyname, gethostent, getnetent, getprotoent, getservent, seekdir,
+sethostent, setnetent, setprotoent, setservent, endpwent, endgrent,
+endhostent, endnetent, endprotoent, endservent, getsockopt
+SOCKET,LEVEL,OPTNAME, glob, gmtime, ioctl FILEHANDLE,FUNCTION,SCALAR, kill,
+link, localtime, lstat, msgctl, msgget, msgsnd, msgrcv, open, readlink,
+rename, rewinddir, select, semctl, semget, semop, setgrent, setpgrp,
+setpriority, setpwent, setsockopt, shmctl, shmget, shmread, shmwrite,
+sleep, sockatmark, socketpair, stat, symlink, syscall, sysopen, system,
+telldir, times, truncate, umask, utime, wait, waitpid
 
 =back
 
@@ -3612,7 +3614,7 @@ Symbian, NetBSD, FreeBSD, Debian GNU/kFreeBSD, Haiku, Irix (6.5. What
 else?), OpenBSD, Dragonfly BSD, Midnight BSD, QNX Neutrino RTOS (6.5.0),
 MirOS BSD, Stratus OpenVOS (17.0 or later), time_t issues that may or may
 not be fixed, Symbian (Series 60 v3, 3.2 and 5 - what else?), Stratus VOS /
-OpenVOS, AIX, FreeMINT
+OpenVOS, AIX, Android, FreeMINT
 
 =item EOL Platforms 
 
@@ -3662,8 +3664,9 @@ Category LC_CTYPE: Character Types, Other categories
 
 =item The use locale pragma
 
-B<Not within the scope of any C<"use locale"> variant>, B<Under C<"use
-locale ':not_characters';">>, B<Under just plain C<"use locale";>>
+B<Not within the scope of any C<"use locale"> variant>, B<Lingering effects
+of C<S<use locale>>>, B<Under C<"use locale ':not_characters';">>, B<Under
+just plain C<"use locale";>>
 
 =item The setlocale function
 
@@ -3709,8 +3712,8 @@ locale ':not_characters';">>, B<Under just plain C<"use locale";>>
 
 =item ENVIRONMENT
 
-PERL_BADLANG, LC_ALL, LANGUAGE, LC_CTYPE, LC_COLLATE, LC_MONETARY,
-LC_NUMERIC, LC_TIME, LANG
+PERL_SKIP_LOCALE_INIT, PERL_BADLANG, LC_ALL, LANGUAGE, LC_CTYPE,
+LC_COLLATE, LC_MONETARY, LC_NUMERIC, LC_TIME, LANG
 
 =over 4
 
@@ -4350,15 +4353,16 @@ Net::SMTP, Net::Time, Net::hostent, Net::libnetFAQ, Net::netent,
 Net::protoent, Net::servent, O, ODBM_File, Opcode, POSIX,
 Package::Constants, Params::Check, Parse::CPAN::Meta, Perl::OSType, PerlIO,
 PerlIO::encoding, PerlIO::mmap, PerlIO::scalar, PerlIO::via,
-PerlIO::via::QuotedPrint, Pod::Escapes, Pod::Functions, Pod::Html,
-Pod::Man, Pod::ParseLink, Pod::Perldoc, Pod::Perldoc::BaseTo,
-Pod::Perldoc::GetOptsOO, Pod::Perldoc::ToANSI, Pod::Perldoc::ToChecker,
-Pod::Perldoc::ToMan, Pod::Perldoc::ToNroff, Pod::Perldoc::ToPod,
-Pod::Perldoc::ToRtf, Pod::Perldoc::ToTerm, Pod::Perldoc::ToText,
-Pod::Perldoc::ToTk, Pod::Perldoc::ToXml, Pod::Simple, Pod::Simple::Checker,
-Pod::Simple::Debug, Pod::Simple::DumpAsText, Pod::Simple::DumpAsXML,
-Pod::Simple::HTML, Pod::Simple::HTMLBatch, Pod::Simple::LinkSection,
-Pod::Simple::Methody, Pod::Simple::PullParser,
+PerlIO::via::QuotedPrint, Pod::Escapes, Pod::Find, Pod::Functions,
+Pod::Html, Pod::InputObjects, Pod::Man, Pod::ParseLink, Pod::ParseUtils,
+Pod::Parser, Pod::Perldoc, Pod::Perldoc::BaseTo, Pod::Perldoc::GetOptsOO,
+Pod::Perldoc::ToANSI, Pod::Perldoc::ToChecker, Pod::Perldoc::ToMan,
+Pod::Perldoc::ToNroff, Pod::Perldoc::ToPod, Pod::Perldoc::ToRtf,
+Pod::Perldoc::ToTerm, Pod::Perldoc::ToText, Pod::Perldoc::ToTk,
+Pod::Perldoc::ToXml, Pod::PlainText, Pod::Select, Pod::Simple,
+Pod::Simple::Checker, Pod::Simple::Debug, Pod::Simple::DumpAsText,
+Pod::Simple::DumpAsXML, Pod::Simple::HTML, Pod::Simple::HTMLBatch,
+Pod::Simple::LinkSection, Pod::Simple::Methody, Pod::Simple::PullParser,
 Pod::Simple::PullParserEndToken, Pod::Simple::PullParserStartToken,
 Pod::Simple::PullParserTextToken, Pod::Simple::PullParserToken,
 Pod::Simple::RTF, Pod::Simple::Search, Pod::Simple::SimpleTree,
@@ -5069,6 +5073,8 @@ SBRKed/SBRKs:CONTINUOUS>, C<pad: 0>, C<heads: 2192>, C<chain: 0>, C<tail:
 =item Version caveat
 
 =item Dynamic Loading versus Static Loading
+
+=item Threads and PERL_NO_GET_CONTEXT
 
 =back
 
@@ -5901,7 +5907,8 @@ X<sv_usepvn_mg>, sv_uv X<sv_uv>, unpack_str X<unpack_str>
 
 =item Functions in file op.c
 
-alloccopstash X<alloccopstash>, op_contextualize X<op_contextualize>
+alloccopstash X<alloccopstash>, op_contextualize X<op_contextualize>,
+op_free X<op_free>, op_null X<op_null>
 
 =item Functions in file perl.h
 
@@ -6356,22 +6363,22 @@ X<newGVgen>, newGVgen_flags X<newGVgen_flags>, newHVREF X<newHVREF>,
 newHVhv X<newHVhv>, newIO X<newIO>, newMYSUB X<newMYSUB>, newPROG
 X<newPROG>, newRV X<newRV>, newSUB X<newSUB>, newSVREF X<newSVREF>,
 newSVpvf_nocontext X<newSVpvf_nocontext>, new_stackinfo X<new_stackinfo>,
-ninstr X<ninstr>, op_free X<op_free>, op_null X<op_null>, op_refcnt_lock
-X<op_refcnt_lock>, op_refcnt_unlock X<op_refcnt_unlock>, parser_dup
-X<parser_dup>, perl_alloc_using X<perl_alloc_using>, perl_clone_using
-X<perl_clone_using>, pmop_dump X<pmop_dump>, pop_scope X<pop_scope>,
-pregcomp X<pregcomp>, pregexec X<pregexec>, pregfree X<pregfree>, pregfree2
-X<pregfree2>, printf_nocontext X<printf_nocontext>, ptr_table_fetch
-X<ptr_table_fetch>, ptr_table_free X<ptr_table_free>, ptr_table_new
-X<ptr_table_new>, ptr_table_split X<ptr_table_split>, ptr_table_store
-X<ptr_table_store>, push_scope X<push_scope>, re_compile X<re_compile>,
-re_dup_guts X<re_dup_guts>, re_intuit_start X<re_intuit_start>,
-re_intuit_string X<re_intuit_string>, realloc X<realloc>, reentrant_free
-X<reentrant_free>, reentrant_init X<reentrant_init>, reentrant_retry
-X<reentrant_retry>, reentrant_size X<reentrant_size>, ref X<ref>,
-reg_named_buff_all X<reg_named_buff_all>, reg_named_buff_exists
-X<reg_named_buff_exists>, reg_named_buff_fetch X<reg_named_buff_fetch>,
-reg_named_buff_firstkey X<reg_named_buff_firstkey>, reg_named_buff_nextkey
+ninstr X<ninstr>, op_refcnt_lock X<op_refcnt_lock>, op_refcnt_unlock
+X<op_refcnt_unlock>, parser_dup X<parser_dup>, perl_alloc_using
+X<perl_alloc_using>, perl_clone_using X<perl_clone_using>, pmop_dump
+X<pmop_dump>, pop_scope X<pop_scope>, pregcomp X<pregcomp>, pregexec
+X<pregexec>, pregfree X<pregfree>, pregfree2 X<pregfree2>, printf_nocontext
+X<printf_nocontext>, ptr_table_fetch X<ptr_table_fetch>, ptr_table_free
+X<ptr_table_free>, ptr_table_new X<ptr_table_new>, ptr_table_split
+X<ptr_table_split>, ptr_table_store X<ptr_table_store>, push_scope
+X<push_scope>, re_compile X<re_compile>, re_dup_guts X<re_dup_guts>,
+re_intuit_start X<re_intuit_start>, re_intuit_string X<re_intuit_string>,
+realloc X<realloc>, reentrant_free X<reentrant_free>, reentrant_init
+X<reentrant_init>, reentrant_retry X<reentrant_retry>, reentrant_size
+X<reentrant_size>, ref X<ref>, reg_named_buff_all X<reg_named_buff_all>,
+reg_named_buff_exists X<reg_named_buff_exists>, reg_named_buff_fetch
+X<reg_named_buff_fetch>, reg_named_buff_firstkey
+X<reg_named_buff_firstkey>, reg_named_buff_nextkey
 X<reg_named_buff_nextkey>, reg_named_buff_scalar X<reg_named_buff_scalar>,
 regclass_swash X<regclass_swash>, regdump X<regdump>, regdupe_internal
 X<regdupe_internal>, regexec_flags X<regexec_flags>, regfree_internal
@@ -6676,8 +6683,9 @@ op_refcnt_inc X<op_refcnt_inc>, op_std_init X<op_std_init>, op_unscope
 X<op_unscope>, op_xmldump X<op_xmldump>, opslab_force_free
 X<opslab_force_free>, opslab_free X<opslab_free>, opslab_free_nopad
 X<opslab_free_nopad>, package X<package>, package_version
-X<package_version>, padlist_store X<padlist_store>, parse_unicode_opts
-X<parse_unicode_opts>, parser_free X<parser_free>, parser_free_nexttoke_ops
+X<package_version>, padlist_store X<padlist_store>, parse_subsignature
+X<parse_subsignature>, parse_unicode_opts X<parse_unicode_opts>,
+parser_free X<parser_free>, parser_free_nexttoke_ops
 X<parser_free_nexttoke_ops>, path_is_searchable X<path_is_searchable>, peep
 X<peep>, pmop_xmldump X<pmop_xmldump>, pmruntime X<pmruntime>, populate_isa
 X<populate_isa>, prepend_madprops X<prepend_madprops>, ptr_hash
@@ -6687,40 +6695,41 @@ X<reg_named_buff_iter>, reg_numbered_buff_fetch X<reg_numbered_buff_fetch>,
 reg_numbered_buff_length X<reg_numbered_buff_length>,
 reg_numbered_buff_store X<reg_numbered_buff_store>, reg_qr_package
 X<reg_qr_package>, reg_temp_copy X<reg_temp_copy>, regcurly X<regcurly>,
-regpposixcc X<regpposixcc>, regprop X<regprop>, report_evil_fh
-X<report_evil_fh>, report_redefined_cv X<report_redefined_cv>,
-report_wrongway_fh X<report_wrongway_fh>, rpeep X<rpeep>, rsignal_restore
-X<rsignal_restore>, rsignal_save X<rsignal_save>, rxres_save X<rxres_save>,
-same_dirent X<same_dirent>, save_strlen X<save_strlen>, sawparens
-X<sawparens>, scalar X<scalar>, scalarvoid X<scalarvoid>, set_caret_X
-X<set_caret_X>, sighandler X<sighandler>, softref2xv X<softref2xv>,
-ssc_add_range X<ssc_add_range>, ssc_clear_locale X<ssc_clear_locale>,
-ssc_cp_and X<ssc_cp_and>, ssc_intersection X<ssc_intersection>, ssc_union
-X<ssc_union>, sub_crush_depth X<sub_crush_depth>, sv_add_backref
-X<sv_add_backref>, sv_buf_to_ro X<sv_buf_to_ro>, sv_catxmlpv
-X<sv_catxmlpv>, sv_catxmlpvn X<sv_catxmlpvn>, sv_catxmlsv X<sv_catxmlsv>,
-sv_del_backref X<sv_del_backref>, sv_free2 X<sv_free2>, sv_kill_backrefs
-X<sv_kill_backrefs>, sv_len_utf8_nomg X<sv_len_utf8_nomg>,
-sv_magicext_mglob X<sv_magicext_mglob>, sv_mortalcopy_flags
-X<sv_mortalcopy_flags>, sv_or_pv_pos_u2b X<sv_or_pv_pos_u2b>, sv_resetpvn
-X<sv_resetpvn>, sv_sethek X<sv_sethek>, sv_setsv_cow X<sv_setsv_cow>,
-sv_unglob X<sv_unglob>, sv_xmlpeek X<sv_xmlpeek>, tied_method
-X<tied_method>, token_free X<token_free>, token_getmad X<token_getmad>,
-translate_substr_offsets X<translate_substr_offsets>, try_amagic_bin
-X<try_amagic_bin>, try_amagic_un X<try_amagic_un>, unshare_hek
-X<unshare_hek>, utilize X<utilize>, varname X<varname>, vivify_defelem
-X<vivify_defelem>, vivify_ref X<vivify_ref>, wait4pid X<wait4pid>,
-was_lvalue_sub X<was_lvalue_sub>, watch X<watch>,
-win32_croak_not_implemented X<win32_croak_not_implemented>, write_to_stderr
-X<write_to_stderr>, xmldump_all X<xmldump_all>, xmldump_all_perl
-X<xmldump_all_perl>, xmldump_eval X<xmldump_eval>, xmldump_form
-X<xmldump_form>, xmldump_indent X<xmldump_indent>, xmldump_packsubs
-X<xmldump_packsubs>, xmldump_packsubs_perl X<xmldump_packsubs_perl>,
-xmldump_sub X<xmldump_sub>, xmldump_sub_perl X<xmldump_sub_perl>,
-xmldump_vindent X<xmldump_vindent>, xs_apiversion_bootcheck
-X<xs_apiversion_bootcheck>, xs_version_bootcheck X<xs_version_bootcheck>,
-yyerror X<yyerror>, yyerror_pv X<yyerror_pv>, yyerror_pvn X<yyerror_pvn>,
-yylex X<yylex>, yyparse X<yyparse>, yyunlex X<yyunlex>
+regpposixcc X<regpposixcc>, regprop X<regprop>, reguni X<reguni>,
+report_evil_fh X<report_evil_fh>, report_redefined_cv
+X<report_redefined_cv>, report_wrongway_fh X<report_wrongway_fh>, rpeep
+X<rpeep>, rsignal_restore X<rsignal_restore>, rsignal_save X<rsignal_save>,
+rxres_save X<rxres_save>, same_dirent X<same_dirent>, save_strlen
+X<save_strlen>, sawparens X<sawparens>, scalar X<scalar>, scalarvoid
+X<scalarvoid>, set_caret_X X<set_caret_X>, sighandler X<sighandler>,
+softref2xv X<softref2xv>, ssc_add_range X<ssc_add_range>, ssc_clear_locale
+X<ssc_clear_locale>, ssc_cp_and X<ssc_cp_and>, ssc_intersection
+X<ssc_intersection>, ssc_union X<ssc_union>, sub_crush_depth
+X<sub_crush_depth>, sv_add_backref X<sv_add_backref>, sv_buf_to_ro
+X<sv_buf_to_ro>, sv_catxmlpv X<sv_catxmlpv>, sv_catxmlpvn X<sv_catxmlpvn>,
+sv_catxmlsv X<sv_catxmlsv>, sv_del_backref X<sv_del_backref>, sv_free2
+X<sv_free2>, sv_kill_backrefs X<sv_kill_backrefs>, sv_len_utf8_nomg
+X<sv_len_utf8_nomg>, sv_magicext_mglob X<sv_magicext_mglob>,
+sv_mortalcopy_flags X<sv_mortalcopy_flags>, sv_or_pv_pos_u2b
+X<sv_or_pv_pos_u2b>, sv_resetpvn X<sv_resetpvn>, sv_sethek X<sv_sethek>,
+sv_setsv_cow X<sv_setsv_cow>, sv_unglob X<sv_unglob>, sv_xmlpeek
+X<sv_xmlpeek>, tied_method X<tied_method>, token_free X<token_free>,
+token_getmad X<token_getmad>, translate_substr_offsets
+X<translate_substr_offsets>, try_amagic_bin X<try_amagic_bin>,
+try_amagic_un X<try_amagic_un>, unshare_hek X<unshare_hek>, utilize
+X<utilize>, varname X<varname>, vivify_defelem X<vivify_defelem>,
+vivify_ref X<vivify_ref>, wait4pid X<wait4pid>, was_lvalue_sub
+X<was_lvalue_sub>, watch X<watch>, win32_croak_not_implemented
+X<win32_croak_not_implemented>, write_to_stderr X<write_to_stderr>,
+xmldump_all X<xmldump_all>, xmldump_all_perl X<xmldump_all_perl>,
+xmldump_eval X<xmldump_eval>, xmldump_form X<xmldump_form>, xmldump_indent
+X<xmldump_indent>, xmldump_packsubs X<xmldump_packsubs>,
+xmldump_packsubs_perl X<xmldump_packsubs_perl>, xmldump_sub X<xmldump_sub>,
+xmldump_sub_perl X<xmldump_sub_perl>, xmldump_vindent X<xmldump_vindent>,
+xs_apiversion_bootcheck X<xs_apiversion_bootcheck>, xs_version_bootcheck
+X<xs_version_bootcheck>, yyerror X<yyerror>, yyerror_pv X<yyerror_pv>,
+yyerror_pvn X<yyerror_pvn>, yylex X<yylex>, yyparse X<yyparse>, yyunlex
+X<yyunlex>
 
 =item AUTHORS
 
@@ -7394,7 +7403,7 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.19.8
+=head2 perldelta - what is new for perl v5.19.9
 
 =over 4
 
@@ -7404,7 +7413,17 @@ B<-i>, B<-V>
 
 =over 4
 
-=item New C<\p{Unicode}> regular expression pattern property
+=item UTF-8 locales now supported better under C<S<use locale>>
+
+=item C<S<use locale>> now compiles on systems without locale ability
+
+=item PERL_DEBUG_READONLY_COW
+
+=item C<-DL> runtime option now added for tracing locale setting
+
+=item Subroutine signatures
+
+=item More locale initialization fallback options
 
 =back
 
@@ -7412,28 +7431,20 @@ B<-i>, B<-V>
 
 =over 4
 
-=item C<do> can no longer be used to call subroutines
+=item Tainting happens under more circumstances; now conforms to
+documentation
 
-=item C<\p{}>, C<\P{}> matching has changed for non-Unicode code
-points.
-
-=item C<\p{All}> has been expanded to match all possible code points
+=item Quote-like escape changes
 
 =back
 
 =item Deprecations
 
-=over 4
-
-=item Module removals
-
-=back
+=item Performance Enhancements
 
 =item Modules and Pragmata
 
 =over 4
-
-=item New Modules and Pragmata
 
 =item Updated Modules and Pragmata
 
@@ -7449,7 +7460,11 @@ points.
 
 =item Diagnostics
 
-=item Utility Changes
+=over 4
+
+=item New Diagnostics
+
+=back
 
 =item Configuration and Compilation
 
@@ -7457,18 +7472,27 @@ points.
 
 =over 4
 
+=item New Platforms
+
+Android
+
 =item Platform-Specific Notes
 
-Cygwin
+VMS, Cygwin
 
 =back
 
 =item Internal Changes
 
-newATTRSUB is now a macro, Changes in warnings raised by
-C<utf8n_to_uvchr()>
+Regexp Engine Changes That Affect The Pluggable Regex Engine Interface
 
 =item Selected Bug Fixes
+
+=item Known Problems
+
+=item Errata From Previous Releases
+
+perl5180delta.pod
 
 =item Acknowledgements
 
@@ -7478,7 +7502,106 @@ C<utf8n_to_uvchr()>
 
 =back
 
-=head2 perl5198delta, perldelta - what is new for perl v5.19.8
+=head2 perl5199delta, perldelta - what is new for perl v5.19.9
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=over 4
+
+=item UTF-8 locales now supported better under C<S<use locale>>
+
+=item C<S<use locale>> now compiles on systems without locale ability
+
+=item PERL_DEBUG_READONLY_COW
+
+=item C<-DL> runtime option now added for tracing locale setting
+
+=item Subroutine signatures
+
+=item More locale initialization fallback options
+
+=back
+
+=item Incompatible Changes
+
+=over 4
+
+=item Tainting happens under more circumstances; now conforms to
+documentation
+
+=item Quote-like escape changes
+
+=back
+
+=item Deprecations
+
+=item Performance Enhancements
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Documentation
+
+=over 4
+
+=item Changes to Existing Documentation
+
+=back
+
+=item Diagnostics
+
+=over 4
+
+=item New Diagnostics
+
+=back
+
+=item Configuration and Compilation
+
+=item Platform Support
+
+=over 4
+
+=item New Platforms
+
+Android
+
+=item Platform-Specific Notes
+
+VMS, Cygwin
+
+=back
+
+=item Internal Changes
+
+Regexp Engine Changes That Affect The Pluggable Regex Engine Interface
+
+=item Selected Bug Fixes
+
+=item Known Problems
+
+=item Errata From Previous Releases
+
+perl5180delta.pod
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5198delta - what is new for perl v5.19.8
 
 =over 4
 
@@ -12475,6 +12598,36 @@ B<Unix emulation for AmigaOS: ixemul.library>, B<Version of Amiga OS>
 
 =back
 
+=head2 perlandroid - Perl under Android
+
+=over 4
+
+=item SYNOPSIS
+
+=item DESCRIPTION
+
+=item Cross-compilation
+
+=over 4
+
+=item Get the Android Native Development Kit (NDK)
+
+=item Determine the architecture you'll be cross-compiling for
+
+=item Set up a standalone toolchain
+
+=item adb or ssh?
+
+=item Configure and beyond
+
+=back
+
+=item Native Builds
+
+=item AUTHOR
+
+=back
+
 =head2 perlbs2000 - building and installing Perl for BS2000.
 
 =over 4
@@ -13373,6 +13526,8 @@ qnx/ar, qnx/cpp
 
 =item Outstanding issues with perl under QNX6
 
+=item Cross-compilation
+
 =back
 
 =item AUTHOR
@@ -13446,6 +13601,8 @@ DATAMODEL_NATIVE specified", sh: ar: not found
 =item nss_delete core dump from op/pwent or op/grent
 
 =back
+
+=item CROSS-COMPILATION
 
 =item PREBUILT BINARIES OF PERL FOR SOLARIS.
 
@@ -13877,6 +14034,8 @@ lexical scope
 =item FUNCTION SPECIFIC NOTES
 
 =over 4
+
+=item print
 
 =item flock
 
@@ -14488,6 +14647,8 @@ upgrading for byte-strings
 
 =item The 'lexical_subs' feature
 
+=item The 'signatures' feature
+
 =back
 
 =item FEATURE BUNDLES
@@ -14660,8 +14821,6 @@ operations
 =item SYNOPSIS
 
 =item DESCRIPTION
-
-=item NOTE
 
 =back
 
@@ -18325,18 +18484,19 @@ C<d_hasmntopt>, C<d_htonl>, C<d_ilogbl>, C<d_inc_version_list>, C<d_index>,
 C<d_inetaton>, C<d_inetntop>, C<d_inetpton>, C<d_int64_t>, C<d_ip_mreq>,
 C<d_ip_mreq_source>, C<d_ipv6_mreq>, C<d_ipv6_mreq_source>, C<d_isascii>,
 C<d_isblank>, C<d_isfinite>, C<d_isinf>, C<d_isnan>, C<d_isnanl>,
-C<d_killpg>, C<d_lchown>, C<d_ldbl_dig>, C<d_libm_lib_version>, C<d_link>,
-C<d_localtime64>, C<d_localtime_r>, C<d_localtime_r_needs_tzset>,
-C<d_locconv>, C<d_lockf>, C<d_longdbl>, C<d_longlong>, C<d_lseekproto>,
-C<d_lstat>, C<d_madvise>, C<d_malloc_good_size>, C<d_malloc_size>,
-C<d_mblen>, C<d_mbstowcs>, C<d_mbtowc>, C<d_memchr>, C<d_memcmp>,
-C<d_memcpy>, C<d_memmove>, C<d_memset>, C<d_mkdir>, C<d_mkdtemp>,
-C<d_mkfifo>, C<d_mkstemp>, C<d_mkstemps>, C<d_mktime>, C<d_mktime64>,
-C<d_mmap>, C<d_modfl>, C<d_modfl_pow32_bug>, C<d_modflproto>,
-C<d_mprotect>, C<d_msg>, C<d_msg_ctrunc>, C<d_msg_dontroute>, C<d_msg_oob>,
-C<d_msg_peek>, C<d_msg_proxy>, C<d_msgctl>, C<d_msgget>, C<d_msghdr_s>,
-C<d_msgrcv>, C<d_msgsnd>, C<d_msync>, C<d_munmap>, C<d_mymalloc>,
-C<d_ndbm>, C<d_ndbm_h_uses_prototypes>, C<d_nice>, C<d_nl_langinfo>,
+C<d_killpg>, C<d_lchown>, C<d_ldbl_dig>, C<d_libm_lib_version>,
+C<d_libname_unique>, C<d_link>, C<d_localtime64>, C<d_localtime_r>,
+C<d_localtime_r_needs_tzset>, C<d_locconv>, C<d_lockf>, C<d_longdbl>,
+C<d_longlong>, C<d_lseekproto>, C<d_lstat>, C<d_madvise>,
+C<d_malloc_good_size>, C<d_malloc_size>, C<d_mblen>, C<d_mbstowcs>,
+C<d_mbtowc>, C<d_memchr>, C<d_memcmp>, C<d_memcpy>, C<d_memmove>,
+C<d_memset>, C<d_mkdir>, C<d_mkdtemp>, C<d_mkfifo>, C<d_mkstemp>,
+C<d_mkstemps>, C<d_mktime>, C<d_mktime64>, C<d_mmap>, C<d_modfl>,
+C<d_modfl_pow32_bug>, C<d_modflproto>, C<d_mprotect>, C<d_msg>,
+C<d_msg_ctrunc>, C<d_msg_dontroute>, C<d_msg_oob>, C<d_msg_peek>,
+C<d_msg_proxy>, C<d_msgctl>, C<d_msgget>, C<d_msghdr_s>, C<d_msgrcv>,
+C<d_msgsnd>, C<d_msync>, C<d_munmap>, C<d_mymalloc>, C<d_ndbm>,
+C<d_ndbm_h_uses_prototypes>, C<d_nice>, C<d_nl_langinfo>,
 C<d_nv_preserves_uv>, C<d_nv_zero_is_allbits_zero>, C<d_off64_t>,
 C<d_old_pthread_create_joinable>, C<d_oldpthreads>, C<d_oldsock>,
 C<d_open3>, C<d_pathconf>, C<d_pause>, C<d_perl_otherlibdirs>,
@@ -18433,8 +18593,9 @@ C<gnulibc_version>, C<grep>, C<groupcat>, C<groupstype>, C<gzip>
 
 =back
 
-C<h_fcntl>, C<h_sysfile>, C<hint>, C<hostcat>, C<html1dir>, C<html1direxp>,
-C<html3dir>, C<html3direxp>
+C<h_fcntl>, C<h_sysfile>, C<hint>, C<hostperl>, C<hostgenerate>,
+C<hostosname>, C<hostcat>, C<html1dir>, C<html1direxp>, C<html3dir>,
+C<html3direxp>
 
 =over 4
 
@@ -18461,17 +18622,18 @@ C<i_systimes>, C<i_systypes>, C<i_sysuio>, C<i_sysun>, C<i_sysutsname>,
 C<i_sysvfs>, C<i_syswait>, C<i_termio>, C<i_termios>, C<i_time>,
 C<i_unistd>, C<i_ustat>, C<i_utime>, C<i_values>, C<i_varargs>,
 C<i_varhdr>, C<i_vfork>, C<ignore_versioned_solibs>, C<inc_version_list>,
-C<inc_version_list_init>, C<incpath>, C<inews>, C<initialinstalllocation>,
-C<installarchlib>, C<installbin>, C<installhtml1dir>, C<installhtml3dir>,
-C<installman1dir>, C<installman3dir>, C<installprefix>,
-C<installprefixexp>, C<installprivlib>, C<installscript>,
-C<installsitearch>, C<installsitebin>, C<installsitehtml1dir>,
-C<installsitehtml3dir>, C<installsitelib>, C<installsiteman1dir>,
-C<installsiteman3dir>, C<installsitescript>, C<installstyle>,
-C<installusrbinperl>, C<installvendorarch>, C<installvendorbin>,
-C<installvendorhtml1dir>, C<installvendorhtml3dir>, C<installvendorlib>,
-C<installvendorman1dir>, C<installvendorman3dir>, C<installvendorscript>,
-C<intsize>, C<issymlink>, C<ivdformat>, C<ivsize>, C<ivtype>
+C<inc_version_list_init>, C<incpath>, C<incpth>, C<inews>,
+C<initialinstalllocation>, C<installarchlib>, C<installbin>,
+C<installhtml1dir>, C<installhtml3dir>, C<installman1dir>,
+C<installman3dir>, C<installprefix>, C<installprefixexp>,
+C<installprivlib>, C<installscript>, C<installsitearch>, C<installsitebin>,
+C<installsitehtml1dir>, C<installsitehtml3dir>, C<installsitelib>,
+C<installsiteman1dir>, C<installsiteman3dir>, C<installsitescript>,
+C<installstyle>, C<installusrbinperl>, C<installvendorarch>,
+C<installvendorbin>, C<installvendorhtml1dir>, C<installvendorhtml3dir>,
+C<installvendorlib>, C<installvendorman1dir>, C<installvendorman3dir>,
+C<installvendorscript>, C<intsize>, C<issymlink>, C<ivdformat>, C<ivsize>,
+C<ivtype>
 
 =over 4
 
@@ -18595,7 +18757,8 @@ C<sPRIx64>, C<sPRIXU64>, C<srand48_r_proto>, C<srandom_r_proto>, C<src>,
 C<sSCNfldbl>, C<ssizetype>, C<st_ino_sign>, C<st_ino_size>, C<startperl>,
 C<startsh>, C<static_ext>, C<stdchar>, C<stdio_base>, C<stdio_bufsiz>,
 C<stdio_cnt>, C<stdio_filbuf>, C<stdio_ptr>, C<stdio_stream_array>,
-C<strerror_r_proto>, C<strings>, C<submit>, C<subversion>, C<sysman>
+C<strerror_r_proto>, C<strings>, C<submit>, C<subversion>, C<sysman>,
+C<sysroot>
 
 =over 4
 
@@ -18603,9 +18766,10 @@ C<strerror_r_proto>, C<strings>, C<submit>, C<subversion>, C<sysman>
 
 =back
 
-C<tail>, C<tar>, C<targetarch>, C<tbl>, C<tee>, C<test>, C<timeincl>,
-C<timetype>, C<tmpnam_r_proto>, C<to>, C<touch>, C<tr>, C<trnl>, C<troff>,
-C<ttyname_r_proto>
+C<tail>, C<tar>, C<targetarch>, C<targetdir>, C<targetenv>, C<targethost>,
+C<targetmkdir>, C<targetport>, C<targetsh>, C<tbl>, C<tee>, C<test>,
+C<timeincl>, C<timetype>, C<tmpnam_r_proto>, C<to>, C<touch>, C<tr>,
+C<trnl>, C<troff>, C<ttyname_r_proto>
 
 =over 4
 
@@ -19310,10 +19474,10 @@ B<sha384_base64($data, ...)>, B<sha512_base64($data, ...)>,
 B<sha512224_base64($data, ...)>, B<sha512256_base64($data, ...)>,
 B<new($alg)>, B<reset($alg)>, B<hashsize>, B<algorithm>, B<clone>,
 B<add($data, ...)>, B<add_bits($data, $nbits)>, B<add_bits($bits)>,
-B<addfile(*FILE)>, B<addfile($filename [, $mode])>, B<dump($filename)>,
-B<load($filename)>, B<digest>, B<hexdigest>, B<b64digest>,
-B<hmac_sha1($data, $key)>, B<hmac_sha224($data, $key)>,
-B<hmac_sha256($data, $key)>, B<hmac_sha384($data, $key)>,
+B<addfile(*FILE)>, B<addfile($filename [, $mode])>, B<getstate>,
+B<putstate($str)>, B<dump($filename)>, B<load($filename)>, B<digest>,
+B<hexdigest>, B<b64digest>, B<hmac_sha1($data, $key)>, B<hmac_sha224($data,
+$key)>, B<hmac_sha256($data, $key)>, B<hmac_sha384($data, $key)>,
 B<hmac_sha512($data, $key)>, B<hmac_sha512224($data, $key)>,
 B<hmac_sha512256($data, $key)>, B<hmac_sha1_hex($data, $key)>,
 B<hmac_sha224_hex($data, $key)>, B<hmac_sha256_hex($data, $key)>,
@@ -23144,6 +23308,8 @@ with switch clustering
 
 =item SSL SUPPORT
 
+=item PROXY SUPPORT
+
 =item LIMITATIONS
 
 =item SEE ALSO
@@ -26066,13 +26232,17 @@ B<Relationship between code sets>, B<Non-ASCII characters not supported>
 
 =item SYNOPSIS
 
-=item VERSION 3.32  (planned 2014-12-01; sbeck)
+=item VERSION 3.33  (planned 2014-12-01; sbeck)
 
-=item VERSION 3.31  (planned 2014-09-01; sbeck)
+=item VERSION 3.32  (planned 2014-09-01; sbeck)
 
-=item VERSION 3.30  (planned 2014-06-01; sbeck)
+=item VERSION 3.31  (planned 2014-06-01; sbeck)
 
-=item VERSION 3.29  (planned 2014-03-01; sbeck)
+=item VERSION 3.30  (planned 2014-03-01; sbeck)
+
+=item VERSION 3.29  (2014-01-27; sbeck)
+
+B<ISO 3166 country codes improved>, B<Bug fixes>
 
 =item VERSION 3.28  (2013-12-02; sbeck)
 
@@ -26235,11 +26405,10 @@ B<Locale::Codes::Country::rename_country_code  ( CODE ,NEW_CODE [,CODESET]
 =item SEE ALSO
 
 B<Locale::Codes>, B<Locale::Codes::API>, B<Locale::SubCountry>,
-B<http://www.iso.org/iso/country_codes>,
-B<http://www.iso.org/iso/list-en1-semic-3.txt>,
+B<http://www.iso.org/iso/home/standards/country_codes.htm>,
 B<http://www.iso.org/iso/home/standards/country_codes/iso-3166-1_decoding_t
-able.htm>, B<http://unstats.un.org/unsd/methods/m49/m49alpha.htm>,
-B<http://www.iana.org/domains/>,
+able.htm>, B<http://www.iana.org/domains/root/db/>,
+B<http://unstats.un.org/unsd/methods/m49/m49alpha.htm>,
 B<https://www.cia.gov/library/publications/the-world-factbook/appendix/prin
 t_appendix-d.html>, B<http://www.statoids.com/wab.html>
 
@@ -26528,11 +26697,10 @@ B<alias_code ( ALIAS, CODE [,CODESET] )>
 =item SEE ALSO
 
 B<Locale::Codes>, B<Locale::Codes::API>, B<Locale::SubCountry>,
-B<http://www.iso.org/iso/country_codes>,
-B<http://www.iso.org/iso/list-en1-semic-3.txt>,
+B<http://www.iso.org/iso/home/standards/country_codes.htm>,
 B<http://www.iso.org/iso/home/standards/country_codes/iso-3166-1_decoding_t
-able.htm>, B<http://unstats.un.org/unsd/methods/m49/m49alpha.htm>,
-B<http://www.iana.org/domains/>,
+able.htm>, B<http://www.iana.org/domains/root/db/>,
+B<http://unstats.un.org/unsd/methods/m49/m49alpha.htm>,
 B<https://www.cia.gov/library/publications/the-world-factbook/appendix/prin
 t_appendix-d.html>, B<http://www.statoids.com/wab.html>
 
@@ -28667,8 +28835,8 @@ USERNAME, PASSWORD ), mail ( ADDRESS [, OPTIONS] ), send ( ADDRESS ),
 send_or_mail ( ADDRESS ), send_and_mail ( ADDRESS ), reset (), recipient (
 ADDRESS [, ADDRESS, [...]] [, OPTIONS ] ), to ( ADDRESS [, ADDRESS [...]]
 ), cc ( ADDRESS [, ADDRESS [...]] ), bcc ( ADDRESS [, ADDRESS [...]] ),
-data ( [ DATA ] ), expand ( ADDRESS ), verify ( ADDRESS ), message (), help
-( [ $subject ] ), quit ()
+data ( [ DATA ] ), expand ( ADDRESS ), verify ( ADDRESS ), help ( [
+$subject ] ), quit ()
 
 =item ADDRESSES
 
@@ -29395,7 +29563,7 @@ $obj->CLEARERR($fh), $obj->ERROR($fh), $obj->EOF($fh)
 
 =back
 
-=head2 Pod::Escapes -- for resolving Pod EE<lt>...E<gt> sequences
+=head2 Pod::Escapes - for resolving Pod EE<lt>...E<gt> sequences
 
 =over 4
 
@@ -29413,9 +29581,59 @@ $Latin1Char_to_fallback{I<character>}, $Code2USASCII{I<integer>}
 
 =item SEE ALSO
 
+=item REPOSITORY
+
 =item COPYRIGHT AND DISCLAIMERS
 
 =item AUTHOR
+
+=back
+
+=head2 Pod::Find - find POD documents in directory trees
+
+=over 4
+
+=item SYNOPSIS
+
+=item DESCRIPTION
+
+=back
+
+=over 4
+
+=item C<pod_find( { %opts } , @directories )>
+
+C<-verbose =E<gt> 1>, C<-perl =E<gt> 1>, C<-script =E<gt> 1>, C<-inc =E<gt>
+1>
+
+=back
+
+=over 4
+
+=item C<simplify_name( $str )>
+
+=back
+
+=over 4
+
+=item C<pod_where( { %opts }, $pod )>
+
+C<-inc =E<gt> 1>, C<-dirs =E<gt> [ $dir1, $dir2, ... ]>, C<-verbose =E<gt>
+1>
+
+=back
+
+=over 4
+
+=item C<contains_pod( $file , $verbose )>
+
+=back
+
+=over 4
+
+=item AUTHOR
+
+=item SEE ALSO
 
 =back
 
@@ -29450,6 +29668,236 @@ verbose
 =item SEE ALSO
 
 =item COPYRIGHT
+
+=back
+
+=head2 Pod::InputObjects - objects representing POD input paragraphs,
+commands, etc.
+
+=over 4
+
+=item SYNOPSIS
+
+=item REQUIRES
+
+=item EXPORTS
+
+=item DESCRIPTION
+
+package B<Pod::InputSource>, package B<Pod::Paragraph>, package
+B<Pod::InteriorSequence>, package B<Pod::ParseTree>
+
+=back
+
+=over 4
+
+=item B<Pod::InputSource>
+
+=back
+
+=over 4
+
+=item B<new()>
+
+=back
+
+=over 4
+
+=item B<name()>
+
+=back
+
+=over 4
+
+=item B<handle()>
+
+=back
+
+=over 4
+
+=item B<was_cutting()>
+
+=back
+
+=over 4
+
+=item B<Pod::Paragraph>
+
+=back
+
+=over 4
+
+=item Pod::Paragraph-E<gt>B<new()>
+
+=back
+
+=over 4
+
+=item $pod_para-E<gt>B<cmd_name()>
+
+=back
+
+=over 4
+
+=item $pod_para-E<gt>B<text()>
+
+=back
+
+=over 4
+
+=item $pod_para-E<gt>B<raw_text()>
+
+=back
+
+=over 4
+
+=item $pod_para-E<gt>B<cmd_prefix()>
+
+=back
+
+=over 4
+
+=item $pod_para-E<gt>B<cmd_separator()>
+
+=back
+
+=over 4
+
+=item $pod_para-E<gt>B<parse_tree()>
+
+=back
+
+=over 4
+
+=item $pod_para-E<gt>B<file_line()>
+
+=back
+
+=over 4
+
+=item B<Pod::InteriorSequence>
+
+=back
+
+=over 4
+
+=item Pod::InteriorSequence-E<gt>B<new()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<cmd_name()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<prepend()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<append()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<nested()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<raw_text()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<left_delimiter()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<right_delimiter()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<parse_tree()>
+
+=back
+
+=over 4
+
+=item $pod_seq-E<gt>B<file_line()>
+
+=back
+
+=over 4
+
+=item Pod::InteriorSequence::B<DESTROY()>
+
+=back
+
+=over 4
+
+=item B<Pod::ParseTree>
+
+=back
+
+=over 4
+
+=item Pod::ParseTree-E<gt>B<new()>
+
+=back
+
+=over 4
+
+=item $ptree-E<gt>B<top()>
+
+=back
+
+=over 4
+
+=item $ptree-E<gt>B<children()>
+
+=back
+
+=over 4
+
+=item $ptree-E<gt>B<prepend()>
+
+=back
+
+=over 4
+
+=item $ptree-E<gt>B<append()>
+
+=back
+
+=over 4
+
+=item $ptree-E<gt>B<raw_text()>
+
+=back
+
+=over 4
+
+=item Pod::ParseTree::B<DESTROY()>
+
+=back
+
+=over 4
+
+=item SEE ALSO
+
+=item AUTHOR
 
 =back
 
@@ -29494,6 +29942,353 @@ Invalid quote specification "%s", POD document had syntax errors
 =item AUTHOR
 
 =item COPYRIGHT AND LICENSE
+
+=back
+
+=head2 Pod::ParseUtils - helpers for POD parsing and conversion
+
+=over 4
+
+=item SYNOPSIS
+
+=item DESCRIPTION
+
+=back
+
+=over 4
+
+=item Pod::List
+
+Pod::List-E<gt>new()
+
+=back
+
+$list-E<gt>file()
+
+$list-E<gt>start()
+
+$list-E<gt>indent()
+
+$list-E<gt>type()
+
+$list-E<gt>rx()
+
+$list-E<gt>item()
+
+$list-E<gt>parent()
+
+$list-E<gt>tag()
+
+=over 4
+
+=item Pod::Hyperlink
+
+Pod::Hyperlink-E<gt>new()
+
+=back
+
+$link-E<gt>parse($string)
+
+$link-E<gt>markup($string)
+
+$link-E<gt>text()
+
+$link-E<gt>warning()
+
+$link-E<gt>file(), $link-E<gt>line()
+
+$link-E<gt>page()
+
+$link-E<gt>node()
+
+$link-E<gt>alttext()
+
+$link-E<gt>type()
+
+$link-E<gt>link()
+
+=over 4
+
+=item Pod::Cache
+
+Pod::Cache-E<gt>new()
+
+=back
+
+$cache-E<gt>item()
+
+$cache-E<gt>find_page($name)
+
+=over 4
+
+=item Pod::Cache::Item
+
+Pod::Cache::Item-E<gt>new()
+
+=back
+
+$cacheitem-E<gt>page()
+
+$cacheitem-E<gt>description()
+
+$cacheitem-E<gt>path()
+
+$cacheitem-E<gt>file()
+
+$cacheitem-E<gt>nodes()
+
+$cacheitem-E<gt>find_node($name)
+
+$cacheitem-E<gt>idx()
+
+=over 4
+
+=item AUTHOR
+
+=item SEE ALSO
+
+=back
+
+=head2 Pod::Parser - base class for creating POD filters and translators
+
+=over 4
+
+=item SYNOPSIS
+
+=item REQUIRES
+
+=item EXPORTS
+
+=item DESCRIPTION
+
+=item QUICK OVERVIEW
+
+=item PARSING OPTIONS
+
+B<-want_nonPODs> (default: unset), B<-process_cut_cmd> (default: unset),
+B<-warnings> (default: unset)
+
+=back
+
+=over 4
+
+=item RECOMMENDED SUBROUTINE/METHOD OVERRIDES
+
+=back
+
+=over 4
+
+=item B<command()>
+
+C<$cmd>, C<$text>, C<$line_num>, C<$pod_para>
+
+=back
+
+=over 4
+
+=item B<verbatim()>
+
+C<$text>, C<$line_num>, C<$pod_para>
+
+=back
+
+=over 4
+
+=item B<textblock()>
+
+C<$text>, C<$line_num>, C<$pod_para>
+
+=back
+
+=over 4
+
+=item B<interior_sequence()>
+
+=back
+
+=over 4
+
+=item OPTIONAL SUBROUTINE/METHOD OVERRIDES
+
+=back
+
+=over 4
+
+=item B<new()>
+
+=back
+
+=over 4
+
+=item B<initialize()>
+
+=back
+
+=over 4
+
+=item B<begin_pod()>
+
+=back
+
+=over 4
+
+=item B<begin_input()>
+
+=back
+
+=over 4
+
+=item B<end_input()>
+
+=back
+
+=over 4
+
+=item B<end_pod()>
+
+=back
+
+=over 4
+
+=item B<preprocess_line()>
+
+=back
+
+=over 4
+
+=item B<preprocess_paragraph()>
+
+=back
+
+=over 4
+
+=item METHODS FOR PARSING AND PROCESSING
+
+=back
+
+=over 4
+
+=item B<parse_text()>
+
+B<-expand_seq> =E<gt> I<code-ref>|I<method-name>, B<-expand_text> =E<gt>
+I<code-ref>|I<method-name>, B<-expand_ptree> =E<gt>
+I<code-ref>|I<method-name>
+
+=back
+
+=over 4
+
+=item B<interpolate()>
+
+=back
+
+=over 4
+
+=item B<parse_paragraph()>
+
+=back
+
+=over 4
+
+=item B<parse_from_filehandle()>
+
+=back
+
+=over 4
+
+=item B<parse_from_file()>
+
+=back
+
+=over 4
+
+=item ACCESSOR METHODS
+
+=back
+
+=over 4
+
+=item B<errorsub()>
+
+=back
+
+=over 4
+
+=item B<cutting()>
+
+=back
+
+=over 4
+
+=item B<parseopts()>
+
+=back
+
+=over 4
+
+=item B<output_file()>
+
+=back
+
+=over 4
+
+=item B<output_handle()>
+
+=back
+
+=over 4
+
+=item B<input_file()>
+
+=back
+
+=over 4
+
+=item B<input_handle()>
+
+=back
+
+=over 4
+
+=item B<input_streams()>
+
+=back
+
+=over 4
+
+=item B<top_stream()>
+
+=back
+
+=over 4
+
+=item PRIVATE METHODS AND DATA
+
+=back
+
+=over 4
+
+=item B<_push_input_stream()>
+
+=back
+
+=over 4
+
+=item B<_pop_input_stream()>
+
+=back
+
+=over 4
+
+=item TREE-BASED PARSING
+
+=item CAVEATS
+
+=item SEE ALSO
+
+=item AUTHOR
+
+=item LICENSE
 
 =back
 
@@ -29717,6 +30512,138 @@ warn, and then increment    the error counter
 =item SEE ALSO
 
 =item COPYRIGHT AND DISCLAIMERS
+
+=item AUTHOR
+
+=back
+
+=head2 Pod::PlainText - Convert POD data to formatted ASCII text
+
+=over 4
+
+=item SYNOPSIS
+
+=item DESCRIPTION
+
+alt, indent, loose, sentence, width
+
+=item DIAGNOSTICS
+
+Bizarre space in item, Can't open %s for reading: %s, Unknown escape: %s,
+Unknown sequence: %s, Unmatched =back
+
+=item RESTRICTIONS
+
+=item NOTES
+
+=item SEE ALSO
+
+=item AUTHOR
+
+=back
+
+=head2 Pod::Select, podselect() - extract selected sections of POD from
+input
+
+=over 4
+
+=item SYNOPSIS
+
+=item REQUIRES
+
+=item EXPORTS
+
+=item DESCRIPTION
+
+=item SECTION SPECIFICATIONS
+
+=item RANGE SPECIFICATIONS
+
+=back
+
+=over 4
+
+=item OBJECT METHODS
+
+=back
+
+=over 4
+
+=item B<curr_headings()>
+
+=back
+
+=over 4
+
+=item B<select()>
+
+=back
+
+=over 4
+
+=item B<add_selection()>
+
+=back
+
+=over 4
+
+=item B<clear_selections()>
+
+=back
+
+=over 4
+
+=item B<match_section()>
+
+=back
+
+=over 4
+
+=item B<is_selected()>
+
+=back
+
+=over 4
+
+=item EXPORTED FUNCTIONS
+
+=back
+
+=over 4
+
+=item B<podselect()>
+
+B<-output>, B<-sections>, B<-ranges>
+
+=back
+
+=over 4
+
+=item PRIVATE METHODS AND DATA
+
+=back
+
+=over 4
+
+=item B<_compile_section_spec()>
+
+=back
+
+=over 4
+
+=item $self->{_SECTION_HEADINGS}
+
+=back
+
+=over 4
+
+=item $self->{_SELECTED_SECTIONS}
+
+=back
+
+=over 4
+
+=item SEE ALSO
 
 =item AUTHOR
 

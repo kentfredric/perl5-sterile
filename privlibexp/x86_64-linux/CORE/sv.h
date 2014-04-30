@@ -1473,7 +1473,7 @@ attention to precisely which outputs are influenced by which inputs.
 
 #define sv_taint(sv)	  sv_magic((sv), NULL, PERL_MAGIC_taint, NULL, 0)
 
-#if NO_TAINT_SUPPORT
+#ifdef NO_TAINT_SUPPORT
 #   define SvTAINTED(sv) 0
 #else
 #   define SvTAINTED(sv)	  (SvMAGICAL(sv) && sv_tainted(sv))
@@ -1703,6 +1703,7 @@ Like sv_utf8_upgrade, but doesn't do magic on C<sv>.
     (SvPOK_nog(sv) \
      ? SvPVX(sv) : sv_2pv_flags(sv, 0, SV_GMAGIC))
 
+/* "_nomg" in these defines means no mg_get() */
 #define SvPV_nomg_nolen(sv) \
     (SvPOK_nog(sv) \
      ? SvPVX(sv) : sv_2pv_flags(sv, 0, 0))
@@ -2014,7 +2015,7 @@ after modifying a scalar, in case it is a magical variable like C<$|>
 or a tied variable (it calls C<STORE>).  This macro evaluates its
 argument more than once.
 
-=for apidoc Am|void|SvSetSV|SV* dsb|SV* ssv
+=for apidoc Am|void|SvSetSV|SV* dsv|SV* ssv
 Calls C<sv_setsv> if dsv is not the same as ssv.  May evaluate arguments
 more than once.
 
@@ -2022,7 +2023,7 @@ more than once.
 Calls a non-destructive version of C<sv_setsv> if dsv is not the same as
 ssv.  May evaluate arguments more than once.
 
-=for apidoc Am|void|SvSetMagicSV|SV* dsb|SV* ssv
+=for apidoc Am|void|SvSetMagicSV|SV* dsv|SV* ssv
 Like C<SvSetSV>, but does any set magic required afterwards.
 
 =for apidoc Am|void|SvSetMagicSV_nosteal|SV* dsv|SV* ssv

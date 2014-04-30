@@ -1601,6 +1601,10 @@ PerlIO layer for quoted-printable strings
 
 For resolving Pod EE<lt>...E<gt> sequences
 
+=item Pod::Find
+
+Find POD documents in directory trees
+
 =item Pod::Functions
 
 Group Perl's functions a la perlfunc.pod
@@ -1609,6 +1613,10 @@ Group Perl's functions a la perlfunc.pod
 
 Module to convert pod files to HTML
 
+=item Pod::InputObjects
+
+Objects representing POD input paragraphs, commands, etc.
+
 =item Pod::Man
 
 Convert POD data to formatted *roff input
@@ -1616,6 +1624,14 @@ Convert POD data to formatted *roff input
 =item Pod::ParseLink
 
 Parse an LE<lt>E<gt> formatting code in POD text
+
+=item Pod::ParseUtils
+
+Helpers for POD parsing and conversion
+
+=item Pod::Parser
+
+Base class for creating POD filters and translators
 
 =item Pod::Perldoc
 
@@ -1668,6 +1684,14 @@ Let Perldoc use Tk::Pod to render Pod
 =item Pod::Perldoc::ToXml
 
 Let Perldoc render Pod as XML
+
+=item Pod::PlainText
+
+Convert POD data to formatted ASCII text
+
+=item Pod::Select
+
+Extract selected sections of POD from input
 
 =item Pod::Simple
 

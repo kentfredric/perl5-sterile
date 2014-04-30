@@ -25,11 +25,7 @@
 #ifdef PERL_MICRO
 #   include "uconfig.h"
 #else
-#   ifndef USE_CROSS_COMPILE
-#       include "config.h"
-#   else
-#       include "xconfig.h"
-#   endif
+#   include "config.h"
 #endif
 
 /* See L<perlguts/"The Perl API"> for detailed notes on
@@ -369,7 +365,7 @@
 #endif
 
 #ifndef pTHX
-/* Don't bother defining tTHX and sTHX; using them outside
+/* Don't bother defining tTHX ; using it outside
  * code guarded by PERL_IMPLICIT_CONTEXT is an error.
  */
 #  define pTHX		void
@@ -542,7 +538,7 @@
  * DANGER! Using NO_TAINT_SUPPORT or SILENT_NO_TAINT_SUPPORT
  *         voids your nonexistent warranty!
  */
-#if SILENT_NO_TAINT_SUPPORT && !defined(NO_TAINT_SUPPORT)
+#if defined(SILENT_NO_TAINT_SUPPORT) && !defined(NO_TAINT_SUPPORT)
 #  define NO_TAINT_SUPPORT 1
 #endif
 
@@ -550,7 +546,7 @@
  * operations into no-ops for a very modest speed-up. Enable only if you
  * know what you're doing: tests and CPAN modules' tests are bound to fail.
  */
-#if NO_TAINT_SUPPORT
+#ifdef NO_TAINT_SUPPORT
 #   define TAINT		NOOP
 #   define TAINT_NOT		NOOP
 #   define TAINT_IF(c)		NOOP
@@ -705,6 +701,9 @@
 #   endif
 #   if !defined(NO_LOCALE_MONETARY) && defined(LC_MONETARY)
 #	define USE_LOCALE_MONETARY
+#   endif
+#   ifndef WIN32    /* No wrapper except on Windows */
+#       define my_setlocale(a,b) setlocale(a,b)
 #   endif
 #endif /* !NO_LOCALE && HAS_SETLOCALE */
 
@@ -3331,6 +3330,8 @@ typedef struct magic_state MGS;	/* struct magic_state defined in mg.c */
  * before their definitions in regcomp.h. */
 
 struct scan_data_t;
+typedef struct regnode_charclass regnode_charclass;
+
 struct regnode_charclass_class;
 
 /* A hopefully less confusing name.  The sub-classes are all Posix classes only
@@ -3563,7 +3564,8 @@ Gid_t getegid (void);
 #define DEBUG_q_FLAG		0x00800000 /*8388608 */
 #define DEBUG_M_FLAG		0x01000000 /*16777216*/
 #define DEBUG_B_FLAG		0x02000000 /*33554432*/
-#define DEBUG_MASK		0x03FFEFFF /* mask of all the standard flags */
+#define DEBUG_L_FLAG		0x04000000 /*67108864*/
+#define DEBUG_MASK		0x07FFEFFF /* mask of all the standard flags */
 
 #define DEBUG_DB_RECURSE_FLAG	0x40000000
 #define DEBUG_TOP_FLAG		0x80000000 /* XXX what's this for ??? Signal
@@ -3595,6 +3597,7 @@ Gid_t getegid (void);
 #  define DEBUG_q_TEST_ (PL_debug & DEBUG_q_FLAG)
 #  define DEBUG_M_TEST_ (PL_debug & DEBUG_M_FLAG)
 #  define DEBUG_B_TEST_ (PL_debug & DEBUG_B_FLAG)
+#  define DEBUG_L_TEST_ (PL_debug & DEBUG_L_FLAG)
 #  define DEBUG_Xv_TEST_ (DEBUG_X_TEST_ && DEBUG_v_TEST_)
 #  define DEBUG_Uv_TEST_ (DEBUG_U_TEST_ && DEBUG_v_TEST_)
 #  define DEBUG_Pv_TEST_ (DEBUG_P_TEST_ && DEBUG_v_TEST_)
@@ -3627,6 +3630,7 @@ Gid_t getegid (void);
 #  define DEBUG_q_TEST DEBUG_q_TEST_
 #  define DEBUG_M_TEST DEBUG_M_TEST_
 #  define DEBUG_B_TEST DEBUG_B_TEST_
+#  define DEBUG_L_TEST DEBUG_L_TEST_
 #  define DEBUG_Xv_TEST DEBUG_Xv_TEST_
 #  define DEBUG_Uv_TEST DEBUG_Uv_TEST_
 #  define DEBUG_Pv_TEST DEBUG_Pv_TEST_
@@ -3678,6 +3682,7 @@ Gid_t getegid (void);
 #  define DEBUG_q(a) DEBUG__(DEBUG_q_TEST, a)
 #  define DEBUG_M(a) DEBUG__(DEBUG_M_TEST, a)
 #  define DEBUG_B(a) DEBUG__(DEBUG_B_TEST, a)
+#  define DEBUG_L(a) DEBUG__(DEBUG_L_TEST, a)
 
 #else /* DEBUGGING */
 
@@ -3707,6 +3712,7 @@ Gid_t getegid (void);
 #  define DEBUG_q_TEST (0)
 #  define DEBUG_M_TEST (0)
 #  define DEBUG_B_TEST (0)
+#  define DEBUG_L_TEST (0)
 #  define DEBUG_Xv_TEST (0)
 #  define DEBUG_Uv_TEST (0)
 #  define DEBUG_Pv_TEST (0)
@@ -3738,6 +3744,7 @@ Gid_t getegid (void);
 #  define DEBUG_q(a)
 #  define DEBUG_M(a)
 #  define DEBUG_B(a)
+#  define DEBUG_L(a)
 #  define DEBUG_Xv(a)
 #  define DEBUG_Uv(a)
 #  define DEBUG_Pv(a)
@@ -4036,12 +4043,13 @@ struct perl_memory_debug_header {
 
 #if defined (PERL_TRACK_MEMPOOL) || defined (PERL_DEBUG_READONLY_COW)
 
-#  define sTHX	(sizeof(struct perl_memory_debug_header) + \
+#  define PERL_MEMORY_DEBUG_HEADER_SIZE \
+        (sizeof(struct perl_memory_debug_header) + \
 	(MEM_ALIGNBYTES - sizeof(struct perl_memory_debug_header) \
 	 %MEM_ALIGNBYTES) % MEM_ALIGNBYTES)
 
 #else
-#  define sTHX	0
+#  define PERL_MEMORY_DEBUG_HEADER_SIZE	0
 #endif
 
 #ifdef PERL_TRACK_MEMPOOL
@@ -4074,7 +4082,7 @@ struct perl_memory_debug_header {
 #  if defined(HAS_MALLOC_SIZE) && !defined(PERL_DEBUG_READONLY_COW)
 #    ifdef PERL_TRACK_MEMPOOL
 #	define Perl_safesysmalloc_size(where)			\
-	    (malloc_size(((char *)(where)) - sTHX) - sTHX)
+	    (malloc_size(((char *)(where)) - PERL_MEMORY_DEBUG_HEADER_SIZE) - PERL_MEMORY_DEBUG_HEADER_SIZE)
 #    else
 #	define Perl_safesysmalloc_size(where) malloc_size(where)
 #    endif
@@ -4082,7 +4090,7 @@ struct perl_memory_debug_header {
 #  ifdef HAS_MALLOC_GOOD_SIZE
 #    ifdef PERL_TRACK_MEMPOOL
 #	define Perl_malloc_good_size(how_much)			\
-	    (malloc_good_size((how_much) + sTHX) - sTHX)
+	    (malloc_good_size((how_much) + PERL_MEMORY_DEBUG_HEADER_SIZE) - PERL_MEMORY_DEBUG_HEADER_SIZE)
 #    else
 #	define Perl_malloc_good_size(how_much) malloc_good_size(how_much)
 #    endif
@@ -4579,6 +4587,9 @@ EXTCONST char PL_bincompat_options[] =
 #  ifdef PERLIO_LAYERS
 			     " PERLIO_LAYERS"
 #  endif
+#  ifdef PERL_DEBUG_READONLY_COW
+			     " PERL_DEBUG_READONLY_COW"
+#  endif
 #  ifdef PERL_DEBUG_READONLY_OPS
 			     " PERL_DEBUG_READONLY_OPS"
 #  endif
@@ -4743,7 +4754,10 @@ typedef enum {
 
 /* Hints are now stored in a dedicated U32, so the bottom 8 bits are no longer
    special and there is no need for HINT_PRIVATE_MASK for COPs
-   However, bitops store HINT_INTEGER in their op_private.  */
+   However, bitops store HINT_INTEGER in their op_private.
+
+    NOTE: The typical module using these has the bit value hard-coded, so don't
+    blindly change the values of these */
 #define HINT_INTEGER		0x00000001 /* integer pragma */
 #define HINT_STRICT_REFS	0x00000002 /* strict pragma */
 #define HINT_LOCALE		0x00000004 /* locale pragma */
@@ -5235,17 +5249,17 @@ typedef struct am_table_short AMTS;
 
 #ifdef USE_LOCALE_NUMERIC
 
-/* Returns non-zero If the plain locale pragma without a parameter is in effect
+/* Returns TRUE if the plain locale pragma without a parameter is in effect
  */
-#define IN_LOCALE_RUNTIME	(CopHINTS_get(PL_curcop) & HINT_LOCALE)
+#define IN_LOCALE_RUNTIME	cBOOL(CopHINTS_get(PL_curcop) & HINT_LOCALE)
 
-/* Returns non-zero If either form of the locale pragma is in effect */
+/* Returns TRUE if either form of the locale pragma is in effect */
 #define IN_SOME_LOCALE_FORM_RUNTIME   \
-		(CopHINTS_get(PL_curcop) & (HINT_LOCALE|HINT_LOCALE_NOT_CHARS))
+           cBOOL(CopHINTS_get(PL_curcop) & (HINT_LOCALE|HINT_LOCALE_NOT_CHARS))
 
-#define IN_LOCALE_COMPILETIME	(PL_hints & HINT_LOCALE)
+#define IN_LOCALE_COMPILETIME	cBOOL(PL_hints & HINT_LOCALE)
 #define IN_SOME_LOCALE_FORM_COMPILETIME \
-			    (PL_hints & (HINT_LOCALE|HINT_LOCALE_NOT_CHARS))
+                          cBOOL(PL_hints & (HINT_LOCALE|HINT_LOCALE_NOT_CHARS))
 
 #define IN_LOCALE \
 	(IN_PERL_COMPILETIME ? IN_LOCALE_COMPILETIME : IN_LOCALE_RUNTIME)

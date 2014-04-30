@@ -230,6 +230,7 @@ PERLVARI(I, dumpindent,	U16,	4)	/* number of blanks per dump
 PERLVAR(I, exit_flags,	U8)		/* was exit() unexpected, etc. */
 
 PERLVAR(I, utf8locale,	bool)		/* utf8 locale detected */
+PERLVAR(I, in_utf8_CTYPE_locale, bool)
 
 PERLVARA(I, colors,6,	char *)		/* values from PERL_RE_COLORS env var */
 
@@ -734,7 +735,7 @@ PERLVAR(I, debug_pad,	struct perl_debug_pad)	/* always needed because of the re 
 /* Hook for File::Glob */
 PERLVARI(I, globhook,	globhook_t, NULL)
 
-/* The last unconditional member of the interpreter structure when 5.19.8 was
+/* The last unconditional member of the interpreter structure when 5.19.9 was
    released. The offset of the end of this is baked into a global variable in 
    any shared perl library which will allow a sanity test in future perl
    releases.  */

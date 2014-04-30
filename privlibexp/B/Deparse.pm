@@ -20,7 +20,7 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
          CVf_METHOD CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
 	 PMf_MULTILINE PMf_SINGLELINE PMf_FOLD PMf_EXTENDED);
-$VERSION = '1.24';
+$VERSION = '1.25';
 use strict;
 use vars qw/$AUTOLOAD/;
 use warnings ();
@@ -3698,8 +3698,9 @@ sub check_proto {
     my @reals;
     # An unbackslashed @ or % gobbles up the rest of the args
     1 while $proto =~ s/(?<!\\)([@%])[^\]]+$/$1/;
+    $proto =~ s/^\s*//;
     while ($proto) {
-	$proto =~ s/^(\\?[\$\@&%*_]|\\\[[\$\@&%*]+\]|;)//;
+	$proto =~ s/^(\\?[\$\@&%*_]|\\\[[\$\@&%*]+\]|;)\s*//;
 	my $chr = $1;
 	if ($chr eq "") {
 	    return "&" if @args;
@@ -3856,7 +3857,7 @@ sub pp_entersub {
 	my $dproto = defined($proto) ? $proto : "undefined";
         if (!$declared) {
 	    return "$kid(" . $args . ")";
-	} elsif ($dproto eq "") {
+	} elsif ($dproto =~ /^\s*\z/) {
 	    return $kid;
 	} elsif ($dproto eq "\$" and is_scalar($exprs[0])) {
 	    # is_scalar is an excessively conservative test here:

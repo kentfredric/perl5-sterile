@@ -16,7 +16,7 @@ package DynaLoader;
 # Tim.Bunce@ig.co.uk, August 1994
 
 BEGIN {
-    $VERSION = '1.24';
+    $VERSION = '1.25';
 }
 
 use Config;
@@ -29,6 +29,7 @@ $dl_debug = $ENV{PERL_DL_DEBUG} || 0 unless defined $dl_debug;
 #   0x01  make symbols available for linking later dl_load_file's.
 #         (only known to work on Solaris 2 using dlopen(RTLD_GLOBAL))
 #         (ignored under VMS; effect is built-in to image linking)
+#         (ignored under Android; the linker always uses RTLD_LOCAL)
 #
 # This is called as a class method $module->dl_load_flags.  The
 # definition here will be inherited and result on "default" loading
@@ -187,7 +188,9 @@ sub bootstrap {
     # in this perl code simply because this was the last perl code
     # it executed.
 
-    my $libref = dl_load_file($file, $module->dl_load_flags) or
+    my $flags = $module->dl_load_flags;
+    
+    my $libref = dl_load_file($file, $flags) or
 	croak("Can't load '$file' for module $module: ".dl_error());
 
     push(@dl_librefs,$libref);  # record loaded object

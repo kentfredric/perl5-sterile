@@ -27,20 +27,22 @@ is controlled per application by using one pragma, one function call,
 and several environment variables.
 
 Unfortunately, there are quite a few deficiencies with the design (and
-often, the implementations) of locales, and their use for character sets
-has mostly been supplanted by Unicode (see L<perlunitut> for an
-introduction to that, and keep on reading here for how Unicode interacts
-with locales in Perl).
+often, the implementations) of locales.  Unicode was invented (see
+L<perlunitut> for an introduction to that) in part to address these
+design deficiencies, and nowadays, there is a series of "UTF-8
+locales", based on Unicode.  These are locales whose character set is
+Unicode, encoded in UTF-8.  Starting in v5.20, Perl fully supports
+UTF-8 locales, except for sorting and string comparisions.  (Use
+L<Unicode::Collate> for these.)  Perl continues to support the old
+non UTF-8 locales as well.
 
-Perl continues to support the old locale system, and starting in v5.16,
-provides a hybrid way to use the Unicode character set, along with the
-other portions of locales that may not be so problematic.
 (Unicode is also creating C<CLDR>, the "Common Locale Data Repository",
 L<http://cldr.unicode.org/> which includes more types of information than
 are available in the POSIX locale system.  At the time of this writing,
 there was no CPAN module that provides access to this XML-encoded data.
 However, many of its locales have the POSIX-only data extracted, and are
-available at L<http://unicode.org/Public/cldr/latest/>.)
+available as UTF-8 locales at
+L<http://unicode.org/Public/cldr/latest/>.)
 
 =head1 WHAT IS A LOCALE
 
@@ -59,14 +61,14 @@ for example the character used as the decimal point.
 =item Category LC_MONETARY: Formatting of monetary amounts
 
 =for comment
-The nbsp below makes this look better
+The nbsp below makes this look better (though not great)
 
 E<160>
 
 =item Category LC_TIME: Date/Time formatting
 
 =for comment
-The nbsp below makes this look better
+The nbsp below makes this look better (though not great)
 
 E<160>
 
@@ -166,7 +168,8 @@ Starting in v5.16, there is an optional parameter to this pragma:
 
     use locale ':not_characters';
 
-This parameter allows better mixing of locales and Unicode, and is
+This parameter allows better mixing of locales and Unicode (less useful
+in v5.20 and later), and is
 described fully in L</Unicode and UTF-8>, but briefly, it tells Perl to
 not use the character portions of the locale definition, that is
 the C<LC_CTYPE> and C<LC_COLLATE> categories.  Instead it will use the
@@ -180,12 +183,12 @@ The current locale is set at execution time by
 L<setlocale()|/The setlocale function> described below.  If that function
 hasn't yet been called in the course of the program's execution, the
 current locale is that which was determined by the L</"ENVIRONMENT"> in
-effect at the start of the program, except that
-C<L<LC_NUMERIC|/Category LC_NUMERIC: Numeric Formatting>> is always
-initialized to the C locale (mentioned under L<Finding locales>).
+effect at the start of the program.
 If there is no valid environment, the current locale is whatever the
-system default has been set to.  It is likely, but not necessarily, the
-"C" locale.
+system default has been set to.   On POSIX systems, it is likely, but
+not necessarily, the "C" locale.  On Windows, the default is set via the
+computer's S<C<Control Panel-E<gt>Regional and Language Options>> (or its
+current equivalent).
 
 The operations that are affected by locale are:
 
@@ -193,16 +196,24 @@ The operations that are affected by locale are:
 
 =item B<Not within the scope of any C<"use locale"> variant>
 
-Only operations originating outside Perl should be affected.
+Only operations originating outside Perl should be affected, as follows:
+
+=over 4
+
+=item *
 
 The variable L<$!|perlvar/$ERRNO> (and its synonyms C<$ERRNO> and
 C<$OS_ERROR>) when used as strings always are in terms of the current
 locale.
 
+=item *
+
 The current locale is also used when going outside of Perl with
 operations like L<system()|perlfunc/system LIST> or
 L<qxE<sol>E<sol>|perlop/qxE<sol>STRINGE<sol>>, if those operations are
 locale-sensitive.
+
+=item *
 
 Also Perl gives access to various C library functions through the
 L<POSIX> module.  Some of those functions are always affected by the
@@ -211,9 +222,30 @@ C<POSIX::strtod()> uses C<LC_NUMERIC>; C<POSIX::strcoll()> and
 C<POSIX::strxfrm()> use C<LC_COLLATE>; and character classification
 functions like C<POSIX::isalnum()> use C<LC_CTYPE>.  All such functions
 will behave according to the current underlying locale, even if that
-isn't exposed to Perl space.
+locale isn't exposed to Perl space.
 
-And, certain Perl operations that are set-up within the scope of a
+=item *
+
+Perl also provides lite wrappers for XS modules to use some C library
+C<printf> functions.  These wrappers don't do anything with the locale,
+and the underlying C library function is affected by the locale in
+effect at the time of the wrapper call.
+The affected functions are
+L<perlapi/my_sprintf>,
+L<perlapi/my_snprintf>,
+and
+L<perlapi/my_vsnprintf>.
+
+=back
+
+=for comment
+The nbsp below makes this look better (though not great)
+
+E<160>
+
+=item B<Lingering effects of C<S<use locale>>>
+
+Certain Perl operations that are set-up within the scope of a
 C<use locale> variant retain that effect even outside the scope.
 These include:
 
@@ -236,6 +268,11 @@ was done within the scope of C<use locale> that determines the match
 behavior, not if the matches are done within such a scope or not.
 
 =back
+
+=for comment
+The nbsp below makes this look better (though not great)
+
+E<160>
 
 =item B<Under C<"use locale ':not_characters';">>
 
@@ -263,7 +300,7 @@ C<sprintf()>.
 =back
 
 =for comment
-The nbsp below makes this look better
+The nbsp below makes this look better (though not great)
 
 E<160>
 
@@ -320,7 +357,7 @@ C<POSIX::setlocale()> function:
         #                    LC_CTYPE -- explained below
         # (Showing the testing for success/failure of operations is
         # omitted in these examples to avoid distracting from the main
-        # point
+        # point)
 
         use POSIX qw(locale_h);
         use locale;
@@ -333,8 +370,9 @@ C<POSIX::setlocale()> function:
         # LC_CTYPE now in locale "French, Canada, codeset ISO 8859-1"
 
         setlocale(LC_CTYPE, "");
-        # LC_CTYPE now reset to default defined by LC_ALL/LC_CTYPE/LANG
-        # environment variables.  See below for documentation.
+        # LC_CTYPE now reset to the default defined by the
+        # LC_ALL/LC_CTYPE/LANG environment variables, or to the system
+        # default.  See below for documentation.
 
         # restore the old locale
         setlocale(LC_CTYPE, $old_locale);
@@ -456,11 +494,13 @@ You may encounter the following warning message at Perl startup:
 This means that your locale settings had LC_ALL set to "En_US" and
 LANG exists but has no value.  Perl tried to believe you but could not.
 Instead, Perl gave up and fell back to the "C" locale, the default locale
-that is supposed to work no matter what.  This usually means your locale
-settings were wrong, they mention locales your system has never heard
-of, or the locale installation in your system has problems (for example,
-some system files are broken or missing).  There are quick and temporary
-fixes to these problems, as well as more thorough and lasting fixes.
+that is supposed to work no matter what.  (On Windows, it first tries
+falling back to the system default locale.)  This usually means your
+locale settings were wrong, they mention locales your system has never
+heard of, or the locale installation in your system has problems (for
+example, some system files are broken or missing).  There are quick and
+temporary fixes to these problems, as well as more thorough and lasting
+fixes.
 
 =head2 Testing for broken locales
 
@@ -470,7 +510,7 @@ Setting the environment variable C<PERL_DEBUG_FULL_TEST> to 1
 will cause it to output detailed results.  For example, on Linux, you
 could say
 
- PERL_DEBUG_FULL_TEST=1 ./perl -T lib/locale.t > locale.log 2>&1
+ PERL_DEBUG_FULL_TEST=1 ./perl -T -Ilib lib/locale.t > locale.log 2>&1
 
 Besides many other tests, it will test every locale it finds on your
 system to see if they conform to the POSIX standard.  If any have
@@ -713,6 +753,11 @@ C<$equal_in_locale> will be true if the collation locale specifies a
 dictionary-like ordering that ignores space characters completely and
 which folds case.
 
+Perl only supports single-byte locales for C<LC_COLLATE>.  This means
+that a UTF-8 locale likely will just give you machine-native ordering.
+Use L<Unicode::Collate> for the full implementation of the Unicode
+Collation Algorithm.
+
 If you have a single string that you want to check for "equality in
 locale" against several others, you might think you could gain a little
 efficiency by using C<POSIX::strxfrm()> in conjunction with C<eq>:
@@ -753,13 +798,17 @@ always obey the current C<LC_COLLATE> locale.
 In the scope of S<C<use locale>> (but not a
 C<use locale ':not_characters'>), Perl obeys the C<LC_CTYPE> locale
 setting.  This controls the application's notion of which characters are
-alphabetic.  This affects Perl's C<\w> regular expression metanotation,
+alphabetic, numeric, punctuation, I<etc>.  This affects Perl's C<\w>
+regular expression metanotation,
 which stands for alphanumeric characters--that is, alphabetic,
-numeric, and including other special characters such as the underscore or
-hyphen.  (Consult L<perlre> for more information about
+numeric, and the platform's native underscore.
+(Consult L<perlre> for more information about
 regular expressions.)  Thanks to C<LC_CTYPE>, depending on your locale
 setting, characters like "E<aelig>", "E<eth>", "E<szlig>", and
 "E<oslash>" may be understood as C<\w> characters.
+It also affects things like C<\s>, C<\D>, and the POSIX character
+classes, like C<[[:graph:]]>.  (See L<perlrecharclass> for more
+information on all these.)
 
 The C<LC_CTYPE> locale also provides the map used in transliterating
 characters between lower and uppercase.  This affects the case-mapping
@@ -768,18 +817,34 @@ interpolation with C<\F>, C<\l>, C<\L>, C<\u>, or C<\U> in double-quoted
 strings and C<s///> substitutions; and case-independent regular expression
 pattern matching using the C<i> modifier.
 
-Finally, C<LC_CTYPE> affects the POSIX character-class test
-functions--C<isalpha()>, C<islower()>, and so on.  For example, if you move
-from the "C" locale to a 7-bit Scandinavian one, you may find--possibly
-to your surprise--that "|" moves from the C<ispunct()> class to C<isalpha()>.
+Finally, C<LC_CTYPE> affects the (deprecated) POSIX character-class test
+functions--C<POSIX::isalpha()>, C<POSIX::islower()>, and so on.  For
+example, if you move from the "C" locale to a 7-bit Scandinavian one,
+you may find--possibly to your surprise--that "|" moves from the
+C<POSIX::ispunct()> class to C<POSIX::isalpha()>.
 Unfortunately, this creates big problems for regular expressions. "|" still
 means alternation even though it matches C<\w>.
+
+Starting in v5.20, Perl supports UTF-8 locales for C<LC_CTYPE>, but
+otherwise Perl only supports single-byte locales, such as the ISO 8859
+series.  This means that wide character locales, for example for Asian
+languages, are not supported.  The UTF-8 locale support is actually a
+superset of POSIX locales, because it is really full Unicode behavior
+as if no locale were in effect at all (except for tainting; see
+L</SECURITY>).  POSIX locales, even UTF-8 ones,
+are lacking certain concepts in Unicode, such as the idea that changing
+the case of a character could expand to be more than one character.
+Perl in a UTF-8 locale, will give you that expansion.  Prior to v5.20,
+Perl treated a UTF-8 locale on some platforms like an ISO 8859-1 one,
+with some restrictions, and on other platforms more like the "C" locale.
+For releases v5.16 and v5.18, C<S<use locale 'not_characters>> could be
+used as a workaround for this (see L</Unicode and UTF-8>).
 
 Note that there are quite a few things that are unaffected by the
 current locale.  All the escape sequences for particular characters,
 C<\n> for example, always mean the platform's native one.  This means,
 for example, that C<\N> in regular expressions (every character
-but new-line) work on the platform character set.
+but new-line) works on the platform character set.
 
 B<Note:> A broken or malicious C<LC_CTYPE> locale definition may result
 in clearly ineligible characters being considered to be alphanumeric by
@@ -932,7 +997,7 @@ Scalar true/false (or less/equal/greater) result is never tainted.
 
 =item  *
 
-B<Case-mapping interpolation> (with C<\l>, C<\L>, C<\u> or C<\U>)
+B<Case-mapping interpolation> (with C<\l>, C<\L>, C<\u>, C<\U>, or C<\F>)
 
 Result string containing interpolated material is tainted if
 C<use locale> (but not S<C<use locale ':not_characters'>>) is in effect.
@@ -943,15 +1008,26 @@ B<Matching operator> (C<m//>):
 
 Scalar true/false result never tainted.
 
-All subpatterns, either delivered as a list-context result or as $1 etc.
-are tainted if C<use locale> (but not S<C<use locale ':not_characters'>>)
-is in effect, and the subpattern regular
-expression contains C<\w> (to match an alphanumeric character), C<\W>
-(non-alphanumeric character), C<\s> (whitespace character), or C<\S>
-(non whitespace character).  The matched-pattern variable, $&, $`
-(pre-match), $' (post-match), and $+ (last match) are also tainted if
-C<use locale> is in effect and the regular expression contains C<\w>,
-C<\W>, C<\s>, or C<\S>.
+All subpatterns, either delivered as a list-context result or as C<$1>
+I<etc>., are tainted if C<use locale> (but not
+S<C<use locale ':not_characters'>>) is in effect, and the subpattern
+regular expression contains a locale-dependent construct.  These
+constructs include C<\w> (to match an alphanumeric character), C<\W>
+(non-alphanumeric character), C<\b> and C<\B> (word-boundary and
+non-boundardy, which depend on what C<\w> and C<\W> match), C<\s>
+(whitespace character), C<\S> (non whitespace character), C<\d> and
+C<\D> (digits and non-digits), and the POSIX character classes, such as
+C<[:alpha:]> (see L<perlrecharclass/POSIX Character Classes>).
+
+Tainting is also likely if the pattern is to be matched
+case-insensitively (via C</i>).  The exception is if all the code points
+to be matched this way are above 255 and do not have folds under Unicode
+rules to below 256.  Tainting is not done for these because Perl
+only uses Unicode rules for such code points, and those rules are the
+same no matter what the current locale.
+
+The matched-pattern variables, C<$&>, C<$`> (pre-match), C<$'>
+(post-match), and C<$+> (last match) also are tainted.
 
 =item  *
 
@@ -961,8 +1037,8 @@ Has the same behavior as the match operator.  Also, the left
 operand of C<=~> becomes tainted when C<use locale>
 (but not S<C<use locale ':not_characters'>>) is in effect if modified as
 a result of a substitution based on a regular
-expression match involving C<\w>, C<\W>, C<\s>, or C<\S>; or of
-case-mapping with C<\l>, C<\L>,C<\u> or C<\U>.
+expression match involving any of the things mentioned in the previous
+item, or of case-mapping, such as C<\l>, C<\L>,C<\u>, C<\U>, or C<\F>.
 
 =item *
 
@@ -988,9 +1064,10 @@ Results are never tainted.
 
 =item *
 
-B<POSIX character class tests> (C<isalnum()>, C<isalpha()>, C<isdigit()>,
-C<isgraph()>, C<islower()>, C<isprint()>, C<ispunct()>, C<isspace()>, C<isupper()>,
-C<isxdigit()>):
+B<POSIX character class tests> (C<POSIX::isalnum()>,
+C<POSIX::isalpha()>, C<POSIX::isdigit()>, C<POSIX::isgraph()>,
+C<POSIX::islower()>, C<POSIX::isprint()>, C<POSIX::ispunct()>,
+C<POSIX::isspace()>, C<POSIX::isupper()>, C<POSIX::isxdigit()>):
 
 True/false results are never tainted.
 
@@ -1036,12 +1113,21 @@ Compare this with a similar but locale-aware program:
         open(F, ">$localized_output_file")
             or warn "Open of $localized_output_file failed: $!\n";
 
-This third program fails to run because $& is tainted: it is the result
+This third program fails to run because C<$&> is tainted: it is the result
 of a match involving C<\w> while C<use locale> is in effect.
 
 =head1 ENVIRONMENT
 
 =over 12
+
+=item PERL_SKIP_LOCALE_INIT
+
+This environment variable, available starting in Perl v5.20, and if it
+evaluates to a TRUE value, tells Perl to not use the rest of the
+environment variables to initialize with.  Instead, Perl uses whatever
+the current locale settings are.  This is particularly useful in
+embedded environments, see
+L<perlembed/Using embedded Perl with POSIX locales>.
 
 =item PERL_BADLANG
 
@@ -1061,7 +1147,14 @@ and you should investigate what the problem is.
 
 The following environment variables are not specific to Perl: They are
 part of the standardized (ISO C, XPG4, POSIX 1.c) C<setlocale()> method
-for controlling an application's opinion on data.
+for controlling an application's opinion on data.  Windows is non-POSIX,
+but Perl arranges for the following to work as described anyway.
+If the locale given by an environment variable is not valid, Perl tries
+the next lower one in priority.  If none are valid, on Windows, the
+system default locale is then tried.  If all else fails, the C<"C">
+locale is used.  If even that doesn't work, something is badly broken,
+but Perl tries to forge ahead with whatever the locale settinga might
+be.
 
 =over 12
 
@@ -1246,9 +1339,11 @@ into bankers, bikers, gamers, and so on.
 =head1 Unicode and UTF-8
 
 The support of Unicode is new starting from Perl version v5.6, and more fully
-implemented in version v5.8 and later.  See L<perluniintro>.  It is
-strongly recommended that when combining Unicode and locale (starting in
-v5.16), you use
+implemented in versions v5.8 and later.  See L<perluniintro>.
+
+Starting in Perl v5.20, UTF-8 locales are supported in Perl, except for
+C<LC_COLLATE> (use L<Unicode::Collate> instead).  If you have Perl v5.16
+or v5.18 and can't upgrade, you can use
 
     use locale ':not_characters';
 
@@ -1268,26 +1363,38 @@ into the locale.  (See L<open>).  On a per-filehandle basis, you can
 instead use the L<PerlIO::locale> module, or the L<Encode::Locale>
 module, both available from CPAN.  The latter module also has methods to
 ease the handling of C<ARGV> and environment variables, and can be used
-on individual strings.  Also, if you know that all your locales will be
+on individual strings.  If you know that all your locales will be
 UTF-8, as many are these days, you can use the L<B<-C>|perlrun/-C>
 command line switch.
 
 This form of the pragma allows essentially seamless handling of locales
-with Unicode.  The collation order will be Unicode's.  It is strongly
+with Unicode.  The collation order will be by Unicode code point order.
+It is strongly
 recommended that when you need to order and sort strings that you use
 the standard module L<Unicode::Collate> which gives much better results
 in many instances than you can get with the old-style locale handling.
 
-For pre-v5.16 Perls, or if you use the locale pragma without the
-C<:not_characters> parameter, Perl tries to work with both Unicode and
-locales--but there are problems.
+All the modules and switches just described can be used in v5.20 with
+just plain C<use locale>, and, should the input locales not be UTF-8,
+you'll get the less than ideal behavior, described below, that you get
+with pre-v5.16 Perls, or when you use the locale pragma without the
+C<:not_characters> parameter in v5.16 and v5.18.  If you are using
+exclusively UTF-8 locales in v5.20 and higher, the rest of this section
+does not apply to you.
 
-Perl does not handle multi-byte locales in this case, such as have been
-used for various
-Asian languages, such as Big5 or Shift JIS.  However, the increasingly
-common multi-byte UTF-8 locales, if properly implemented, may work
-reasonably well (depending on your C library implementation) in this
-form of the locale pragma, simply because both
+There are two cases, multi-byte and single-byte locales.  First
+multi-byte:
+
+The only multi-byte (or wide character) locale that Perl is ever likely
+to support is UTF-8.  This is due to the difficulty of implementation,
+the fact that high quality UTF-8 locales are now published for every
+area of the world (L<http://unicode.org/Public/cldr/latest/>), and that
+failing all that you can use the L<Encode> module to translate to/from
+your locale.  So, you'll have to do one of those things if you're using
+one of these locales, such as Big5 or Shift JIS.  For UTF-8 locales, in
+Perls (pre v5.20) that don't have full UTF-8 locale support, they may
+work reasonably well (depending on your C library implementation)
+simply because both
 they and Perl store characters that take up multiple bytes the same way.
 However, some, if not most, C library implementations may not process
 the characters in the upper half of the Latin-1 range (128 - 255)
@@ -1295,7 +1402,10 @@ properly under LC_CTYPE.  To see if a character is a particular type
 under a locale, Perl uses the functions like C<isalnum()>.  Your C
 library may not work for UTF-8 locales with those functions, instead
 only working under the newer wide library functions like C<iswalnum()>.
+However, they are treated like single-byte locales, and will have the
+restrictions described below.
 
+For single-byte locales,
 Perl generally takes the tack to use locale rules on code points that can fit
 in a single byte, and Unicode rules for those that can't (though this
 isn't uniformly applied, see the note at the end of this section).  This
@@ -1305,12 +1415,13 @@ in the ISO8859-1 locale, Latin1, it is a multiplication sign.  The POSIX
 regular expression character class C<[[:alpha:]]> will magically match
 0xD7 in the Greek locale but not in the Latin one.
 
-However, there are places where this breaks down.  Certain constructs are
+However, there are places where this breaks down.  Certain Perl constructs are
 for Unicode only, such as C<\p{Alpha}>.  They assume that 0xD7 always has its
 Unicode meaning (or the equivalent on EBCDIC platforms).  Since Latin1 is a
 subset of Unicode and 0xD7 is the multiplication sign in both Latin1 and
 Unicode, C<\p{Alpha}> will never match it, regardless of locale.  A similar
-issue occurs with C<\N{...}>.  It is therefore a bad idea to use C<\p{}> or
+issue occurs with C<\N{...}>.  Prior to v5.20, It is therefore a bad
+idea to use C<\p{}> or
 C<\N{}> under plain C<use locale>--I<unless> you can guarantee that the
 locale will be a ISO8859-1.  Use POSIX character classes instead.
 
@@ -1335,6 +1446,10 @@ input, which should mean the multiplication sign, won't be interpreted by
 Perl that way under the Greek locale.  This is not a problem
 I<provided> you make certain that all locales will always and only be either
 an ISO8859-1, or, if you don't have a deficient C library, a UTF-8 locale.
+
+Still another problem is that this approach can lead to two code
+points meaning the same character.  Thus in a Greek locale, both U+03A7
+and U+00D7 are GREEK CAPITAL LETTER CHI.
 
 Vendor locales are notoriously buggy, and it is difficult for Perl to test
 its locale-handling code because this interacts with code that Perl has no

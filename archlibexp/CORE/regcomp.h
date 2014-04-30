@@ -125,13 +125,28 @@
  *
  * See regexp.h for flags used externally to the regexp engine
  */
+#define RXp_INTFLAGS(rx)        ((rx)->intflags)
+#define RX_INTFLAGS(prog)        RXp_INTFLAGS(ReANY(prog))
+
 #define PREGf_SKIP		0x00000001
 #define PREGf_IMPLICIT		0x00000002 /* Converted .* to ^.* */
 #define PREGf_NAUGHTY		0x00000004 /* how exponential is this pattern? */
 #define PREGf_VERBARG_SEEN	0x00000008
 #define PREGf_CUTGROUP_SEEN	0x00000010
 #define PREGf_USE_RE_EVAL	0x00000020 /* compiled with "use re 'eval'" */
+/* these used to be extflags, but are now intflags */
+#define PREGf_NOSCAN            0x00000040
+#define PREGf_CANY_SEEN         0x00000080
+#define PREGf_GPOS_SEEN         0x00000100
+#define PREGf_GPOS_FLOAT        0x00000200
 
+#define PREGf_ANCH_BOL          0x00000400
+#define PREGf_ANCH_MBOL         0x00000800
+#define PREGf_ANCH_SBOL         0x00001000
+#define PREGf_ANCH_GPOS         0x00002000
+
+#define PREGf_ANCH              (PREGf_ANCH_SBOL | PREGf_ANCH_GPOS | \
+                                 PREGf_ANCH_MBOL | PREGf_ANCH_BOL )
 
 /* this is where the old regcomp.h started */
 
@@ -170,14 +185,25 @@ struct regnode_2 {
 };
 
 
-#define ANYOF_BITMAP_SIZE	32	/* 256 b/(8 b/B) */
+#define ANYOF_BITMAP_SIZE	(256 / 8)   /* 8 bits/Byte */
+
+/* Note that these form structs which are supersets of the next smaller one, by
+ * appending fields.  Alignment problems can occur if one of those optional
+ * fields requires stricter alignment than the base struct.  And formal
+ * parameters that can really be two or more of the structs should be
+ * declared as the smallest one it could be.  See commit message for
+ * 7dcac5f6a5195002b55c935ee1d67f67e1df280b.  Regnode allocation is done
+ * without regard to alignment, and changing it to would also require changing
+ * the code that inserts and deletes regnodes.  The basic single-argument
+ * regnode has a U32, which is what reganode() allocates as a unit.  Therefore
+ * no field can require stricter alignment than U32. */
 
 /* also used by trie */
 struct regnode_charclass {
     U8	flags;
     U8  type;
     U16 next_off;
-    U32 arg1;				/* used as ptr in S_regclass */
+    U32 arg1;
     char bitmap[ANYOF_BITMAP_SIZE];	/* only compile-time */
 };
 
@@ -186,23 +212,41 @@ struct regnode_charclass_class {
     U8	flags;				/* ANYOF_POSIXL bit must go here */
     U8  type;
     U16 next_off;
-    U32 arg1;					/* used as ptr in S_regclass */
+    U32 arg1;
     char bitmap[ANYOF_BITMAP_SIZE];		/* both compile-time */
     U32 classflags;	                        /* and run-time */
 };
 
-/* Synthetic start class; is a regnode_charclass_class plus an SV*.  Note that
- * the 'next_off' field is unused, as the SSC stands alone, so there is never a
- * next node. */
+/* A synthetic start class; is a regnode_charclass_posixl_fold, plus an extra
+ * SV*, used only during its construction and which is not used by regexec.c.
+ * Note that the 'next_off' field is unused, as the SSC stands alone, so there
+ * is never a next node.  Also, there is no alignment issue, becase these are
+ * declared or allocated as a complete unit so the compiler takes care of
+ * alignment.  This is unlike ithe other regnodes which are allocated in terms
+ * of multiples of a single-argument regnode.  Because there is no alignment
+ * issue, these can have a pointer field */
 struct regnode_ssc {
     U8	flags;				/* ANYOF_POSIXL bit must go here */
     U8  type;
     U16 next_off;
-    U32 arg1;				/* used as ptr in S_regclass */
+    U32 arg1;
     char bitmap[ANYOF_BITMAP_SIZE];	/* both compile-time */
     U32 classflags;	                /* and run-time */
     SV* invlist;                        /* list of code points matched */
 };
+
+/*  We take advantage of 'next_off' not otherwise being used in the SSC by
+ *  actually using it: by setting it to 1.  This allows us to test and
+ *  distinguish between an SSC and other ANYOF node types, as 'next_off' cannot
+ *  otherwise be 1, because it is the offset to the next regnode expressed in
+ *  units of regnodes.  Since an ANYOF node contains extra fields, it adds up
+ *  to 12 regnode units on 32-bit systems, (hence the minimum this can be (if
+ *  not 0) is 11 there.  Even if things get tightly packed on a 64-bit system,
+ *  it still would be more than 1. */
+#define set_ANYOF_SYNTHETIC(n) STMT_START{ OP(n) = ANYOF;              \
+                                           NEXT_OFF(n) = 1;            \
+                               } STMT_END
+#define is_ANYOF_SYNTHETIC(n) (OP(n) == ANYOF && NEXT_OFF(n) == 1)
 
 /* XXX fix this description.
    Impose a limit of REG_INFTY on various pattern matching operations
@@ -303,29 +347,20 @@ struct regnode_ssc {
  * reach this high). */
 #define ANYOF_NONBITMAP_EMPTY	((U32) -1)
 
-/* The information used to be stored as as combination of the ANYOF_UTF8 and
- * ANYOF_NONBITMAP_NON_UTF8 bits in the flags field, but was moved out of there
- * to free up a bit for other uses.  This tries to hide the change from
- * existing code as much as possible.  Now, the data structure that goes in ARG
- * is not allocated unless it is needed, and that is what is used to determine
- * if there is something outside the bitmap.  The code now assumes that if
- * that structure exists, that any UTF-8 encoded string should be tried against
- * it, but a non-UTF8-encoded string will be tried only if the
- * ANYOF_NONBITMAP_NON_UTF8 bit is also set. */
-#define ANYOF_NONBITMAP(node)	(ARG(node) != ANYOF_NONBITMAP_EMPTY)
-
 /* Flags for node->flags of ANYOF.  These are in short supply, with none
- * currently available.  If more are needed, the ANYOF_LOCALE and
- * ANYOF_POSIXL bits could be shared, making a space penalty for all locale
- * nodes.  Also, the ABOVE_LATIN1_ALL bit could be freed up by resorting to
- * creating a swash containing everything above 255.  This introduces a
- * performance penalty.  Better would be to split it off into a separate node,
- * which actually would improve performance a bit by allowing regexec.c to test
- * for a UTF-8 character being above 255 without having to call a function nor
- * calculate its code point value.  However, this solution might need to have a
- * second node type, ANYOF_SYNTHETIC_ABOVE_LATIN1_ALL.  Several flags are not
- * used in synthetic start class (SSC) nodes, so could be shared should new
- * flags be needed for SSCs. */
+ * currently available.  The ABOVE_LATIN1_ALL bit could be freed up
+ * by resorting to creating a swash containing everything above 255.  This
+ * introduces a performance penalty.  An option that wouldn't slow things down
+ * would be to split one of the two LOC flags out into a separate
+ * node, like what was done with ANYOF_NON_UTF8_NON_ASCII_ALL in commit
+ * 34fdef848b1687b91892ba55e9e0c3430e0770f6 (but which was reverted because it
+ * wasn't the best option available at the time), and using a LOC flag is
+ * probably better than that commit anyway.  But it could be reinstated if we
+ * need a bit.  The LOC flags are only for /l nodes; the reverted commit was
+ * only for /d, so there are no combinatorial issues.  The LOC flag to use is
+ * probably the POSIXL one.
+ * Several flags are not used in synthetic start class (SSC) nodes, so could be
+ * shared should new flags be needed for SSCs, like ANYOF_EMPTY_STRING now. */
 
 /* regexec.c is expecting this to be in the low bit */
 #define ANYOF_INVERT		 0x01
@@ -335,7 +370,9 @@ struct regnode_ssc {
  * regex compilation. */
 #define ANYOF_EMPTY_STRING       ANYOF_INVERT
 
-#define ANYOF_LOCALE		 0x02	    /* /l modifier */
+/* Are there things that will match only if the target string is encoded in
+ * UTF-8?  (This is not set if ANYOF_AOVE_LATIN1_ALL is set) */
+#define ANYOF_UTF8               0x02
 
 /* The fold is calculated and stored in the bitmap where possible at compile
  * time.  However under locale, the actual folding varies depending on
@@ -346,8 +383,7 @@ struct regnode_ssc {
 /* Set if this is a regnode_charclass_posixl vs a regnode_charclass.  This
  * is used for runtime \d, \w, [:posix:], ..., which are used only in locale
  * and the optimizer's synthetic start class.  Non-locale \d, etc are resolved
- * at compile-time.  Could be shared with ANYOF_LOCALE, forcing all locale
- * nodes to be large */
+ * at compile-time */
 #define ANYOF_POSIXL	         0x08
 #define ANYOF_CLASS	         ANYOF_POSIXL
 #define ANYOF_LARGE              ANYOF_POSIXL
@@ -365,18 +401,16 @@ struct regnode_ssc {
 
 /* Match all Latin1 characters that aren't ASCII when the target string is not
  * in utf8. */
-#define ANYOF_NON_UTF8_LATIN1_ALL 0x80
+#define ANYOF_NON_UTF8_NON_ASCII_ALL 0x80
 
 #define ANYOF_FLAGS_ALL		(0xff)
 
-#define ANYOF_LOCALE_FLAGS (ANYOF_LOCALE                        \
-                           |ANYOF_LOC_FOLD                      \
-                           |ANYOF_POSIXL)
+#define ANYOF_LOCALE_FLAGS (ANYOF_LOC_FOLD | ANYOF_POSIXL)
 
 /* These are the flags that apply to both regular ANYOF nodes and synthetic
  * start class nodes during construction of the SSC.  During finalization of
  * the SSC, other of the flags could be added to it */
-#define ANYOF_COMMON_FLAGS    (ANYOF_LOCALE_FLAGS | ANYOF_WARN_SUPER)
+#define ANYOF_COMMON_FLAGS    (ANYOF_WARN_SUPER|ANYOF_UTF8)
 
 /* Character classes for node->classflags of ANYOF */
 /* Should be synchronized with a table in regprop() */
@@ -484,9 +518,18 @@ struct regnode_ssc {
 	 && (((regnode_charclass_posixl*)(p))->classflags))
 #define ANYOF_CLASS_TEST_ANY_SET(p) ANYOF_POSIXL_TEST_ANY_SET(p)
 
-#define ANYOF_POSIXL_TEST_ALL_SET(p)                               \
-        ((ANYOF_FLAGS(p) & ANYOF_POSIXL)                           \
-         && ((regnode_charclass_posixl*) (p))->classflags == ((1U << ((ANYOF_POSIXL_MAX) - 1))) - 1)
+/* Since an SSC always has this field, we don't have to test for that; nor do
+ * we want to because the bit isn't set for SSC during its construction */
+#define ANYOF_POSIXL_SSC_TEST_ANY_SET(p)                               \
+                            cBOOL(((regnode_ssc*)(p))->classflags)
+#define ANYOF_POSIXL_SSC_TEST_ALL_SET(p) /* Are all bits set? */       \
+        (((regnode_ssc*) (p))->classflags                              \
+                        == ((1U << ((ANYOF_POSIXL_MAX) - 1))) - 1)
+
+#define ANYOF_POSIXL_TEST_ALL_SET(p)                                   \
+        ((ANYOF_FLAGS(p) & ANYOF_POSIXL)                               \
+         && ((regnode_charclass_posixl*) (p))->classflags              \
+                        == ((1U << ((ANYOF_POSIXL_MAX) - 1))) - 1)
 
 #define ANYOF_POSIXL_OR(source, dest) STMT_START { (dest)->classflags |= (source)->classflags ; } STMT_END
 #define ANYOF_CLASS_OR(source, dest) ANYOF_POSIXL_OR((source), (dest))
@@ -523,19 +566,20 @@ struct regnode_ssc {
 
 #define EXTRA_SIZE(guy) ((sizeof(guy)-1)/sizeof(struct regnode))
 
-#define REG_SEEN_ZERO_LEN	0x00000001
-#define REG_SEEN_LOOKBEHIND	0x00000002
-#define REG_SEEN_GPOS		0x00000004
+#define REG_ZERO_LEN_SEEN                   0x00000001
+#define REG_LOOKBEHIND_SEEN                 0x00000002
+#define REG_GPOS_SEEN                       0x00000004
 /* spare */
-#define REG_SEEN_CANY		0x00000010
-#define REG_SEEN_SANY		REG_SEEN_CANY /* src bckwrd cmpt */
-#define REG_SEEN_RECURSE        0x00000020
-#define REG_TOP_LEVEL_BRANCHES  0x00000040
-#define REG_SEEN_VERBARG        0x00000080
-#define REG_SEEN_CUTGROUP       0x00000100
-#define REG_SEEN_RUN_ON_COMMENT 0x00000200
-#define REG_SEEN_EXACTF_SHARP_S 0x00000400
-#define REG_SEEN_GOSTART        0x00000800
+#define REG_CANY_SEEN                       0x00000010
+#define REG_RECURSE_SEEN                    0x00000020
+#define REG_TOP_LEVEL_BRANCHES_SEEN         0x00000040
+#define REG_VERBARG_SEEN                    0x00000080
+#define REG_CUTGROUP_SEEN                   0x00000100
+#define REG_RUN_ON_COMMENT_SEEN             0x00000200
+#define REG_UNFOLDED_MULTI_SEEN             0x00000400
+#define REG_GOSTART_SEEN                    0x00000800
+#define REG_UNBOUNDED_QUANTIFIER_SEEN       0x00001000
+
 
 START_EXTERN_C
 

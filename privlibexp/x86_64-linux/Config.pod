@@ -2323,6 +2323,15 @@ This variable conditionally defines the C<LIBM_LIB_VERSION> symbol,
 which indicates to the C program that F<math.h> defines C<_LIB_VERSION>
 being available in libm
 
+=item C<d_libname_unique>
+
+From F<so.U>:
+
+This variable is defined if the target system insists on unique
+basenames for shared library files. This is currently true on Android,
+false everywhere else we know of.
+Defaults to C<undef>.
+
 =item C<d_link>
 
 From F<d_link.U>:
@@ -4987,6 +4996,33 @@ From F<Oldconfig.U>:
 Gives the type of hints used for previous answers. May be one of
 C<default>, C<recommended> or C<previous>.
 
+=item C<hostperl>
+
+From F<Cross.U>:
+
+This variable contains the path to a miniperl binary that can be
+run on the host C<OS> when cross-compiling.  Useful and available only
+during Perl build.
+Empty string '' if not cross-compiling.
+
+=item C<hostgenerate>
+
+From F<Cross.U>:
+
+This variable contains the path to a generate_uudmap binary that
+can be run on the host C<OS> when cross-compiling.  Useful and
+available only during Perl build.
+Empty string '' if not cross-compiling.
+
+=item C<hostosname>
+
+From F<Cross.U>:
+
+This variable contains the original value of C<$^O> for hostperl
+when cross-compiling.  This is useful to pick the proper tools
+when running build code in the host.
+Empty string '' if not cross-compiling.
+
 =item C<hostcat>
 
 From F<nis.U>:
@@ -5757,6 +5793,14 @@ suitable for use in the C<PERL_INC_VERSION_LIST> initialization.
 =item C<incpath>
 
 From F<usrinc.U>:
+
+This variable must precede the normal include path to get the
+right one, as in F<$incpath/usr/include> or F<$incpath/usr/lib>.
+Value can be "" or F</bsd43> on mips.
+
+=item C<incpth>
+
+From F<libpth.U>:
 
 This variable must precede the normal include path to get the
 right one, as in F<$incpath/usr/include> or F<$incpath/usr/lib>.
@@ -8157,6 +8201,15 @@ system. It is not the place where the user wants to put his manual
 pages. Rather it is the place where Configure may look to find manual
 for unix commands (section 1 of the manual usually). See mansrc.
 
+=item C<sysroot>
+
+From F<Sysroot.U>:
+
+This variable is empty unless supplied by the Configure user.
+It can contain a path to an alternative root directory, under which
+headers and libraries for the compilation target can be found. This
+is generally used when cross-compiling using a gcc-like compiler.
+
 =back
 
 =cut
@@ -8187,6 +8240,55 @@ From F<Cross.U>:
 
 If cross-compiling, this variable contains the target architecture.
 If not, this will be empty.
+
+=item C<targetdir>
+
+From F<Cross.U>:
+
+This variable contains a path that will be created on the target
+host using targetmkdir, and then used to copy the cross-compiled
+executables to. Defaults to F</tmp> if not set.
+
+=item C<targetenv>
+
+From F<Cross.U>:
+
+If cross-compiling, this variable can be used to modify the
+environment on the target system.
+However, how and where it's used, and even if it's used at all, is
+entirely dependent on both the transport mechanism (targetrun) and
+what the target system is.  Unless the relevant documentation says
+otherwise, it is genereally not useful.
+
+=item C<targethost>
+
+From F<Cross.U>:
+
+This variable contains the name of a separate host machine that
+can be used to run compiled test programs and perl tests on.
+Set to empty string if not in use.
+
+=item C<targetmkdir>
+
+From F<Cross.U>:
+
+This variable contains the command used by Configure to create a
+new directory on the target host.
+
+=item C<targetport>
+
+From F<Cross.U>:
+
+This variable contains the number of a network port to be used to
+connect to the host in targethost, if unset defaults to 22 for ssh.
+
+=item C<targetsh>
+
+From F<Cross.U>:
+
+If cross-compiling, this variable contains the location of sh on the
+target system.
+If not, this will be the same as $sh.
 
 =item C<tbl>
 

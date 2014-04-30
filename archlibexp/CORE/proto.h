@@ -75,31 +75,31 @@ PERL_CALLCONV bool	Perl__is_utf8_perl_idstart(pTHX_ const U8 *p)
 #define PERL_ARGS_ASSERT__IS_UTF8_PERL_IDSTART	\
 	assert(p)
 
-PERL_CALLCONV UV	Perl__to_uni_fold_flags(pTHX_ UV c, U8 *p, STRLEN *lenp, const U8 flags)
+PERL_CALLCONV UV	Perl__to_uni_fold_flags(pTHX_ UV c, U8 *p, STRLEN *lenp, U8 flags)
 			__attribute__nonnull__(pTHX_2)
 			__attribute__nonnull__(pTHX_3);
 #define PERL_ARGS_ASSERT__TO_UNI_FOLD_FLAGS	\
 	assert(p); assert(lenp)
 
-PERL_CALLCONV UV	Perl__to_utf8_fold_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, U8 flags, bool* tainted_ptr)
+PERL_CALLCONV UV	Perl__to_utf8_fold_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, U8 flags)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT__TO_UTF8_FOLD_FLAGS	\
 	assert(p); assert(ustrp)
 
-PERL_CALLCONV UV	Perl__to_utf8_lower_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, const bool flags, bool* tainted_ptr)
+PERL_CALLCONV UV	Perl__to_utf8_lower_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, bool flags)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT__TO_UTF8_LOWER_FLAGS	\
 	assert(p); assert(ustrp)
 
-PERL_CALLCONV UV	Perl__to_utf8_title_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, const bool flags, bool* tainted_ptr)
+PERL_CALLCONV UV	Perl__to_utf8_title_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, bool flags)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT__TO_UTF8_TITLE_FLAGS	\
 	assert(p); assert(ustrp)
 
-PERL_CALLCONV UV	Perl__to_utf8_upper_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, const bool flags, bool* tainted_ptr)
+PERL_CALLCONV UV	Perl__to_utf8_upper_flags(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp, bool flags)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT__TO_UTF8_UPPER_FLAGS	\
@@ -3180,6 +3180,9 @@ PERL_CALLCONV OP*	Perl_parse_fullstmt(pTHX_ U32 flags);
 PERL_CALLCONV SV*	Perl_parse_label(pTHX_ U32 flags);
 PERL_CALLCONV OP*	Perl_parse_listexpr(pTHX_ U32 flags);
 PERL_CALLCONV OP*	Perl_parse_stmtseq(pTHX_ U32 flags);
+PERL_CALLCONV OP *	Perl_parse_subsignature(pTHX)
+			__attribute__warn_unused_result__;
+
 PERL_CALLCONV OP*	Perl_parse_termexpr(pTHX_ U32 flags);
 PERL_CALLCONV U32	Perl_parse_unicode_opts(pTHX_ const char **popt)
 			__attribute__nonnull__(pTHX_1);
@@ -5079,6 +5082,11 @@ PERL_CALLCONV void	Perl_utilize(pTHX_ int aver, I32 floor, OP* version, OP* idop
 	assert(idop)
 
 #endif
+#if !(defined(WIN32))
+/* PERL_CALLCONV char*	my_setlocale(pTHX_ int category, const char* locale)
+			__attribute__pure__; */
+
+#endif
 #if !(defined(_MSC_VER))
 PERL_CALLCONV_NO_RET int	Perl_magic_regdatum_set(pTHX_ SV* sv, MAGIC* mg)
 			__attribute__noreturn__
@@ -5304,6 +5312,11 @@ STATIC bool	S_put_latin1_charclass_innards(pTHX_ SV* sv, char* bitmap)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT_PUT_LATIN1_CHARCLASS_INNARDS	\
 	assert(sv); assert(bitmap)
+
+STATIC void	S_put_range(pTHX_ SV* sv, UV start, UV end)
+			__attribute__nonnull__(pTHX_1);
+#define PERL_ARGS_ASSERT_PUT_RANGE	\
+	assert(sv)
 
 STATIC void	S_regdump_extflags(pTHX_ const char *lead, const U32 flags);
 STATIC void	S_regdump_intflags(pTHX_ const char *lead, const U32 flags);
@@ -6594,7 +6607,7 @@ STATIC U32	S_add_data(RExC_state_t* const pRExC_state, const char* const s, cons
 #define PERL_ARGS_ASSERT_ADD_DATA	\
 	assert(pRExC_state); assert(s)
 
-PERL_STATIC_INLINE void	S_alloc_maybe_populate_EXACT(pTHX_ RExC_state_t *pRExC_state, regnode *node, I32 *flagp, STRLEN len, UV code_point)
+PERL_STATIC_INLINE void	S_alloc_maybe_populate_EXACT(pTHX_ RExC_state_t *pRExC_state, regnode *node, I32 *flagp, STRLEN len, UV code_point, const bool downgradable)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2)
 			__attribute__nonnull__(pTHX_3);
@@ -6716,13 +6729,13 @@ PERL_STATIC_INLINE void	S_invlist_trim(pTHX_ SV* const invlist)
 #define PERL_ARGS_ASSERT_INVLIST_TRIM	\
 	assert(invlist)
 
-STATIC U32	S_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan, UV *min_subtract, bool *has_exactf_sharp_s, U32 flags, regnode *val, U32 depth)
+STATIC U32	S_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan, UV *min_subtract, bool *unfolded_multi_char, U32 flags, regnode *val, U32 depth)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2)
 			__attribute__nonnull__(pTHX_3)
 			__attribute__nonnull__(pTHX_4);
 #define PERL_ARGS_ASSERT_JOIN_EXACT	\
-	assert(pRExC_state); assert(scan); assert(min_subtract); assert(has_exactf_sharp_s)
+	assert(pRExC_state); assert(scan); assert(min_subtract); assert(unfolded_multi_char)
 
 STATIC I32	S_make_trie(pTHX_ RExC_state_t *pRExC_state, regnode *startbranch, regnode *first, regnode *last, regnode *tail, U32 word_count, U32 flags, U32 depth)
 			__attribute__nonnull__(pTHX_1)
@@ -6843,7 +6856,7 @@ STATIC void	S_regtail(pTHX_ RExC_state_t *pRExC_state, regnode *p, const regnode
 #define PERL_ARGS_ASSERT_REGTAIL	\
 	assert(pRExC_state); assert(p); assert(val)
 
-STATIC STRLEN	S_reguni(pTHX_ const RExC_state_t *pRExC_state, UV uv, char *s)
+PERL_STATIC_INLINE STRLEN	S_reguni(pTHX_ const RExC_state_t *pRExC_state, UV uv, char *s)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_3);
 #define PERL_ARGS_ASSERT_REGUNI	\
@@ -6863,7 +6876,7 @@ STATIC void	S_scan_commit(pTHX_ const RExC_state_t *pRExC_state, struct scan_dat
 #define PERL_ARGS_ASSERT_SCAN_COMMIT	\
 	assert(pRExC_state); assert(data); assert(minlenp)
 
-STATIC void	S_set_ANYOF_arg(pTHX_ RExC_state_t* const pRExC_state, regnode* const node, SV* const cp_list, SV* const runtime_defns, SV* const swash, const bool has_user_defined_property)
+STATIC void	S_set_ANYOF_arg(pTHX_ RExC_state_t* const pRExC_state, regnode* const node, SV* const cp_list, SV* const runtime_defns, SV* const only_utf8_locale_list, SV* const swash, const bool has_user_defined_property)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2);
 #define PERL_ARGS_ASSERT_SET_ANYOF_ARG	\
@@ -6874,7 +6887,7 @@ PERL_STATIC_INLINE void	S_ssc_add_range(pTHX_ regnode_ssc *ssc, UV const start, 
 #define PERL_ARGS_ASSERT_SSC_ADD_RANGE	\
 	assert(ssc)
 
-STATIC void	S_ssc_and(pTHX_ const RExC_state_t *pRExC_state, regnode_ssc *ssc, const regnode_ssc *and_with)
+STATIC void	S_ssc_and(pTHX_ const RExC_state_t *pRExC_state, regnode_ssc *ssc, const regnode_charclass *and_with)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2)
 			__attribute__nonnull__(pTHX_3);
@@ -6902,11 +6915,6 @@ STATIC void	S_ssc_finalize(pTHX_ RExC_state_t *pRExC_state, regnode_ssc *ssc)
 #define PERL_ARGS_ASSERT_SSC_FINALIZE	\
 	assert(pRExC_state); assert(ssc)
 
-STATIC void	S_ssc_flags_and(regnode_ssc *ssc, const U8 and_with)
-			__attribute__nonnull__(1);
-#define PERL_ARGS_ASSERT_SSC_FLAGS_AND	\
-	assert(ssc)
-
 STATIC void	S_ssc_init(pTHX_ const RExC_state_t *pRExC_state, regnode_ssc *ssc)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2);
@@ -6932,7 +6940,7 @@ STATIC int	S_ssc_is_cp_posixl_init(pTHX_ const RExC_state_t *pRExC_state, const 
 #define PERL_ARGS_ASSERT_SSC_IS_CP_POSIXL_INIT	\
 	assert(pRExC_state); assert(ssc)
 
-STATIC void	S_ssc_or(pTHX_ const RExC_state_t *pRExC_state, regnode_ssc *ssc, const regnode_ssc *or_with)
+STATIC void	S_ssc_or(pTHX_ const RExC_state_t *pRExC_state, regnode_ssc *ssc, const regnode_charclass *or_with)
 			__attribute__nonnull__(pTHX_1)
 			__attribute__nonnull__(pTHX_2)
 			__attribute__nonnull__(pTHX_3);
@@ -6970,6 +6978,13 @@ PERL_CALLCONV SV*	Perl__new_invlist_C_array(pTHX_ const UV* const list)
 			__attribute__nonnull__(pTHX_1);
 #define PERL_ARGS_ASSERT__NEW_INVLIST_C_ARRAY	\
 	assert(list)
+
+#endif
+#if defined(PERL_IN_REGCOMP_C) || defined(PERL_IN_REGEXEC_C)
+PERL_CALLCONV SV*	Perl__get_regclass_nonbitmap_data(pTHX_ const regexp *prog, const struct regnode *node, bool doinit, SV **listsvp, SV **lonly_utf8_locale)
+			__attribute__nonnull__(pTHX_2);
+#define PERL_ARGS_ASSERT__GET_REGCLASS_NONBITMAP_DATA	\
+	assert(node)
 
 #endif
 #if defined(PERL_IN_REGCOMP_C) || defined(PERL_IN_REGEXEC_C) || defined(PERL_IN_UTF8_C)
@@ -7033,7 +7048,7 @@ STATIC char*	S_form_short_octal_warning(pTHX_ const char * const s, const STRLEN
 #define PERL_ARGS_ASSERT_FORM_SHORT_OCTAL_WARNING	\
 	assert(s)
 
-STATIC char	S_grok_bslash_c(pTHX_ const char source, const bool utf8, const bool output_warning)
+STATIC char	S_grok_bslash_c(pTHX_ const char source, const bool output_warning)
 			__attribute__warn_unused_result__;
 
 STATIC bool	S_grok_bslash_o(pTHX_ char** s, UV* uv, const char** error_msg, const bool output_warning, const bool strict, const bool silence_non_portable, const bool utf8)
@@ -7118,12 +7133,6 @@ PERL_CALLCONV SV*	Perl__swash_to_invlist(pTHX_ SV* const swash)
 
 #endif
 #if defined(PERL_IN_REGEXEC_C)
-STATIC SV*	S_core_regclass_swash(pTHX_ const regexp *prog, const struct regnode *node, bool doinit, SV **listsvp)
-			__attribute__warn_unused_result__
-			__attribute__nonnull__(pTHX_2);
-#define PERL_ARGS_ASSERT_CORE_REGCLASS_SWASH	\
-	assert(node)
-
 STATIC char*	S_find_byclass(pTHX_ regexp * prog, const regnode *c, char *s, const char *strend, regmatch_info *reginfo)
 			__attribute__warn_unused_result__
 			__attribute__nonnull__(pTHX_1)
@@ -7166,6 +7175,14 @@ STATIC U8*	S_reghop3(U8 *s, SSize_t off, const U8 *lim)
 			__attribute__nonnull__(3);
 #define PERL_ARGS_ASSERT_REGHOP3	\
 	assert(s); assert(lim)
+
+STATIC U8*	S_reghop4(U8 *s, SSize_t off, const U8 *llim, const U8 *rlim)
+			__attribute__warn_unused_result__
+			__attribute__nonnull__(1)
+			__attribute__nonnull__(3)
+			__attribute__nonnull__(4);
+#define PERL_ARGS_ASSERT_REGHOP4	\
+	assert(s); assert(llim); assert(rlim)
 
 STATIC U8*	S_reghopmaybe3(U8 *s, SSize_t off, const U8 *lim)
 			__attribute__warn_unused_result__
@@ -7216,16 +7233,6 @@ STATIC void	S_to_utf8_substr(pTHX_ regexp * prog)
 #define PERL_ARGS_ASSERT_TO_UTF8_SUBSTR	\
 	assert(prog)
 
-#  if defined(XXX_dmq)
-STATIC U8*	S_reghop4(U8 *s, SSize_t off, const U8 *llim, const U8 *rlim)
-			__attribute__warn_unused_result__
-			__attribute__nonnull__(1)
-			__attribute__nonnull__(3)
-			__attribute__nonnull__(4);
-#define PERL_ARGS_ASSERT_REGHOP4	\
-	assert(s); assert(llim); assert(rlim)
-
-#  endif
 #endif
 #if defined(PERL_IN_SCOPE_C)
 STATIC void	S_save_pushptri32ptr(pTHX_ void *const ptr1, const I32 i, void *const ptr2, const int type);
@@ -8055,6 +8062,9 @@ PERL_CALLCONV SSize_t	Perl_PerlIO_write(pTHX_ PerlIO *f, const void *vbuf, Size_
 
 #endif
 #if defined(WIN32)
+PERL_CALLCONV char*	Perl_my_setlocale(pTHX_ int category, const char* locale)
+			__attribute__pure__;
+
 PERL_CALLCONV_NO_RET void	win32_croak_not_implemented(const char * fname)
 			__attribute__noreturn__
 			__attribute__nonnull__(1);

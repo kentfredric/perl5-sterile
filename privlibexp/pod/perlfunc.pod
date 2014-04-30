@@ -1973,15 +1973,13 @@ with some other statement, you can use one of these styles to avoid the warning:
     exec ('foo')   or print STDERR "couldn't exec foo: $!";
     { exec ('foo') }; print STDERR "couldn't exec foo: $!";
 
-If there is more than one argument in LIST, or if LIST is an array
-with more than one value, calls execvp(3) with the arguments in LIST.
-If there is only one scalar argument or an array with one element in it,
-the argument is checked for shell metacharacters, and if there are any,
-the entire argument is passed to the system's command shell for parsing
-(this is C</bin/sh -c> on Unix platforms, but varies on other platforms).
-If there are no shell metacharacters in the argument, it is split into
-words and passed directly to C<execvp>, which is more efficient.
-Examples:
+If there is more than one argument in LIST, this calls execvp(3) with the
+arguments in LIST.  If there is only one element in LIST, the argument is
+checked for shell metacharacters, and if there are any, the entire
+argument is passed to the system's command shell for parsing (this is
+C</bin/sh -c> on Unix platforms, but varies on other platforms).  If
+there are no shell metacharacters in the argument, it is split into words
+and passed directly to C<execvp>, which is more efficient.  Examples:
 
     exec '/bin/echo', 'Your arguments are: ', @ARGV;
     exec "sort $outfile | uniq";
@@ -3329,8 +3327,8 @@ What gets returned depends on several factors:
 
 =item If C<use bytes> is in effect:
 
-The results follow ASCII semantics.  Only characters C<A-Z> change, to C<a-z>
-respectively.
+The results follow ASCII semantics.  Only the characters C<A-Z> change,
+to C<a-z> respectively.
 
 =item Otherwise, if C<use locale> (but not C<use locale ':not_characters'>) is in effect:
 
@@ -3338,10 +3336,13 @@ Respects current LC_CTYPE locale for code points < 256; and uses Unicode
 semantics for the remaining code points (this last can only happen if
 the UTF8 flag is also set).  See L<perllocale>.
 
-A deficiency in this is that case changes that cross the 255/256
+Starting in v5.20, Perl wil use full Unicode rules if the locale is
+UTF-8.  Otherwise, there is a deficiency in this scheme, which is that
+case changes that cross the 255/256
 boundary are not well-defined.  For example, the lower case of LATIN CAPITAL
 LETTER SHARP S (U+1E9E) in Unicode semantics is U+00DF (on ASCII
-platforms).   But under C<use locale>, the lower case of U+1E9E is
+platforms).   But under C<use locale> (prior to v5.20 or not a UTF-8
+locale), the lower case of U+1E9E is
 itself, because 0xDF may not be LATIN SMALL LETTER SHARP S in the
 current locale, and Perl has no way of knowing if that character even
 exists in the locale, much less what code point it is.  Perl returns
@@ -3695,7 +3696,7 @@ this right, so Perl automatically removes all trailing slashes to keep
 everyone happy.
 
 To recursively create a directory structure, look at
-the C<mkpath> function of the L<File::Path> module.
+the C<make_path> function of the L<File::Path> module.
 
 =item msgctl ID,CMD,ARG
 X<msgctl>

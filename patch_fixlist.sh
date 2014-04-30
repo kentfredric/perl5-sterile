@@ -3,5 +3,5 @@ if [ -z $1 ]; then
   exit 1;
 fi
 for i in $( cat ./fixlist.txt ); do
-  sed -i "s^/home/kent/perl5/perlbrew/perls/5.19.8-pristine^$1^g" $i;
+  sed -i "s^/home/kent/perl5/perlbrew/perls/5.19.9-pristine^$1^g" $i;
 done

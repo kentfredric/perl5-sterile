@@ -3,7 +3,8 @@ use strict;
 use vars qw/$VERSION %released %version %families %upstream
 	    %bug_tracker %deprecated %delta/;
 use Module::CoreList::TieHashDelta;
-$VERSION = '3.04';
+use version;
+$VERSION = '3.06';
 
 my $dumpinc = 0;
 sub import {
@@ -244,6 +245,7 @@ sub changes_between {
     5.019007 => '2013-12-20',
     5.018002 => '2014-01-06',
     5.019008 => '2014-01-20',
+    5.019009 => '2014-02-20',
   );
 
 for my $version ( sort { $a <=> $b } keys %released ) {
@@ -9380,6 +9382,197 @@ for my $version ( sort { $a <=> $b } keys %released ) {
         removed => {
         }
     },
+    5.019009 => {
+        delta_from => 5.019008,
+        changed => {
+            'B'                     => '1.48',
+            'B::Concise'            => '0.992',
+            'B::Deparse'            => '1.25',
+            'CGI'                   => '3.65',
+            'CPAN::Meta::YAML'      => '0.011',
+            'Compress::Raw::Bzip2'  => '2.064',
+            'Compress::Raw::Zlib'   => '2.065',
+            'Compress::Zlib'        => '2.064',
+            'Config'                => '5.019009',
+            'Config::Perl::V'       => '0.20',
+            'Cwd'                   => '3.47',
+            'Devel::Peek'           => '1.16',
+            'Digest::SHA'           => '5.87',
+            'DynaLoader'            => '1.25',
+            'English'               => '1.09',
+            'ExtUtils::CBuilder'    => '0.280216',
+            'ExtUtils::CBuilder::Base'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::Unix'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::VMS'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::Windows'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::Windows::BCC'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::Windows::GCC'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::Windows::MSVC'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::aix'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::android'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::cygwin'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::darwin'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::dec_osf'=> '0.280216',
+            'ExtUtils::CBuilder::Platform::os2'=> '0.280216',
+            'ExtUtils::Command::MM' => '6.88',
+            'ExtUtils::Embed'       => '1.32',
+            'ExtUtils::Install'     => '1.62',
+            'ExtUtils::Installed'   => '1.999004',
+            'ExtUtils::Liblist'     => '6.88',
+            'ExtUtils::Liblist::Kid'=> '6.88',
+            'ExtUtils::MM'          => '6.88',
+            'ExtUtils::MM_AIX'      => '6.88',
+            'ExtUtils::MM_Any'      => '6.88',
+            'ExtUtils::MM_BeOS'     => '6.88',
+            'ExtUtils::MM_Cygwin'   => '6.88',
+            'ExtUtils::MM_DOS'      => '6.88',
+            'ExtUtils::MM_Darwin'   => '6.88',
+            'ExtUtils::MM_MacOS'    => '6.88',
+            'ExtUtils::MM_NW5'      => '6.88',
+            'ExtUtils::MM_OS2'      => '6.88',
+            'ExtUtils::MM_QNX'      => '6.88',
+            'ExtUtils::MM_UWIN'     => '6.88',
+            'ExtUtils::MM_Unix'     => '6.88',
+            'ExtUtils::MM_VMS'      => '6.88',
+            'ExtUtils::MM_VOS'      => '6.88',
+            'ExtUtils::MM_Win32'    => '6.88',
+            'ExtUtils::MM_Win95'    => '6.88',
+            'ExtUtils::MY'          => '6.88',
+            'ExtUtils::MakeMaker'   => '6.88',
+            'ExtUtils::MakeMaker::Config'=> '6.88',
+            'ExtUtils::Mkbootstrap' => '6.88',
+            'ExtUtils::Mksymlists'  => '6.88',
+            'ExtUtils::Packlist'    => '1.47',
+            'ExtUtils::testlib'     => '6.88',
+            'Fatal'                 => '2.23',
+            'File::Fetch'           => '0.48',
+            'File::Spec'            => '3.47',
+            'File::Spec::Cygwin'    => '3.47',
+            'File::Spec::Epoc'      => '3.47',
+            'File::Spec::Functions' => '3.47',
+            'File::Spec::Mac'       => '3.47',
+            'File::Spec::OS2'       => '3.47',
+            'File::Spec::Unix'      => '3.47',
+            'File::Spec::VMS'       => '3.47',
+            'File::Spec::Win32'     => '3.47',
+            'HTTP::Tiny'            => '0.042',
+            'IO::Compress::Adapter::Bzip2'=> '2.064',
+            'IO::Compress::Adapter::Deflate'=> '2.064',
+            'IO::Compress::Adapter::Identity'=> '2.064',
+            'IO::Compress::Base'    => '2.064',
+            'IO::Compress::Base::Common'=> '2.064',
+            'IO::Compress::Bzip2'   => '2.064',
+            'IO::Compress::Deflate' => '2.064',
+            'IO::Compress::Gzip'    => '2.064',
+            'IO::Compress::Gzip::Constants'=> '2.064',
+            'IO::Compress::RawDeflate'=> '2.064',
+            'IO::Compress::Zip'     => '2.064',
+            'IO::Compress::Zip::Constants'=> '2.064',
+            'IO::Compress::Zlib::Constants'=> '2.064',
+            'IO::Compress::Zlib::Extra'=> '2.064',
+            'IO::Socket::INET'      => '1.35',
+            'IO::Socket::IP'        => '0.28',
+            'IO::Uncompress::Adapter::Bunzip2'=> '2.064',
+            'IO::Uncompress::Adapter::Identity'=> '2.064',
+            'IO::Uncompress::Adapter::Inflate'=> '2.064',
+            'IO::Uncompress::AnyInflate'=> '2.064',
+            'IO::Uncompress::AnyUncompress'=> '2.064',
+            'IO::Uncompress::Base'  => '2.064',
+            'IO::Uncompress::Bunzip2'=> '2.064',
+            'IO::Uncompress::Gunzip'=> '2.064',
+            'IO::Uncompress::Inflate'=> '2.064',
+            'IO::Uncompress::RawInflate'=> '2.064',
+            'IO::Uncompress::Unzip' => '2.064',
+            'IPC::Cmd'              => '0.92',
+            'List::Util'            => '1.38',
+            'List::Util::XS'        => '1.38',
+            'Locale::Codes'         => '3.29',
+            'Locale::Codes::Constants'=> '3.29',
+            'Locale::Codes::Country'=> '3.29',
+            'Locale::Codes::Country_Codes'=> '3.29',
+            'Locale::Codes::Country_Retired'=> '3.29',
+            'Locale::Codes::Currency'=> '3.29',
+            'Locale::Codes::Currency_Codes'=> '3.29',
+            'Locale::Codes::Currency_Retired'=> '3.29',
+            'Locale::Codes::LangExt'=> '3.29',
+            'Locale::Codes::LangExt_Codes'=> '3.29',
+            'Locale::Codes::LangExt_Retired'=> '3.29',
+            'Locale::Codes::LangFam'=> '3.29',
+            'Locale::Codes::LangFam_Codes'=> '3.29',
+            'Locale::Codes::LangFam_Retired'=> '3.29',
+            'Locale::Codes::LangVar'=> '3.29',
+            'Locale::Codes::LangVar_Codes'=> '3.29',
+            'Locale::Codes::LangVar_Retired'=> '3.29',
+            'Locale::Codes::Language'=> '3.29',
+            'Locale::Codes::Language_Codes'=> '3.29',
+            'Locale::Codes::Language_Retired'=> '3.29',
+            'Locale::Codes::Script' => '3.29',
+            'Locale::Codes::Script_Codes'=> '3.29',
+            'Locale::Codes::Script_Retired'=> '3.29',
+            'Locale::Country'       => '3.29',
+            'Locale::Currency'      => '3.29',
+            'Locale::Language'      => '3.29',
+            'Locale::Script'        => '3.29',
+            'Module::Build'         => '0.4205',
+            'Module::Build::Base'   => '0.4205',
+            'Module::Build::Compat' => '0.4205',
+            'Module::Build::Config' => '0.4205',
+            'Module::Build::Cookbook'=> '0.4205',
+            'Module::Build::Dumper' => '0.4205',
+            'Module::Build::ModuleInfo'=> '0.4205',
+            'Module::Build::Notes'  => '0.4205',
+            'Module::Build::PPMMaker'=> '0.4205',
+            'Module::Build::Platform::Default'=> '0.4205',
+            'Module::Build::Platform::MacOS'=> '0.4205',
+            'Module::Build::Platform::Unix'=> '0.4205',
+            'Module::Build::Platform::VMS'=> '0.4205',
+            'Module::Build::Platform::VOS'=> '0.4205',
+            'Module::Build::Platform::Windows'=> '0.4205',
+            'Module::Build::Platform::aix'=> '0.4205',
+            'Module::Build::Platform::cygwin'=> '0.4205',
+            'Module::Build::Platform::darwin'=> '0.4205',
+            'Module::Build::Platform::os2'=> '0.4205',
+            'Module::Build::PodParser'=> '0.4205',
+            'Module::CoreList'      => '3.06',
+            'Module::CoreList::TieHashDelta'=> '3.06',
+            'Module::CoreList::Utils'=> '3.06',
+            'Module::Load'          => '0.30',
+            'Module::Load::Conditional'=> '0.62',
+            'Net::Domain'           => '2.23',
+            'Net::FTP'              => '2.79',
+            'Net::NNTP'             => '2.26',
+            'Net::POP3'             => '2.31',
+            'Net::Ping'             => '2.43',
+            'Net::SMTP'             => '2.33',
+            'POSIX'                 => '1.38_02',
+            'Parse::CPAN::Meta'     => '1.4413',
+            'PathTools::Cwd'        => '3.47',
+            'Pod::Escapes'          => '1.06',
+            'Pod::Find'             => '1.62',
+            'Pod::InputObjects'     => '1.62',
+            'Pod::ParseUtils'       => '1.62',
+            'Pod::Parser'           => '1.62',
+            'Pod::Select'           => '1.62',
+            'Scalar::Util'          => '1.38',
+            'autodie'               => '2.23',
+            'autodie::exception'    => '2.23',
+            'autodie::exception::system'=> '2.23',
+            'autodie::hints'        => '2.23',
+            'autodie::skip'         => '2.23',
+            'diagnostics'           => '1.34',
+            'feature'               => '1.35',
+            'inc::latest'           => '0.4205',
+            'locale'                => '1.03',
+            'mro'                   => '1.15',
+            'threads'               => '1.92',
+            'version'               => '0.9908',
+            'version::regex'        => '0.9908',
+            'version::vpp'          => '0.9908',
+            'warnings'              => '1.22',
+        },
+        removed => {
+        }
+    },
 );
 
 sub is_core
@@ -9389,7 +9582,7 @@ sub is_core
     my ($module_version, $perl_version);
 
     $module_version = shift if @_ > 0;
-    $perl_version   = @_ > 0 ? shift : $^V;
+    $perl_version   = @_ > 0 ? shift : $];
 
     my $first_release = first_release($module);
 
@@ -9421,7 +9614,7 @@ sub is_core
             last RELEASE if $prn > $perl_version;
             next unless defined(my $next_module_version
                                    = $delta{$prn}->{changed}->{$module});
-            return 1 if $next_module_version >= $module_version;
+            return 1 if version->parse($next_module_version) >= version->parse($module_version);
         }
         return 0;
     }
@@ -9753,6 +9946,13 @@ for my $version (sort { $a <=> $b } keys %delta) {
         removed => {
         }
     },
+    5.019009 => {
+        delta_from => 5.019008,
+        changed => {
+        },
+        removed => {
+        }
+    },
 );
 
 for my $version (sort { $a <=> $b } keys %deprecated) {
@@ -9914,6 +10114,7 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'IO::Compress::Zip::Constants'=> 'cpan',
     'IO::Compress::Zlib::Constants'=> 'cpan',
     'IO::Compress::Zlib::Extra'=> 'cpan',
+    'IO::Socket::IP'        => 'cpan',
     'IO::Uncompress::Adapter::Bunzip2'=> 'cpan',
     'IO::Uncompress::Adapter::Identity'=> 'cpan',
     'IO::Uncompress::Adapter::Inflate'=> 'cpan',
@@ -10167,6 +10368,9 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'inc::latest'           => 'cpan',
     'parent'                => 'cpan',
     'perlfaq'               => 'cpan',
+    'version'               => 'cpan',
+    'version::regex'        => 'cpan',
+    'version::vpp'          => 'cpan',
 );
 
 %bug_tracker = (
@@ -10179,15 +10383,15 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'Archive::Tar::Constant'=> undef,
     'Archive::Tar::File'    => undef,
     'B::Debug'              => undef,
-    'CGI'                   => undef,
-    'CGI::Apache'           => undef,
-    'CGI::Carp'             => undef,
-    'CGI::Cookie'           => undef,
-    'CGI::Fast'             => undef,
-    'CGI::Pretty'           => undef,
-    'CGI::Push'             => undef,
-    'CGI::Switch'           => undef,
-    'CGI::Util'             => undef,
+    'CGI'                   => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Apache'           => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Carp'             => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Cookie'           => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Fast'             => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Pretty'           => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Push'             => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Switch'           => 'https://github.com/markstos/CGI.pm/issues',
+    'CGI::Util'             => 'https://github.com/markstos/CGI.pm/issues',
     'CPAN'                  => undef,
     'CPAN::Author'          => undef,
     'CPAN::Bundle'          => undef,
@@ -10318,6 +10522,7 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'IO::Compress::Zip::Constants'=> undef,
     'IO::Compress::Zlib::Constants'=> undef,
     'IO::Compress::Zlib::Extra'=> undef,
+    'IO::Socket::IP'        => undef,
     'IO::Uncompress::Adapter::Bunzip2'=> undef,
     'IO::Uncompress::Adapter::Identity'=> undef,
     'IO::Uncompress::Adapter::Inflate'=> undef,
@@ -10571,6 +10776,9 @@ for my $version (sort { $a <=> $b } keys %deprecated) {
     'inc::latest'           => undef,
     'parent'                => undef,
     'perlfaq'               => 'https://github.com/perl-doc-cats/perlfaq/issues',
+    'version'               => undef,
+    'version::regex'        => undef,
+    'version::vpp'          => undef,
 );
 
 # Create aliases with trailing zeros for $] use

@@ -2331,6 +2331,9 @@ X<package_version>
 =item padlist_store
 X<padlist_store>
 
+=item parse_subsignature
+X<parse_subsignature>
+
 =item parse_unicode_opts
 X<parse_unicode_opts>
 
@@ -2396,6 +2399,9 @@ X<regpposixcc>
 
 =item regprop
 X<regprop>
+
+=item reguni
+X<reguni>
 
 =item report_evil_fh
 X<report_evil_fh>

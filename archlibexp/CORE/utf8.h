@@ -47,19 +47,18 @@
                                     ckWARN_d(WARN_UTF8) ? 0 : UTF8_ALLOW_ANY)
 
 #define to_uni_fold(c, p, lenp) _to_uni_fold_flags(c, p, lenp, FOLD_FLAGS_FULL)
-#define to_utf8_fold(c, p, lenp) _to_utf8_fold_flags(c, p, lenp, \
-	             FOLD_FLAGS_FULL, NULL)
-#define to_utf8_lower(a,b,c) _to_utf8_lower_flags(a,b,c,0, NULL)
-#define to_utf8_upper(a,b,c) _to_utf8_upper_flags(a,b,c,0, NULL)
-#define to_utf8_title(a,b,c) _to_utf8_title_flags(a,b,c,0, NULL)
+#define to_utf8_fold(c, p, lenp) _to_utf8_fold_flags(c, p, lenp, FOLD_FLAGS_FULL)
+#define to_utf8_lower(a,b,c) _to_utf8_lower_flags(a,b,c,0)
+#define to_utf8_upper(a,b,c) _to_utf8_upper_flags(a,b,c,0)
+#define to_utf8_title(a,b,c) _to_utf8_title_flags(a,b,c,0)
 
 /* Source backward compatibility. */
 #define is_utf8_string_loc(s, len, ep)	is_utf8_string_loclen(s, len, ep, 0)
 
 #define foldEQ_utf8(s1, pe1, l1, u1, s2, pe2, l2, u2) \
 		    foldEQ_utf8_flags(s1, pe1, l1, u1, s2, pe2, l2, u2, 0)
-#define FOLDEQ_UTF8_NOMIX_ASCII (1 << 0)
-#define FOLDEQ_UTF8_LOCALE      (1 << 1)
+#define FOLDEQ_UTF8_NOMIX_ASCII   (1 << 0)
+#define FOLDEQ_LOCALE             (1 << 1)
 #define FOLDEQ_S1_ALREADY_FOLDED  (1 << 2)
 #define FOLDEQ_S2_ALREADY_FOLDED  (1 << 3)
 
