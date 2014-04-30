@@ -330,6 +330,32 @@
 #  define PERL_UNUSED_CONTEXT
 #endif
 
+/* on gcc (and clang), specify that a warning should be temporarily
+ * ignored; e.g.
+ *
+ *    GCC_DIAG_IGNORE(-Wmultichar);
+ *    char b = 'ab';
+ *    GCC_DIAG_RESTORE;
+ *
+ * based on http://dbp-consulting.com/tutorials/SuppressingGCCWarnings.html
+ *
+ * Note that "pragma GCC diagnostic push/pop" was added in GCC 4.6, Mar 2011;
+ * clang only pretends to be GCC 4.2, but still supports push/pop.
+ */
+
+#if defined(__clang) || \
+       (defined( __GNUC__) && ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406)
+#  define GCC_DIAG_DO_PRAGMA_(x) _Pragma (#x)
+
+#  define GCC_DIAG_IGNORE(x) _Pragma("GCC diagnostic push") \
+                             GCC_DIAG_DO_PRAGMA_(GCC diagnostic ignored #x)
+#  define GCC_DIAG_RESTORE   _Pragma("GCC diagnostic pop")
+#else
+#  define GCC_DIAG_IGNORE(w)
+#  define GCC_DIAG_RESTORE
+#endif
+
+
 #define NOOP /*EMPTY*/(void)0
 /* cea2e8a9dd23747f accidentally lost the comment originally from the first
    check in of thread.h, explaining why we need dNOOP at all:  */
@@ -1229,6 +1255,8 @@ EXTERN_C char *crypt(const char *, const char *);
 			       * #define errno (*_errno()) */
 #endif
 
+#define UNKNOWN_ERRNO_MSG "(unknown)"
+
 #ifdef HAS_STRERROR
 #   ifndef DONT_DECLARE_STD
 #       ifdef VMS
@@ -1246,7 +1274,7 @@ EXTERN_C char *crypt(const char *, const char *);
 	extern char *sys_errlist[];
 #       ifndef Strerror
 #           define Strerror(e) \
-		((e) < 0 || (e) >= sys_nerr ? "(unknown)" : sys_errlist[e])
+		((e) < 0 || (e) >= sys_nerr ? UNKNOWN_ERRNO_MSG : sys_errlist[e])
 #       endif
 #   endif
 #endif

@@ -10,7 +10,7 @@
 package Data::Dumper;
 
 BEGIN {
-    $VERSION = '2.149'; # Don't forget to set version and release
+    $VERSION = '2.150'; # Don't forget to set version and release
 }               # date in POD below!
 
 #$| = 1;
@@ -363,25 +363,15 @@ sub _dump {
 
     if ($is_regex) {
         my $pat;
-        # This really sucks, re:regexp_pattern is in ext/re/re.xs and not in
-        # universal.c, and even worse we cant just require that re to be loaded
-        # we *have* to use() it.
-        # We should probably move it to universal.c for 5.10.1 and fix this.
-        # Currently we only use re::regexp_pattern when the re is blessed into another
-        # package. This has the disadvantage of meaning that a DD dump won't round trip
-        # as the pattern will be repeatedly wrapped with the same modifiers.
-        # This is an aesthetic issue so we will leave it for now, but we could use
-        # regexp_pattern() in list context to get the modifiers separately.
-        # But since this means loading the full debugging engine in process we wont
-        # bother unless its necessary for accuracy.
-        if (($realpack ne 'Regexp') && defined(*re::regexp_pattern{CODE})) {
-          $pat = re::regexp_pattern($val);
+        my $flags = "";
+        if (defined(*re::regexp_pattern{CODE})) {
+          ($pat, $flags) = re::regexp_pattern($val);
         }
         else {
           $pat = "$val";
         }
         $pat =~ s <(\\.)|/> { $1 || '\\/' }ge;
-        $out .= "qr/$pat/";
+        $out .= "qr/$pat/$flags";
     }
     elsif ($realtype eq 'SCALAR' || $realtype eq 'REF'
     || $realtype eq 'VSTRING') {
@@ -450,8 +440,15 @@ sub _dump {
          () )
       {
         my $nk = $s->_dump($k, "");
-        $nk = $1
-          if !$s->{quotekeys} and $nk =~ /^[\"\']([A-Za-z_]\w*)[\"\']$/;
+
+        # _dump doesn't quote numbers of this form
+        if ($s->{quotekeys} && $nk =~ /^(?:0|-?[1-9][0-9]{0,8})\z/) {
+          $nk = $s->{useqq} ? qq("$nk") : qq('$nk');
+        }
+        elsif (!$s->{quotekeys} and $nk =~ /^[\"\']([A-Za-z_]\w*)[\"\']$/) {
+          $nk = $1
+        }
+
         $sname = $mname . '{' . $nk . '}';
         $out .= $pad . $ipad . $nk . $pair;
 
@@ -556,7 +553,8 @@ sub _dump {
        and ref $ref eq 'VSTRING' || eval{Scalar::Util::isvstring($val)}) {
       $out .= sprintf "%vd", $val;
     }
-    elsif ($val =~ /^(?:0|-?[1-9]\d{0,8})\z/) { # safe decimal number
+    # \d here would treat "1\x{660}" as a safe decimal number
+    elsif ($val =~ /^(?:0|-?[1-9][0-9]{0,8})\z/) { # safe decimal number
       $out .= $val;
     }
     else {                 # string
@@ -1400,7 +1398,7 @@ modify it under the same terms as Perl itself.
 
 =head1 VERSION
 
-Version 2.149  (September 20 2013)
+Version 2.150  (December 18 2013)
 
 =head1 SEE ALSO
 

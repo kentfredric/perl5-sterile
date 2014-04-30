@@ -1812,12 +1812,15 @@ C<$1>, or C<$10000>, A sigil, followed by either a caret and a single POSIX
 uppercase letter, like C<$^V> or C<$^W>, or a sigil followed by a literal
 control character matching the C<\p{POSIX_Cntrl}> property. Due to a
 historical oddity, if not running under C<use utf8>, the 128 extra controls
-in the C<[0x80-0xff]> range may also be used in length one variables,
-Similar to the above, a sigil, followed by bareword text in brackets, where
-the first character is either a caret followed by an uppercase letter, or a
-literal control, like C<${^GLOBAL_PHASE}> or C<${\7LOBAL_PHASE}>, A sigil
-followed by a single character matching the C<\p{POSIX_Punct}> property,
-like C<$!> or C<%+>
+in the C<[0x80-0xff]> range may also be used in length one variables.  The
+use of a literal control character is deprecated.  Support for this form
+will be removed in a future version of perl, Similar to the above, a sigil,
+followed by bareword text in brackets, where the first character is either
+a caret followed by an uppercase letter, or a literal control, like
+C<${^GLOBAL_PHASE}> or C<${\7LOBAL_PHASE}>.  The use of a literal control
+character is deprecated.  Support for this form will be removed in a future
+version of perl, A sigil followed by a single character matching the
+C<\p{POSIX_Punct}> property, like C<$!> or C<%+>
 
 =item Context
 X<context> X<scalar context> X<list context>
@@ -3669,6 +3672,8 @@ locale ':not_characters';">>, B<Under just plain C<"use locale";>>
 
 =item LOCALE PROBLEMS
 
+=item Testing for broken locales
+
 =item Temporarily fixing locale problems
 
 =item Permanently fixing locale problems
@@ -4317,18 +4322,11 @@ IO::Uncompress::RawInflate, IO::Uncompress::Unzip, IO::Zlib, IPC::Cmd,
 IPC::Msg, IPC::Open2, IPC::Open3, IPC::Semaphore, IPC::SharedMem,
 IPC::SysV, JSON::PP, JSON::PP::Boolean, List::Util, List::Util::XS,
 Locale::Codes, Locale::Codes::API, Locale::Codes::Changes,
-Locale::Codes::Constants, Locale::Codes::Country,
-Locale::Codes::Country_Codes, Locale::Codes::Country_Retired,
-Locale::Codes::Currency, Locale::Codes::Currency_Codes,
-Locale::Codes::Currency_Retired, Locale::Codes::LangExt,
-Locale::Codes::LangExt_Codes, Locale::Codes::LangExt_Retired,
-Locale::Codes::LangFam, Locale::Codes::LangFam_Codes,
+Locale::Codes::Constants, Locale::Codes::Country, Locale::Codes::Currency,
+Locale::Codes::LangExt, Locale::Codes::LangFam,
 Locale::Codes::LangFam_Retired, Locale::Codes::LangVar,
-Locale::Codes::LangVar_Codes, Locale::Codes::LangVar_Retired,
-Locale::Codes::Language, Locale::Codes::Language_Codes,
-Locale::Codes::Language_Retired, Locale::Codes::Script,
-Locale::Codes::Script_Codes, Locale::Codes::Script_Retired,
-Locale::Country, Locale::Currency, Locale::Language, Locale::Maketext,
+Locale::Codes::Language, Locale::Codes::Script, Locale::Country,
+Locale::Currency, Locale::Language, Locale::Maketext,
 Locale::Maketext::Cookbook, Locale::Maketext::Guts,
 Locale::Maketext::GutsLoader, Locale::Maketext::Simple,
 Locale::Maketext::TPJ13, Locale::Script, MIME::Base64, MIME::QuotedPrint,
@@ -6051,7 +6049,7 @@ newCONSTSUB_flags X<newCONSTSUB_flags>, newXS X<newXS>, op_append_elem
 X<op_append_elem>, op_append_list X<op_append_list>, OP_CLASS X<OP_CLASS>,
 OP_DESC X<OP_DESC>, op_linklist X<op_linklist>, op_lvalue X<op_lvalue>,
 OP_NAME X<OP_NAME>, op_prepend_elem X<op_prepend_elem>, op_scope
-X<op_scope>, rv2cv_op_cv X<rv2cv_op_cv>
+X<op_scope>, OP_TYPE_IS X<OP_TYPE_IS>, rv2cv_op_cv X<rv2cv_op_cv>
 
 =item Pad Data Structures
 
@@ -6209,7 +6207,8 @@ sv_unref_flags X<sv_unref_flags>, sv_untaint X<sv_untaint>, sv_upgrade
 X<sv_upgrade>, sv_usepvn_flags X<sv_usepvn_flags>, sv_utf8_decode
 X<sv_utf8_decode>, sv_utf8_downgrade X<sv_utf8_downgrade>, sv_utf8_encode
 X<sv_utf8_encode>, sv_utf8_upgrade X<sv_utf8_upgrade>,
-sv_utf8_upgrade_flags X<sv_utf8_upgrade_flags>, sv_utf8_upgrade_nomg
+sv_utf8_upgrade_flags X<sv_utf8_upgrade_flags>, sv_utf8_upgrade_flags_grow
+X<sv_utf8_upgrade_flags_grow>, sv_utf8_upgrade_nomg
 X<sv_utf8_upgrade_nomg>, sv_vcatpvf X<sv_vcatpvf>, sv_vcatpvfn
 X<sv_vcatpvfn>, sv_vcatpvfn_flags X<sv_vcatpvfn_flags>, sv_vcatpvf_mg
 X<sv_vcatpvf_mg>, sv_vsetpvf X<sv_vsetpvf>, sv_vsetpvfn X<sv_vsetpvfn>,
@@ -6396,11 +6395,10 @@ X<sv_catpvf_mg_nocontext>, sv_catpvf_nocontext X<sv_catpvf_nocontext>,
 sv_dump X<sv_dump>, sv_dup X<sv_dup>, sv_dup_inc X<sv_dup_inc>, sv_peek
 X<sv_peek>, sv_pvn_nomg X<sv_pvn_nomg>, sv_setpvf_mg_nocontext
 X<sv_setpvf_mg_nocontext>, sv_setpvf_nocontext X<sv_setpvf_nocontext>,
-sv_utf8_upgrade_flags_grow X<sv_utf8_upgrade_flags_grow>, swash_fetch
-X<swash_fetch>, swash_init X<swash_init>, sys_init X<sys_init>, sys_init3
-X<sys_init3>, sys_intern_clear X<sys_intern_clear>, sys_intern_dup
-X<sys_intern_dup>, sys_intern_init X<sys_intern_init>, sys_term
-X<sys_term>, taint_env X<taint_env>, taint_proper X<taint_proper>,
+swash_fetch X<swash_fetch>, swash_init X<swash_init>, sys_init X<sys_init>,
+sys_init3 X<sys_init3>, sys_intern_clear X<sys_intern_clear>,
+sys_intern_dup X<sys_intern_dup>, sys_intern_init X<sys_intern_init>,
+sys_term X<sys_term>, taint_env X<taint_env>, taint_proper X<taint_proper>,
 tmps_grow X<tmps_grow>, unlnk X<unlnk>, unsharepvn X<unsharepvn>,
 utf16_to_utf8 X<utf16_to_utf8>, utf16_to_utf8_reversed
 X<utf16_to_utf8_reversed>, uvuni_to_utf8 X<uvuni_to_utf8>, vdeb X<vdeb>,
@@ -7379,7 +7377,7 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.19.6
+=head2 perldelta - what is new for perl v5.19.7
 
 =over 4
 
@@ -7389,7 +7387,15 @@ B<-i>, B<-V>
 
 =over 4
 
-=item $a and $b warnings exemption
+=item Postfix syntax for maximum array index
+
+=back
+
+=item Incompatible Changes
+
+=over 4
+
+=item Data::Dumper's output may change
 
 =back
 
@@ -7397,13 +7403,9 @@ B<-i>, B<-V>
 
 =over 4
 
-=item Module removals
-
-L<Package::Constants>
+=item C<< CGI.pm >>
 
 =back
-
-=item Performance Enhancements
 
 =item Modules and Pragmata
 
@@ -7413,21 +7415,17 @@ L<Package::Constants>
 
 =back
 
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=back
-
 =item Diagnostics
 
 =over 4
 
+=item New Diagnostics
+
 =item Changes to Existing Diagnostics
 
 =back
+
+=item Utility Changes
 
 =item Testing
 
@@ -7435,21 +7433,15 @@ L<Package::Constants>
 
 =over 4
 
-=item New Platforms
-
-Synology
-
 =item Platform-Specific Notes
 
-Windows, WinCE
+Windows
 
 =back
 
 =item Internal Changes
 
 =item Selected Bug Fixes
-
-=item Known Problems
 
 =item Acknowledgements
 
@@ -7459,7 +7451,81 @@ Windows, WinCE
 
 =back
 
-=head2 perl5196delta, perldelta - what is new for perl v5.19.6
+=head2 perl5197delta, perldelta - what is new for perl v5.19.7
+
+=over 4
+
+=item DESCRIPTION
+
+=item Core Enhancements
+
+=over 4
+
+=item Postfix syntax for maximum array index
+
+=back
+
+=item Incompatible Changes
+
+=over 4
+
+=item Data::Dumper's output may change
+
+=back
+
+=item Deprecations
+
+=over 4
+
+=item C<< CGI.pm >>
+
+=back
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=back
+
+=item Diagnostics
+
+=over 4
+
+=item New Diagnostics
+
+=item Changes to Existing Diagnostics
+
+=back
+
+=item Utility Changes
+
+=item Testing
+
+=item Platform Support
+
+=over 4
+
+=item Platform-Specific Notes
+
+Windows
+
+=back
+
+=item Internal Changes
+
+=item Selected Bug Fixes
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5196delta - what is new for perl v5.19.6
 
 =over 4
 
@@ -12352,11 +12418,15 @@ B<Unix emulation for AmigaOS: ixemul.library>, B<Version of Amiga OS>
 
 =over 4
 
+=item WARNING
+
 =item DESCRIPTION
 
 =item General explanations on cross-compiling WinCE
 
-=item BUILD
+=item CURRENT BUILD INSTRUCTIONS
+
+=item OLD BUILD INSTRUCTIONS
 
 Microsoft Embedded Visual Tools, Microsoft Visual C++, Rainer Keuchel's
 celib-sources, Rainer Keuchel's console-sources, go to F<./win32>
@@ -12393,7 +12463,7 @@ PERL5LIB, PATH, TMP, UNIXROOTPATH, ROWS/COLS, HOME, CONSOLEFONTSIZE
 
 =item AUTHORS
 
-Rainer Keuchel <coyxc@rainer-keuchel.de>, Vadim Konovalov
+Rainer Keuchel <coyxc@rainer-keuchel.de>, Vadim Konovalov, Daniel Dragan
 
 =back
 
@@ -16381,8 +16451,6 @@ a </ul> tag)
 
 =item CREATING THE HTML DOCUMENT HEADER
 
-B<Parameters:>, 4, 5, 6..
-
 =item ENDING THE HTML DOCUMENT:
 
 =item CREATING A SELF-REFERENCING URL THAT PRESERVES STATE INFORMATION:
@@ -16435,15 +16503,11 @@ B<-onSelect>
 
 =item CREATING A TEXT FIELD
 
-B<Parameters>
-
 =item CREATING A BIG TEXT FIELD
 
 =item CREATING A PASSWORD FIELD
 
 =item CREATING A FILE UPLOAD FIELD
-
-B<Parameters>
 
 =item PROCESSING A FILE UPLOAD FIELD
 
@@ -16453,23 +16517,13 @@ B<Parameters>
 
 =item CREATING A SCROLLING LIST
 
-B<Parameters:>
-
 =item CREATING A GROUP OF RELATED CHECKBOXES
-
-B<Parameters:>
 
 =item CREATING A STANDALONE CHECKBOX
 
-B<Parameters:>
-
 =item CREATING A RADIO BUTTON GROUP
 
-B<Parameters:>
-
 =item CREATING A SUBMIT BUTTON 
-
-B<Parameters:>
 
 =item CREATING A RESET BUTTON
 
@@ -16477,12 +16531,7 @@ B<Parameters:>
 
 =item CREATING A HIDDEN FIELD
 
-B<Parameters:>
-
 =item CREATING A CLICKABLE IMAGE BUTTON
-
-B<Parameters:>, 3. The third option (-align, optional) is an alignment
-type, and may be TOP, BOTTOM or MIDDLE
 
 =item CREATING A JAVASCRIPT ACTION BUTTON
 
@@ -21020,9 +21069,9 @@ INSTALLSITEMAN3DIR, INSTALLSITESCRIPT, INSTALLVENDORARCH, INSTALLVENDORBIN,
 INSTALLVENDORLIB, INSTALLVENDORMAN1DIR, INSTALLVENDORMAN3DIR,
 INSTALLVENDORSCRIPT, INST_ARCHLIB, INST_BIN, INST_LIB, INST_MAN1DIR,
 INST_MAN3DIR, INST_SCRIPT, LD, LDDLFLAGS, LDFROM, LIB, LIBPERL_A, LIBS,
-LICENSE, LINKTYPE, MAKE, MAKEAPERL, MAKEFILE_OLD, MAN1PODS, MAN3PODS,
-MAP_TARGET, META_ADD, META_MERGE, MIN_PERL_VERSION, MYEXTLIB, NAME,
-NEEDS_LINKING, NOECHO, NORECURS, NO_META, NO_MYMETA, NO_PACKLIST,
+LICENSE, LINKTYPE, MAGICXS, MAKE, MAKEAPERL, MAKEFILE_OLD, MAN1PODS,
+MAN3PODS, MAP_TARGET, META_ADD, META_MERGE, MIN_PERL_VERSION, MYEXTLIB,
+NAME, NEEDS_LINKING, NOECHO, NORECURS, NO_META, NO_MYMETA, NO_PACKLIST,
 NO_PERLLOCAL, NO_VC, OBJECT, OPTIMIZE, PERL, PERL_CORE, PERLMAINCC,
 PERL_ARCHLIB, PERL_LIB, PERL_MALLOC_OK, PERLPREFIX, PERLRUN, PERLRUNINST,
 PERL_SRC, PERM_DIR, PERM_RW, PERM_RWX, PL_FILES, PM, PMLIBDIRS, PM_FILTER,
@@ -25768,7 +25817,15 @@ B<Relationship between code sets>, B<Non-ASCII characters not supported>
 
 =item SYNOPSIS
 
-=item VERSION 3.28  (planned 2013-12-01; sbeck)
+=item VERSION 3.32  (planned 2014-12-01; sbeck)
+
+=item VERSION 3.31  (planned 2014-09-01; sbeck)
+
+=item VERSION 3.30  (planned 2014-06-01; sbeck)
+
+=item VERSION 3.29  (planned 2014-03-01; sbeck)
+
+=item VERSION 3.28  (2013-12-02; sbeck)
 
 =item VERSION 3.27  (2013-09-03; sbeck)
 
@@ -25839,7 +25896,7 @@ B<Fixed Makefile.PL and Build.PL>
 
 =item VERSION 3.00  (2010-02-10; sbeck)
 
-B<New maintainer>, B<(*) (!) All codes are generated from standards>,
+B<(*) New maintainer>, B<(*) (!) All codes are generated from standards>,
 B<Added new codeset(s)>, B<(*) (!) Locale::Script changed>, B<Added missing
 functions>, B<(!) Dropped support for _alias_code>, B<(!) All functions
 return the standard value>, B<(!) rename_country function altered>
@@ -25943,32 +26000,6 @@ t_appendix-d.html>, B<http://www.statoids.com/wab.html>
 
 =back
 
-=head2 Locale::Codes::Country_Codes - country codes for the
-Locale::Codes::Country module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::Country_Retired - retired country codes for the
-Locale::Codes::Country module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
 =head2 Locale::Codes::Currency - standard codes for currency identification
 
 =over 4
@@ -26000,32 +26031,6 @@ B<Locale::Codes::Currency::delete_currency_code_alias  ( CODE [,CODESET] )>
 
 B<Locale::Codes>, B<Locale::Codes::API>,
 B<http://www.iso.org/iso/support/currency_codes_list-1.htm>
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::Currency_Codes - currency codes for the
-Locale::Codes::Currency module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::Currency_Retired - retired currency codes for the
-Locale::Codes::Currency module
-
-=over 4
-
-=item SYNOPSIS
 
 =item AUTHOR
 
@@ -26072,32 +26077,6 @@ B<http://www.iana.org/assignments/language-subtag-registry>
 
 =back
 
-=head2 Locale::Codes::LangExt_Codes - langext codes for the
-Locale::Codes::LangExt module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::LangExt_Retired - retired langext codes for the
-Locale::Codes::LangExt module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
 =head2 Locale::Codes::LangFam - standard codes for language extension
 identification
 
@@ -26130,19 +26109,6 @@ B<Locale::Codes::LangFam::rename_langfam_code  ( CODE ,NEW_CODE [,CODESET]
 
 B<Locale::Codes>, B<Locale::Codes::API>,
 B<http://www.loc.gov/standards/iso639-5/id.php>
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::LangFam_Codes - langfam codes for the
-Locale::Codes::LangFam module
-
-=over 4
-
-=item SYNOPSIS
 
 =item AUTHOR
 
@@ -26202,32 +26168,6 @@ B<http://www.iana.org/assignments/language-subtag-registry>
 
 =back
 
-=head2 Locale::Codes::LangVar_Codes - langvar codes for the
-Locale::Codes::LangVar module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::LangVar_Retired - retired langvar codes for the
-Locale::Codes::LangVar module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
 =head2 Locale::Codes::Language - standard codes for language identification
 
 =over 4
@@ -26269,32 +26209,6 @@ B<http://www.iana.org/assignments/language-subtag-registry>
 
 =back
 
-=head2 Locale::Codes::Language_Codes - language codes for the
-Locale::Codes::Language module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::Language_Retired - retired language codes for the
-Locale::Codes::Language module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
 =head2 Locale::Codes::Script - standard codes for script identification
 
 =over 4
@@ -26327,32 +26241,6 @@ B<Locale::Codes::Script::rename_script_code  ( CODE ,NEW_CODE [,CODESET]
 B<Locale::Codes>, B<Locale::Codes::API>,
 B<http://www.unicode.org/iso15924/>,
 B<http://www.iana.org/assignments/language-subtag-registry>
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::Script_Codes - script codes for the
-Locale::Codes::Script module
-
-=over 4
-
-=item SYNOPSIS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=back
-
-=head2 Locale::Codes::Script_Retired - retired script codes for the
-Locale::Codes::Script module
-
-=over 4
-
-=item SYNOPSIS
 
 =item AUTHOR
 
@@ -30523,7 +30411,13 @@ C<-input>, C<-pathlist>, C<-noperldoc>
 
 =item DESCRIPTION
 
-C<O_RDONLY>, C<O_WRONLY>, C<O_RDWR>
+=over 4
+
+=item Tie
+
+=back
+
+=item EXPORTS
 
 =item DIAGNOSTICS
 

@@ -1706,7 +1706,7 @@ X<custom_op_xop>
 
 Return the XOP structure for a given custom op. This macro should be
 considered internal to OP_NAME and the other access macros: use them instead.
-This macro does call a function. Prior to 5.19.6, this was implemented as a
+This macro does call a function. Prior to 5.19.7, this was implemented as a
 function.
 
 NOTE: this function must be explicitly called as Perl_custom_op_xop with an aTHX_ parameter.
@@ -5154,6 +5154,8 @@ X<Newx>
 
 The XSUB-writer's interface to the C C<malloc> function.
 
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
+
 In 5.9.3, Newx() and friends replace the older New() API, and drops
 the first parameter, I<x>, a debug aid which allowed callers to identify
 themselves.  This aid has been superseded by a new build option,
@@ -5171,6 +5173,8 @@ X<Newxc>
 The XSUB-writer's interface to the C C<malloc> function, with
 cast.  See also C<Newx>.
 
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
+
 	void	Newxc(void* ptr, int nitems, type, cast)
 
 =for hackers
@@ -5181,6 +5185,8 @@ X<Newxz>
 
 The XSUB-writer's interface to the C C<malloc> function.  The allocated
 memory is zeroed with C<memzero>.  See also C<Newx>.
+
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
 
 	void	Newxz(void* ptr, int nitems, type)
 
@@ -5234,6 +5240,8 @@ X<Renew>
 
 The XSUB-writer's interface to the C C<realloc> function.
 
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
+
 	void	Renew(void* ptr, int nitems, type)
 
 =for hackers
@@ -5245,6 +5253,8 @@ X<Renewc>
 The XSUB-writer's interface to the C C<realloc> function, with
 cast.
 
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
+
 	void	Renewc(void* ptr, int nitems, type, cast)
 
 =for hackers
@@ -5254,6 +5264,8 @@ Found in file handy.h
 X<Safefree>
 
 The XSUB-writer's interface to the C C<free> function.
+
+This should B<ONLY> be used on memory obtained using L<"Newx"> and friends.
 
 	void	Safefree(void* ptr)
 
@@ -5268,6 +5280,10 @@ string which is a duplicate of C<pv>. The size of the string is
 determined by C<strlen()>. The memory allocated for the new string can
 be freed with the C<Safefree()> function.
 
+On some platforms, Windows for example, all allocated memory owned by a thread
+is deallocated when that thread ends.  So if you need that not to happen, you
+need to use the shared memory functions, such as C<L</savesharedpv>>.
+
 	char*	savepv(const char* pv)
 
 =for hackers
@@ -5280,6 +5296,10 @@ Perl's version of what C<strndup()> would be if it existed. Returns a
 pointer to a newly allocated string which is a duplicate of the first
 C<len> bytes from C<pv>, plus a trailing NUL byte. The memory allocated for
 the new string can be freed with the C<Safefree()> function.
+
+On some platforms, Windows for example, all allocated memory owned by a thread
+is deallocated when that thread ends.  So if you need that not to happen, you
+need to use the shared memory functions, such as C<L</savesharedpvn>>.
 
 	char*	savepvn(const char* pv, I32 len)
 
@@ -5347,6 +5367,10 @@ X<savesvpv>
 
 A version of C<savepv()>/C<savepvn()> which gets the string to duplicate from
 the passed in SV using C<SvPV()>
+
+On some platforms, Windows for example, all allocated memory owned by a thread
+is deallocated when that thread ends.  So if you need that not to happen, you
+need to use the shared memory functions, such as C<L</savesharedsvpv>>.
 
 	char*	savesvpv(SV* sv)
 
@@ -6052,7 +6076,7 @@ X<grok_hex>
 
 converts a string representing a hex number to numeric form.
 
-On entry I<start> and I<*len> give the string to scan, I<*flags> gives
+On entry I<start> and I<*len_p> give the string to scan, I<*flags> gives
 conversion flags, and I<result> should be NULL or a pointer to an NV.
 The scan stops at the end of the string, or the first invalid character.
 Unless C<PERL_SCAN_SILENT_ILLDIGIT> is set in I<*flags>, encountering an
@@ -6943,6 +6967,16 @@ structure.
 
 =for hackers
 Found in file op.c
+
+=item OP_TYPE_IS
+X<OP_TYPE_IS>
+
+Returns true if the given OP is not NULL and if it is of the given
+type.
+	bool	OP_TYPE_IS(OP *o, Optype type)
+
+=for hackers
+Found in file op.h
 
 =item rv2cv_op_cv
 X<rv2cv_op_cv>
@@ -11504,15 +11538,40 @@ Always sets the SvUTF8 flag to avoid future validity checks even
 if all the bytes are invariant in UTF-8.
 If C<flags> has C<SV_GMAGIC> bit set,
 will C<mg_get> on C<sv> if appropriate, else not.
-Returns the number of bytes in the converted string
-C<sv_utf8_upgrade> and
-C<sv_utf8_upgrade_nomg> are implemented in terms of this function.
+
+If C<flags> has SV_FORCE_UTF8_UPGRADE set, this function assumes that the PV
+will expand when converted to UTF-8, and skips the extra work of checking for
+that.  Typically this flag is used by a routine that has already parsed the
+string and found such characters, and passes this information on so that the
+work doesn't have to be repeated.
+
+Returns the number of bytes in the converted string.
 
 This is not a general purpose byte encoding to Unicode interface:
 use the Encode extension for that.
 
 	STRLEN	sv_utf8_upgrade_flags(SV *const sv,
 		                      const I32 flags)
+
+=for hackers
+Found in file sv.c
+
+=item sv_utf8_upgrade_flags_grow
+X<sv_utf8_upgrade_flags_grow>
+
+Like sv_utf8_upgrade_flags, but has an additional parameter C<extra>, which is
+the number of unused bytes the string of 'sv' is guaranteed to have free after
+it upon return.  This allows the caller to reserve extra space that it intends
+to fill, to avoid extra grows.
+
+C<sv_utf8_upgrade>, C<sv_utf8_upgrade_nomg>, and C<sv_utf8_upgrade_flags>
+are implemented in terms of this function.
+
+Returns the number of bytes in the converted string (not including the spares).
+
+	STRLEN	sv_utf8_upgrade_flags_grow(SV *const sv,
+		                           const I32 flags,
+		                           STRLEN extra)
 
 =for hackers
 Found in file sv.c
@@ -11942,25 +12001,26 @@ Found in file utf8.c
 =item to_utf8_case
 X<to_utf8_case>
 
-The C<p> contains the pointer to the UTF-8 string encoding
+C<p> contains the pointer to the UTF-8 string encoding
 the character that is being converted.  This routine assumes that the character
 at C<p> is well-formed.
 
-The C<ustrp> is a pointer to the character buffer to put the
-conversion result to.  The C<lenp> is a pointer to the length
+C<ustrp> is a pointer to the character buffer to put the
+conversion result to.  C<lenp> is a pointer to the length
 of the result.
 
-The C<swashp> is a pointer to the swash to use.
+C<swashp> is a pointer to the swash to use.
 
 Both the special and normal mappings are stored in F<lib/unicore/To/Foo.pl>,
-and loaded by SWASHNEW, using F<lib/utf8_heavy.pl>.  The C<special> (usually,
+and loaded by SWASHNEW, using F<lib/utf8_heavy.pl>.  C<special> (usually,
 but not always, a multicharacter mapping), is tried first.
 
-The C<special> is a string like "utf8::ToSpecLower", which means the
-hash %utf8::ToSpecLower.  The access to the hash is through
-Perl_to_utf8_case().
+C<special> is a string, normally C<NULL> or C<"">.  C<NULL> means to not use
+any special mappings; C<""> means to use the special mappings.  Values other
+than these two are treated as the name of the hash containing the special
+mappings, like C<"utf8::ToSpecLower">.
 
-The C<normal> is a string like "ToLower" which means the swash
+C<normal> is a string like "ToLower" which means the swash
 %utf8::ToLower.
 
 	UV	to_utf8_case(const U8 *p, U8* ustrp,
@@ -12342,9 +12402,9 @@ the function will raise a warning, provided UTF8 warnings are enabled.  If inste
 UNICODE_DISALLOW_SURROGATE is set, the function will fail and return NULL.
 If both flags are set, the function will both warn and return NULL.
 
-The UNICODE_WARN_NONCHAR and UNICODE_DISALLOW_NONCHAR flags correspondingly
+The UNICODE_WARN_NONCHAR and UNICODE_DISALLOW_NONCHAR flags
 affect how the function handles a Unicode non-character.  And likewise, the
-UNICODE_WARN_SUPER and UNICODE_DISALLOW_SUPER flags, affect the handling of
+UNICODE_WARN_SUPER and UNICODE_DISALLOW_SUPER flags affect the handling of
 code points that are
 above the Unicode maximum of 0x10FFFF.  Code points above 0x7FFF_FFFF (which are
 even less portable) can be warned and/or disallowed even if other above-Unicode
@@ -13863,9 +13923,6 @@ X<sv_setpvf_mg_nocontext>
 
 =item sv_setpvf_nocontext
 X<sv_setpvf_nocontext>
-
-=item sv_utf8_upgrade_flags_grow
-X<sv_utf8_upgrade_flags_grow>
 
 =item swash_fetch
 X<swash_fetch>

@@ -1071,7 +1071,6 @@ EXTCONST U32 PL_charclass[];
         /* Use the native functions.  They likely will return false for all
          * non-ASCII values, but this makes sure */
 #       define isALPHA_A(c)    (isASCII(c) && isalpha(c))
-#       define isALPHA_A(c)    (isASCII(c) && isalpha(c))
 #       define isALPHANUMERIC_A(c) (isASCII(c) && isalnum(c))
 #       define isCNTRL_A(c)    (isASCII(c) && iscntrl(c))
 #       define isDIGIT_A(c)    (isASCII(c) && isdigit(c))
@@ -1198,8 +1197,8 @@ EXTCONST U32 PL_charclass[];
     #define toUPPER(c) (isASCII(c) ? toUPPER_LATIN1_MOD(c) : (c))
    which uses table lookup and mask instead of subtraction.  (This would
    work because the _MOD does not apply in the ASCII range) */
-#define toLOWER(c)  (isUPPER(c) ? (c) + ('a' - 'A') : (c))
-#define toUPPER(c)  (isLOWER(c) ? (c) - ('a' - 'A') : (c))
+#define toLOWER(c)  (isUPPER(c) ? (U8)((c) + ('a' - 'A')) : (c))
+#define toUPPER(c)  (isLOWER(c) ? (U8)((c) - ('a' - 'A')) : (c))
 
 /* In the ASCII range, these are equivalent to what they're here defined to be.
  * But by creating these definitions, other code doesn't have to be aware of
@@ -1278,8 +1277,8 @@ EXTCONST U32 PL_charclass[];
 #    define isWORDCHAR_LC(c) (FITS_IN_8_BITS(c)                                \
                             && (isalnum((unsigned char)(c)) || (char)(c) == '_'))
 #    define isXDIGIT_LC(c)   (FITS_IN_8_BITS(c) && isxdigit((unsigned char)(c)))
-#    define toLOWER_LC(c) (FITS_IN_8_BITS(c) ? tolower((unsigned char)(c)) : (c))
-#    define toUPPER_LC(c) (FITS_IN_8_BITS(c) ? toupper((unsigned char)(c)) : (c))
+#    define toLOWER_LC(c) (FITS_IN_8_BITS(c) ? (UV)tolower((unsigned char)(c)) : (c))
+#    define toUPPER_LC(c) (FITS_IN_8_BITS(c) ? (UV)toupper((unsigned char)(c)) : (c))
 
 #  else
 
@@ -1554,13 +1553,19 @@ typedef U32 line_t;
 	} \
 	return a;
 
-#define READ_XDIGIT(s) (isALPHA(*(s)) ? ((*(s)++ + 9) & 0xf) : (*(s)++ & 0xf))
+/* Converts a hex digit in a string to its numeric value, advancing the
+ * pointer.  The input must be known to be 0-9, A-F, or a-f.  In both ASCII and
+ * EBCDIC the last 4 bits of the digits are 0-9; and the last 4 bits of A-F and
+ * a-f are 1-6, so adding 9 yields 10-15 */
+#define READ_XDIGIT(s)  (0xf & (isDIGIT(*(s)) ? (*(s)++) : (*(s)++ + 9)))
 
 /*
 =head1 Memory Management
 
 =for apidoc Am|void|Newx|void* ptr|int nitems|type
 The XSUB-writer's interface to the C C<malloc> function.
+
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
 
 In 5.9.3, Newx() and friends replace the older New() API, and drops
 the first parameter, I<x>, a debug aid which allowed callers to identify
@@ -1572,19 +1577,29 @@ there for use in XS modules supporting older perls.
 The XSUB-writer's interface to the C C<malloc> function, with
 cast.  See also C<Newx>.
 
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
+
 =for apidoc Am|void|Newxz|void* ptr|int nitems|type
 The XSUB-writer's interface to the C C<malloc> function.  The allocated
 memory is zeroed with C<memzero>.  See also C<Newx>.
 
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
+
 =for apidoc Am|void|Renew|void* ptr|int nitems|type
 The XSUB-writer's interface to the C C<realloc> function.
+
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
 
 =for apidoc Am|void|Renewc|void* ptr|int nitems|type|cast
 The XSUB-writer's interface to the C C<realloc> function, with
 cast.
 
+Memory obtained by this should B<ONLY> be freed with L<"Safefree">.
+
 =for apidoc Am|void|Safefree|void* ptr
 The XSUB-writer's interface to the C C<free> function.
+
+This should B<ONLY> be used on memory obtained using L<"Newx"> and friends.
 
 =for apidoc Am|void|Move|void* src|void* dest|int nitems|type
 The XSUB-writer's interface to the C C<memmove> function.  The C<src> is the

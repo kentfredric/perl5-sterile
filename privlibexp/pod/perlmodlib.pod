@@ -1213,45 +1213,17 @@ Constants for Locale codes
 
 Standard codes for country identification
 
-=item Locale::Codes::Country_Codes
-
-Country codes for the Locale::Codes::Country module
-
-=item Locale::Codes::Country_Retired
-
-Retired country codes for the Locale::Codes::Country module
-
 =item Locale::Codes::Currency
 
 Standard codes for currency identification
-
-=item Locale::Codes::Currency_Codes
-
-Currency codes for the Locale::Codes::Currency module
-
-=item Locale::Codes::Currency_Retired
-
-Retired currency codes for the Locale::Codes::Currency module
 
 =item Locale::Codes::LangExt
 
 Standard codes for language extension identification
 
-=item Locale::Codes::LangExt_Codes
-
-Langext codes for the Locale::Codes::LangExt module
-
-=item Locale::Codes::LangExt_Retired
-
-Retired langext codes for the Locale::Codes::LangExt module
-
 =item Locale::Codes::LangFam
 
 Standard codes for language extension identification
-
-=item Locale::Codes::LangFam_Codes
-
-Langfam codes for the Locale::Codes::LangFam module
 
 =item Locale::Codes::LangFam_Retired
 
@@ -1261,37 +1233,13 @@ Retired langfam codes for the Locale::Codes::LangFam module
 
 Standard codes for language variation identification
 
-=item Locale::Codes::LangVar_Codes
-
-Langvar codes for the Locale::Codes::LangVar module
-
-=item Locale::Codes::LangVar_Retired
-
-Retired langvar codes for the Locale::Codes::LangVar module
-
 =item Locale::Codes::Language
 
 Standard codes for language identification
 
-=item Locale::Codes::Language_Codes
-
-Language codes for the Locale::Codes::Language module
-
-=item Locale::Codes::Language_Retired
-
-Retired language codes for the Locale::Codes::Language module
-
 =item Locale::Codes::Script
 
 Standard codes for script identification
-
-=item Locale::Codes::Script_Codes
-
-Script codes for the Locale::Codes::Script module
-
-=item Locale::Codes::Script_Retired
-
-Retired script codes for the Locale::Codes::Script module
 
 =item Locale::Country
 

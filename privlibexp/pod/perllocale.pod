@@ -73,7 +73,7 @@ E<160>
 =item Category LC_MESSAGES: Error and other messages
 
 This is used by Perl itself only for accessing operating system error
-messages via L<$!|perlvar/$ERRNO>.
+messages via L<$!|perlvar/$ERRNO> and L<$^E|perlvar/$EXTENDED_OS_ERROR>.
 
 =item Category LC_COLLATE: Collation
 
@@ -351,7 +351,9 @@ example.
 If no second argument is provided and the category is something other
 than LC_ALL, the function returns a string naming the current locale
 for the category.  You can use this value as the second argument in a
-subsequent call to C<setlocale()>.
+subsequent call to C<setlocale()>, B<but> on some platforms the string
+is opaque, not something that most people would be able to decipher as
+to what locale it means.
 
 If no second argument is provided and the category is LC_ALL, the
 result is implementation-dependent.  It may be a string of
@@ -376,7 +378,7 @@ be noticed, depending on your system's C library.
 Note that Perl ignores the current C<LC_CTYPE> and C<LC_COLLATE> locales
 within the scope of a C<use locale ':not_characters'>.
 
-If C<set_locale()> fails for some reason (for example an attempt to set
+If C<set_locale()> fails for some reason (for example, an attempt to set
 to a locale unknown to the system), the locale for the category is not
 changed, and the function returns C<undef>.
 
@@ -459,6 +461,21 @@ settings were wrong, they mention locales your system has never heard
 of, or the locale installation in your system has problems (for example,
 some system files are broken or missing).  There are quick and temporary
 fixes to these problems, as well as more thorough and lasting fixes.
+
+=head2 Testing for broken locales
+
+If you are building Perl from source, the Perl test suite file
+F<lib/locale.t> can be used to test the locales on your system.
+Setting the environment variable C<PERL_DEBUG_FULL_TEST> to 1
+will cause it to output detailed results.  For example, on Linux, you
+could say
+
+ PERL_DEBUG_FULL_TEST=1 ./perl -T lib/locale.t > locale.log 2>&1
+
+Besides many other tests, it will test every locale it finds on your
+system to see if they conform to the POSIX standard.  If any have
+errors, it will include a summary near the end of the output of which
+locales passed all its tests, and which failed, and why.
 
 =head2 Temporarily fixing locale problems
 
@@ -926,7 +943,7 @@ B<Matching operator> (C<m//>):
 
 Scalar true/false result never tainted.
 
-Subpatterns, either delivered as a list-context result or as $1 etc.
+All subpatterns, either delivered as a list-context result or as $1 etc.
 are tainted if C<use locale> (but not S<C<use locale ':not_characters'>>)
 is in effect, and the subpattern regular
 expression contains C<\w> (to match an alphanumeric character), C<\W>
@@ -1358,7 +1375,9 @@ C<use locale> is in effect.  When confronted with such a system,
 please report in excruciating detail to <F<perlbug@perl.org>>, and
 also contact your vendor: bug fixes may exist for these problems
 in your operating system.  Sometimes such bug fixes are called an
-operating system upgrade.
+operating system upgrade.  If you have the source for Perl, include in
+the perlbug email the output of the test described above in L</Testing
+for broken locales>.
 
 =head1 SEE ALSO
 
