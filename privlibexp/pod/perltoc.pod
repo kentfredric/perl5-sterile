@@ -7379,189 +7379,7 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.19.11
-
-=over 4
-
-=item DESCRIPTION
-
-=item Modules and Pragmata
-
-=over 4
-
-=item New Modules and Pragmata
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Utility Changes
-
-=over 4
-
-=item L<perlbug>
-
-=back
-
-=item Configuration and Compilation
-
-=item Platform Support
-
-=over 4
-
-=item Platform-Specific Notes
-
-VMS, Win32
-
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=item Known Problems
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl51911delta, perldelta - what is new for perl v5.19.11
-
-=over 4
-
-=item DESCRIPTION
-
-=item Modules and Pragmata
-
-=over 4
-
-=item New Modules and Pragmata
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Utility Changes
-
-=over 4
-
-=item L<perlbug>
-
-=back
-
-=item Configuration and Compilation
-
-=item Platform Support
-
-=over 4
-
-=item Platform-Specific Notes
-
-VMS, Win32
-
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=item Known Problems
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl51910delta - what is new for perl v5.19.10
-
-=over 4
-
-=item DESCRIPTION
-
-=item Deprecations
-
-=over 4
-
-=item Discouraged features
-
-=back
-
-=item Performance Enhancements
-
-=item Modules and Pragmata
-
-=over 4
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Configuration and Compilation
-
-=item Testing
-
-=item Platform Support
-
-=over 4
-
-=item Platform-Specific Notes
-
-Linux, Mac OS, Win32
-
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5199delta - what is new for perl v5.19.9
+=head2 perldelta - what is new for perl v5.20.0
 
 =over 4
 
@@ -7571,106 +7389,43 @@ Linux, Mac OS, Win32
 
 =over 4
 
-=item UTF-8 locales now supported better under C<S<use locale>>
+=item Experimental Subroutine signatures
+
+=item C<sub>s now take a C<prototype> attribute
+
+=item More consistent prototype parsing
+
+=item C<rand> now uses a consistent random number generator
+
+=item New slice syntax
+
+=item Experimental Postfix Dereferencing
+
+=item Unicode 6.3 now supported
+
+=item New C<\p{Unicode}> regular expression pattern property
+
+=item Better 64-bit support
+
+=item C<S<use locale>> now works on UTF-8 locales
 
 =item C<S<use locale>> now compiles on systems without locale ability
 
-=item PERL_DEBUG_READONLY_COW
+=item More locale initialization fallback options
 
 =item C<-DL> runtime option now added for tracing locale setting
 
-=item Subroutine signatures
+=item B<-F> now implies B<-a> and B<-a> implies B<-n>
 
-=item More locale initialization fallback options
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item Tainting happens under more circumstances; now conforms to
-documentation
-
-=item Quote-like escape changes
+=item $a and $b warnings exemption
 
 =back
 
-=item Deprecations
-
-=item Performance Enhancements
-
-=item Modules and Pragmata
+=item Security
 
 =over 4
 
-=item Updated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=back
-
-=item Configuration and Compilation
-
-=item Platform Support
-
-=over 4
-
-=item New Platforms
-
-Android
-
-=item Platform-Specific Notes
-
-VMS, Cygwin
-
-=back
-
-=item Internal Changes
-
-Regexp Engine Changes That Affect The Pluggable Regex Engine Interface
-
-=item Selected Bug Fixes
-
-=item Known Problems
-
-=item Errata From Previous Releases
-
-perl5180delta.pod
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5198delta - what is new for perl v5.19.8
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=over 4
-
-=item New C<\p{Unicode}> regular expression pattern property
+=item Avoid possible read of free()d memory during parsing
 
 =back
 
@@ -7680,10 +7435,25 @@ perl5180delta.pod
 
 =item C<do> can no longer be used to call subroutines
 
+=item Quote-like escape changes
+
+=item Tainting happens under more circumstances; now conforms to
+documentation
+
 =item C<\p{}>, C<\P{}> matching has changed for non-Unicode code
 points.
 
 =item C<\p{All}> has been expanded to match all possible code points
+
+=item Data::Dumper's output may change
+
+=item Locale decimal point character no longer leaks outside of S<C<use
+locale>> scope
+
+=item Assignments of Windows sockets error codes to $! now prefer
+F<errno.h> values over WSAGetLastError() values
+
+=item Functions C<PerlIO_vsprintf> and C<PerlIO_sprintf> have been removed
 
 =back
 
@@ -7691,7 +7461,25 @@ points.
 
 =over 4
 
+=item The C</\C/> character class
+
+=item Literal control characters in variable names
+
+=item References to non-integers and non-positive integers in C<$/>
+
+=item Character matching routines in POSIX
+
+=item Interpreter-based threads are now I<discouraged>
+
 =item Module removals
+
+L<CGI> and its associated CGI:: packages, L<inc::latest>,
+L<Package::Constants>, L<Module::Build> and its associated Module::Build::
+packages
+
+=item Utility removals
+
+L<find2perl>, L<s2p>, L<a2p>
 
 =back
 
@@ -7702,325 +7490,6 @@ points.
 =over 4
 
 =item New Modules and Pragmata
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Diagnostics
-
-=item Utility Changes
-
-=item Configuration and Compilation
-
-=item Platform Support
-
-=over 4
-
-=item Platform-Specific Notes
-
-Cygwin
-
-=back
-
-=item Internal Changes
-
-newATTRSUB is now a macro, Changes in warnings raised by
-C<utf8n_to_uvchr()>
-
-=item Selected Bug Fixes
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5197delta - what is new for perl v5.19.7
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=over 4
-
-=item Postfix syntax for maximum array index
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item Data::Dumper's output may change
-
-=back
-
-=item Deprecations
-
-=over 4
-
-=item C<< CGI.pm >>
-
-=back
-
-=item Modules and Pragmata
-
-=over 4
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Utility Changes
-
-=item Testing
-
-=item Platform Support
-
-=over 4
-
-=item Platform-Specific Notes
-
-Windows
-
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5196delta - what is new for perl v5.19.6
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=over 4
-
-=item $a and $b warnings exemption
-
-=back
-
-=item Deprecations
-
-=over 4
-
-=item Module removals
-
-L<Package::Constants>
-
-=back
-
-=item Performance Enhancements
-
-=item Modules and Pragmata
-
-=over 4
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Testing
-
-=item Platform Support
-
-=over 4
-
-=item New Platforms
-
-Synology
-
-=item Platform-Specific Notes
-
-Windows, WinCE
-
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=item Known Problems
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5195delta - what is new for perl v5.19.5
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=over 4
-
-=item Unicode 6.3 now supported
-
-=item Experimental Postfix Dereferencing
-
-=item C<sub>s now take a C<prototype> attribute
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item Functions C<PerlIO_vsprintf> and C<PerlIO_sprintf> have been removed
-
-=back
-
-=item Performance Enhancements
-
-=item Modules and Pragmata
-
-=over 4
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=back
-
-=item Utility Changes
-
-=item Testing
-
-=item Platform Support
-
-=over 4
-
-=item Platform-Specific Notes
-
-Windows
-
-=back
-
-=item Selected Bug Fixes
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5194delta - what is new for perl v5.19.4
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=over 4
-
-=item C<rand> now uses a consistent random number generator
-
-=item Better 64-bit support
-
-=item New slice syntax
-
-=item EBCDIC support
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item Locale decimal point character no longer leaks outside of
-S<C<use locale>> scope (with the exception of $!)
-
-=item Assignments of Windows sockets error codes to $! now prefer
-F<errno.h> values over WSAGetLastError() values
-
-=back
-
-=item Deprecations
-
-=over 4
-
-=item Literal control characters in variable names
-
-=back
-
-=item Performance Enhancements
-
-=item Modules and Pragmata
-
-=over 4
 
 =item Updated Modules and Pragmata
 
@@ -8034,6 +7503,8 @@ F<errno.h> values over WSAGetLastError() values
 
 =item Changes to Existing Documentation
 
+=item L<perllexwarn>
+
 =back
 
 =item Diagnostics
@@ -8058,21 +7529,38 @@ F<errno.h> values over WSAGetLastError() values
 
 =item New Platforms
 
-FreeMiNT, Bitrig
+Android, Bitrig, FreeMiNT, Synology
 
 =item Discontinued Platforms
 
-AT&T 3b1
+C<sfio>, AT&T 3b1, DG/UX, EBCDIC
 
 =item Platform-Specific Notes
 
-VMS, Win32, WinCE, GNU/Hurd
+Cygwin, GNU/Hurd, Linux, Mac OS, MidnightBSD, Mixed-endian platforms, VMS,
+Win32, WinCE
 
 =back
 
 =item Internal Changes
 
 =item Selected Bug Fixes
+
+=over 4
+
+=item Regular Expressions
+
+=item Perl 5 Debugger and -d
+
+=item Lexical Subroutines
+
+=item Everything Else
+
+=back
+
+=item Known Problems
+
+=item Obituary
 
 =item Acknowledgements
 
@@ -8082,7 +7570,7 @@ VMS, Win32, WinCE, GNU/Hurd
 
 =back
 
-=head2 perl5193delta - what is new for perl v5.19.3
+=head2 perl5200delta, perldelta - what is new for perl v5.20.0
 
 =over 4
 
@@ -8092,7 +7580,35 @@ VMS, Win32, WinCE, GNU/Hurd
 
 =over 4
 
+=item Experimental Subroutine signatures
+
+=item C<sub>s now take a C<prototype> attribute
+
+=item More consistent prototype parsing
+
+=item C<rand> now uses a consistent random number generator
+
+=item New slice syntax
+
+=item Experimental Postfix Dereferencing
+
+=item Unicode 6.3 now supported
+
+=item New C<\p{Unicode}> regular expression pattern property
+
+=item Better 64-bit support
+
+=item C<S<use locale>> now works on UTF-8 locales
+
+=item C<S<use locale>> now compiles on systems without locale ability
+
+=item More locale initialization fallback options
+
+=item C<-DL> runtime option now added for tracing locale setting
+
 =item B<-F> now implies B<-a> and B<-a> implies B<-n>
+
+=item $a and $b warnings exemption
 
 =back
 
@@ -8104,11 +7620,67 @@ VMS, Win32, WinCE, GNU/Hurd
 
 =back
 
+=item Incompatible Changes
+
+=over 4
+
+=item C<do> can no longer be used to call subroutines
+
+=item Quote-like escape changes
+
+=item Tainting happens under more circumstances; now conforms to
+documentation
+
+=item C<\p{}>, C<\P{}> matching has changed for non-Unicode code
+points.
+
+=item C<\p{All}> has been expanded to match all possible code points
+
+=item Data::Dumper's output may change
+
+=item Locale decimal point character no longer leaks outside of S<C<use
+locale>> scope
+
+=item Assignments of Windows sockets error codes to $! now prefer
+F<errno.h> values over WSAGetLastError() values
+
+=item Functions C<PerlIO_vsprintf> and C<PerlIO_sprintf> have been removed
+
+=back
+
+=item Deprecations
+
+=over 4
+
+=item The C</\C/> character class
+
+=item Literal control characters in variable names
+
+=item References to non-integers and non-positive integers in C<$/>
+
+=item Character matching routines in POSIX
+
+=item Interpreter-based threads are now I<discouraged>
+
+=item Module removals
+
+L<CGI> and its associated CGI:: packages, L<inc::latest>,
+L<Package::Constants>, L<Module::Build> and its associated Module::Build::
+packages
+
+=item Utility removals
+
+L<find2perl>, L<s2p>, L<a2p>
+
+=back
+
 =item Performance Enhancements
 
 =item Modules and Pragmata
 
 =over 4
+
+=item New Modules and Pragmata
 
 =item Updated Modules and Pragmata
 
@@ -8118,61 +7690,11 @@ VMS, Win32, WinCE, GNU/Hurd
 
 =over 4
 
-=item Changes to Existing Documentation
-
-=back
-
-=item Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=back
-
-=item Testing
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5192delta - what is new for perl v5.19.2
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=over 4
-
-=item More consistent prototype parsing
-
-=back
-
-=item Performance Enhancements
-
-=item Modules and Pragmata
-
-=over 4
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
+=item New Documentation
 
 =item Changes to Existing Documentation
+
+=item L<perllexwarn>
 
 =back
 
@@ -8186,86 +7708,28 @@ VMS, Win32, WinCE, GNU/Hurd
 
 =back
 
-=item Configuration and Compilation
-
-=item Platform Support
-
-=over 4
-
-=item Platform-Specific Notes
-
-MidnightBSD
-
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=item Known Problems
-
-=item Acknowledgements
-
-=item Reporting Bugs
-
-=item SEE ALSO
-
-=back
-
-=head2 perl5191delta - what is new for perl v5.19.1
-
-=over 4
-
-=item DESCRIPTION
-
-=item Core Enhancements
-
-=item Security
-
-=item Incompatible Changes
-
-=over 4
-
-=item Most regex engine global state eliminated
-
-=item Locale decimal point character no longer leaks outside of S<C<use
-locale>> scope
-
-=back
-
-=item Performance Enhancements
-
-=item Modules and Pragmata
-
-=over 4
-
-=item Updated Modules and Pragmata
-
-=back
-
-=item Documentation
-
-=over 4
-
-=item Changes to Existing Documentation
-
-=back
-
-=item Diagnostics
-
 =item Utility Changes
 
+=item Configuration and Compilation
+
+=item Testing
+
 =item Platform Support
 
 =over 4
+
+=item New Platforms
+
+Android, Bitrig, FreeMiNT, Synology
 
 =item Discontinued Platforms
 
-DG/UX
+C<sfio>, AT&T 3b1, DG/UX, EBCDIC
 
 =item Platform-Specific Notes
 
-Mixed-endian platforms, Windows
+Cygwin, GNU/Hurd, Linux, Mac OS, MidnightBSD, Mixed-endian platforms, VMS,
+Win32, WinCE
 
 =back
 
@@ -8273,34 +7737,21 @@ Mixed-endian platforms, Windows
 
 =item Selected Bug Fixes
 
-=item Acknowledgements
+=over 4
 
-=item Reporting Bugs
+=item Regular Expressions
 
-=item SEE ALSO
+=item Perl 5 Debugger and -d
+
+=item Lexical Subroutines
+
+=item Everything Else
 
 =back
 
-=head2 perl5190delta - what is new for perl v5.19.0
+=item Known Problems
 
-=over 4
-
-=item DESCRIPTION
-
-=item Notice
-
-=item Modules and Pragmata
-
-=over 4
-
-=item Updated Modules and Pragmata
-
-=item Removed Modules and Pragmata
-
-Archive-Extract, B-Lint, CPANPLUS, File-CheckTree, Log-Message,
-Module-Pluggable, Object-Accessor, Pod-LaTeX, Term-UI, Text-Soundex
-
-=back
+=item Obituary
 
 =item Acknowledgements
 

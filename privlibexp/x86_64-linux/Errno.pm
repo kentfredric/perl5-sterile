@@ -9,10 +9,10 @@ use Config;
 use strict;
 
 "$Config{'archname'}-$Config{'osvers'}" eq
-"x86_64-linux-3.14.0-gentoo" or
-	die "Errno architecture (x86_64-linux-3.14.0-gentoo) does not match executable architecture ($Config{'archname'}-$Config{'osvers'})";
+"x86_64-linux-3.15.5-aufs" or
+	die "Errno architecture (x86_64-linux-3.15.5-aufs) does not match executable architecture ($Config{'archname'}-$Config{'osvers'})";
 
-our $VERSION = "1.20_02";
+our $VERSION = "1.20_03";
 $VERSION = eval $VERSION;
 our @ISA = 'Exporter';
 

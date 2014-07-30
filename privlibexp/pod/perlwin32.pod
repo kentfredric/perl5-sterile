@@ -41,7 +41,7 @@ following compilers on the Intel x86 architecture:
 
       Microsoft Visual C++    version 6.0 or later
       Intel C++ Compiler      (experimental)
-      Gcc by mingw.org        gcc version 3.2 or later
+      Gcc by mingw.org        gcc version 3.4.5 or later
       Gcc by mingw-w64.sf.net gcc version 4.4.3 or later
 
 Note that the last two of these are actually competing projects both
@@ -306,7 +306,7 @@ shells available after you install the Platform SDK from the Start Menu.
 
 =item MinGW release 3 with gcc
 
-Perl can be compiled with gcc from MinGW release 3 and later (using gcc 3.2.x
+Perl can be compiled with gcc from MinGW release 3 and later (using gcc 3.4.5
 and later).  It can be downloaded here:
 
 L<http://www.mingw.org/>
@@ -383,7 +383,7 @@ Be sure to read the instructions near the top of the makefiles carefully.
 Type "dmake" (or "nmake" if you are using that make).
 
 This should build everything.  Specifically, it will create perl.exe,
-perl519.dll at the perl toplevel, and various other extension dll's
+perl520.dll at the perl toplevel, and various other extension dll's
 under the lib\auto directory.  If the build fails for any reason, make
 sure you have done the previous steps correctly.
 
@@ -405,16 +405,16 @@ L<https://connect.microsoft.com/VisualStudio/feedback/details/811534/utime-somet
 if you need fixed C<stat> and C<utime> functions then have a look at the
 CPAN distribution Win32::UTCFileTime.
 
+If you build with certain versions (e.g. 4.8.1) of gcc from www.mingw.org then
+F<ext/POSIX/t/time.t> may fail test 17 due to a known bug in those gcc builds:
+see L<http://sourceforge.net/p/mingw/bugs/2152/>.
+
 Some test failures may occur if you use a command shell other than the
 native "cmd.exe", or if you are building from a path that contains
 spaces.  So don't do that.
 
 If you are running the tests from a emacs shell window, you may see
 failures in op/stat.t.  Run "dmake test-notty" in that case.
-
-If you run the tests on a FAT partition, you may see some failures for
-C<link()> related tests (I<op/write.t>, I<op/stat.t> ...). Testing on
-NTFS avoids these errors.
 
 Furthermore, you should make sure that during C<make test> you do not
 have any GNU tool packages in your path: some toolkits like Unixutils

@@ -1509,8 +1509,10 @@ Like C<SvPV_force>, but doesn't process get magic.
 =for apidoc Am|char*|SvPV|SV* sv|STRLEN len
 Returns a pointer to the string in the SV, or a stringified form of
 the SV if the SV does not contain a string.  The SV may cache the
-stringified version becoming C<SvPOK>.  Handles 'get' magic.  See also
-C<SvPVx> for a version which guarantees to evaluate sv only once.
+stringified version becoming C<SvPOK>.  Handles 'get' magic.  The
+C<len> variable will be set to the length of the string (this is a macro, so
+don't use C<&len>). See also C<SvPVx> for a version which guarantees to
+evaluate sv only once.
 
 Note that there is no guarantee that the return value of C<SvPV()> is
 equal to C<SvPVX(sv)>, or that C<SvPVX(sv)> contains valid data, or that
@@ -1909,12 +1911,6 @@ mg.c:1024: warning: left-hand operand of comma expression has no effect
    /* Note: To allow 256 COW "copies", a refcnt of 0 means 1. */
 #   define CowREFCNT(sv)	(*(U8 *)(SvPVX(sv)+SvLEN(sv)-1))
 #   define SV_COW_REFCNT_MAX	((1 << sizeof(U8)*8) - 1)
-#   ifndef SV_COW_THRESHOLD
-#    define SV_COW_THRESHOLD	0	/* min string length for cow */
-#   endif
-#   ifndef SV_COWBUF_THRESHOLD
-#    define SV_COWBUF_THRESHOLD	1250	/* min string length for cow */
-#   endif				/* over existing buffer */
 #   define CAN_COW_MASK	(SVf_POK|SVf_ROK|SVp_POK|SVf_FAKE| \
 			 SVf_OOK|SVf_BREAK|SVf_READONLY)
 #  endif

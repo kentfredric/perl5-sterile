@@ -4,7 +4,7 @@ use vars qw/$VERSION %released %version %families %upstream
 	    %bug_tracker %deprecated %delta/;
 use Module::CoreList::TieHashDelta;
 use version;
-$VERSION = '3.10';
+$VERSION = '3.11';
 
 my $dumpinc = 0;
 sub import {
@@ -248,6 +248,7 @@ sub changes_between {
     5.019009 => '2014-02-20',
     5.01901  => '2014-03-20',
     5.019011 => '2014-04-20',
+    5.020000 => '2014-05-27',
   );
 
 for my $version ( sort { $a <=> $b } keys %released ) {
@@ -1708,6 +1709,7 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Time::HiRes'           => '1.59',
             'Unicode'               => '4.0.1',
             'Unicode::UCD'          => '0.22',
+            'Win32'                 => '0.23',
             'base'                  => '2.05',
             'bigint'                => '0.05',
             'bignum'                => '0.15',
@@ -1931,11 +1933,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'JPL::AutoLoader'       => 1,
             'JPL::Class'            => 1,
             'JPL::Compile'          => 1,
-            'OS2::DLL'              => 1,
-            'OS2::ExtAttr'          => 1,
-            'OS2::PrfDB'            => 1,
-            'OS2::Process'          => 1,
-            'OS2::REXX'             => 1,
         }
     },
     5.008008 => {
@@ -2028,6 +2025,9 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Math::Trig'            => '1.03',
             'NDBM_File'             => '1.06',
             'ODBM_File'             => '1.06',
+            'OS2::PrfDB'            => '0.04',
+            'OS2::Process'          => '1.02',
+            'OS2::REXX'             => '1.03',
             'Opcode'                => '1.06',
             'POSIX'                 => '1.09',
             'PerlIO'                => '1.04',
@@ -2279,6 +2279,8 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Net::SMTP'             => '2.31',
             'O'                     => '1.01',
             'ODBM_File'             => '1.07',
+            'OS2::DLL'              => '1.03',
+            'OS2::Process'          => '1.03',
             'Opcode'                => '1.0601',
             'POSIX'                 => '1.15',
             'PerlIO'                => '1.05',
@@ -3078,6 +3080,7 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Net::POP3'             => '2.29',
             'Net::SMTP'             => '2.31',
             'ODBM_File'             => '1.07',
+            'OS2::DLL'              => '1.03',
             'Object::Accessor'      => '0.32',
             'Opcode'                => '1.09',
             'POSIX'                 => '1.13',
@@ -3632,6 +3635,8 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'NEXT'                  => '0.64',
             'Net::Ping'             => '2.36',
             'O'                     => '1.01',
+            'OS2::Process'          => '1.03',
+            'OS2::REXX'             => '1.04',
             'Object::Accessor'      => '0.34',
             'POSIX'                 => '1.17',
             'Package::Constants'    => '0.02',
@@ -3938,6 +3943,8 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'File::Path'            => '2.08',
             'IO'                    => '1.25_02',
             'Module::CoreList'      => '2.21',
+            'OS2::DLL'              => '1.04',
+            'OS2::Process'          => '1.04',
             'Object::Accessor'      => '0.36',
             'Opcode'                => '1.15',
             'POSIX'                 => '1.18',
@@ -5248,6 +5255,7 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Module::Load::Conditional'=> '0.40',
             'Module::Metadata'      => '1.000003',
             'Net::Ping'             => '2.38',
+            'OS2::Process'          => '1.05',
             'Object::Accessor'      => '0.38',
             'POSIX'                 => '1.24',
             'Params::Check'         => '0.28',
@@ -5358,6 +5366,7 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Module::CoreList'      => '2.45',
             'Module::Load::Conditional'=> '0.44',
             'Module::Metadata'      => '1.000004',
+            'OS2::Process'          => '1.06',
             'Parse::CPAN::Meta'     => '1.4401',
             'Pod::Html'             => '1.1',
             'Socket'                => '1.94',
@@ -5614,7 +5623,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Module::CoreList'      => '2.49_02',
             'PerlIO::scalar'        => '0.11_01',
             'Time::Piece::Seconds'  => undef,
-            'XSLoader::XSLoader'    => '0.13',
         },
         removed => {
         }
@@ -5853,6 +5861,7 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Math::Complex'         => '1.58',
             'Math::Trig'            => '1.22',
             'Module::CoreList'      => '2.54',
+            'OS2::Process'          => '1.07',
             'Pod::Perldoc'          => '3.15_06',
             'Pod::Simple'           => '3.18',
             'Pod::Simple::BlackBox' => '3.18',
@@ -6594,7 +6603,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Pod::Checker'          => '1.51',
             'Pod::Find'             => '1.51',
             'Pod::Functions'        => '1.05',
-            'Pod::Functions::Functions'=> '1.05',
             'Pod::Html'             => '1.14',
             'Pod::InputObjects'     => '1.51',
             'Pod::ParseUtils'       => '1.51',
@@ -6817,7 +6825,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'IO::Socket'            => '1.34',
             'Module::CoreList'      => '2.67',
             'Pod::Functions'        => '1.06',
-            'Pod::Functions::Functions'=> '1.06',
             'Storable'              => '2.35',
             'XS::APItest'           => '0.39',
             'diagnostics'           => '1.29',
@@ -7738,6 +7745,9 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Module::Load'          => '0.24',
             'Module::Pluggable'     => '4.6',
             'Module::Pluggable::Object'=> '4.6',
+            'OS2::DLL'              => '1.05',
+            'OS2::ExtAttr'          => '0.03',
+            'OS2::Process'          => '1.08',
             'Object::Accessor'      => '0.46',
             'PerlIO::scalar'        => '0.16',
             'Pod::Checker'          => '1.60',
@@ -8312,6 +8322,7 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Module::CoreList::Utils'=> '2.92',
             'Module::Metadata'      => '1.000014',
             'Net::Ping'             => '2.42',
+            'OS2::Process'          => '1.09',
             'POSIX'                 => '1.33',
             'Pod::Find'             => '1.61',
             'Pod::Html'             => '1.19',
@@ -8466,7 +8477,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Params::Check'         => '0.38',
             'Parse::CPAN::Meta'     => '1.4405',
             'Pod::Functions'        => '1.07',
-            'Pod::Functions::Functions'=> '1.07',
             'Pod::Html'             => '1.2',
             'Safe'                  => '2.37',
             'Socket'                => '2.010',
@@ -8632,7 +8642,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Net::SMTP'             => '2.32',
             'PerlIO'                => '1.08',
             'Pod::Functions'        => '1.08',
-            'Pod::Functions::Functions'=> '1.08',
             'Scalar::Util'          => '1.31',
             'Socket'                => '2.011',
             'Storable'              => '2.46',
@@ -9253,7 +9262,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Module::CoreList::TieHashDelta'=> '3.02',
             'Module::CoreList::Utils'=> '3.02',
             'POSIX'                 => '1.37',
-            'PathTools::Cwd'        => '3.45',
             'PerlIO::encoding'      => '0.17',
             'PerlIO::via'           => '0.14',
             'SDBM_File'             => '1.11',
@@ -9548,7 +9556,6 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Net::SMTP'             => '2.33',
             'POSIX'                 => '1.38_02',
             'Parse::CPAN::Meta'     => '1.4413',
-            'PathTools::Cwd'        => '3.47',
             'Pod::Escapes'          => '1.06',
             'Pod::Find'             => '1.62',
             'Pod::InputObjects'     => '1.62',
@@ -9755,6 +9762,45 @@ for my $version ( sort { $a <=> $b } keys %released ) {
             'Storable'              => '2.49',
             'Win32'                 => '0.49',
             'experimental'          => '0.007',
+        },
+        removed => {
+        }
+    },
+    5.020000 => {
+        delta_from => 5.019011,
+        changed => {
+            'Config'                => '5.02',
+            'Devel::PPPort'         => '3.21',
+            'Encode'                => '2.60',
+            'Errno'                 => '1.20_03',
+            'ExtUtils::Command::MM' => '6.98',
+            'ExtUtils::Liblist'     => '6.98',
+            'ExtUtils::Liblist::Kid'=> '6.98',
+            'ExtUtils::MM'          => '6.98',
+            'ExtUtils::MM_AIX'      => '6.98',
+            'ExtUtils::MM_Any'      => '6.98',
+            'ExtUtils::MM_BeOS'     => '6.98',
+            'ExtUtils::MM_Cygwin'   => '6.98',
+            'ExtUtils::MM_DOS'      => '6.98',
+            'ExtUtils::MM_Darwin'   => '6.98',
+            'ExtUtils::MM_MacOS'    => '6.98',
+            'ExtUtils::MM_NW5'      => '6.98',
+            'ExtUtils::MM_OS2'      => '6.98',
+            'ExtUtils::MM_QNX'      => '6.98',
+            'ExtUtils::MM_UWIN'     => '6.98',
+            'ExtUtils::MM_Unix'     => '6.98',
+            'ExtUtils::MM_VMS'      => '6.98',
+            'ExtUtils::MM_VOS'      => '6.98',
+            'ExtUtils::MM_Win32'    => '6.98',
+            'ExtUtils::MM_Win95'    => '6.98',
+            'ExtUtils::MY'          => '6.98',
+            'ExtUtils::MakeMaker'   => '6.98',
+            'ExtUtils::MakeMaker::Config'=> '6.98',
+            'ExtUtils::Miniperl'    => '1.01',
+            'ExtUtils::Mkbootstrap' => '6.98',
+            'ExtUtils::Mksymlists'  => '6.98',
+            'ExtUtils::testlib'     => '6.98',
+            'Pod::Functions::Functions'=> '1.08',
         },
         removed => {
         }
@@ -10148,6 +10194,13 @@ for my $version (sort { $a <=> $b } keys %delta) {
     },
     5.019011 => {
         delta_from => 5.019010,
+        changed => {
+        },
+        removed => {
+        }
+    },
+    5.020000 => {
+        delta_from => 5.019011,
         changed => {
         },
         removed => {
@@ -10997,7 +11050,7 @@ sub _create_aliases {
     my ($hash) = @_;
 
     for my $version (keys %$hash) {
-        next unless $version >= 5.010;
+        next unless $version >= 5.006;
 
         my $padded = sprintf "%0.6f", $version;
 

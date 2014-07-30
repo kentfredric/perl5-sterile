@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use vars '%Config', '$VERSION';
 
-$VERSION = "5.019011";
+$VERSION = "5.020000";
 
 # Skip @Config::EXPORT because it only contains %Config, which we special
 # case below as it's not a function. @Config::EXPORT won't change in the
@@ -56,11 +56,11 @@ sub import {
     return;
 }
 
-die "$0: Perl lib version (5.19.11) doesn't match executable '$^X' version ($])"
+die "$0: Perl lib version (5.20.0) doesn't match executable '$^X' version ($])"
     unless $^V;
 
-$^V eq 5.19.11
-    or die sprintf "%s: Perl lib version (5.19.11) doesn't match executable '$^X' version (%vd)", $0, $^V;
+$^V eq 5.20.0
+    or die sprintf "%s: Perl lib version (5.20.0) doesn't match executable '$^X' version (%vd)", $0, $^V;
 
 
 sub FETCH {
@@ -84,7 +84,7 @@ sub AUTOLOAD {
 
 # tie returns the object, so the value returned to require will be true.
 tie %Config, 'Config', {
-    archlibexp => '/home/kent/perl5/perlbrew/perls/5.19.11-pristine/lib/5.19.11/x86_64-linux',
+    archlibexp => '/home/kent/perl5/perlbrew/perls/5.20.0-pristine/lib/5.20.0/x86_64-linux',
     archname => 'x86_64-linux',
     cc => 'cc',
     d_readlink => 'define',
@@ -93,19 +93,19 @@ tie %Config, 'Config', {
     dlsrc => 'dl_dlopen.xs',
     dont_use_nlink => undef,
     exe_ext => '',
-    inc_version_list => '',
+    inc_version_list => ' ',
     intsize => '4',
     ldlibpthname => 'LD_LIBRARY_PATH',
-    libpth => '/usr/lib/gcc/x86_64-pc-linux-gnu/4.8.2/include-fixed /usr/lib /lib/../lib64 /usr/lib/../lib64 /lib /lib64 /usr/lib64',
+    libpth => '/usr/lib/gcc/x86_64-pc-linux-gnu/4.8.3/include-fixed /usr/lib /lib/../lib64 /usr/lib/../lib64 /lib /lib64 /usr/lib64',
     osname => 'linux',
-    osvers => '3.14.0-gentoo',
+    osvers => '3.15.5-aufs',
     path_sep => ':',
-    privlibexp => '/home/kent/perl5/perlbrew/perls/5.19.11-pristine/lib/5.19.11',
-    scriptdir => '/home/kent/perl5/perlbrew/perls/5.19.11-pristine/bin',
-    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.19.11-pristine/lib/site_perl/5.19.11/x86_64-linux',
-    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.19.11-pristine/lib/site_perl/5.19.11',
+    privlibexp => '/home/kent/perl5/perlbrew/perls/5.20.0-pristine/lib/5.20.0',
+    scriptdir => '/home/kent/perl5/perlbrew/perls/5.20.0-pristine/bin',
+    sitearchexp => '/home/kent/perl5/perlbrew/perls/5.20.0-pristine/lib/site_perl/5.20.0/x86_64-linux',
+    sitelibexp => '/home/kent/perl5/perlbrew/perls/5.20.0-pristine/lib/site_perl/5.20.0',
     so => 'so',
     useithreads => undef,
     usevendorprefix => undef,
-    version => '5.19.11',
+    version => '5.20.0',
 };
