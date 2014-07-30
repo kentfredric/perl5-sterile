@@ -150,10 +150,6 @@ Control the filetest permission operators
 
 C<use> a Perl module if a condition holds
 
-=item inc::latest
-
-Use modules bundled in inc/ if they are newer than installed ones
-
 =item integer
 
 Use integer arithmetic instead of floating point
@@ -344,42 +340,6 @@ Family-neutral IP socket supporting both IPv4 and IPv6
 =item C<Socket>
 
 Networking constants and support functions
-
-=item CGI
-
-Handle Common Gateway Interface requests and responses
-
-=item CGI::Apache
-
-Backward compatibility module for CGI.pm
-
-=item CGI::Carp
-
-CGI routines for writing to the HTTPD (or other) error log
-
-=item CGI::Cookie
-
-Interface to HTTP Cookies
-
-=item CGI::Fast
-
-CGI Interface for Fast CGI
-
-=item CGI::Pretty
-
-Module to produce nicely formatted HTML code
-
-=item CGI::Push
-
-Simple Interface to Server Push
-
-=item CGI::Switch
-
-Backward compatibility module for defunct CGI::Switch
-
-=item CGI::Util
-
-Internal utilities used by CGI module
 
 =item CORE
 
@@ -1361,98 +1321,6 @@ Glue to provide EXISTS for SDBM_File for Storable use
 
 Store Memoized data in Storable database
 
-=item Module::Build
-
-Build and install Perl modules
-
-=item Module::Build::API
-
-API Reference for Module Authors
-
-=item Module::Build::Authoring
-
-Authoring Module::Build modules
-
-=item Module::Build::Base
-
-Default methods for Module::Build
-
-=item Module::Build::Bundling
-
-How to bundle Module::Build with a distribution
-
-=item Module::Build::Compat
-
-Compatibility with ExtUtils::MakeMaker
-
-=item Module::Build::ConfigData
-
-Configuration for Module::Build
-
-=item Module::Build::Cookbook
-
-Examples of Module::Build Usage
-
-=item Module::Build::ModuleInfo
-
-DEPRECATED
-
-=item Module::Build::Notes
-
-Create persistent distribution configuration modules
-
-=item Module::Build::PPMMaker
-
-Perl Package Manager file creation
-
-=item Module::Build::Platform::Default
-
-Stub class for unknown platforms
-
-=item Module::Build::Platform::MacOS
-
-Builder class for MacOS platforms
-
-=item Module::Build::Platform::Unix
-
-Builder class for Unix platforms
-
-=item Module::Build::Platform::VMS
-
-Builder class for VMS platforms
-
-=item Module::Build::Platform::VOS
-
-Builder class for VOS platforms
-
-=item Module::Build::Platform::Windows
-
-Builder class for Windows platforms
-
-=item Module::Build::Platform::aix
-
-Builder class for AIX platform
-
-=item Module::Build::Platform::cygwin
-
-Builder class for Cygwin platform
-
-=item Module::Build::Platform::darwin
-
-Builder class for Mac OS X platform
-
-=item Module::Build::Platform::os2
-
-Builder class for OS/2 platform
-
-=item Module::Build::Version
-
-DEPRECATED
-
-=item Module::Build::YAML
-
-DEPRECATED
-
 =item Module::CoreList
 
 What modules shipped with versions of perl
@@ -1560,10 +1428,6 @@ Disable named opcodes when compiling perl code
 =item POSIX
 
 Perl interface to IEEE Std 1003.1
-
-=item Package::Constants
-
-List all constants declared in a package
 
 =item Params::Check
 

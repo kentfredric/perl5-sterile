@@ -4232,8 +4232,8 @@ arybase, attributes, autodie, autodie::exception,
 autodie::exception::system, autodie::hints, autodie::skip, autouse, base,
 bigint, bignum, bigrat, blib, bytes, charnames, constant, deprecate,
 diagnostics, encoding, encoding::warnings, experimental, feature, fields,
-filetest, if, inc::latest, integer, less, lib, locale, mro, open, ops,
-overload, overloading, parent, re, sigtrap, sort, strict, subs, threads,
+filetest, if, integer, less, lib, locale, mro, open, ops, overload,
+overloading, parent, re, sigtrap, sort, strict, subs, threads,
 threads::shared, utf8, vars, version, vmsish, warnings, warnings::register
 
 =item Standard Modules
@@ -4242,27 +4242,25 @@ AnyDBM_File, App::Cpan, App::Prove, App::Prove::State,
 App::Prove::State::Result, App::Prove::State::Result::Test, Archive::Tar,
 Archive::Tar::File, Attribute::Handlers, AutoLoader, AutoSplit, B,
 B::Concise, B::Debug, B::Deparse, B::Showlex, B::Terse, B::Xref, Benchmark,
-C<IO::Socket::IP>, C<Socket>, CGI, CGI::Apache, CGI::Carp, CGI::Cookie,
-CGI::Fast, CGI::Pretty, CGI::Push, CGI::Switch, CGI::Util, CORE, CPAN,
-CPAN::API::HOWTO, CPAN::Debug, CPAN::Distroprefs, CPAN::FirstTime,
-CPAN::HandleConfig, CPAN::Kwalify, CPAN::Meta, CPAN::Meta::Converter,
-CPAN::Meta::Feature, CPAN::Meta::History, CPAN::Meta::Prereqs,
-CPAN::Meta::Requirements, CPAN::Meta::Spec, CPAN::Meta::Validator,
-CPAN::Meta::YAML, CPAN::Nox, CPAN::Queue, CPAN::Tarzip, CPAN::Version,
-Carp, Class::Struct, Compress::Raw::Bzip2, Compress::Raw::Zlib,
-Compress::Zlib, Config, Config::Perl::V, Cwd, DB, DBM_Filter,
-DBM_Filter::compress, DBM_Filter::encode, DBM_Filter::int32,
-DBM_Filter::null, DBM_Filter::utf8, DB_File, Data::Dumper, Devel::PPPort,
-Devel::Peek, Devel::SelfStubber, Digest, Digest::MD5, Digest::SHA,
-Digest::base, Digest::file, DirHandle, Dumpvalue, DynaLoader, Encode,
-Encode::Alias, Encode::Byte, Encode::CJKConstants, Encode::CN,
-Encode::CN::HZ, Encode::Config, Encode::EBCDIC, Encode::Encoder,
-Encode::Encoding, Encode::GSM0338, Encode::Guess, Encode::JP,
-Encode::JP::H2Z, Encode::JP::JIS7, Encode::KR, Encode::KR::2022_KR,
-Encode::MIME::Header, Encode::MIME::Name, Encode::PerlIO,
-Encode::Supported, Encode::Symbol, Encode::TW, Encode::Unicode,
-Encode::Unicode::UTF7, English, Env, Errno, Exporter, Exporter::Heavy,
-ExtUtils::CBuilder, ExtUtils::CBuilder::Platform::Windows,
+C<IO::Socket::IP>, C<Socket>, CORE, CPAN, CPAN::API::HOWTO, CPAN::Debug,
+CPAN::Distroprefs, CPAN::FirstTime, CPAN::HandleConfig, CPAN::Kwalify,
+CPAN::Meta, CPAN::Meta::Converter, CPAN::Meta::Feature,
+CPAN::Meta::History, CPAN::Meta::Prereqs, CPAN::Meta::Requirements,
+CPAN::Meta::Spec, CPAN::Meta::Validator, CPAN::Meta::YAML, CPAN::Nox,
+CPAN::Queue, CPAN::Tarzip, CPAN::Version, Carp, Class::Struct,
+Compress::Raw::Bzip2, Compress::Raw::Zlib, Compress::Zlib, Config,
+Config::Perl::V, Cwd, DB, DBM_Filter, DBM_Filter::compress,
+DBM_Filter::encode, DBM_Filter::int32, DBM_Filter::null, DBM_Filter::utf8,
+DB_File, Data::Dumper, Devel::PPPort, Devel::Peek, Devel::SelfStubber,
+Digest, Digest::MD5, Digest::SHA, Digest::base, Digest::file, DirHandle,
+Dumpvalue, DynaLoader, Encode, Encode::Alias, Encode::Byte,
+Encode::CJKConstants, Encode::CN, Encode::CN::HZ, Encode::Config,
+Encode::EBCDIC, Encode::Encoder, Encode::Encoding, Encode::GSM0338,
+Encode::Guess, Encode::JP, Encode::JP::H2Z, Encode::JP::JIS7, Encode::KR,
+Encode::KR::2022_KR, Encode::MIME::Header, Encode::MIME::Name,
+Encode::PerlIO, Encode::Supported, Encode::Symbol, Encode::TW,
+Encode::Unicode, Encode::Unicode::UTF7, English, Env, Errno, Exporter,
+Exporter::Heavy, ExtUtils::CBuilder, ExtUtils::CBuilder::Platform::Windows,
 ExtUtils::Command, ExtUtils::Command::MM, ExtUtils::Constant,
 ExtUtils::Constant::Base, ExtUtils::Constant::Utils,
 ExtUtils::Constant::XS, ExtUtils::Embed, ExtUtils::Install,
@@ -4310,33 +4308,23 @@ Math::BigFloat, Math::BigInt, Math::BigInt::Calc, Math::BigInt::CalcEmu,
 Math::BigInt::FastCalc, Math::BigRat, Math::Complex, Math::Trig, Memoize,
 Memoize::AnyDBM_File, Memoize::Expire, Memoize::ExpireFile,
 Memoize::ExpireTest, Memoize::NDBM_File, Memoize::SDBM_File,
-Memoize::Storable, Module::Build, Module::Build::API,
-Module::Build::Authoring, Module::Build::Base, Module::Build::Bundling,
-Module::Build::Compat, Module::Build::ConfigData, Module::Build::Cookbook,
-Module::Build::ModuleInfo, Module::Build::Notes, Module::Build::PPMMaker,
-Module::Build::Platform::Default, Module::Build::Platform::MacOS,
-Module::Build::Platform::Unix, Module::Build::Platform::VMS,
-Module::Build::Platform::VOS, Module::Build::Platform::Windows,
-Module::Build::Platform::aix, Module::Build::Platform::cygwin,
-Module::Build::Platform::darwin, Module::Build::Platform::os2,
-Module::Build::Version, Module::Build::YAML, Module::CoreList,
-Module::CoreList::Utils, Module::Load, Module::Load::Conditional,
-Module::Loaded, Module::Metadata, NDBM_File, NEXT, Net::Cmd, Net::Config,
-Net::Domain, Net::FTP, Net::NNTP, Net::Netrc, Net::POP3, Net::Ping,
-Net::SMTP, Net::Time, Net::hostent, Net::libnetFAQ, Net::netent,
-Net::protoent, Net::servent, O, ODBM_File, Opcode, POSIX,
-Package::Constants, Params::Check, Parse::CPAN::Meta, Perl::OSType, PerlIO,
-PerlIO::encoding, PerlIO::mmap, PerlIO::scalar, PerlIO::via,
-PerlIO::via::QuotedPrint, Pod::Escapes, Pod::Find, Pod::Functions,
-Pod::Html, Pod::InputObjects, Pod::Man, Pod::ParseLink, Pod::ParseUtils,
-Pod::Parser, Pod::Perldoc, Pod::Perldoc::BaseTo, Pod::Perldoc::GetOptsOO,
-Pod::Perldoc::ToANSI, Pod::Perldoc::ToChecker, Pod::Perldoc::ToMan,
-Pod::Perldoc::ToNroff, Pod::Perldoc::ToPod, Pod::Perldoc::ToRtf,
-Pod::Perldoc::ToTerm, Pod::Perldoc::ToText, Pod::Perldoc::ToTk,
-Pod::Perldoc::ToXml, Pod::PlainText, Pod::Select, Pod::Simple,
-Pod::Simple::Checker, Pod::Simple::Debug, Pod::Simple::DumpAsText,
-Pod::Simple::DumpAsXML, Pod::Simple::HTML, Pod::Simple::HTMLBatch,
-Pod::Simple::LinkSection, Pod::Simple::Methody, Pod::Simple::PullParser,
+Memoize::Storable, Module::CoreList, Module::CoreList::Utils, Module::Load,
+Module::Load::Conditional, Module::Loaded, Module::Metadata, NDBM_File,
+NEXT, Net::Cmd, Net::Config, Net::Domain, Net::FTP, Net::NNTP, Net::Netrc,
+Net::POP3, Net::Ping, Net::SMTP, Net::Time, Net::hostent, Net::libnetFAQ,
+Net::netent, Net::protoent, Net::servent, O, ODBM_File, Opcode, POSIX,
+Params::Check, Parse::CPAN::Meta, Perl::OSType, PerlIO, PerlIO::encoding,
+PerlIO::mmap, PerlIO::scalar, PerlIO::via, PerlIO::via::QuotedPrint,
+Pod::Escapes, Pod::Find, Pod::Functions, Pod::Html, Pod::InputObjects,
+Pod::Man, Pod::ParseLink, Pod::ParseUtils, Pod::Parser, Pod::Perldoc,
+Pod::Perldoc::BaseTo, Pod::Perldoc::GetOptsOO, Pod::Perldoc::ToANSI,
+Pod::Perldoc::ToChecker, Pod::Perldoc::ToMan, Pod::Perldoc::ToNroff,
+Pod::Perldoc::ToPod, Pod::Perldoc::ToRtf, Pod::Perldoc::ToTerm,
+Pod::Perldoc::ToText, Pod::Perldoc::ToTk, Pod::Perldoc::ToXml,
+Pod::PlainText, Pod::Select, Pod::Simple, Pod::Simple::Checker,
+Pod::Simple::Debug, Pod::Simple::DumpAsText, Pod::Simple::DumpAsXML,
+Pod::Simple::HTML, Pod::Simple::HTMLBatch, Pod::Simple::LinkSection,
+Pod::Simple::Methody, Pod::Simple::PullParser,
 Pod::Simple::PullParserEndToken, Pod::Simple::PullParserStartToken,
 Pod::Simple::PullParserTextToken, Pod::Simple::PullParserToken,
 Pod::Simple::RTF, Pod::Simple::Search, Pod::Simple::SimpleTree,
@@ -4646,7 +4634,7 @@ L<a2p|a2p>, L<s2p|s2p> and L<psed>, L<find2perl|find2perl>
 
 =item Administration
 
-L<config_data|config_data>, L<libnetcfg|libnetcfg>, L<perlivp>
+L<libnetcfg|libnetcfg>, L<perlivp>
 
 =item Development
 
@@ -7379,188 +7367,21 @@ B<-i>, B<-V>
 
 =back
 
-=head2 perldelta - what is new for perl v5.20.0
+=head2 perldelta - what is new for perl v5.21.0
 
 =over 4
 
 =item DESCRIPTION
 
-=item Core Enhancements
-
-=over 4
-
-=item Experimental Subroutine signatures
-
-=item C<sub>s now take a C<prototype> attribute
-
-=item More consistent prototype parsing
-
-=item C<rand> now uses a consistent random number generator
-
-=item New slice syntax
-
-=item Experimental Postfix Dereferencing
-
-=item Unicode 6.3 now supported
-
-=item New C<\p{Unicode}> regular expression pattern property
-
-=item Better 64-bit support
-
-=item C<S<use locale>> now works on UTF-8 locales
-
-=item C<S<use locale>> now compiles on systems without locale ability
-
-=item More locale initialization fallback options
-
-=item C<-DL> runtime option now added for tracing locale setting
-
-=item B<-F> now implies B<-a> and B<-a> implies B<-n>
-
-=item $a and $b warnings exemption
-
-=back
-
-=item Security
-
-=over 4
-
-=item Avoid possible read of free()d memory during parsing
-
-=back
-
-=item Incompatible Changes
-
-=over 4
-
-=item C<do> can no longer be used to call subroutines
-
-=item Quote-like escape changes
-
-=item Tainting happens under more circumstances; now conforms to
-documentation
-
-=item C<\p{}>, C<\P{}> matching has changed for non-Unicode code
-points.
-
-=item C<\p{All}> has been expanded to match all possible code points
-
-=item Data::Dumper's output may change
-
-=item Locale decimal point character no longer leaks outside of S<C<use
-locale>> scope
-
-=item Assignments of Windows sockets error codes to $! now prefer
-F<errno.h> values over WSAGetLastError() values
-
-=item Functions C<PerlIO_vsprintf> and C<PerlIO_sprintf> have been removed
-
-=back
-
-=item Deprecations
-
-=over 4
-
-=item The C</\C/> character class
-
-=item Literal control characters in variable names
-
-=item References to non-integers and non-positive integers in C<$/>
-
-=item Character matching routines in POSIX
-
-=item Interpreter-based threads are now I<discouraged>
-
-=item Module removals
-
-L<CGI> and its associated CGI:: packages, L<inc::latest>,
-L<Package::Constants>, L<Module::Build> and its associated Module::Build::
-packages
-
-=item Utility removals
-
-L<find2perl>, L<s2p>, L<a2p>
-
-=back
-
-=item Performance Enhancements
-
 =item Modules and Pragmata
 
 =over 4
 
-=item New Modules and Pragmata
-
 =item Updated Modules and Pragmata
 
-=back
-
-=item Documentation
-
-=over 4
-
-=item New Documentation
-
-=item Changes to Existing Documentation
-
-=item L<perllexwarn>
+=item Removed Modules and Pragmata
 
 =back
-
-=item Diagnostics
-
-=over 4
-
-=item New Diagnostics
-
-=item Changes to Existing Diagnostics
-
-=back
-
-=item Utility Changes
-
-=item Configuration and Compilation
-
-=item Testing
-
-=item Platform Support
-
-=over 4
-
-=item New Platforms
-
-Android, Bitrig, FreeMiNT, Synology
-
-=item Discontinued Platforms
-
-C<sfio>, AT&T 3b1, DG/UX, EBCDIC
-
-=item Platform-Specific Notes
-
-Cygwin, GNU/Hurd, Linux, Mac OS, MidnightBSD, Mixed-endian platforms, VMS,
-Win32, WinCE
-
-=back
-
-=item Internal Changes
-
-=item Selected Bug Fixes
-
-=over 4
-
-=item Regular Expressions
-
-=item Perl 5 Debugger and -d
-
-=item Lexical Subroutines
-
-=item Everything Else
-
-=back
-
-=item Known Problems
-
-=item Obituary
 
 =item Acknowledgements
 
@@ -7570,7 +7391,31 @@ Win32, WinCE
 
 =back
 
-=head2 perl5200delta, perldelta - what is new for perl v5.20.0
+=head2 perl5210delta, perldelta - what is new for perl v5.21.0
+
+=over 4
+
+=item DESCRIPTION
+
+=item Modules and Pragmata
+
+=over 4
+
+=item Updated Modules and Pragmata
+
+=item Removed Modules and Pragmata
+
+=back
+
+=item Acknowledgements
+
+=item Reporting Bugs
+
+=item SEE ALSO
+
+=back
+
+=head2 perl5200delta - what is new for perl v5.20.0
 
 =over 4
 
@@ -14279,41 +14124,6 @@ new, phash
 
 =back
 
-=head2 inc::latest - use modules bundled in inc/ if they are newer than
-installed ones
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=over 4
-
-=item Special notes on bundling
-
-=back
-
-=item USAGE
-
-=over 4
-
-=item Author-mode
-
-loaded_modules(), write(), bundle_module()
-
-=item As bundled in inc/
-
-=back
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
 =head2 integer - Perl pragma to use integer arithmetic instead of floating
 point
 
@@ -16238,456 +16048,6 @@ cpu_p, cpu_c, cpu_a, real, iters
 =item AUTHORS
 
 =item MODIFICATION HISTORY
-
-=back
-
-=head2 CGI - Handle Common Gateway Interface requests and responses
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=over 4
-
-=item PROGRAMMING STYLE
-
-=item CALLING CGI.PM ROUTINES
-
-=item CREATING A NEW QUERY OBJECT (OBJECT-ORIENTED STYLE):
-
-=item CREATING A NEW QUERY OBJECT FROM AN INPUT FILE
-
-=item FETCHING A LIST OF KEYWORDS FROM THE QUERY:
-
-=item FETCHING THE NAMES OF ALL THE PARAMETERS PASSED TO YOUR SCRIPT:
-
-=item FETCHING THE VALUE OR VALUES OF A SINGLE NAMED PARAMETER:
-
-=item SETTING THE VALUE(S) OF A NAMED PARAMETER:
-
-=item APPENDING ADDITIONAL VALUES TO A NAMED PARAMETER:
-
-=item IMPORTING ALL PARAMETERS INTO A NAMESPACE:
-
-=item DELETING A PARAMETER COMPLETELY:
-
-=item DELETING ALL PARAMETERS:
-
-=item HANDLING NON-URLENCODED ARGUMENTS
-
-=item DIRECT ACCESS TO THE PARAMETER LIST:
-
-=item FETCHING THE PARAMETER LIST AS A HASH:
-
-=item SAVING THE STATE OF THE SCRIPT TO A FILE:
-
-=item RETRIEVING CGI ERRORS
-
-=item USING THE FUNCTION-ORIENTED INTERFACE
-
-B<:cgi>, B<:form>, B<:html2>, B<:html3>, B<:html4>, B<:netscape>, B<:html>,
-B<:standard>, B<:all>
-
-=item PRAGMAS
-
--any, -compile, -nosticky, -tabindex, -no_undef_params, -no_xhtml, -utf8,
--nph, -newstyle_urls, -oldstyle_urls, -autoload, -no_debug, -debug,
--private_tempfiles
-
-=item SPECIAL FORMS FOR IMPORTING HTML-TAG FUNCTIONS
-
-1. start_table() (generates a <table> tag), 2. end_table() (generates a
-</table> tag), 3. start_ul() (generates a <ul> tag), 4. end_ul() (generates
-a </ul> tag)
-
-=back
-
-=item GENERATING DYNAMIC DOCUMENTS
-
-=over 4
-
-=item CREATING A STANDARD HTTP HEADER:
-
-=item GENERATING A REDIRECTION HEADER
-
-=item CREATING THE HTML DOCUMENT HEADER
-
-=item ENDING THE HTML DOCUMENT:
-
-=item CREATING A SELF-REFERENCING URL THAT PRESERVES STATE INFORMATION:
-
-=item OBTAINING THE SCRIPT'S URL
-
-B<-absolute>, B<-relative>, B<-full>, B<-path> (B<-path_info>), B<-query>
-(B<-query_string>), B<-base>, B<-rewrite>
-
-=item MIXING POST AND URL PARAMETERS
-
-=back
-
-=item CREATING STANDARD HTML ELEMENTS:
-
-=over 4
-
-=item PROVIDING ARGUMENTS TO HTML SHORTCUTS
-
-=item THE DISTRIBUTIVE PROPERTY OF HTML SHORTCUTS
-
-=item HTML SHORTCUTS AND LIST INTERPOLATION
-
-=item NON-STANDARD HTML SHORTCUTS
-
-=item AUTOESCAPING HTML
-
-$escaped_string = escapeHTML("unescaped string");, $charset =
-charset([$charset]);, $flag = autoEscape([$flag]);
-
-=item PRETTY-PRINTING HTML
-
-=back
-
-=item CREATING FILL-OUT FORMS:
-
-=over 4
-
-=item CREATING AN ISINDEX TAG
-
-=item STARTING AND ENDING A FORM
-
-B<application/x-www-form-urlencoded>, B<multipart/form-data>
-
-=item FORM ELEMENTS
-
-B<-name>, B<-value>, B<-values>, B<-tabindex>, B<-id>, B<-override>,
-B<-onChange>, B<-onFocus>, B<-onBlur>, B<-onMouseOver>, B<-onMouseOut>,
-B<-onSelect>
-
-=item CREATING A TEXT FIELD
-
-=item CREATING A BIG TEXT FIELD
-
-=item CREATING A PASSWORD FIELD
-
-=item CREATING A FILE UPLOAD FIELD
-
-=item PROCESSING A FILE UPLOAD FIELD
-
-=item CREATING A POPUP MENU
-
-=item CREATING AN OPTION GROUP
-
-=item CREATING A SCROLLING LIST
-
-=item CREATING A GROUP OF RELATED CHECKBOXES
-
-=item CREATING A STANDALONE CHECKBOX
-
-=item CREATING A RADIO BUTTON GROUP
-
-=item CREATING A SUBMIT BUTTON 
-
-=item CREATING A RESET BUTTON
-
-=item CREATING A DEFAULT BUTTON
-
-=item CREATING A HIDDEN FIELD
-
-=item CREATING A CLICKABLE IMAGE BUTTON
-
-=item CREATING A JAVASCRIPT ACTION BUTTON
-
-=back
-
-=item HTTP COOKIES
-
-1. an expiration time, 2. a domain, 3. a path, 4. a "secure" flag,
-B<-name>, B<-value>, B<-path>, B<-domain>, B<-expires>, B<-secure>
-
-=item WORKING WITH FRAMES
-
-1. Create a <Frameset> document, 2. Specify the destination for the
-document in the HTTP header, 3. Specify the destination for the document in
-the <form> tag
-
-=item SUPPORT FOR JAVASCRIPT
-
-B<onLoad>, B<onUnload>, B<onSubmit>, B<onClick>, B<onChange>, B<onFocus>,
-B<onBlur>, B<onSelect>, B<onMouseOver>, B<onMouseOut>
-
-=item LIMITED SUPPORT FOR CASCADING STYLE SHEETS
-
-=item DEBUGGING
-
-=over 4
-
-=item DUMPING OUT ALL THE NAME/VALUE PAIRS
-
-=back
-
-=item FETCHING ENVIRONMENT VARIABLES
-
-B<Accept()>, B<raw_cookie()>, B<user_agent()>, B<path_info()>,
-B<path_translated()>, B<remote_host()>, B<remote_addr()>, B<script_name()>
-Return the script name as a partial URL, for self-referring scripts,
-B<referer()>, B<auth_type ()>, B<server_name ()>, B<virtual_host ()>,
-B<server_port ()>, B<virtual_port ()>, B<server_software ()>, B<remote_user
-()>, B<user_name ()>, B<request_method()>, B<content_type()>, B<http()>,
-B<https()>
-
-=item USING NPH SCRIPTS
-
-In the B<use> statement, By calling the B<nph()> method:, By using B<-nph>
-parameters
-
-=item Server Push
-
-multipart_init(), multipart_start(), multipart_end(), multipart_final()
-
-=item Avoiding Denial of Service Attacks
-
-B<$CGI::POST_MAX>, B<$CGI::DISABLE_UPLOADS>, B<1. On a script-by-script
-basis>, B<2. Globally for all scripts>
-
-=item COMPATIBILITY WITH CGI-LIB.PL
-
-=over 4
-
-=item Cgi-lib functions that are available in CGI.pm
-
-=item Cgi-lib functions that are not available in CGI.pm
-
-=back
-
-=item AUTHOR INFORMATION
-
-=item CREDITS
-
-Matt Heffron (heffron@falstaff.css.beckman.com), James Taylor
-(james.taylor@srs.gov), Scott Anguish <sanguish@digifix.com>, Mike Jewell
-(mlj3u@virginia.edu), Timothy Shimmin (tes@kbs.citri.edu.au), Joergen Haegg
-(jh@axis.se), Laurent Delfosse (delfosse@delfosse.com), Richard Resnick
-(applepi1@aol.com), Craig Bishop (csb@barwonwater.vic.gov.au), Tony Curtis
-(tc@vcpc.univie.ac.at), Tim Bunce (Tim.Bunce@ig.co.uk), Tom Christiansen
-(tchrist@convex.com), Andreas Koenig (k@franz.ww.TU-Berlin.DE), Tim
-MacKenzie (Tim.MacKenzie@fulcrum.com.au), Kevin B. Hendricks
-(kbhend@dogwood.tyler.wm.edu), Stephen Dahmen (joyfire@inxpress.net), Ed
-Jordan (ed@fidalgo.net), David Alan Pisoni (david@cnation.com), Doug
-MacEachern (dougm@opengroup.org), Robin Houston (robin@oneworld.org),
-...and many many more..
-
-=item A COMPLETE EXAMPLE OF A SIMPLE FORM-BASED SCRIPT
-
-=item BUGS
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Apache - Backward compatibility module for CGI.pm
-
-=over 4
-
-=item SYNOPSIS
-
-=item ABSTRACT
-
-=item DESCRIPTION
-
-=item AUTHOR INFORMATION
-
-=item BUGS
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Carp, B<CGI::Carp> - CGI routines for writing to the HTTPD (or
-other) error log
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item REDIRECTING ERROR MESSAGES
-
-=item MAKING PERL ERRORS APPEAR IN THE BROWSER WINDOW
-
-=over 4
-
-=item Changing the default message
-
-=back
-
-=item DOING MORE THAN PRINTING A MESSAGE IN THE EVENT OF PERL ERRORS
-
-=over 4
-
-=item SUPPRESSING PERL ERRORS APPEARING IN THE BROWSER WINDOW
-
-=back
-
-=item MAKING WARNINGS APPEAR AS HTML COMMENTS
-
-=item OVERRIDING THE NAME OF THE PROGRAM
-
-=item AUTHORS
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Cookie - Interface to HTTP Cookies
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item USING CGI::Cookie
-
-B<1. expiration date>, B<2. domain>, B<3. path>, B<4. secure flag>, B<5.
-httponly flag>
-
-=over 4
-
-=item Creating New Cookies
-
-=item Sending the Cookie to the Browser
-
-=item Recovering Previous Cookies
-
-=item Manipulating Cookies
-
-B<name()>, B<value()>, B<domain()>, B<path()>, B<expires()>
-
-=back
-
-=item AUTHOR INFORMATION
-
-=item BUGS
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Fast - CGI Interface for Fast CGI
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item OTHER PIECES OF THE PUZZLE
-
-=item WRITING FASTCGI PERL SCRIPTS
-
-=item INSTALLING FASTCGI SCRIPTS
-
-=item USING FASTCGI SCRIPTS AS CGI SCRIPTS
-
-=item EXTERNAL FASTCGI SERVER INVOCATION
-
-FCGI_SOCKET_PATH, FCGI_LISTEN_QUEUE
-
-=item CAVEATS
-
-=item AUTHOR INFORMATION
-
-=item BUGS
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Pretty - module to produce nicely formatted HTML code
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=over 4
-
-=item Recommendation for when to use CGI::Pretty
-
-=item Tags that won't be formatted
-
-=item Customizing the Indenting
-
-=back
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Push - Simple Interface to Server Push
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item USING CGI::Push
-
--next_page, -last_page, -type, -delay, -cookie, -target, -expires, -nph
-
-=over 4
-
-=item Heterogeneous Pages
-
-=item Changing the Page Delay on the Fly
-
-=back
-
-=item INSTALLING CGI::Push SCRIPTS
-
-=item AUTHOR INFORMATION
-
-=item BUGS
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Switch - Backward compatibility module for defunct CGI::Switch
-
-=over 4
-
-=item SYNOPSIS
-
-=item ABSTRACT
-
-=item DESCRIPTION
-
-=item AUTHOR INFORMATION
-
-=item BUGS
-
-=item SEE ALSO
-
-=back
-
-=head2 CGI::Util - Internal utilities used by CGI module
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item AUTHOR INFORMATION
-
-=item SEE ALSO
 
 =back
 
@@ -27261,595 +26621,6 @@ Storable use
 
 =back
 
-=head2 Module::Build - Build and install Perl modules
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item GUIDE TO DOCUMENTATION
-
-General Usage (L<Module::Build>), Authoring Reference
-(L<Module::Build::Authoring>), API Reference (L<Module::Build::API>),
-Cookbook (L<Module::Build::Cookbook>)
-
-=item ACTIONS
-
-build, clean, code, config_data, diff, dist, distcheck, distclean, distdir,
-distinstall, distmeta, distsign, disttest, docs, fakeinstall, help, html,
-install, installdeps, manifest, manifest_skip, manpages, pardist, ppd,
-ppmdist, prereq_data, prereq_report, pure_install, realclean, retest,
-skipcheck, test, testall, testcover, testdb, testpod, testpodcoverage,
-versioninstall
-
-=item OPTIONS
-
-=over 4
-
-=item Command Line Options
-
-quiet, verbose, cpan_client, use_rcfile, allow_mb_mismatch, debug
-
-=item Default Options File (F<.modulebuildrc>)
-
-=item Environment variables
-
-MODULEBUILDRC, PERL_MB_OPT
-
-=back
-
-=item INSTALL PATHS
-
-lib, arch, script, bin, bindoc, libdoc, binhtml, libhtml, installdirs,
-install_path, install_base, destdir, prefix
-
-=item MOTIVATIONS
-
-+, +
-
-=item TO DO
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::API - API Reference for Module Authors
-
-=over 4
-
-=item DESCRIPTION
-
-=over 4
-
-=item CONSTRUCTORS
-
-current(), new(), add_to_cleanup, allow_pureperl, auto_configure_requires,
-auto_features, autosplit, build_class, build_requires, configure_requires,
-test_requires, create_packlist, c_source, conflicts, create_license,
-create_makefile_pl, create_readme, dist_abstract, dist_author, dist_name,
-dist_suffix, dist_version, dist_version_from, dynamic_config,
-extra_compiler_flags, extra_linker_flags, extra_manify_args, get_options,
-type, store, default, include_dirs, install_path, installdirs, license,
-apache, apache_1_1, artistic, artistic_2, bsd, gpl, lgpl, mit, mozilla,
-open_source, perl, restrictive, unrestricted, meta_add, meta_merge,
-module_name, needs_compiler, PL_files, pm_files, pod_files, recommends,
-recursive_test_files, release_status, requires, script_files, share_dir,
-sign, tap_harness_args, test_files, use_tap_harness, xs_files,
-new_from_context(%args), resume(), subclass(), add_property, C<default>,
-C<check>, property_error
-
-=item METHODS
-
-add_build_element($type), add_to_cleanup(@files), args(),
-autosplit_file($from, $to), base_dir(), build_requires(), can_action(
-$action ), cbuilder(), check_installed_status($module, $version),
-check_installed_version($module, $version), compare_versions($v1, $op,
-$v2), config($key), config($key, $value), config() [deprecated],
-config_data($name), config_data($name => $value), conflicts(),
-contains_pod($file) [deprecated], copy_if_modified(%parameters),
-create_build_script(), current_action(), depends_on(@actions),
-dir_contains($first_dir, $second_dir), dispatch($action, %args),
-dist_dir(), dist_name(), dist_version(), do_system($cmd, @args),
-extra_compiler_flags(), extra_compiler_flags(@flags), extra_linker_flags(),
-extra_linker_flags(@flags), feature($name), feature($name => $value),
-fix_shebang_line(@files), have_c_compiler(), install_base_relpaths(),
-install_base_relpaths($type), install_base_relpaths($type => $path),
-install_destination($type), install_path(), install_path($type),
-install_path($type => $path), install_types(), invoked_action(), notes(),
-notes($key), notes($key => $value), orig_dir(), os_type(), is_vmsish(),
-is_windowsish(), is_unixish(), prefix_relpaths(),
-prefix_relpaths($installdirs), prefix_relpaths($installdirs, $type),
-prefix_relpaths($installdirs, $type => $path), get_metadata(),
-prepare_metadata() [deprecated], prereq_failures(), prereq_data(),
-prereq_report(), prompt($message, $default), recommends(), requires(),
-rscan_dir($dir, $pattern), runtime_params(), runtime_params($key),
-script_files(), up_to_date($source_file, $derived_file),
-up_to_date(\@source_files, \@derived_files), y_n($message, $default)
-
-=item Autogenerated Accessors
-
-PL_files(), allow_mb_mismatch(), allow_pureperl(),
-auto_configure_requires(), autosplit(), base_dir(), bindoc_dirs(), blib(),
-build_bat(), build_class(), build_elements(), build_requires(),
-build_script(), bundle_inc(), bundle_inc_preload(), c_source(),
-config_dir(), configure_requires(), conflicts(), cpan_client(),
-create_license(), create_makefile_pl(), create_packlist(), create_readme(),
-debug(), debugger(), destdir(), dynamic_config(), extra_manify_args(),
-get_options(), html_css(), include_dirs(), install_base(), installdirs(),
-libdoc_dirs(), license(), magic_number(), mb_version(), meta_add(),
-meta_merge(), metafile(), metafile2(), module_name(), mymetafile(),
-mymetafile2(), needs_compiler(), orig_dir(), perl(), pm_files(),
-pod_files(), pollute(), prefix(), prereq_action_types(), program_name(),
-pureperl_only(), quiet(), recommends(), recurse_into(),
-recursive_test_files(), requires(), scripts(), sign(), tap_harness_args(),
-test_file_exts(), test_requires(), use_rcfile(), use_tap_harness(),
-verbose(), xs_files()
-
-=back
-
-=item MODULE METADATA
-
-keywords, resources
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Authoring - Authoring Module::Build modules
-
-=over 4
-
-=item DESCRIPTION
-
-=item STRUCTURE
-
-=item SUBCLASSING
-
-=item PREREQUISITES
-
-=over 4
-
-=item Types of prerequisites
-
-configure_requires, build_requires, requires, recommends, test_requires,
-conflicts
-
-=item Format of prerequisites
-
-=item XS Extensions
-
-=back
-
-=item SAVING CONFIGURATION INFORMATION
-
-=item STARTING MODULE DEVELOPMENT
-
-=item AUTOMATION
-
-=item MIGRATION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Base - Default methods for Module::Build
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Bundling - How to bundle Module::Build with a
-distribution
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item BUNDLING OTHER CONFIGURATION DEPENDENCIES
-
-=over 4
-
-=item WARNING -- How to Manage Dependency Chains
-
-=back
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Compat - Compatibility with ExtUtils::MakeMaker
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item METHODS
-
-create_makefile_pl($style, $build), traditional, small, passthrough
-(DEPRECATED), run_build_pl(args => \@ARGV), args, script, write_makefile(),
-makefile
-
-=item SCENARIOS
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::ConfigData - Configuration for Module::Build
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item METHODS
-
-config($name), feature($name), set_config($name, $value),
-set_feature($name, $value), config_names(), feature_names(),
-auto_feature_names(), write()
-
-=item AUTHOR
-
-=back
-
-=head2 Module::Build::Cookbook - Examples of Module::Build Usage
-
-=over 4
-
-=item DESCRIPTION
-
-=item BASIC RECIPES
-
-=over 4
-
-=item Installing modules that use Module::Build
-
-=item Modifying Config.pm values
-
-=item Installing modules using the programmatic interface
-
-=item Installing to a temporary directory
-
-=item Installing to a non-standard directory
-
-=item Installing in the same location as ExtUtils::MakeMaker
-
-=item Running a single test file
-
-=back
-
-=item ADVANCED RECIPES
-
-=over 4
-
-=item Making a CPAN.pm-compatible distribution
-
-=item Changing the order of the build process
-
-=item Adding new file types to the build process
-
-=item Adding new elements to the install process
-
-=back
-
-=item EXAMPLES ON CPAN
-
-=over 4
-
-=item SVN-Notify-Mirror
-
-1. Using C<auto_features>, I check to see whether two optional modules are
-available - SVN::Notify::Config and Net::SSH;, 2. If the S::N::Config
-module is loaded, I automatically generate test files for it during Build
-(using the C<PL_files> property), 3. If the C<ssh_feature> is available, I
-ask if the user wishes to perform the ssh tests (since it requires a little
-preliminary setup);, 4. Only if the user has C<ssh_feature> and answers yes
-to the testing, do I generate a test file
-
-=item Modifying an action
-
-=item Adding an action
-
-=item Bundling Module::Build
-
-=back
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::ModuleInfo - DEPRECATED
-
-=over 4
-
-=item DESCRIPTION
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Notes - Create persistent distribution configuration
-modules
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Notes, NOTES_NAME - Configuration for MODULE_NAME
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item METHODS
-
-config($name), feature($name), set_config($name, $value),
-set_feature($name, $value), config_names(), feature_names(),
-auto_feature_names(), write()
-
-=item AUTHOR
-
-=back
-
-=head2 Module::Build::PPMMaker - Perl Package Manager file creation
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item COPYRIGHT
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::Default - Stub class for unknown platforms
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::MacOS - Builder class for MacOS platforms
-
-=over 4
-
-=item DESCRIPTION
-
-=over 4
-
-=item Overridden Methods
-
-new(), make_executable(), dispatch(), ACTION_realclean()
-
-=back
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::Unix - Builder class for Unix platforms
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::VMS - Builder class for VMS platforms
-
-=over 4
-
-=item DESCRIPTION
-
-=over 4
-
-=item Overridden Methods
-
-_set_defaults
-
-=back
-
-=back
-
-cull_args
-
-manpage_separator
-
-prefixify
-
-_quote_args
-
-have_forkpipe
-
-_backticks
-
-find_command
-
-_maybe_command (override)
-
-do_system
-
-oneliner
-
-rscan_dir
-
-dist_dir
-
-man3page_name
-
-expand_test_dir
-
-_detildefy
-
-find_perl_interpreter
-
-localize_file_path
-
-localize_dir_path
-
-ACTION_clean
-
-=over 4
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::VOS - Builder class for VOS platforms
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::Windows - Builder class for Windows
-platforms
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::aix - Builder class for AIX platform
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::cygwin - Builder class for Cygwin platform
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::darwin - Builder class for Mac OS X
-platform
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Platform::os2 - Builder class for OS/2 platform
-
-=over 4
-
-=item DESCRIPTION
-
-=item AUTHOR
-
-=item SEE ALSO
-
-=back
-
-=head2 Module::Build::Version - DEPRECATED
-
-=over 4
-
-=item DESCRIPTION
-
-=back
-
-=head2 Module::Build::YAML - DEPRECATED
-
-=over 4
-
-=item DESCRIPTION
-
-=back
-
 =head2 Module::CoreList - what modules shipped with versions of perl
 
 =over 4
@@ -28833,46 +27604,6 @@ Constants
 
 Constants, C<WNOHANG>, C<WUNTRACED>, Macros, C<WIFEXITED>, C<WEXITSTATUS>,
 C<WIFSIGNALED>, C<WTERMSIG>, C<WIFSTOPPED>, C<WSTOPSIG>
-
-=back
-
-=head2 Package::Constants - List all constants declared in a package
-
-=over 4
-
-=item SYNOPSIS
-
-=item DESCRIPTION
-
-=item CLASS METHODS
-
-=over 4
-
-=item @const = Package::Constants->list( PACKAGE_NAME );
-
-=back
-
-=back
-
-=over 4
-
-=item GLOBAL VARIABLES
-
-=over 4
-
-=item $Package::Constants::DEBUG
-
-=back
-
-=back
-
-=over 4
-
-=item BUG REPORTS
-
-=item AUTHOR
-
-=item COPYRIGHT
 
 =back
 
